@@ -22,7 +22,7 @@ Cada etapa é pura até `applyPlan`: carregar, validar e planejar só leem o dis
 | Caminho | Responsabilidade |
 | --- | --- |
 | `src/cli.ts` | Parsing de argumentos (`node:util.parseArgs`), saída texto/JSON, códigos de saída |
-| `src/commands/` | `init`, `update` (fluxo comum em `install.ts`), `status`, `doctor`, `remove`, `validate`, `review` (única que chama o modelo: executa a skill `seedgrid-review` via `claude -p` ou `codex exec`, somente leitura) |
+| `src/commands/` | `init`, `update` (fluxo comum em `install.ts`), `status`, `doctor`, `remove`, `validate`, `review` (única que chama o modelo: executa a skill `sg-review` via `claude -p` ou `codex exec`, somente leitura) |
 | `src/core/content.ts` | Leitura do manifesto (vault) e validação de schema, nomes, IDs, arquivos, links, referências e da KB (wikilinks, caminhos locais, segredos) |
 | `src/core/plan.ts` | Comparação entre estado desejado, lock e disco; classifica cada item e detecta conflitos |
 | `src/core/apply.ts` | Revalidação, backup, escrita via temporário + renomeação, rollback, limpeza de pastas vazias |
@@ -47,7 +47,7 @@ Para cada arquivo desejado:
 | igual ao desejado | presente / ausente | sem mudança / adotar |
 | igual ao hash do lock | presente | atualizar |
 | diferente de ambos | presente | **conflito** (modificado localmente) |
-| diferente do desejado | ausente | **conflito** (arquivo não gerenciado) |
+| diferente do desejado | ausente | **conflito** (arquivo não gerenciado; exceção: arquivos de skill do toolkit são substituídos, com backup) |
 
 Arquivos no lock que saíram do estado desejado (troca de target/modo, item removido do conteúdo) são apagados se intactos; se modificados, geram conflito.
 

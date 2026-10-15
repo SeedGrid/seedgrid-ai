@@ -57,7 +57,7 @@ Arquivos e pastas que começam com ponto são ignorados.
 ```json
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.1",
+  "contentVersion": "0.3.2",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     { "id": "agents", "type": "agents", "files": ["agents/arquiteto.md"] },
@@ -65,9 +65,9 @@ Arquivos e pastas que começam com ponto são ignorados.
     { "id": "templates", "type": "templates", "files": ["templates/especificacao-tarefa.md"] },
     { "id": "references", "type": "references", "files": ["references/glossario.md"] },
     {
-      "id": "skill:planejar-mudanca",
+      "id": "skill:sg-plan-change",
       "type": "skill",
-      "name": "planejar-mudanca",
+      "name": "sg-plan-change",
       "files": [
         "SKILL.md",
         { "path": "assets/especificacao-tarefa.md", "from": "templates/especificacao-tarefa.md" }
@@ -111,7 +111,7 @@ Schema próprio do toolkit, em frontmatter YAML:
 id: backend-java
 description: Implementa APIs Java e persistência quando a tarefa altera o backend.
 capabilities: [read-files, edit-files, run-checks]
-preferred_skills: [validar-mudanca]
+preferred_skills: [sg-validate-change]
 ---
 ```
 

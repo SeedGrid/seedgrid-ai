@@ -1,5 +1,5 @@
 ---
-name: seedgrid-bump
+name: sg-bump
 description: Sobe a versão do projeto inteiro de uma vez, mantendo a mesma versão no back (pom.xml) e em todos os apps de front (package.json), e no que mais a exibir. Use quando pedirem bump, nova versão ou release do projeto (patch, minor, major ou uma versão informada). Não altera dependências.
 metadata:
   toolkit: seedgrid-ai

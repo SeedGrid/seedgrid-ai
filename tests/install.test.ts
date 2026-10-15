@@ -17,7 +17,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const SKILLS = ['planejar-mudanca', 'revisar-codigo', 'seedgrid-backend-crud', 'seedgrid-bump', 'seedgrid-crud', 'seedgrid-new-screen', 'seedgrid-review', 'validar-mudanca'];
+const SKILLS = ['sg-bump', 'sg-code-review', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-review', 'sg-validate-change'];
 const AGENTS = ['arquiteto', 'backend-java', 'backend-rust', 'frontend-react', 'qa', 'revisor'];
 
 /** Gera uma nova versão de conteúdo alterando uma regra. */
@@ -47,8 +47,8 @@ describe('instalação', () => {
       }
     }
     // Recursos relativos acompanham a skill e as cópias são idênticas.
-    assert.ok(files['.claude/skills/revisar-codigo/references/checklist.md']);
-    assert.ok(files['.agents/skills/planejar-mudanca/assets/especificacao-tarefa.md']);
+    assert.ok(files['.claude/skills/sg-code-review/references/checklist.md']);
+    assert.ok(files['.agents/skills/sg-plan-change/assets/especificacao-tarefa.md']);
     for (const [rel, text] of Object.entries(files).filter(([k]) => k.startsWith('.claude/skills/'))) {
       assert.equal(files[rel.replace('.claude/', '.agents/')], text);
     }
@@ -124,9 +124,12 @@ describe('instalação', () => {
     await initCommand({ project, target: 'claude' });
     const files = await snapshot(project);
     const index = files['.ai/skills/index.md']!;
-    for (const name of SKILLS) assert.match(index, new RegExp(`\\| \`${name}\` \\|.*\`\\.claude/skills/${name}/SKILL\\.md\``));
-    assert.doesNotMatch(index, /\.agents\/skills/, 'target claude não lista o destino do Codex');
-    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(8\)/);
+    for (const name of SKILLS) {
+      assert.match(index, new RegExp(`\\| \`${name}\` \\|.*\\[${name}/SKILL\\.md\\]\\(${name}/SKILL\\.md\\)`));
+      assert.ok(files[`.ai/skills/${name}/SKILL.md`], `${name} tem cópia canônica em .ai/skills`);
+      assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
+    }
+    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(9\)/);
     for (const dir of ['rules', 'agents', 'templates', 'references']) {
       assert.ok(files[`.ai/${dir}/index.md`], `${dir}/index.md gerado`);
       assert.ok(files['AGENTS.md']!.includes(`.ai/${dir}/`), `AGENTS.md aponta para ${dir}/`);
@@ -135,14 +138,16 @@ describe('instalação', () => {
     assert.match(files['.ai/templates/index.md']!, /relatorio-validacao\.md/);
     assert.doesNotMatch(files['AGENTS.md']!, /coordenacao\.md.*formato-entrega|relatorio-validacao/s, 'AGENTS.md não lista arquivos');
     // A única skill citada pelo nome é a de revisão, que o bloco recomenda explicitamente.
-    for (const name of SKILLS.filter((n) => n !== 'seedgrid-review')) {
+    for (const name of SKILLS.filter((n) => n !== 'sg-review')) {
       assert.ok(!files['AGENTS.md']!.includes(`\`${name}\``), `AGENTS.md não deve listar ${name}`);
     }
-    assert.match(files['AGENTS.md']!, /Padrões SeedGrid obrigatórios.*frontend-seedgrid\.md.*backend-java-seedgrid\.md.*seedgrid-review/);
+    assert.match(files['AGENTS.md']!, /Padrões SeedGrid obrigatórios.*frontend-seedgrid\.md.*backend-java-seedgrid\.md.*sg-review/);
 
-    // Ao instalar o outro target, o índice passa a citar os dois destinos e o lock o acompanha.
+    // Ao instalar o outro target, as cópias nativas dos dois destinos coexistem com a canônica em .ai/skills.
     await initCommand({ project, target: 'both' });
-    assert.match(await readText(project, '.ai/skills/index.md'), /\.claude\/skills\/seedgrid-crud\/SKILL\.md` ou `\.agents\/skills\/seedgrid-crud\/SKILL\.md`/);
+    const both = await snapshot(project);
+    assert.equal(both['.agents/skills/sg-crud-front/SKILL.md'], both['.ai/skills/sg-crud-front/SKILL.md']);
+    assert.equal(both['.claude/skills/sg-crud-front/SKILL.md'], both['.ai/skills/sg-crud-front/SKILL.md']);
     assert.equal((await removeCommand({ project })).exitCode, EXIT_OK);
   });
 
@@ -195,25 +200,51 @@ describe('instalação', () => {
     assert.match(await readText(project, '.ai/backups/.gitignore'), /^\*$/m);
   });
 
+  test('update renova o conteúdo do toolkit e preserva as skills criadas pelo usuário', async () => {
+    const project = await tempProject();
+    const source = await copyContent();
+    await initCommand({ project, source });
+    const mine = '---\nname: gerar-relatorio\ndescription: minha skill\n---\n# minha\n';
+    for (const dir of ['.ai/skills', '.claude/skills', '.agents/skills']) await writeText(project, `${dir}/gerar-relatorio/SKILL.md`, mine);
+    await writeText(project, '.ai/skills/projeto.md', '# Skills do projeto\n\n- [gerar-relatorio](gerar-relatorio/SKILL.md): minha\n');
+    const extras = ['.ai/rules/minha-regra.md', '.ai/templates/meu-modelo.md', '.ai/references/minha-ref.md', '.ai/local/regras.md'];
+    for (const f of extras) await writeText(project, f, `meu conteúdo em ${f}\n`);
+
+    await bumpContent(source, '0.2.0', 'NOVA REGRA 0.2.0');
+    const res = await updateCommand({ project, source });
+    assert.equal(res.exitCode, EXIT_OK, res.lines.join('\n'));
+    const files = await snapshot(project);
+    assert.match(files['.ai/rules/formato-entrega.md']!, /NOVA REGRA 0\.2\.0/);
+    for (const dir of ['.ai/skills', '.claude/skills', '.agents/skills']) assert.equal(files[`${dir}/gerar-relatorio/SKILL.md`], mine);
+    assert.match(files['.ai/skills/projeto.md']!, /gerar-relatorio/);
+    assert.match(files['.ai/skills/index.md']!, /projeto\.md/);
+    for (const f of extras) assert.equal(files[f], `meu conteúdo em ${f}\n`, `${f} preservado no update`);
+    assert.equal((await removeCommand({ project })).exitCode, EXIT_OK);
+    const after = await snapshot(project);
+    assert.equal(after['.claude/skills/gerar-relatorio/SKILL.md'], mine, 'remove também preserva a skill do usuário');
+    for (const f of extras) assert.ok(after[f], `${f} preservado no remove`);
+  });
+
   test('update leva skills novas a um projeto instalado com conteúdo anterior', async () => {
     const project = await tempProject();
     const old = await copyContent();
     await editManifest(old, (m) => {
       m.contentVersion = '0.1.0';
-      m.components = m.components.filter((c: { id: string }) => !c.id.startsWith('skill:seedgrid-'));
+      m.components = m.components.filter((c: { id: string }) => !/^skill:sg-(crud|new|review|bump)/.test(c.id));
     });
-    await rm(path.join(old, TK, 'skills', 'seedgrid-crud'), { recursive: true });
-    await rm(path.join(old, TK, 'skills', 'seedgrid-new-screen'), { recursive: true });
-    await rm(path.join(old, TK, 'skills', 'seedgrid-review'), { recursive: true });
-    await rm(path.join(old, TK, 'skills', 'seedgrid-backend-crud'), { recursive: true });
-    await rm(path.join(old, TK, 'skills', 'seedgrid-bump'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-crud-front'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-new-screen'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-review'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-crud-back'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-bump'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-new-skill'), { recursive: true });
     // Os papéis atuais citam essas skills; no conteúdo "anterior" elas deixam de existir.
     for (const id of ['backend-java', 'frontend-react', 'revisor']) {
       const p = `${TK}agents/${id}.md`;
       await writeText(old, p, (await readText(old, p)).replace(/^preferred_skills: .*$/m, 'preferred_skills: []'));
     }
     await initCommand({ project, source: old });
-    assert.equal((await snapshot(project))['.claude/skills/seedgrid-crud/SKILL.md'], undefined);
+    assert.equal((await snapshot(project))['.claude/skills/sg-crud-front/SKILL.md'], undefined);
 
     const st = await statusCommand({ project });
     assert.equal(st.report.updateAvailable, true);
@@ -221,8 +252,8 @@ describe('instalação', () => {
     assert.equal(res.exitCode, EXIT_OK, res.lines.join('\n'));
     const files = await snapshot(project);
     for (const dir of ['.claude/skills', '.agents/skills']) {
-      assert.ok(files[`${dir}/seedgrid-crud/references/patterns.md`]);
-      assert.ok(files[`${dir}/seedgrid-new-screen/agents/openai.yaml`]);
+      assert.ok(files[`${dir}/sg-crud-front/references/patterns.md`]);
+      assert.ok(files[`${dir}/sg-new-screen/agents/openai.yaml`]);
     }
     const lock = JSON.parse(files['.ai/toolkit-lock.json']!);
     assert.deepEqual(lock.source, { type: 'bundled' });
@@ -247,11 +278,26 @@ describe('instalação', () => {
 
   test('arquivo preexistente não gerenciado com conteúdo diferente gera conflito', async () => {
     const project = await tempProject();
-    await writeText(project, '.claude/skills/revisar-codigo/SKILL.md', '---\nname: revisar-codigo\ndescription: minha\n---\n');
+    await writeText(project, '.ai/rules/coordenacao.md', 'minha regra\n');
     const before = await snapshot(project);
     const res = await initCommand({ project });
     assert.equal(res.exitCode, EXIT_CONFLICT);
     assert.deepEqual(await snapshot(project), before);
+  });
+
+  test('skill do projeto com o mesmo nome de uma do toolkit é substituída, com backup', async () => {
+    const project = await tempProject();
+    const mine = '---\nname: sg-crud-front\ndescription: antiga do projeto\n---\n';
+    await writeText(project, '.ai/skills/sg-crud-front/SKILL.md', mine);
+    await writeText(project, '.claude/skills/sg-code-review/SKILL.md', mine);
+    const res = await initCommand({ project });
+    assert.equal(res.exitCode, EXIT_OK, res.lines.join('\n'));
+    const files = await snapshot(project);
+    assert.doesNotMatch(files['.ai/skills/sg-crud-front/SKILL.md']!, /antiga do projeto/);
+    assert.doesNotMatch(files['.claude/skills/sg-code-review/SKILL.md']!, /antiga do projeto/);
+    const backupDir = (res.report.result as { backupDir: string }).backupDir;
+    assert.equal(await readText(project, `${backupDir}/.ai/skills/sg-crud-front/SKILL.md`), mine);
+    assert.ok(res.lines.join('\n').includes('substituído pela skill do toolkit'));
   });
 
   test('bloco editado manualmente gera conflito; texto fora dos marcadores é preservado', async () => {
@@ -300,7 +346,7 @@ describe('instalação', () => {
   test('remove aborta quando há customização', async () => {
     const project = await tempProject();
     await initCommand({ project });
-    await writeText(project, '.agents/skills/validar-mudanca/SKILL.md', 'alterado\n');
+    await writeText(project, '.agents/skills/sg-validate-change/SKILL.md', 'alterado\n');
     const before = await snapshot(project);
     const res = await removeCommand({ project });
     assert.equal(res.exitCode, EXIT_CONFLICT);
@@ -334,7 +380,7 @@ describe('instalação', () => {
     const project = await tempProject();
     await initCommand({ project, target: 'claude' });
     const files = await snapshot(project);
-    assert.ok(files['.claude/skills/revisar-codigo/SKILL.md']);
+    assert.ok(files['.claude/skills/sg-code-review/SKILL.md']);
     assert.ok(!Object.keys(files).some((f) => f.startsWith('.agents/')));
     assert.doesNotMatch(files['AGENTS.md']!, /\.agents\/skills/);
   });

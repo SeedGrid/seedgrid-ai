@@ -72,7 +72,7 @@ describe('review: comando', () => {
     assert.equal(res.report.violations, 2);
     assert.equal(f.calls.length, 1);
     assert.equal(f.calls[0]!.cwd, project);
-    assert.match(f.calls[0]!.command, /^claude -p "Use a skill seedgrid-review .*escopo front/);
+    assert.match(f.calls[0]!.command, /^claude -p "Use a skill sg-review .*escopo front/);
     assert.match(f.calls[0]!.command, /--allowedTools "Read,Grep,Glob,Bash\(git diff:\*\)/);
     assert.doesNotMatch(f.calls[0]!.command, /Edit|Write/, 'a revisão não recebe ferramentas de escrita');
     assert.match(res.lines.join('\n'), /2 violação\(ões\), 1 bloqueante/);
@@ -85,7 +85,7 @@ describe('review: comando', () => {
     const res = await reviewCommand({ project, tool: 'codex', full: true, runner: f.runner });
     assert.equal(res.exitCode, EXIT_OK);
     assert.equal(res.report.tool, 'codex');
-    assert.match(f.calls[0]!.command, /^codex exec --sandbox read-only "Use a skill seedgrid-review .*projeto inteiro.*front e back/);
+    assert.match(f.calls[0]!.command, /^codex exec --sandbox read-only "Use a skill sg-review .*projeto inteiro.*front e back/);
   });
 
   test('só o target instalado é considerado; skill ausente orienta o update', async () => {
@@ -95,10 +95,10 @@ describe('review: comando', () => {
     assert.equal((await reviewCommand({ project, runner: f.runner })).report.tool, 'codex');
     await assert.rejects(reviewCommand({ project, tool: 'claude', runner: f.runner }), /não está entre os targets instalados/);
 
-    await rm(path.join(project, '.agents', 'skills', 'seedgrid-review'), { recursive: true });
+    await rm(path.join(project, '.agents', 'skills', 'sg-review'), { recursive: true });
     await assert.rejects(reviewCommand({ project, runner: f.runner }), (e: unknown) => {
       assert.ok(e instanceof ToolkitError);
-      assert.match(e.details.join(' '), /skill seedgrid-review não instalada \(rode seedgrid-ai update\)/);
+      assert.match(e.details.join(' '), /skill sg-review não instalada \(rode seedgrid-ai update\)/);
       return true;
     });
   });

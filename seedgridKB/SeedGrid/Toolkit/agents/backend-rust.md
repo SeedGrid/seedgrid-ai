@@ -2,7 +2,7 @@
 id: backend-rust
 description: Implementa APIs, regras de negócio e persistência em Rust com os crates SeedGrid (portes das extensions Java) quando a tarefa altera um backend Rust.
 capabilities: [read-files, edit-files, run-checks]
-preferred_skills: [validar-mudanca]
+preferred_skills: [sg-validate-change]
 ---
 
 # Backend Rust

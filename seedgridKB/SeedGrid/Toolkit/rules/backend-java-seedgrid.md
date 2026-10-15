@@ -3,7 +3,7 @@ description: "Padrões obrigatórios do back-end Java SeedGrid: estrutura de pas
 ---
 # Padrões do back-end Java SeedGrid
 
-Regras **obrigatórias** para novos projetos e bibliotecas SeedGrid. Cada regra tem um id (`BE-nn`) para citar em revisões (`seedgrid-review`). Para as extensions existentes (propriedades, enums, exemplos), consulte a KB: comece por `.ai/brain/SeedGrid/Extensions/Indice.md`.
+Regras **obrigatórias** para novos projetos e bibliotecas SeedGrid. Cada regra tem um id (`BE-nn`) para citar em revisões (`sg-review`). Para as extensions existentes (propriedades, enums, exemplos), consulte a KB: comece por `.ai/brain/SeedGrid/Extensions/Indice.md`.
 
 ## Estrutura e nomes
 
@@ -47,7 +47,7 @@ Regras **obrigatórias** para novos projetos e bibliotecas SeedGrid. Cada regra 
 - **BE-63.** Dado pessoal **não** vai em claro para auditoria, log, exportação ou resposta de erro: use `@PersonalData`/`@MaskRule` (e `remove = true` para senha e segredos).
 - **BE-64.** Criação, alteração e exclusão de entidades de negócio são auditadas com `@Audit` (`entityFqcn`, `operation`, `description`) no método de serviço, dentro de `@Transactional`.
 - **BE-65.** Endpoints protegidos com as anotações de segurança do Quarkus (`@Authenticated`, `@RolesAllowed`, `@PermissionsAllowed`) e permissões registradas conforme a extension `security`; a UI esconder um botão não substitui a checagem no back.
-- **BE-66.** Cadastros novos seguem a skill `seedgrid-backend-crud`.
+- **BE-66.** Cadastros novos seguem a skill `sg-crud-back`.
 
 ## Ao terminar
 

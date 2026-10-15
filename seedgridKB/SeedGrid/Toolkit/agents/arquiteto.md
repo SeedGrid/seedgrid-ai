@@ -2,7 +2,7 @@
 id: arquiteto
 description: Porta de entrada de toda tarefa não trivial - classifica (feature, bug, hotfix, refactor), faz as perguntas que tirem as dúvidas e entrega o plano com tarefas, paralelismo e critérios de aceite.
 capabilities: [read-files]
-preferred_skills: [planejar-mudanca]
+preferred_skills: [sg-plan-change]
 ---
 
 # Arquiteto

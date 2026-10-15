@@ -1,5 +1,5 @@
 ---
-name: seedgrid-new-screen
+name: sg-new-screen
 description: Registrar uma tela, menu ou permissao nova no boilerplate SeedGrid (app do cliente `frontend/` ou admin da plataforma `admin/`) sem esquecer nenhum dos lugares que precisam ficar sincronizados - migration da permissao, item de menu, icone, item ativo, catalogo do editor de perfis e, se for vendavel por plano, o treeview de features do admin e o `@RequiresPlanFeature`. Use ao criar tela nova, acao nova numa tela existente, permissao nova, ou ao mover/renomear item de menu.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: seedgrid-backend-crud
+name: sg-crud-back
 description: Cria ou padroniza um CRUD de back-end Java com as extensions SeedGrid - entidade com BaseEntity e publicId, migration Flyway, campos pessoais cifrados com seedgrid-privacy (LGPD), auditoria com @Audit, permissões, controller com RestControllerPath, DTOs e testes. Use ao criar uma entidade nova com API, ou ao adicionar campo pessoal, auditoria ou permissão a um cadastro existente.
 metadata:
   toolkit: seedgrid-ai
@@ -25,5 +25,5 @@ Monta um cadastro completo no padrão `.ai/rules/backend-java-seedgrid.md` (regr
 ## Cuidados
 
 - Cifra de campo é opt-in: exige `seedgrid.privacy.encryption.enabled=true`, `seedgrid.privacy.crypto.key` e `seedgrid.privacy.search.key` fornecidos por variável de ambiente ou segredo, nunca versionados (BE-62). Sem a chave configurada, a leitura de valor já cifrado falha.
-- A tela correspondente segue a skill `seedgrid-crud`; menu e permissão da tela, a `seedgrid-new-screen`.
-- Para conferir o resultado contra o padrão, use `seedgrid-review back`.
+- A tela correspondente segue a skill `sg-crud-front`; menu e permissão da tela, a `sg-new-screen`.
+- Para conferir o resultado contra o padrão, use `sg-review back`.

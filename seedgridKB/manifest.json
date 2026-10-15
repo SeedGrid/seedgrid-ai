@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.1",
+  "contentVersion": "0.3.2",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -21,6 +21,7 @@
       "files": [
         "rules/coordenacao.md",
         "rules/formato-entrega.md",
+        "rules/documentos.md",
         "rules/personalizacao-local.md",
         "rules/frontend-seedgrid.md",
         "rules/backend-java-seedgrid.md"
@@ -45,9 +46,9 @@
       ]
     },
     {
-      "id": "skill:planejar-mudanca",
+      "id": "skill:sg-plan-change",
       "type": "skill",
-      "name": "planejar-mudanca",
+      "name": "sg-plan-change",
       "files": [
         "SKILL.md",
         {
@@ -57,18 +58,18 @@
       ]
     },
     {
-      "id": "skill:revisar-codigo",
+      "id": "skill:sg-code-review",
       "type": "skill",
-      "name": "revisar-codigo",
+      "name": "sg-code-review",
       "files": [
         "SKILL.md",
         "references/checklist.md"
       ]
     },
     {
-      "id": "skill:validar-mudanca",
+      "id": "skill:sg-validate-change",
       "type": "skill",
-      "name": "validar-mudanca",
+      "name": "sg-validate-change",
       "files": [
         "SKILL.md",
         {
@@ -78,17 +79,17 @@
       ]
     },
     {
-      "id": "skill:seedgrid-backend-crud",
+      "id": "skill:sg-crud-back",
       "type": "skill",
-      "name": "seedgrid-backend-crud",
+      "name": "sg-crud-back",
       "files": [
         "SKILL.md"
       ]
     },
     {
-      "id": "skill:seedgrid-crud",
+      "id": "skill:sg-crud-front",
       "type": "skill",
-      "name": "seedgrid-crud",
+      "name": "sg-crud-front",
       "files": [
         "SKILL.md",
         "references/patterns.md",
@@ -98,9 +99,9 @@
       ]
     },
     {
-      "id": "skill:seedgrid-new-screen",
+      "id": "skill:sg-new-screen",
       "type": "skill",
-      "name": "seedgrid-new-screen",
+      "name": "sg-new-screen",
       "files": [
         "SKILL.md",
         "references/steps.md",
@@ -109,17 +110,25 @@
       ]
     },
     {
-      "id": "skill:seedgrid-bump",
+      "id": "skill:sg-bump",
       "type": "skill",
-      "name": "seedgrid-bump",
+      "name": "sg-bump",
       "files": [
         "SKILL.md"
       ]
     },
     {
-      "id": "skill:seedgrid-review",
+      "id": "skill:sg-new-skill",
       "type": "skill",
-      "name": "seedgrid-review",
+      "name": "sg-new-skill",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:sg-review",
+      "type": "skill",
+      "name": "sg-review",
       "files": [
         "SKILL.md"
       ]

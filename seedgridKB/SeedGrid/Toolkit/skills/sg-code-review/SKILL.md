@@ -1,5 +1,5 @@
 ---
-name: revisar-codigo
+name: sg-code-review
 description: Revisa um diff ou conjunto de arquivos alterados procurando defeitos de lógica, segurança, tratamento de erros, compatibilidade e testes ausentes, com achados priorizados e cenário concreto de falha. Use após implementar uma mudança substancial ou quando pedirem revisão de código.
 metadata:
   toolkit: seedgrid-ai

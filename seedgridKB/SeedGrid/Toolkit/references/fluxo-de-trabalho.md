@@ -69,10 +69,10 @@ flowchart TD
 
 ## Manutenção (chore)
 
-Bump de versão do projeto, atualização de configuração e tarefas parecidas vão direto para a skill adequada (por exemplo `seedgrid-bump`), sem plano; o `qa` confere build e testes ao final.
+Bump de versão do projeto, atualização de configuração e tarefas parecidas vão direto para a skill adequada (por exemplo `sg-bump`), sem plano; o `qa` confere build e testes ao final.
 
 ## Skills que os papéis usam
 
-- `planejar-mudanca` (arquiteto), `validar-mudanca` (qa), `revisar-codigo` e `seedgrid-review` (revisor).
-- `seedgrid-backend-crud` (backend-java), `seedgrid-crud` e `seedgrid-new-screen` (frontend-react), `seedgrid-bump` (versão do projeto).
+- `sg-plan-change` (arquiteto), `sg-validate-change` (qa), `sg-code-review` e `sg-review` (revisor).
+- `sg-crud-back` (backend-java), `sg-crud-front` e `sg-new-screen` (frontend-react), `sg-bump` (versão do projeto).
 - A lista completa, com o que cada skill faz, está em `.ai/skills/index.md`.

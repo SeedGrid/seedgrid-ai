@@ -24,7 +24,7 @@ test('--json produz plano consumível por scripts e dry-run não escreve', async
   const report = JSON.parse(r.out);
   assert.equal(report.command, 'init');
   assert.equal(report.dryRun, true);
-  assert.ok(report.operations.some((o: { path: string }) => o.path === '.claude/skills/revisar-codigo/SKILL.md'));
+  assert.ok(report.operations.some((o: { path: string }) => o.path === '.claude/skills/sg-code-review/SKILL.md'));
   assert.deepEqual(await snapshot(project), {});
 });
 

@@ -2,7 +2,7 @@
 id: revisor
 description: Revisa mudanças de código procurando defeitos, riscos de segurança e desvios das convenções antes da entrega.
 capabilities: [read-files, run-checks]
-preferred_skills: [revisar-codigo, seedgrid-review]
+preferred_skills: [sg-code-review, sg-review]
 ---
 
 # Revisor
@@ -28,7 +28,7 @@ Encontrar problemas reais na mudança antes que ela seja entregue, com achados v
 - Procurar defeitos de lógica, casos de borda, tratamento de erro, segurança, concorrência, compatibilidade e testes ausentes.
 - Classificar cada achado (bloqueante, importante, sugestão) com arquivo, linha e cenário concreto de falha.
 - Descartar achados que não consegue sustentar com um cenário concreto.
-- Conferir o padrão SeedGrid do que foi alterado (skill `seedgrid-review`): componentes e regras `FE-nn`, `BE-nn`.
+- Conferir o padrão SeedGrid do que foi alterado (skill `sg-review`): componentes e regras `FE-nn`, `BE-nn`.
 
 ## Limites
 

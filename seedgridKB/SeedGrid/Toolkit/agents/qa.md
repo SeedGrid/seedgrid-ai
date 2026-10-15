@@ -2,7 +2,7 @@
 id: qa
 description: Garante a qualidade da entrega - cria e executa testes (unitários, integração, regressão) a partir dos critérios de aceite e valida cada critério com evidência executada.
 capabilities: [read-files, edit-files, run-checks]
-preferred_skills: [validar-mudanca]
+preferred_skills: [sg-validate-change]
 ---
 
 # QA
@@ -31,7 +31,7 @@ Provar, com testes escritos e executados, que a mudança atende aos critérios d
 - Executar build, lint, testes afetados e a suíte relevante; exercitar o comportamento alterado quando possível.
 - Registrar comandos, resultados e evidências no formato do relatório de validação (`.ai/templates/relatorio-validacao.md`).
 - Diferenciar "passou", "falhou" e "não executado (motivo)". Teste instável é repetido uma vez e relatado, nunca ocultado.
-- Conferir que o código segue o padrão SeedGrid quando a tarefa pedir (skill `seedgrid-review`).
+- Conferir que o código segue o padrão SeedGrid quando a tarefa pedir (skill `sg-review`).
 
 ## Limites
 

@@ -26,7 +26,7 @@ test('o conteúdo empacotado é válido', async () => {
   );
   assert.deepEqual(
     bundle.skills.map((s) => s.name),
-    ['planejar-mudanca', 'revisar-codigo', 'seedgrid-backend-crud', 'seedgrid-bump', 'seedgrid-crud', 'seedgrid-new-screen', 'seedgrid-review', 'validar-mudanca'],
+    ['sg-bump', 'sg-code-review', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-review', 'sg-validate-change'],
   );
   for (const s of bundle.skills) assert.ok(s.description.length > 20);
 });
@@ -57,8 +57,8 @@ test('rejeita nome de skill inválido', async () => {
 
 test('rejeita name do SKILL.md diferente da pasta', async () => {
   const dir = await copyContent();
-  const p = TK + 'skills/revisar-codigo/SKILL.md';
-  await writeText(dir, p, (await readText(dir, p)).replace('name: revisar-codigo', 'name: outro-nome'));
+  const p = TK + 'skills/sg-code-review/SKILL.md';
+  await writeText(dir, p, (await readText(dir, p)).replace('name: sg-code-review', 'name: outro-nome'));
   await expectInvalid(dir, /igual à pasta/);
 });
 
@@ -71,7 +71,7 @@ test('rejeita id de papel duplicado ou que não corresponde ao arquivo', async (
 
 test('rejeita referência quebrada em skill', async () => {
   const dir = await copyContent();
-  const p = TK + 'skills/revisar-codigo/SKILL.md';
+  const p = TK + 'skills/sg-code-review/SKILL.md';
   await writeText(dir, p, `${await readText(dir, p)}\nVeja [inexistente](references/nao-existe.md).\n`);
   await expectInvalid(dir, /referência quebrada .*nao-existe\.md/);
 });
@@ -86,7 +86,7 @@ test('rejeita referência quebrada entre regras', async () => {
 test('rejeita preferred_skills inexistente', async () => {
   const dir = await copyContent();
   const p = TK + 'agents/revisor.md';
-  await writeText(dir, p, (await readText(dir, p)).replace('[revisar-codigo, seedgrid-review]', '[skill-fantasma]'));
+  await writeText(dir, p, (await readText(dir, p)).replace('[sg-code-review, sg-review]', '[skill-fantasma]'));
   await expectInvalid(dir, /skill inexistente "skill-fantasma"/);
 });
 
@@ -104,7 +104,7 @@ test('rejeita arquivo fora do manifesto e caminho que escapa da fonte', async ()
 
 test('rejeita campo de frontmatter não portável na skill e modelo fixo no papel', async () => {
   const dir = await copyContent();
-  const p = TK + 'skills/validar-mudanca/SKILL.md';
+  const p = TK + 'skills/sg-validate-change/SKILL.md';
   await writeText(dir, p, (await readText(dir, p)).replace('metadata:', 'context: fork\nmetadata:'));
   await expectInvalid(dir, /campo "context" não é portável/);
 

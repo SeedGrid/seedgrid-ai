@@ -37,7 +37,7 @@ Cada pasta de `.ai/` (`rules`, `agents`, `skills`, `templates`, `references`) te
 | `.claude/agents/<id>.md` | Somente `--mode native`: subagentes do Claude Code |
 | `.codex/agents/<id>.toml` | Somente `--mode native`: agentes personalizados do Codex |
 
-Skills: `planejar-mudanca`, `revisar-codigo`, `validar-mudanca` (genéricas) e `seedgrid-crud`, `seedgrid-new-screen`, `seedgrid-review` (padrões SeedGrid). Toda instalação recebe todas as skills.
+Skills: `sg-plan-change`, `sg-code-review`, `sg-validate-change` (genéricas) e `sg-crud-front`, `sg-new-screen`, `sg-review` (padrões SeedGrid). Toda instalação recebe todas as skills.
 
 ## A base de conhecimento (seedgridKB)
 
@@ -101,14 +101,14 @@ seedgrid-ai review back --tool codex             # só o back-end, usando o Code
 
 ### `seedgrid-ai review`
 
-Executa a skill `seedgrid-review` na ferramenta de IA instalada, em modo não interativo e somente leitura (Claude Code: `claude -p` com ferramentas de leitura; Codex: `codex exec --sandbox read-only`). A skill confere o código contra as regras `FE-nn` e `BE-nn` (`.ai/rules/frontend-seedgrid.md` e `backend-java-seedgrid.md`) e o CLI mostra o relatório e devolve o código de saída.
+Executa a skill `sg-review` na ferramenta de IA instalada, em modo não interativo e somente leitura (Claude Code: `claude -p` com ferramentas de leitura; Codex: `codex exec --sandbox read-only`). A skill confere o código contra as regras `FE-nn` e `BE-nn` (`.ai/rules/frontend-seedgrid.md` e `backend-java-seedgrid.md`) e o CLI mostra o relatório e devolve o código de saída.
 
 - **Escopo:** `front`, `back` ou nenhum (os dois). Por padrão revisa os arquivos alterados (diff); `--full` revisa o projeto inteiro.
 - **Ferramenta:** `--tool claude|codex`. Sem a opção, usa a primeira disponível nesta ordem: Claude Code, Codex. Considera só os targets instalados no projeto que tenham a skill e o executável no `PATH`. O CLI não detecta em qual ferramenta você está trabalhando.
 - **Custo e login:** chama o modelo com o seu login na ferramenta e **consome tokens**. É o único comando que faz isso. Nenhum token é lido nem gravado pelo CLI.
 - **Resultado não determinístico:** a revisão é feita por um modelo; execuções repetidas podem apontar itens um pouco diferentes (nos testes, as duas ferramentas acharam as violações óbvias e divergiram nos itens de julgamento). Trate o resultado como revisão, não como prova.
 - **Saída estruturada:** a skill termina com um bloco `seedgrid-review-json`. Se a ferramenta falhar, esgotar o tempo (15 min) ou responder sem o bloco, o comando sai com `1` e mostra o texto bruto; nunca conta como "sem violações".
-- Exige o toolkit instalado (`init`) com a skill `seedgrid-review` (`update` leva as skills novas a projetos já instalados).
+- Exige o toolkit instalado (`init`) com a skill `sg-review` (`update` leva as skills novas a projetos já instalados).
 
 Depois de instalar ou atualizar, **abra uma nova sessão** do Claude Code ou do Codex. Não há recarga garantida em todas as ferramentas.
 

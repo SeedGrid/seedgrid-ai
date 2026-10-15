@@ -36,4 +36,4 @@ Se o projeto exigir um fluxo obrigatório (por exemplo, revisão antes de todo c
 
 ## Artefatos
 
-Os templates em `.ai/templates/` são modelos distribuídos pelo toolkit. Especificações, decisões e relatórios produzidos em tarefas reais pertencem ao projeto: salve-os onde o projeto definir (por exemplo, `docs/`), nunca dentro de `.ai/templates/`, `.ai/agents/` ou `.ai/rules/`, que são gerenciados e podem ser atualizados.
+Os templates em `.ai/templates/` são modelos distribuídos pelo toolkit. Planos, handoffs, decisões, especificações e relatórios produzidos em tarefas reais são salvos em `.ai/docs/<tipo>/`, conforme [documentos](documentos.md), nunca dentro de `.ai/templates/`, `.ai/agents/` ou `.ai/rules/`, que são gerenciados e podem ser atualizados.

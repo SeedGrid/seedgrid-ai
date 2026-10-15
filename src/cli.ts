@@ -33,7 +33,7 @@ Comandos:
   doctor    Diagnostica sintaxe, consistência e limitações; --probe confirma a descoberta real no Codex
   remove    Remove só o que o toolkit instalou e continua intacto
   validate  Valida uma fonte de conteúdo (manifesto, papéis, skills, KB) sem tocar em projetos
-  review    Confere o código contra os padrões SeedGrid, chamando a skill seedgrid-review no Claude Code ou no Codex
+  review    Confere o código contra os padrões SeedGrid, chamando a skill sg-review no Claude Code ou no Codex
   help      Mostra esta ajuda
 
 Uso:

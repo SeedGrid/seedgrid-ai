@@ -1,0 +1,4 @@
+interface:
+  display_name: "SeedGrid CRUD"
+  short_description: "Padrao CRUD SeedGrid"
+  default_prompt: "Use $sg-crud-front to create a SeedGrid CRUD with list/edit pages, publicId routing, and SgInputTextSearch."

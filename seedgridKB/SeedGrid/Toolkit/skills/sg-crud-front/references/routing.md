@@ -63,4 +63,4 @@ Resources behind a CRUD should:
 - Menu item should point to the real list route
 - Breadcrumb items must use valid `href` values
 - Parent sections like `/security` must resolve to a real child route if there is no standalone page
-- Registering the menu item, icon and permission is covered by the `seedgrid-new-screen` skill
+- Registering the menu item, icon and permission is covered by the `sg-new-screen` skill

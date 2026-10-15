@@ -1,5 +1,5 @@
 ---
-name: validar-mudanca
+name: sg-validate-change
 description: Valida uma mudança de código executando build, testes e verificações ligadas aos critérios de aceite, e registra evidências em um relatório. Use antes de declarar uma tarefa concluída ou após correções de revisão.
 metadata:
   toolkit: seedgrid-ai

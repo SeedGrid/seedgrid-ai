@@ -31,7 +31,7 @@ Fontes consultadas: [Claude Code skills](https://code.claude.com/docs/en/skills)
 
 - **Base de conhecimento** (Claude Code 2.1.299, `claude -p`, projeto vazio com `.ai/brain/` instalada): perguntado pelo valor padrão, tipo e classe de `seedgrid.app.ai-pricing.timezone`, respondeu `America/Sao_Paulo`, `String`, `AiPricingScheduler`, citando as notas consultadas; perguntado por uma propriedade inexistente, respondeu que não a encontrou e se recusou a inventar o padrão.
 
-- **`seedgrid-ai review`** (Claude Code 2.1.300 via `claude -p`; Codex 0.160.1 via `codex exec --sandbox read-only`): em projeto descartável com violações plantadas (telefone e CPF em `SgInputText`, `<input>` cru, `window.confirm`, `@Inject` em atributo, `RuntimeException`, pacote no singular), as duas ferramentas executaram a skill `seedgrid-review`, apontaram essas violações com arquivo e linha e fecharam com o bloco `seedgrid-review-json`; o CLI saiu com código 3. Tempos: cerca de 27 s (Claude Code) e 80 s (Codex). Os itens de julgamento divergiram entre as duas ferramentas.
+- **`seedgrid-ai review`** (Claude Code 2.1.300 via `claude -p`; Codex 0.160.1 via `codex exec --sandbox read-only`): em projeto descartável com violações plantadas (telefone e CPF em `SgInputText`, `<input>` cru, `window.confirm`, `@Inject` em atributo, `RuntimeException`, pacote no singular), as duas ferramentas executaram a skill `sg-review`, apontaram essas violações com arquivo e linha e fecharam com o bloco `seedgrid-review-json`; o CLI saiu com código 3. Tempos: cerca de 27 s (Claude Code) e 80 s (Codex). Os itens de julgamento divergiram entre as duas ferramentas.
 
 Nenhuma tarefa publicou ou modificou serviços externos.
 

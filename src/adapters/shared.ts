@@ -68,22 +68,19 @@ export function renderFolderIndex(bundle: ContentBundle, type: keyof typeof FOLD
 export const SKILLS_INDEX_FILE = '.ai/skills/index.md';
 
 /** Índice das skills do toolkit, gerado das descrições para o AGENTS.md não crescer a cada skill nova. */
-export function renderSkillsIndex(bundle: ContentBundle, targets: Target[]): string {
+export function renderSkillsIndex(bundle: ContentBundle): string {
   const cell = (t: string) => t.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ').trim();
-  const dirs = [targets.includes('claude') ? '.claude/skills' : null, targets.includes('codex') ? '.agents/skills' : null].filter(
-    (d): d is string => d !== null,
-  );
   const lines = [
     '# Índice de skills',
     '',
     `<!-- ${GENERATED_NOTICE} a partir do frontmatter de cada SKILL.md (conteúdo ${bundle.contentVersion}). Não edite. -->`,
     '',
-    'Skills instaladas pelo SeedGrid AI Toolkit. Antes de uma tarefa que combine com a descrição, leia o `SKILL.md` indicado e siga-o. Skills do próprio projeto que não são do toolkit não aparecem aqui.',
+    'Skills instaladas pelo SeedGrid AI Toolkit. Antes de uma tarefa que combine com a descrição, leia o `SKILL.md` indicado e siga-o. Skills do próprio projeto não aparecem aqui: se existir `projeto.md` nesta pasta, ele as lista.',
     '',
     '| Skill | O que faz e quando usar | Arquivo |',
     '| --- | --- | --- |',
     ...bundle.skills.map(
-      (k) => `| \`${k.name}\` | ${cell(k.description)} | ${dirs.map((d) => `\`${d}/${k.name}/SKILL.md\``).join(' ou ')} |`,
+      (k) => `| \`${k.name}\` | ${cell(k.description)} | [${k.name}/SKILL.md](${k.name}/SKILL.md) |`,
     ),
     '',
   ];
@@ -100,7 +97,11 @@ export function sharedFiles(bundle: ContentBundle, targets: Target[]): DesiredFi
   for (const type of ['rules', 'templates', 'references'] as const) {
     files.push({ path: sharedDest(`${type}/index.md`), content: renderFolderIndex(bundle, type), component: type });
   }
-  files.push({ path: SKILLS_INDEX_FILE, content: renderSkillsIndex(bundle, targets), component: 'skills-index' });
+  // Cópia canônica em .ai/skills (o AGENTS.md aponta para ela); as cópias nativas das ferramentas vêm dos adapters.
+  for (const k of bundle.skills) {
+    for (const f of k.files) files.push({ path: `.ai/skills/${k.name}/${f.path}`, content: f.content, component: `skill:${k.name}` });
+  }
+  files.push({ path: SKILLS_INDEX_FILE, content: renderSkillsIndex(bundle), component: 'skills-index' });
   return files;
 }
 
@@ -127,8 +128,8 @@ const STANDARD_RULES: [string, string][] = [
 function standardsLines(bundle: ContentBundle): string[] {
   const present = STANDARD_RULES.filter(([p]) => bundle.shared.some((s) => s.path === p));
   if (present.length === 0) return [];
-  const review = bundle.skills.some((k) => k.name === 'seedgrid-review')
-    ? ' Para conferir se o código segue o padrão, use a skill `seedgrid-review`.'
+  const review = bundle.skills.some((k) => k.name === 'sg-review')
+    ? ' Para conferir se o código segue o padrão, use a skill `sg-review`.'
     : '';
   const list = present.map(([p, label]) => `\`.ai/${p}\` (${label})`).join(' e ');
   return [`- **Padrões SeedGrid obrigatórios:** ao implementar ou alterar código, siga ${list}.${review}`];
@@ -153,6 +154,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     'Cada pasta de `.ai/` tem um `index.md` com o que há nela: comece por ele e leia só o que a tarefa pedir.',
     '',
     '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',
+    '- **Documentos que você gerar** (planos, handoff, decisões, especificações, relatórios) são salvos em `.ai/docs/<tipo>/`, por exemplo `.ai/docs/plans/` e `.ai/docs/handoff/`; veja `.ai/rules/documentos.md`.',
     ...standardsLines(bundle),
     '- Papéis: `.ai/agents/`.',
     `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,

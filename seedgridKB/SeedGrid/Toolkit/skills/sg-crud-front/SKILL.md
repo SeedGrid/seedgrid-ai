@@ -1,5 +1,5 @@
 ---
-name: seedgrid-crud
+name: sg-crud-front
 description: Create or refactor SeedGrid CRUD flows in a Next.js app built on the SeedGrid boilerplate, using the project standard of separate `*_list` and `*_edit` pages, `publicId` routing, Next API proxy routes, and SeedGrid components. Use when you need to build or standardize an entity CRUD (users, roles, plans, API keys, audit screens, etc.) with `SgDatatable`, `SgInputTextSearch`, permissions, user-facing copy, and menu/breadcrumb integration.
 ---
 
@@ -13,7 +13,7 @@ Read the existing screens of the project before writing a new one and copy their
 hooks, helpers). The names below (`Shell`, `useSavedToast`, `ListLoadError`, `adminProxyClient`, ...)
 are the boilerplate's own; if the project names them differently, use the project's equivalents.
 
-To register the menu item, icon and permission of a new screen, use the `seedgrid-new-screen` skill.
+To register the menu item, icon and permission of a new screen, use the `sg-new-screen` skill.
 
 ## Workflow
 

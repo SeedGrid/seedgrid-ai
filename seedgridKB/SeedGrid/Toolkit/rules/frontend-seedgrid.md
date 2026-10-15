@@ -3,7 +3,7 @@ description: "Padrões obrigatórios do front-end SeedGrid: usar sempre os compo
 ---
 # Padrões do front-end SeedGrid
 
-Regras **obrigatórias** para telas React que usam `@seedgrid/fe-components`. Cada regra tem um id (`FE-nn`) para citar em revisões (`seedgrid-review`). Para detalhes de props e exemplos, consulte a KB: comece por `.ai/brain/SeedGrid/SeedGrid-components/Indice.md` e abra só a nota do grupo necessário.
+Regras **obrigatórias** para telas React que usam `@seedgrid/fe-components`. Cada regra tem um id (`FE-nn`) para citar em revisões (`sg-review`). Para detalhes de props e exemplos, consulte a KB: comece por `.ai/brain/SeedGrid/SeedGrid-components/Indice.md` e abra só a nota do grupo necessário.
 
 ## Componentes SeedGrid primeiro
 
@@ -44,4 +44,4 @@ Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que t
 
 ## CRUDs
 
-Telas de cadastro seguem a skill `seedgrid-crud` (páginas `*_list` e `*_edit`, `publicId` nas URLs, proxy em `app/api/...`). Nunca exponha o `id` numérico ao navegador quando houver `publicId`.
+Telas de cadastro seguem a skill `sg-crud-front` (páginas `*_list` e `*_edit`, `publicId` nas URLs, proxy em `app/api/...`). Nunca exponha o `id` numérico ao navegador quando houver `publicId`.

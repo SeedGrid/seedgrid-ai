@@ -7,7 +7,7 @@ import { detectTool, runReviewCommand, type ReviewRun } from '../core/tools.js';
 import { ALL_TARGETS, ToolkitError, type Target } from '../core/types.js';
 import { EXIT_ERROR, EXIT_OK, EXIT_VIOLATIONS, type CommandOptions, type CommandResult } from './common.js';
 
-export const REVIEW_SKILL = 'seedgrid-review';
+export const REVIEW_SKILL = 'sg-review';
 export const REVIEW_SCOPES = ['front', 'back', 'both'] as const;
 export type ReviewScope = (typeof REVIEW_SCOPES)[number];
 
@@ -68,7 +68,7 @@ async function skillInstalled(projectRoot: string, target: Target): Promise<bool
 
 /**
  * Revisa o código do projeto contra os padrões SeedGrid chamando, em modo somente leitura,
- * a skill seedgrid-review na ferramenta de IA instalada (Claude Code ou Codex).
+ * a skill sg-review na ferramenta de IA instalada (Claude Code ou Codex).
  * Usa o login do usuário na ferramenta e consome tokens; nenhum outro comando chama o modelo.
  */
 export async function reviewCommand(opts: CommandOptions): Promise<CommandResult> {

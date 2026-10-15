@@ -1,5 +1,5 @@
 ---
-name: seedgrid-review
+name: sg-review
 description: Verifica se o código-fonte de um projeto segue os padrões SeedGrid (front React com @seedgrid/fe-components e back Java), citando cada violação por id de regra, arquivo e linha. Use quando pedirem para revisar, auditar ou conferir o padrão SeedGrid, depois de implementar uma tela ou serviço, ou antes de abrir um PR. Aceita o escopo "front", "back" ou nenhum (os dois).
 metadata:
   toolkit: seedgrid-ai

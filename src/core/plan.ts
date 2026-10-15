@@ -202,6 +202,10 @@ export async function planInstall(
       fileOps.push({ path: d.path, action: 'update', reason: 'nova versão do conteúdo', content: d.content, expectedHash: cur.hash! });
     } else if (prev) {
       conflicts.push({ path: d.path, reason: 'modificado localmente desde a última instalação' });
+    } else if (d.component.startsWith('skill:')) {
+      // Padronização: a skill do toolkit prevalece sobre uma skill de projeto com o mesmo nome (o original vai para o backup).
+      fileOps.push({ path: d.path, action: 'update', reason: 'skill do toolkit substitui arquivo existente de mesmo nome', content: d.content, expectedHash: cur.hash! });
+      warnings.push(`${d.path}: substituído pela skill do toolkit; o original fica no backup da operação`);
     } else {
       conflicts.push({ path: d.path, reason: 'arquivo existente não gerenciado pelo toolkit, com conteúdo diferente' });
     }

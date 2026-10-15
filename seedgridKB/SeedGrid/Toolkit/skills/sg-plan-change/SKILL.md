@@ -1,5 +1,5 @@
 ---
-name: planejar-mudanca
+name: sg-plan-change
 description: Planeja uma mudança de código antes de implementar - entende o objetivo, lê o código afetado, define critérios de aceite, divide em tarefas e identifica riscos. Use quando a tarefa atravessa vários arquivos ou camadas, é ambígua ou envolve decisão de arquitetura.
 metadata:
   toolkit: seedgrid-ai
