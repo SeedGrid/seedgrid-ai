@@ -34,7 +34,7 @@ test('o conteúdo empacotado é válido', async () => {
 test('rules, templates e references exigem description no frontmatter', async () => {
   const dir = await copyContent();
   const p = TK + 'rules/formato-entrega.md';
-  await writeText(dir, p, (await readText(dir, p)).replace(/^---[\s\S]*?---\n/, ''));
+  await writeText(dir, p, (await readText(dir, p)).replace(/^---[\s\S]*?---\r?\n/, ''));
   await expectInvalid(dir, /rules\/formato-entrega\.md: .*frontmatter/);
 });
 

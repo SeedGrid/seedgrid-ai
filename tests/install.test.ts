@@ -433,7 +433,7 @@ describe('instalação', () => {
     assert.ok(text.includes(`${BLOCK_END}\r\n`));
     // Simula core.autocrlf convertendo um arquivo gerenciado.
     const rel = '.ai/rules/coordenacao.md';
-    await writeText(project, rel, (await readText(project, rel)).replace(/\n/g, '\r\n'));
+    await writeText(project, rel, (await readText(project, rel)).replace(/\r?\n/g, '\r\n'));
     const again = await initCommand({ project });
     assert.equal(again.exitCode, EXIT_OK);
     assert.equal((again.report.summary as Record<string, number>).update ?? 0, 0);
