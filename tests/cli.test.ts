@@ -88,7 +88,7 @@ test('sem argumentos, help e --help listam todos os comandos', () => {
   for (const args of [[], ['help'], ['--help'], ['-h']]) {
     const r = run(args);
     assert.equal(r.code, 0, args.join(' '));
-    for (const c of ['init', 'update', 'status', 'doctor', 'remove', 'validate', 'review']) {
+    for (const c of ['install', 'init', 'update', 'status', 'doctor', 'remove', 'validate', 'review']) {
       assert.match(r.out, new RegExp(`^  ${c}\\s+\\S`, 'm'), `${c} descrito na ajuda (${args.join(' ') || 'sem argumentos'})`);
     }
   }

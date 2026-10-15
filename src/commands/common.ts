@@ -17,6 +17,8 @@ export interface CommandOptions {
   scope?: string;
   tool?: string;
   full?: boolean;
+  /** Somente testes: substitui a execução de comandos npm (install). */
+  npmRunner?: (command: string, timeoutMs: number) => Promise<import('./selfinstall.js').NpmRun>;
   /** Somente testes: substitui a execução do comando de revisão. */
   runner?: (command: string, cwd: string) => Promise<import('../core/tools.js').ReviewRun>;
   /** Somente testes: substitui operações de disco. */

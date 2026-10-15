@@ -57,7 +57,7 @@ Arquivos e pastas que começam com ponto são ignorados.
 ```json
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.0",
+  "contentVersion": "0.3.1",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     { "id": "agents", "type": "agents", "files": ["agents/arquiteto.md"] },

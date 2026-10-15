@@ -1,6 +1,6 @@
 # Instalação em projetos
 
-Os exemplos usam `seedgrid-ai`. Sem `npm link`, troque por `node <pasta-do-toolkit>/dist/cli.js`.
+Os exemplos usam o comando `seedgrid-ai`. Para tê-lo na máquina: `npx @seedgrid/ai-toolkit@latest install` (executa `npm install -g`, uma vez; repita para atualizar o comando). Sem instalar, troque `seedgrid-ai` por `npx @seedgrid/ai-toolkit`; em desenvolvimento do toolkit, por `node <pasta-do-toolkit>/dist/cli.js`.
 
 ## Primeira instalação
 

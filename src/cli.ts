@@ -7,10 +7,12 @@ import { doctorCommand } from './commands/doctor.js';
 import { initCommand } from './commands/init.js';
 import { removeCommand } from './commands/remove.js';
 import { reviewCommand } from './commands/review.js';
+import { selfInstallCommand } from './commands/selfinstall.js';
 import { statusCommand } from './commands/status.js';
 import { updateCommand } from './commands/update.js';
 import { validateCommand } from './commands/validate.js';
 import { cliVersion } from './core/env.js';
+import { TOOL_NAME } from './core/lock.js';
 import { ToolkitError } from './core/types.js';
 import {
   checkLatest,
@@ -24,6 +26,7 @@ import {
 const HELP = `seedgrid-ai — instala o SeedGrid AI Toolkit em projetos locais (Claude Code e Codex)
 
 Comandos:
+  install   Instala o comando seedgrid-ai nesta máquina (npm install -g), para usar sem npx; não altera nenhum projeto
   init      Instala o toolkit (regras, papéis, skills, base de conhecimento) no projeto; idempotente
   update    Leva o projeto ao conteúdo da versão do CLI em execução (use npx @seedgrid/ai-toolkit@latest para a mais nova)
   status    Mostra versões, opções e divergências da instalação
@@ -34,6 +37,7 @@ Comandos:
   help      Mostra esta ajuda
 
 Uso:
+  seedgrid-ai install  [--dry-run]
   seedgrid-ai init     [--target claude|codex|both] [--mode shared|native] [--source <pasta>] [--dry-run]
   seedgrid-ai update   [--target ...] [--mode ...] [--source <pasta>] [--dry-run]
   seedgrid-ai status
@@ -54,6 +58,7 @@ Opções comuns:
   --no-update-check    Não consulta o npm por versões mais novas (também: SEEDGRID_AI_NO_UPDATE_CHECK=1)
   --version, --help
 
+Primeira vez: npx @seedgrid/ai-toolkit@latest install  (depois use seedgrid-ai init, update, ... sem npx)
 Padrões do init: --target both --mode shared (ou as opções do lock existente).
 Em terminal interativo, init/update/status perguntam se devem usar uma versão mais nova publicada no npm.
 Conflitos abortam a operação inteira (código de saída 2); nada é sobrescrito.`;
@@ -61,6 +66,7 @@ Conflitos abortam a operação inteira (código de saída 2); nada é sobrescrit
 type Handler = (opts: CommandOptions) => Promise<CommandResult>;
 
 const COMMANDS: Record<string, { handler: Handler; allowed: string[] }> = {
+  install: { handler: selfInstallCommand, allowed: ['dry-run'] },
   init: { handler: initCommand, allowed: ['target', 'mode', 'source', 'dry-run'] },
   update: { handler: updateCommand, allowed: ['target', 'mode', 'source', 'dry-run'] },
   status: { handler: statusCommand, allowed: [] },
@@ -178,7 +184,7 @@ export async function main(argv: string[]): Promise<number> {
 }
 
 function updateNotice(info: UpdateInfo, args: string[]): string {
-  return `Aviso: versão ${info.latest} disponível no npm (este CLI: ${info.current}). Para usá-la: ${npxCommandLine(info.latest, args)}`;
+  return `Aviso: versão ${info.latest} disponível no npm (este CLI: ${info.current}). Para usá-la: ${npxCommandLine(info.latest, args)}. Para atualizar o comando seedgrid-ai instalado na máquina: npx ${TOOL_NAME}@latest install`;
 }
 
 /** Repassa o comando para a versão publicada mais nova. */

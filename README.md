@@ -4,7 +4,17 @@ Fonte versionada de **agentes (papéis), skills, regras, templates, referências
 
 O toolkit **não** é um orquestrador de modelos: não chama APIs da OpenAI ou da Anthropic, não guarda credenciais e não escolhe fornecedores. Ele instala instruções e configurações; a ferramenta de IA executa e coordena o trabalho.
 
-> Estado: versão 0.3.0 (pacote e conteúdo), pronta para publicar no npm como `@seedgrid/ai-toolkit`. Licença MIT. O pacote ainda **não foi publicado** no npm e o repositório GitHub ainda não existe.
+> Pacote público no npm como `@seedgrid/ai-toolkit` (licença MIT); código em https://github.com/SeedGrid/seedgrid-ai. A versão do pacote e a do conteúdo instalado são a mesma.
+
+## Instalação rápida
+
+```bash
+npx @seedgrid/ai-toolkit@latest install   # uma vez por máquina: instala o comando seedgrid-ai (npm install -g)
+cd /caminho/do/projeto
+seedgrid-ai init                          # instala o toolkit no projeto
+```
+
+Depois é só `seedgrid-ai update`, `seedgrid-ai status`, `seedgrid-ai doctor`, `seedgrid-ai review` etc. (`seedgrid-ai --help` lista tudo). Sem instalar o comando, qualquer comando também funciona com `npx @seedgrid/ai-toolkit <comando>`. Abra uma **sessão nova** do Claude Code ou do Codex depois de instalar no projeto.
 
 ## O que é instalado
 
@@ -66,6 +76,7 @@ seedgrid-ai init --target both --mode shared
 ## Comandos
 
 ```bash
+seedgrid-ai install                              # instala o comando seedgrid-ai na máquina (npm install -g)
 seedgrid-ai init --target both --mode shared     # padrão; idempotente
 seedgrid-ai init --target both --mode native     # também registra subagentes nativos
 seedgrid-ai init --source ./seedgridKB --dry-run    # fonte local (desenvolvimento), só o plano
@@ -118,15 +129,15 @@ Seleção de papéis e delegação são comportamentos orientados por instruçõ
 
 ## Uso via npm
 
-Depois que a versão for publicada:
-
 ```bash
+npx @seedgrid/ai-toolkit@latest install     # instala o comando seedgrid-ai nesta máquina (uma vez; repita para atualizar o comando)
 cd /caminho/do/projeto
-npx @seedgrid/ai-toolkit@0.2.0 init --target both     # primeira instalação
-npx @seedgrid/ai-toolkit@latest update                # traz o conteúdo da versão mais recente
+seedgrid-ai init --target both              # primeira instalação no projeto
+seedgrid-ai update                          # leva o projeto ao conteúdo da versão do comando instalado
+npx @seedgrid/ai-toolkit@latest update      # ou: usa a versão mais recente sem instalar nada
 ```
 
-Ou instale o comando globalmente: `npm i -g @seedgrid/ai-toolkit` e use `seedgrid-ai`. Se houver versão mais nova publicada, `init`, `update` e `status` avisam e, no terminal, perguntam se devem usá-la (`[Y/n]`); desative com `--no-update-check`. Detalhes em [docs/instalacao.md](docs/instalacao.md#aviso-de-versão-nova). O pacote leva o CLI compilado e o conteúdo; a versão do pacote identifica o conteúdo instalado, e `update` nunca baixa conteúdo por conta própria. Faça commit do resultado no projeto: o restante da equipe recebe tudo pelo Git, sem rodar o CLI.
+`install` executa `npm install -g @seedgrid/ai-toolkit@<versão deste CLI>` e confere se `seedgrid-ai` ficou no PATH; não toca em nenhum projeto (`--dry-run` mostra o comando). Se der erro de permissão, configure um prefixo global do npm para o seu usuário ou continue usando `npx`. Se houver versão mais nova publicada, `init`, `update` e `status` avisam e, no terminal, perguntam se devem usá-la (`[Y/n]`); desative com `--no-update-check`. Detalhes em [docs/instalacao.md](docs/instalacao.md#aviso-de-versão-nova). O pacote leva o CLI compilado e o conteúdo; a versão do pacote identifica o conteúdo instalado, e `update` nunca baixa conteúdo por conta própria. Faça commit do resultado no projeto: o restante da equipe recebe tudo pelo Git, sem rodar o CLI.
 
 ## Repositório e publicação
 
