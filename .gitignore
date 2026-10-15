@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build-test/
+*.tgz
+.ai/backups/
+.env
+.env.*
+*.log
+
+# Estado local do Obsidian (cada pessoa tem o seu)
+seedgridKB/.obsidian/workspace.json
+seedgridKB/.obsidian/workspaces.json
+seedgridKB/.claude/

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "contentVersion": "0.3.0",
+  "toolkitBase": "SeedGrid/Toolkit",
+  "components": [
+    {
+      "id": "agents",
+      "type": "agents",
+      "files": [
+        "agents/arquiteto.md",
+        "agents/backend-java.md",
+        "agents/backend-rust.md",
+        "agents/frontend-react.md",
+        "agents/qa.md",
+        "agents/revisor.md"
+      ]
+    },
+    {
+      "id": "rules",
+      "type": "rules",
+      "files": [
+        "rules/coordenacao.md",
+        "rules/formato-entrega.md",
+        "rules/personalizacao-local.md",
+        "rules/frontend-seedgrid.md",
+        "rules/backend-java-seedgrid.md"
+      ]
+    },
+    {
+      "id": "templates",
+      "type": "templates",
+      "files": [
+        "templates/especificacao-tarefa.md",
+        "templates/decisao-arquitetura.md",
+        "templates/relatorio-validacao.md"
+      ]
+    },
+    {
+      "id": "references",
+      "type": "references",
+      "files": [
+        "references/modos-shared-native.md",
+        "references/glossario.md",
+        "references/fluxo-de-trabalho.md"
+      ]
+    },
+    {
+      "id": "skill:planejar-mudanca",
+      "type": "skill",
+      "name": "planejar-mudanca",
+      "files": [
+        "SKILL.md",
+        {
+          "path": "assets/especificacao-tarefa.md",
+          "from": "templates/especificacao-tarefa.md"
+        }
+      ]
+    },
+    {
+      "id": "skill:revisar-codigo",
+      "type": "skill",
+      "name": "revisar-codigo",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md"
+      ]
+    },
+    {
+      "id": "skill:validar-mudanca",
+      "type": "skill",
+      "name": "validar-mudanca",
+      "files": [
+        "SKILL.md",
+        {
+          "path": "assets/relatorio-validacao.md",
+          "from": "templates/relatorio-validacao.md"
+        }
+      ]
+    },
+    {
+      "id": "skill:seedgrid-backend-crud",
+      "type": "skill",
+      "name": "seedgrid-backend-crud",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:seedgrid-crud",
+      "type": "skill",
+      "name": "seedgrid-crud",
+      "files": [
+        "SKILL.md",
+        "references/patterns.md",
+        "references/routing.md",
+        "references/checklist.md",
+        "agents/openai.yaml"
+      ]
+    },
+    {
+      "id": "skill:seedgrid-new-screen",
+      "type": "skill",
+      "name": "seedgrid-new-screen",
+      "files": [
+        "SKILL.md",
+        "references/steps.md",
+        "references/checklist.md",
+        "agents/openai.yaml"
+      ]
+    },
+    {
+      "id": "skill:seedgrid-bump",
+      "type": "skill",
+      "name": "seedgrid-bump",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:seedgrid-review",
+      "type": "skill",
+      "name": "seedgrid-review",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "brain",
+      "type": "brain",
+      "base": "SeedGrid",
+      "entrypoints": [
+        "Visao-geral.md",
+        "Versoes.md",
+        "Extensions/Catalogo-de-propriedades.md",
+        "Extensions/Catalogo-de-enums.md",
+        "Extensions/Indice.md",
+        "SeedGrid-components/Indice.md",
+        "Mapa-dos-repositorios.md"
+      ]
+    }
+  ]
+}

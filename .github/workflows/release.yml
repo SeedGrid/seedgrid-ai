@@ -1,0 +1,51 @@
+name: Release
+
+# Publica no npm e cria a Release do GitHub quando uma tag vX.Y.Z é enviada.
+# A tag precisa ser igual à versão do package.json (npm version cria as duas).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # criar a Release do GitHub
+  id-token: write # trusted publishing / provenance no npm
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: node dist/cli.js validate
+      - name: Confere pacote, tag e repository
+        run: node scripts/check-pack.mjs --release "${GITHUB_REF_NAME}"
+
+      - name: Publica no npm
+        env:
+          # Vazio com trusted publishing (OIDC). Use o segredo NPM_TOKEN só na primeira publicação.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-* ]]; then DIST_TAG=next; else DIST_TAG=latest; fi
+          npm publish --access public --provenance --tag "$DIST_TAG"
+
+      - name: Cria a Release do GitHub com o .tgz
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TGZ=$(npm pack --ignore-scripts | tail -n 1)
+          PRERELEASE=""
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then PRERELEASE="--prerelease"; fi
+          gh release create "${GITHUB_REF_NAME}" "$TGZ" --generate-notes $PRERELEASE

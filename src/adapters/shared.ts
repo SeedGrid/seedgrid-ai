@@ -1,0 +1,165 @@
+import type { AgentDef, ContentBundle, SharedFile } from '../core/content.js';
+import type { DesiredBlock, DesiredFile, Mode, Target } from '../core/types.js';
+import { GENERATED_NOTICE } from './types.js';
+
+export const SHARED_ROOT = '.ai';
+
+/** Destino instalado de um arquivo compartilhado (ex.: rules/x.md -> .ai/rules/x.md). */
+export function sharedDest(contentPath: string): string {
+  return `${SHARED_ROOT}/${contentPath}`;
+}
+
+function escapeCell(text: string): string {
+  return text.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
+}
+
+/** Catálogo curto, gerado do frontmatter dos papéis para não duplicar autoria. */
+export function renderCatalog(bundle: ContentBundle): string {
+  const lines = [
+    '# Índice de papéis',
+    '',
+    `<!-- ${GENERATED_NOTICE} a partir do frontmatter de agents/*.md (conteúdo ${bundle.contentVersion}). Não edite. -->`,
+    '',
+    'Escolha papéis por esta tabela. Leia a definição completa apenas dos papéis selecionados.',
+    '',
+    '| Papel | Quando usar | Capacidades | Skills preferidas | Definição |',
+    '| --- | --- | --- | --- | --- |',
+    ...bundle.agents.map(
+      (a: AgentDef) =>
+        `| ${a.id} | ${escapeCell(a.description)} | ${a.capabilities.join(', ') || '-'} | ${
+          a.preferredSkills.join(', ') || '-'
+        } | [${a.id}.md](${a.id}.md) |`,
+    ),
+    '',
+  ];
+  return lines.join('\n');
+}
+
+const FOLDER_INDEX: Record<'rules' | 'templates' | 'references', { title: string; intro: string }> = {
+  rules: { title: 'Índice de regras', intro: 'Leia a regra quando a descrição combinar com a tarefa.' },
+  templates: {
+    title: 'Índice de templates',
+    intro: 'Copie o modelo para o local de documentação do projeto antes de preencher; não edite o modelo.',
+  },
+  references: { title: 'Índice de referências', intro: 'Conhecimento estático do toolkit. Leia só o que a tarefa pedir.' },
+};
+
+/** Índice de rules, templates ou references, gerado do frontmatter para o AGENTS.md não listar arquivos. */
+export function renderFolderIndex(bundle: ContentBundle, type: keyof typeof FOLDER_INDEX): string {
+  const files = bundle.shared.filter((s: SharedFile) => s.type === type).sort((a, b) => a.path.localeCompare(b.path));
+  const { title, intro } = FOLDER_INDEX[type];
+  return [
+    `# ${title}`,
+    '',
+    `<!-- ${GENERATED_NOTICE} a partir do frontmatter de ${type}/*.md (conteúdo ${bundle.contentVersion}). Não edite. -->`,
+    '',
+    intro,
+    '',
+    '| Arquivo | O que é e quando usar |',
+    '| --- | --- |',
+    ...files.map((f) => {
+      const name = f.path.slice(type.length + 1);
+      return `| [${name}](${name}) | ${escapeCell(f.description ?? '')} |`;
+    }),
+    '',
+  ].join('\n');
+}
+
+export const SKILLS_INDEX_FILE = '.ai/skills/index.md';
+
+/** Índice das skills do toolkit, gerado das descrições para o AGENTS.md não crescer a cada skill nova. */
+export function renderSkillsIndex(bundle: ContentBundle, targets: Target[]): string {
+  const cell = (t: string) => t.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ').trim();
+  const dirs = [targets.includes('claude') ? '.claude/skills' : null, targets.includes('codex') ? '.agents/skills' : null].filter(
+    (d): d is string => d !== null,
+  );
+  const lines = [
+    '# Índice de skills',
+    '',
+    `<!-- ${GENERATED_NOTICE} a partir do frontmatter de cada SKILL.md (conteúdo ${bundle.contentVersion}). Não edite. -->`,
+    '',
+    'Skills instaladas pelo SeedGrid AI Toolkit. Antes de uma tarefa que combine com a descrição, leia o `SKILL.md` indicado e siga-o. Skills do próprio projeto que não são do toolkit não aparecem aqui.',
+    '',
+    '| Skill | O que faz e quando usar | Arquivo |',
+    '| --- | --- | --- |',
+    ...bundle.skills.map(
+      (k) => `| \`${k.name}\` | ${cell(k.description)} | ${dirs.map((d) => `\`${d}/${k.name}/SKILL.md\``).join(' ou ')} |`,
+    ),
+    '',
+  ];
+  return lines.join('\n');
+}
+
+export function sharedFiles(bundle: ContentBundle, targets: Target[]): DesiredFile[] {
+  const files: DesiredFile[] = bundle.shared.map((s) => ({
+    path: sharedDest(s.path),
+    content: s.content,
+    component: s.component,
+  }));
+  files.push({ path: sharedDest('agents/index.md'), content: renderCatalog(bundle), component: 'agents' });
+  for (const type of ['rules', 'templates', 'references'] as const) {
+    files.push({ path: sharedDest(`${type}/index.md`), content: renderFolderIndex(bundle, type), component: type });
+  }
+  files.push({ path: SKILLS_INDEX_FILE, content: renderSkillsIndex(bundle, targets), component: 'skills-index' });
+  return files;
+}
+
+/** Instruções de consulta à base de conhecimento SeedGrid (.ai/brain/), quando o conteúdo a inclui. */
+function brainLines(bundle: ContentBundle): string[] {
+  if (!bundle.brain) return [];
+  const entries = bundle.brain.entrypoints.map((e) => `\`${e}\``).join(', ');
+  return [
+    `- **Base de conhecimento SeedGrid** (extensions Quarkus, componentes React, propriedades e enums): \`.ai/brain/\` (${bundle.brain.notes} notas, somente leitura). Consulte-a antes de usar ou configurar qualquer extension ou componente SeedGrid.`,
+    `  - Comece pelos índices, sem varrer a pasta inteira: ${entries}.`,
+    '  - Links `[[SeedGrid/...]]` nas notas são caminhos a partir de `.ai/brain/` (acrescente `.md`).',
+    '  - O frontmatter (`commit`, `analisado-em`) diz a que versão do código a nota se refere. Se a versão usada no projeto puder diferir, confirme no código-fonte, no jar ou no pacote e avise o usuário.',
+    '  - Não invente propriedades, valores padrão ou enums que não estejam nas notas; diga que não encontrou.',
+    '  - Não edite `.ai/brain/`: ela é atualizada por `seedgrid-ai update`.',
+  ];
+}
+
+const STANDARD_RULES: [string, string][] = [
+  ['rules/frontend-seedgrid.md', 'front-end'],
+  ['rules/backend-java-seedgrid.md', 'back-end Java'],
+];
+
+/** Padrões SeedGrid obrigatórios (front e back), quando o conteúdo os inclui. */
+function standardsLines(bundle: ContentBundle): string[] {
+  const present = STANDARD_RULES.filter(([p]) => bundle.shared.some((s) => s.path === p));
+  if (present.length === 0) return [];
+  const review = bundle.skills.some((k) => k.name === 'seedgrid-review')
+    ? ' Para conferir se o código segue o padrão, use a skill `seedgrid-review`.'
+    : '';
+  const list = present.map(([p, label]) => `\`.ai/${p}\` (${label})`).join(' e ');
+  return [`- **Padrões SeedGrid obrigatórios:** ao implementar ou alterar código, siga ${list}.${review}`];
+}
+
+export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mode): DesiredBlock {
+  const nativeDirs = [
+    targets.includes('claude') ? '`.claude/agents/`' : null,
+    targets.includes('codex') ? '`.codex/agents/`' : null,
+  ]
+    .filter(Boolean)
+    .join(' e ');
+  const delegation =
+    mode === 'native'
+      ? `- Modo \`native\`: os papéis do catálogo também estão registrados como subagentes em ${nativeDirs}, com os mesmos ids. Use-os quando a ferramenta os reconhecer; caso contrário, siga o modo shared e informe a indisponibilidade.`
+      : '- Modo `shared`: para delegar, use o mecanismo de subagentes disponível na ferramenta e passe a definição do papel. Sem subagentes, aplique o papel na sessão principal e informe isso.';
+  const inner = [
+    '## SeedGrid AI Toolkit',
+    '',
+    `Bloco gerenciado pelo \`seedgrid-ai\` (conteúdo ${bundle.contentVersion}, modo \`${mode}\`). Não edite entre os marcadores; personalize em \`.ai/local/\`.`,
+    '',
+    'Cada pasta de `.ai/` tem um `index.md` com o que há nela: comece por ele e leia só o que a tarefa pedir.',
+    '',
+    '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',
+    ...standardsLines(bundle),
+    '- Papéis: `.ai/agents/`.',
+    `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,
+    '- Templates: `.ai/templates/`. Referências: `.ai/references/`.',
+    ...brainLines(bundle),
+    '- Personalizações do projeto ficam em `.ai/local/` (se existir) e prevalecem sobre as regras compartilhadas; veja `.ai/rules/personalizacao-local.md`.',
+    delegation,
+  ].join('\n');
+  return { file: 'AGENTS.md', inner };
+}

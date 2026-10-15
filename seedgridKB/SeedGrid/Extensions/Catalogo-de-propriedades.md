@@ -1,0 +1,971 @@
+---
+tags: [seedgrid, extension, catalogo, configuracao]
+analisado-em: 2026-10-14
+gerado-por: scripts/kb-catalogs.mjs --only properties
+gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
+---
+
+# Catálogo de propriedades
+
+Tabela geral de **todas as propriedades públicas** de configuração documentadas nas notas `Configuracao` das extensions/libraries (Quarkus), `Configuracao-Rust` dos crates (Rust, variáveis de ambiente e campos de config) e nos módulos/pacotes front. Propriedades de teste e de frameworks (`quarkus.*`, `mp.*`), aliases/obsoletas e exemplos **não** entram aqui — estão nas respectivas notas.
+
+- Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only properties --write`) a partir das próprias notas; não edite à mão — corrija a nota de origem e regenere.
+- Detalhes (valores aceitos, obrigatoriedade, relações, origem no código): siga o link da coluna **Nota**.
+- "Padrão" `—` = sem valor padrão (ou coluna ausente na tabela de origem); "não confirmado" = não foi possível confirmar no código.
+- 🔒 = sensível. "Fase" (Quarkus) / "Leitura" (Rust, front: "Fase") indica quando a propriedade é lida.
+- Dica: no Obsidian use `Ctrl+F` nesta nota para achar uma propriedade por parte do nome.
+
+## Contagem
+
+| Plataforma | Extension | Propriedades |
+|---|---|---|
+| Quarkus | ai-pricing | 3 |
+| Quarkus | apikeys | 2 |
+| Quarkus | audit | 6 |
+| Quarkus | backup | 46 |
+| Quarkus | billing | 26 |
+| Quarkus | cache | 7 |
+| Quarkus | commons | 5 |
+| Quarkus | exchange | 2 |
+| Quarkus | filemanagement | 26 |
+| Quarkus | login-tenancy | 35 |
+| Quarkus | notification | 9 |
+| Quarkus | privacy | 3 |
+| Quarkus | realtime | 6 |
+| Quarkus | resilience | 15 |
+| Quarkus | security | 133 |
+| Quarkus | subdomain-tenancy | 53 |
+| Quarkus | whatsapp | 5 |
+| Rust | apikeys | 2 |
+| Rust | audit | 5 |
+| Rust | backup | 24 |
+| Rust | billing | 8 |
+| Rust | broker | 5 |
+| Rust | cache | 4 |
+| Rust | filemanagement | 24 |
+| Rust | login-tenancy | 18 |
+| Rust | privacy | 3 |
+| Rust | realtime | 6 |
+| Rust | resilience | 15 |
+| Rust | runtime | 24 |
+| Rust | security | 75 |
+| Rust | subdomain-tenancy | 39 |
+| Rust | whatsapp | 5 |
+| Front | fe-backup | 6 |
+| Front | fe-billing-platform | 5 |
+| Front | fe-billing-user | 3 |
+| Front | fe-login-tenancy | 2 |
+| Front | fe-playground | 9 |
+| Front | fe-security | 43 |
+| Front | fe-subdomain-tenancy | 2 |
+| **Total** | | **709** |
+
+## Quarkus (Java) — `application.properties`
+
+### ai-pricing
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.ai-pricing.persistence-unit` | Propriedades | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager de todas as tabelas do ai-pricing (repositories) | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+| `seedgrid.app.ai-pricing.timezone` | Propriedades | String (ZoneId) | `America/Sao_Paulo` | runtime | Fuso em que o cron do robô (vindo do banco) é interpretado | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+| `seedgrid.app.ai-pricing.source-url` | Propriedades | String (URL) | `https://developers.openai.com/api/docs/pricing` | runtime | URL usada só quando ai_pricing_config.source_url está nula ou vazia | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+
+### apikeys
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.apikeys.prefix-length` (env `SEEDGRID_APIKEYS_PREFIX_LENGTH`) | Geração da chave | `int` | `8` | Runtime | Nº de caracteres da parte aleatória guardados como prefix (busca no banco e máscara prefix...) | [[SeedGrid/Extensions/apikeys/Configuracao\|apikeys/Configuracao]] |
+| `seedgrid.apikeys.key-bytes` (env `SEEDGRID_APIKEYS_KEY_BYTES`) | Geração da chave | `int` | `32` | Runtime | Bytes aleatórios (SecureRandom) codificados em Base64 URL-safe sem padding para formar a chave sgkey_<...> | [[SeedGrid/Extensions/apikeys/Configuracao\|apikeys/Configuracao]] |
+
+### audit
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.audit.persistence.strategy` | Geral e strategy | enum [[SeedGrid/Extensions/audit/Enums#AuditPersistenceStrategy\|AuditPersistenceStrategy]] | JPA (@WithDefault); o módulo postgresql define ${AUDIT_STRATEGY:JPA} e o módulo mongodb… | Runtime | Seleciona o AuditPersistenceProvider cuja strategy() coincide; sem provider correspondente → IllegalStateException("No… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+| `seedgrid.audit.jpa.jdbc.url` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_URL:}` = vazio) | Runtime | Vazia → IllegalStateException("Audit JPA strategy configured but seedgrid.audit.jpa.jdbc.url not set"); outro esquema… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+| `seedgrid.audit.jpa.username` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_USERNAME:}`) | Runtime | Usuário do datasource standalone | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+| 🔒 `seedgrid.audit.jpa.password` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_PASSWORD:}`) | Runtime | Senha do datasource standalone | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+| 🔒 `seedgrid.audit.mongodb.connection-string` | MongoDB (seedgrid.audit.mongodb.*) | `Optional<String>` | — no mapping; o módulo mongodb define ${SEEDGRID_AUDIT_MONGODB_URI:<URI local com credenciais de… | Runtime | Não é lida por Java; o módulo faz a ponte quarkus.mongodb.connection-string=${seedgrid.audit.mongodb.connection-string} | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+| `seedgrid.audit.mongodb.database` | MongoDB (seedgrid.audit.mongodb.*) | `Optional<String>` | — (fallback do producer: `<seedgrid.login-tenancy.app.code>_audit_db`, ou `audit_db`) | Runtime | Não é lida pelo módulo audit | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
+
+### backup
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.backup.storage` | Execução, fila e retenção | String | `filesystem` (`@WithDefault`; MP: `${SEEDGRID_BACKUP_STORAGE:filesystem}`) | Runtime | Backend onde os ZIPs são gravados; outro valor → IllegalArgumentException("Unknown storage type") ao gravar | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.async-enabled` | Execução, fila e retenção | boolean | `true` | Runtime | true: ao criar o job dispara thread de plataforma daemon seedgrid-backup-export-<jobId>. false: job fica QUEUED até o… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.max-concurrent-exports` | Execução, fila e retenção | int | `1` (BC e MP) | Runtime | Teto global (somando todos os tenants) de jobs RUNNING para o scheduler iniciar novos jobs QUEUED; slots divididos… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.queue-poll-interval` | Execução, fila e retenção | String (duração do Quarkus Scheduler) | `30s` (BC e MP) | Runtime (startup do scheduler) | Intervalo do @Scheduled(every = "{seedgrid.backup.queue-poll-interval}") | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.retention-days` | Execução, fila e retenção | int | `7` (BC e MP) | Runtime | Ao concluir (DONE), expiresAt = agora + N dias | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.excluded-domain-entity-packages` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | — (vazio) | Runtime | Entidades JPA cujo pacote começa com algum prefixo são puladas no escopo DOMAIN (evita consultar entidades de outra… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.notification.enabled` | Notificação | boolean | `true` (BC e MP) | Runtime | Liga o scheduler de notificação e entra em EmailExportNotificationService#isEnabled() | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.notification.poll-interval` | Notificação | String (duração do Quarkus Scheduler) | `5m` (BC e MP) | Runtime | Intervalo do @Scheduled(every = "{seedgrid.backup.notification.poll-interval}") | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.notification.max-retries` | Notificação | int | `3` (BC e MP) | Runtime | Jobs DONE com notificationAttempts < max-retries são (re)notificados; sucesso → DONE_NOTIFIED | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.notification.retry-delay` | Notificação | `java.time.Duration` | `PT15M` (BC e MP) | Runtime | Espera mínima desde lastNotificationAttempt antes de nova tentativa | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.from` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_FROM:noreply@example.com}` | Runtime | Remetente (From) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.host` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_HOST:smtp.gmail.com}` | Runtime | Host SMTP (MailConfig#setHostname) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.port` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<Integer>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_PORT:587}` | Runtime | Porta SMTP | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.start-tls` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_START_TLS:REQUIRED}` | Runtime | MailConfig#setStarttls | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.username` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_USERNAME:}` (vazio) | Runtime | Usuário SMTP | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.mailer.password` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MAILER_PASSWORD:}` (vazio) | Runtime | Senha SMTP | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.mailer.auth-methods` | Mailer (notificação padrão por e-mail via Vert.x Mail) | `Optional<String>` | interface: —; MP: ${SEEDGRID_BACKUP_MAILER_AUTH_METHODS:PLAIN LOGIN}; código: ausente/branco →… | Runtime | Fixa os métodos de AUTH (evita XOAUTH2 automático do Vert.x com Gmail, que derruba o socket com 535) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.csv.delimiter` | CSV (exporter CSV_ZIP) | String | `,` | Runtime | Delimitador (charAt(0)); string inteira gravada no manifest (csvOptions.delimiter) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.csv.quote-char` | CSV (exporter CSV_ZIP) | String | `"` | Runtime | Caractere de aspas; também gravado no manifest | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.csv.encoding` | CSV (exporter CSV_ZIP) | String | `UTF-8` | Runtime | Encoding dos bytes de cada data/<tabela>.csv | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.filesystem.base-path` | Storage (repassado ao seedgrid-filemanagement) | String | `/var/seedgrid/files` (BC; MP: `${SEEDGRID_BACKUP_FILESYSTEM_BASE:/var/seedgrid/files}`) | Runtime | (base-path) diretório raiz, criado se não existir (precisa ser gravável); artefatos vão em <schema>/exports/ | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.s3.bucket` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (bucket) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.s3.region` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — (factory: `us-east-1`) | Runtime | (region) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.s3.access-key` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (access-key) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.s3.secret-key` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (secret-key) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.s3.endpoint` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (endpoint) endpoint S3-compatível | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.minio.bucket` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — (MP: `${SEEDGRID_BACKUP_MINIO_BUCKET:}`) | Runtime | (bucket) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.minio.region` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | interface: —; MP: `${SEEDGRID_BACKUP_MINIO_REGION:us-east-1}` (factory também usa `us-east-1`) | Runtime | (region) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.minio.access-key` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — (MP: `${SEEDGRID_BACKUP_MINIO_ACCESS_KEY:}`) | Runtime | (access-key) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.minio.secret-key` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — (MP: `${SEEDGRID_BACKUP_MINIO_SECRET_KEY:}`) | Runtime | (secret-key) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.minio.endpoint` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — (MP: `${SEEDGRID_BACKUP_MINIO_ENDPOINT:}`) | Runtime | (endpoint) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.azure-blob.connection-string` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (connection-string) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.azure-blob.container` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (container) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.azure-blob.account-name` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (account-name) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.azure-blob.account-key` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (account-key) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.google-drive.root-folder-id` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (root-folder-id) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.google-drive.credentials-file` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (credentials-file) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.google-drive.credentials-json` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (credentials-json) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.onedrive.client-id` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (client-id) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.onedrive.client-secret` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (client-secret) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.onedrive.tenant-id` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (tenant-id) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.onedrive.root-folder-path` | Storage (repassado ao seedgrid-filemanagement) | String | `/seedgrid/files` | Runtime | (root-folder-path) sempre enviado | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.gcs.bucket` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (bucket) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.gcs.project-id` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (project-id) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.gcs.credentials-file` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (credentials-file) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| 🔒 `seedgrid.backup.gcs.credentials-json` | Storage (repassado ao seedgrid-filemanagement) | `Optional<String>` | — | Runtime | (credentials-json) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+
+### billing
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.billing.business-timezone` | Geral / negócio | String (ZoneId) | `America/Sao_Paulo` | runtime | Define o fuso em que o negócio conta os dias: vigência de preço, virada do ciclo e data nos e-mails de acesso | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.currency` | Geral / negócio | String | `brl` | runtime | Moeda dos preços publicados no provider (fixo e metered) e do overview | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.overage-meter-name` | Geral / negócio | String | `Excedente` | runtime | Prefixo do nome exibido do meter de excedente no provider: "<valor> - <label do contador>" | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.persistence-unit` | Geral / negócio | Optional\<String\> | — (sem valor = PU default) | runtime | Escolhe o EntityManager das tabelas do billing | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.api.enabled` | API e bloqueio geral | boolean | `true` | runtime | Com false, os prefixos /admin/plans, /admin/subscriptions, /admin/accounts, /admin/billing, /me/plans… | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.access-gate.enabled` | API e bloqueio geral | boolean | `false` | runtime | Liga o bloqueio geral: conta sem assinatura vigente recebe 402 em qualquer endpoint autenticado | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.access-gate.block-past-due` | API e bloqueio geral | boolean | `true` | runtime | Assinatura PAST_DUE também nega acesso no bloqueio geral (402 PAYMENT_PAST_DUE) | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.access-gate.allowed-paths` | API e bloqueio geral | Optional\<List\<String\>\> | — | runtime | Prefixos extras sempre liberados pelo bloqueio geral | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.catalog.product-id` | Catálogo, checkout e portal | Optional\<String\> | — (cai em `seedgrid.billing.stripe.product`) | runtime | Define o produto sob o qual os preços dos planos e os meters (overage_<produto>_<contador>) são criados | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.checkout.success-url` | Catálogo, checkout e portal | Optional\<String\> | — | runtime | URL para onde o provider devolve o cliente após o checkout | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.checkout.cancel-url` | Catálogo, checkout e portal | Optional\<String\> | — | runtime | URL de retorno quando o cliente cancela o checkout | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.portal.return-url` | Catálogo, checkout e portal | Optional\<String\> | — | runtime | URL de retorno do customer portal | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.trial.enabled` | Trial e feature gate | boolean | `true` | runtime | Conta nova sem nenhuma assinatura ganha uma assinatura ACTIVE no term do trial | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.trial.plan-term-public-id` | Trial e feature gate | String | `00000000-0000-0000-0000-0000000000a2` (semeado pela V505) | runtime | Define o term usado no trial | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.feature-gate.exempt-company-ids` | Trial e feature gate | Optional\<List\<Long\>\> | — | runtime | Companies nunca bloqueadas por @RequiresPlanFeature, por exemplo a empresa da plataforma | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.plan-term.additional-attributes.max-size-bytes` | Limites dos additionalAttributes e reconciliação | int | `16384` | runtime | Tamanho máximo, em bytes UTF-8, do JSON final | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.plan-term.additional-attributes.max-depth` | Limites dos additionalAttributes e reconciliação | int | `5` | runtime | Profundidade máxima de aninhamento | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.plan-term.additional-attributes.max-keys` | Limites dos additionalAttributes e reconciliação | int | `100` | runtime | Total de chaves em todos os objetos, inclusive aninhados e dentro de arrays | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.reconciliation.throttle-seconds` | Limites dos additionalAttributes e reconciliação | long | `60` | runtime | Intervalo mínimo entre reconciliações implícitas da mesma conta com o provider (anti-stampede, guardado em memória) | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| 🔒 `seedgrid.billing.stripe.apiKey` | Provider Stripe (seedgrid-billing-stripe) | String | — | runtime | Atribuída a Stripe.apiKey global no @PostConstruct | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| 🔒 `seedgrid.billing.stripe.webhookSecret` | Provider Stripe (seedgrid-billing-stripe) | String | — | runtime | Valida o header Stripe-Signature em Webhook.constructEvent | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.defaultSuccessUrl` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — | runtime | Fallback quando o core não envia a URL de sucesso | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.defaultCancelUrl` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — | runtime | Fallback da URL de cancelamento | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.test-clock-enabled` | Provider Stripe (seedgrid-billing-stripe) | boolean | `true` | runtime | Com chave sk_test, a nova assinatura nasce num customer preso a um Stripe Test Clock, para testes E2E | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.product` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — | runtime | No startup, StripeProductBootstrap faz retrieve-or-create do produto | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.product-name` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — (usa o próprio ID) | runtime | Nome do produto criado no bootstrap | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+
+### cache
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.cache.if-provider-is-down` | Política de falha do backend | `String` (parse para enum `CacheProviderFailSoft.Level`) | Level]] | Não é relocada para quarkus.redis.* (o relocate só mexe em nomes que começam com quarkus.redis.). Equivalente no crate Rust é sempre fail-soft | Não | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.<sufixo>` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.<sufixo>` | conforme Quarkus | A da propriedade Quarkus correspondente | Alias de quarkus.redis.<sufixo>; vence o nome nativo | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.hosts` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.hosts` (URIs `redis://host:porta`) | conforme Quarkus (sem valor, o client padrão do Quarkus é usado; dev services podem subir um… | Runtime (Quarkus) | Endereço do servidor Redis/Valkey/Dragonfly | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.password` 🔒 | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.password` | — | Runtime (Quarkus) | Senha do servidor | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.timeout` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.timeout` (`Duration`, ex.: `PT5S`) | conforme Quarkus | Runtime (Quarkus) | Timeout do client | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.max-pool-size` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.max-pool-size` (int) | conforme Quarkus | Runtime (Quarkus) | Tamanho do pool | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.max-pool-waiting` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.max-pool-waiting` (int) | conforme Quarkus | Runtime (Quarkus) | Fila de espera do pool | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+
+### commons
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.app.business-timezone` | Fuso de negócio | `String` → `ZoneId` | `America/Sao_Paulo` | Runtime (construtor do bean) | Valor vazio ou inválido cai silenciosamente para America/Sao_Paulo (sem log) | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+| `seedgrid.web.cors.allow-origins` | CORS (CorsFilter) | `List<String>` (separada por vírgula) | `http://localhost:3000,http://localhost:4200` | Runtime | Preflight OPTIONS de origem fora da lista → 403; requisição não-preflight de origem fora da lista segue sem headers… | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+| `seedgrid.web.cors.allow-methods` | CORS (CorsFilter) | `String` | `GET,POST,PUT,PATCH,DELETE,OPTIONS` | Runtime | Valor de Access-Control-Allow-Methods na resposta ao preflight; não é usado para bloquear métodos | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+| `seedgrid.show-dev-message` | Tratamento de exceções | `boolean` | `false` | Runtime | true preenche devMessage no Problem Details (mensagem técnica da exceção / violações); false devolve devMessage vazio | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+| `app.build.version` | Banner de inicialização | `String` | `dev` | Runtime (startup) | Impresso em System.out como Versao: <valor> após o banner.txt do classpath (se existir) | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+
+### exchange
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.exchange.persistence-unit` | Propriedades lidas pela extension | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager das tabelas currencies e currency_exchange_rates | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
+| `seedgrid.app.business-timezone` | Propriedades lidas pela extension | String (ZoneId) | `America/Sao_Paulo` | Configuração do commons]]. | Fuso usado para apresentar o horário do próximo retry nos avisos (exchange.rate-fetch-failed) | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
+
+### filemanagement
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `filesystem` → `base-path` | filesystem | `String` (caminho) | — | Runtime (lazy) | Cria o diretório se não existir; falha se não for diretório ou não for gravável (StorageConfigurationException) | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `s3` → `bucket` | s3 | `String` | — | Runtime (lazy) | Ausente/vazio → StorageConfigurationException | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `s3` → `region` | s3 | `String` | `us-east-1` | Runtime (lazy) | Região do S3Client e do S3Presigner | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `s3` → `access-key` 🔒 | s3 | `String` | — | Runtime (lazy) | Com ambas, usa StaticCredentialsProvider; sem, usa a cadeia padrão do AWS SDK | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `s3` → `secret-key` 🔒 | s3 | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `s3` → `endpoint` | s3 | `String` (URI) | — | Runtime (lazy) | endpointOverride no cliente e no presigner | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `minio` → `endpoint` | minio | `String` (URL) | — | Runtime (lazy) | Ausente → StorageConfigurationException | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `minio` → `access-key` 🔒 | minio | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `minio` → `secret-key` 🔒 | minio | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `minio` → `bucket` | minio | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `minio` → `region` | minio | `String` | `us-east-1` | Runtime (lazy) | Repassado ao MinIOStorage | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `azure-blob` → `container` | azure-blob | `String` | — | Runtime (lazy) | Ausente → StorageConfigurationException; criado no init se não existir | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `azure-blob` → `connection-string` 🔒 | azure-blob | `String` | — | Runtime (lazy) | Tem prioridade sobre nome+chave | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `azure-blob` → `account-name` | azure-blob | `String` | — | Runtime (lazy) | Endpoint https://<account-name>.blob.core.windows.net + StorageSharedKeyCredential | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `azure-blob` → `account-key` 🔒 | azure-blob | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `gcs` → `bucket` | gcs (Google Cloud Storage) | `String` | — | Runtime (lazy) | Ausente → StorageConfigurationException; bucket inexistente → StorageInitializationException no init | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `gcs` → `project-id` | gcs (Google Cloud Storage) | `String` | — | Runtime (lazy) | Ausente → StorageConfigurationException | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `gcs` → `credentials-file` 🔒 | gcs (Google Cloud Storage) | `String` (caminho de JSON de service account) | — | Runtime (lazy) | Tem prioridade sobre credentials-json | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `gcs` → `credentials-json` 🔒 | gcs (Google Cloud Storage) | `String` (conteúdo JSON) | — | Runtime (lazy) | Usada se não houver credentials-file | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `google-drive` → `root-folder-id` | google-drive | `String` | — | Runtime (lazy) | Ausente → StorageConfigurationException; vira o bucket da StorageKey | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `google-drive` → `credentials-file` 🔒 | google-drive | `String` (caminho) | — | Runtime (lazy) | Prioridade sobre credentials-json; escopo drive.file | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `google-drive` → `credentials-json` 🔒 | google-drive | `String` (conteúdo JSON) | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `onedrive` → `client-id` | onedrive | `String` | — | Runtime (lazy) | Qualquer das três ausente → StorageConfigurationException | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `onedrive` → `client-secret` 🔒 | onedrive | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `onedrive` → `tenant-id` | onedrive | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `onedrive` → `root-folder-path` | onedrive | `String` | `/seedgrid/files` | Runtime (lazy) | Pasta raiz; vira o bucket da StorageKey | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+
+### login-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.login-tenancy.app.code` | Identidade da aplicação | `String` | `seedgrid-app` | Runtime | Código curto da aplicação; exibido no status e no log do bootstrap; base do nome do banco Mongo de auditoria… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.app.name` | Identidade da aplicação | `String` | `SeedGrid Application` | Runtime | Nome de exibição: usado nos e-mails (assunto e template {appName}) de confirmação, boas-vindas e ativação de usuário… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.database.migrate-at-start` | Banco / migrations | `boolean` | `true` | Runtime | false: pula todas as migrations orquestradas (foundation + app) | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.database.baseline-on-migrate` | Banco / migrations | `boolean` | `true` | Runtime | Passado ao Flyway.configure().baselineOnMigrate(...) de cada módulo | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.database.locations` | Banco / migrations | `String` | `classpath:db/migration/app` | Runtime | Location das migrations da aplicação, executadas por último com a tabela flyway_schema_history | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.foundation.status.enabled` | Superfície técnica | `boolean` | `true` | Runtime | false: GET /public/login-tenancy/status responde 404 | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.foundation.health.enabled` | Superfície técnica | `boolean` | `true` | Runtime | false: o readiness login-tenancy-foundation reporta UP sem tocar o banco | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.bootstrap.enabled` | Bootstrap | `boolean` | `true` | Runtime | false: o LoginTenancyBootstrapService só loga que está desligado | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.bootstrap.admin.enabled` | Bootstrap | `boolean` | `true` | Runtime | Intenção de criar o primeiro admin | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.billing.enabled` | Ativação lógica dos módulos | `boolean` (um por constante de [[SeedGrid/Extensions/login-tenancy/Enums#FoundationModule | `true`/`false` | Default de seedgrid.billing.api.enabled=${seedgrid.login-tenancy.modules.billing.enabled:true} | Não | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.apikeys.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não roda as migrations de apikeys; some de activeModules | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.backup.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não roda as migrations de backup; some de activeModules | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.filemanagement.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só afeta activeModules (status/log); filemanagement não tem migrations no baseline | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.audit.mongodb.database` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — (deriva `<app.code>_audit_db`, ou `audit_db`) | audit]]) | Override do banco Mongo de auditoria produzido pela foundation (banco único) | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.audit.persistence.strategy` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | Runtime | Decide se as migrations db/migration/audit rodam | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ai-pricing.migration.enabled` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `boolean` | `false` | Runtime | Roda classpath:db/migration/ai-pricing com flyway_schema_history_ai_pricing | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.exchange.migration.enabled` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `boolean` | `false` | Runtime | Roda classpath:db/migration/exchange com flyway_schema_history_exchange | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.security.first-admin-user.email` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | security]] | Só lida para decidir logs/WARN e firstAdminConfigured no status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.security.jwt.issuer` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | Runtime | Exibido em security.jwtIssuer no status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.show-dev-message` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `boolean` | `false` | Runtime | Inclui devMessage nos problem+json das exceções da login-tenancy | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | false desliga o limite do POST /public/signup | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `10` | Runtime | Pedidos por janela | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1M` | Runtime | Janela | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-email-exists.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de GET /public/signup/email-exists | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-email-exists.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `10` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-email-exists.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1M` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-cnpj-status.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de GET /public/signup/cnpj-status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-cnpj-status.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `10` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-cnpj-status.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1M` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-confirm-email.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de POST /public/signup/confirm-email | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-confirm-email.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `10` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-confirm-email.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1M` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-resend-email.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de POST /public/signup/resend-email | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-resend-email.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `5` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.ratelimit.signup-resend-email.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1H` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+
+### notification
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.notification.enabled` | Ativação e escopo | `boolean` | `true` | Runtime | false: o subscriber ignora eventos (não cria marcador nem entregas — mas código de evento desconhecido ainda lança… | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.dispatch-enabled` | Ativação e escopo | `boolean` | `true` | Runtime | false: só o worker para; eventos continuam sendo enfileirados (fila preservada) | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.scope` | Ativação e escopo | `String` | `platform` | Runtime | Namespace fixo da instalação: separa regras, deduplicação, histórico e workers de instalações que compartilham o banco | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.datasource-name` | Ativação e escopo | `Optional<String>` | — | Runtime | Se informado (após trim), as migrations usam esse datasource; se não resolver, o startup falha com IllegalStateException | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.poll-interval` | Worker / entrega | `String` (expressão `every` do Quarkus Scheduler) | `10s` | Runtime (resolvido pelo scheduler na subida) | Intervalo do NotificationDispatcher#drain (concurrentExecution = SKIP) | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.batch-size` | Worker / entrega | `int` | `20` | Runtime | Máximo de claims por execução do worker | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.max-attempts` | Worker / entrega | `int` | `5` | Runtime | Tentativas por entrega; ao atingir, status FAILED (ATTEMPTS_EXHAUSTED no claim ou TRANSPORT_FAILED na última falha) | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.retry-delay` | Worker / entrega | `Duration` | `PT30S` | Runtime | Base do backoff exponencial: próxima tentativa = agora + retry-delay × 2^min(tentativas-1, 10) | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+| `seedgrid.notification.lease` | Worker / entrega | `Duration` | `PT5M` | Runtime | Prazo de posse de uma entrega em SENDING; depois dele outro worker pode retomá-la | [[SeedGrid/Extensions/notification/Configuracao\|notification/Configuracao]] |
+
+### privacy
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.privacy.encryption.enabled` | Secure Fields | `Boolean` | `false` | Runtime (relido a cada chamada) | false: @EncryptedField grava valor cru e o campo de hash fica sem preencher; true: cifra na escrita e preenche o hash | [[SeedGrid/Extensions/privacy/Configuracao\|privacy/Configuracao]] |
+| `seedgrid.privacy.crypto.key` 🔒 | Secure Fields | `String` (Base64, prefixo `base64:` opcional) | — | Runtime: startup (CryptoBootstrap) se presente; senão lazy em CryptoProvider#getCryptoService() | Ausente quando necessária → IllegalStateException("Propriedade obrigatoria ausente para secure fields: ...") no 1º… | [[SeedGrid/Extensions/privacy/Configuracao\|privacy/Configuracao]] |
+| `seedgrid.privacy.search.key` 🔒 | Secure Fields | `String` (Base64, prefixo `base64:` opcional) | — | Runtime: startup se presente; senão lazy em getSearchHashService() | Ausente quando necessária → IllegalStateException; inválida → IllegalArgumentException (no startup, se presente) | [[SeedGrid/Extensions/privacy/Configuracao\|privacy/Configuracao]] |
+
+### realtime
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.realtime.enabled` (env `SEEDGRID_REALTIME_ENABLED`) | Ativação e conexão com o Pulse | `boolean` | `false` | Runtime | Liga o realtime | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+| `seedgrid.realtime.pulse.base-url` (env `SEEDGRID_REALTIME_PULSE_BASE_URL`) | Ativação e conexão com o Pulse | `Optional<String>` | — | Runtime | Valor em branco é tratado como ausente (filter(!isBlank)) | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+| 🔒 `seedgrid.realtime.pulse.project-key` (env `SEEDGRID_REALTIME_PULSE_PROJECT_KEY`) | Ativação e conexão com o Pulse | `Optional<String>` | — | Runtime | Segredo; fica só no backend | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+| `seedgrid.realtime.token-ttl` (env `SEEDGRID_REALTIME_TOKEN_TTL`) | Token de conexão e limites | `Duration` | `PT5M` | Runtime | Janela para conectar; a conexão aberta segue depois do vencimento | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+| `seedgrid.realtime.channels` (env `SEEDGRID_REALTIME_CHANNELS`) | Token de conexão e limites | `Optional<List<String>>` | — (ausente = todos os channels da conta) | Runtime | Restringe os channels que o token deixa assinar; também é devolvido no corpo do /realtime/connect | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+| `seedgrid.realtime.connect-rate-per-minute` (env `SEEDGRID_REALTIME_CONNECT_RATE_PER_MINUTE`) | Token de conexão e limites | `int` | `30` | Runtime | Pedidos de token por minuto por usuário, janela fixa de 60 s, em memória por instância | [[SeedGrid/Extensions/realtime/Configuracao\|realtime/Configuracao]] |
+
+### resilience
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.ratelimit.{configKey}.enabled` | Rate limit — seedgrid.ratelimit.{configKey}.* | `Boolean` | `true` (fixo no código) | Runtime (por chamada) | false desliga o limiter: tryAcquire retorna allow sem tocar no cache (headers ainda emitidos com permits/janela da… | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.ratelimit.{configKey}.permits` | Rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | atributo `permits` da anotação (`5`) | Runtime | Requisições permitidas por janela; no token bucket é a taxa de reposição por janela e a capacidade quando… | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.ratelimit.{configKey}.window` | Rate limit — seedgrid.ratelimit.{configKey}.* | `java.time.Duration` | atributo `window` × `windowUnit` (`30` × `SECONDS`) | Runtime | Tamanho da janela (substitui window+windowUnit); também TTL das chaves no cache | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.ratelimit.{configKey}.algorithm` | Rate limit — seedgrid.ratelimit.{configKey}.* | `String` → `RateLimitAlgorithm` | RateLimitAlgorithm]]; case-insensitive, -→_. Valor inválido → IllegalArgumentException na chamada | burst-capacity só afeta token bucket; min-spacing não afeta fixed window | Não | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.ratelimit.{configKey}.burst-capacity` | Rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | atributo `burstCapacity` (`0`) | Runtime | Capacidade do bucket; 0 = usa permits | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.ratelimit.{configKey}.min-spacing` | Rate limit — seedgrid.ratelimit.{configKey}.* | `java.time.Duration` | atributo `minSpacing` × `minSpacingUnit` (`0` × `MILLIS`; se `minSpacing>0` mas < 1 ms, vira 1 ms) | Runtime | Intervalo mínimo entre chamadas permitidas da mesma chave | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.enabled` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Boolean` | `true` (fixo no código) | Runtime (por chamada) | false: interceptor chama o método direto, sem estado nem fallback | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.sliding-window-size` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Integer` | atributo `slidingWindowSize` (`100`) | Runtime | Tamanho do ring buffer; em TIME_BASED também é a duração da janela em segundos | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.window-type` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `String` → `SlidingWindowType` | SlidingWindowType]]; case-insensitive, `-`→`_` | sliding-window-size | Não | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.failure-rate-threshold` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Double` | atributo `failureRateThreshold` (`50.0`) | Runtime | Abre quando falhas*100/total >= valor | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.slow-call-duration` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `java.time.Duration` | atributo `slowCallDurationThresholdMs` (`0` = desligado) | Runtime | Chamada com duração >= valor conta como lenta; 0 desativa a regra de lentidão | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.slow-call-rate-threshold` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Double` | atributo `slowCallRateThreshold` (`100.0`) | Runtime | Abre quando lentas*100/total >= valor | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.minimum-number-of-calls` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Integer` | atributo `minimumNumberOfCalls` (`20`) | Runtime | Mínimo de chamadas na janela antes de avaliar thresholds | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.open-state-duration` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `java.time.Duration` | atributo `openStateDurationMs` (`30000` ms) | Runtime | Tempo em OPEN antes de ir a HALF_OPEN; base do retryAfterMs; TTL do estado = max(2×valor, 1h) | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+| `seedgrid.circuitbreaker.{name}.permitted-calls-in-half-open` | Circuit breaker — seedgrid.circuitbreaker.{name}.* | `Integer` | atributo `permittedCallsInHalfOpen` (`10`) | Runtime | Nº de sondas em HALF_OPEN; todas precisam ter sucesso para fechar | [[SeedGrid/Extensions/resilience/Configuracao\|resilience/Configuracao]] |
+
+### security
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.security.jwt.issuer` | JWT (seedgrid.security.jwt.*) | String | `https://seedgrid.com.br` (mp-config e `@WithDefault`) | Runtime | Vai no claim iss do access token e é comparado com igualdade exata ao validar | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.kid` | JWT (seedgrid.security.jwt.*) | Optional\<String\> | `seedgrid-key` (mp-config; fallback em código `seedgrid-key`) | Runtime | Header kid do JWT RS256 | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.ttl` | JWT (seedgrid.security.jwt.*) | Optional\<Duration\> | `PT8H` (mp-config; fallback em código 8 h) | Runtime | Expiração (exp) do access token | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.private-key-location` 🔒 | JWT (seedgrid.security.jwt.*) | Optional\<String\> | `keys/private.pem` (mp-config; mesmo fallback em código) | Runtime | Tenta sistema de arquivos, depois classpath; falha → IllegalStateException("Erro ao carregar chave privada RSA") ao… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.private-key-base64` 🔒 | JWT (seedgrid.security.jwt.*) | Optional\<String\> | vazio (= ausente) | Runtime | Se presente e não-branco, tem precedência sobre private-key-location | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.public-key-location` | JWT (seedgrid.security.jwt.*) | Optional\<String\> | `keys/public.pem` (mp-config; mesmo fallback em código) | Runtime | Igual à privada | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.jwt.public-key-base64` | JWT (seedgrid.security.jwt.*) | Optional\<String\> | vazio | Runtime | Precedência sobre public-key-location | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.refresh-token.ttl` | Refresh token (seedgrid.security.refresh-token.*) | Duration | `P30D` | Runtime | TTL deslizante: cada rotação emite token com nova janela (expiresAt = now + ttl) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.refresh-token.reuse-grace-window` | Refresh token (seedgrid.security.refresh-token.*) | Duration | `PT30S` | Runtime | Dentro da janela, reapresentar um token já rotacionado (não revogado, com usedAt) é tratado como corrida concorrente e… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.encryption.key` 🔒 | Criptografia de segredos internos (seedgrid.security.encryption.*) | String | — (não está no mp-config) | Runtime | Chave AES-256-GCM (IV de 12 bytes) para cifrar segredos TOTP e a senha de bootstrap pendente… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.min-size` | Política de senha (seedgrid.security.password.*) | int | `1` (mp-config) | Runtime | Tamanho mínimo; o gerador de senha usa max(min-size, nº de categorias exigidas) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.max-history` | Política de senha (seedgrid.security.password.*) | int | `0` (mp-config) | Runtime | Bloqueia reutilizar as últimas N senhas | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.upper-case-required` | Política de senha (seedgrid.security.password.*) | boolean | `false` (mp-config) | Runtime | Exige [A-Z] | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.lower-case-required` | Política de senha (seedgrid.security.password.*) | boolean | `false` (mp-config) | Runtime | Exige [a-z] | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.special-character-required` | Política de senha (seedgrid.security.password.*) | boolean | `false` (mp-config) | Runtime | Exige um de !@#$%^&*(),.?":{}\|<> | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.prohibits-repeated-characters-in-sequence` | Política de senha (seedgrid.security.password.*) | boolean | `false` (mp-config) | Runtime | Rejeita dois caracteres iguais consecutivos | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.password.expiration-days` | Política de senha (seedgrid.security.password.*) | int | `0` (mp-config) | Runtime | Calcula passwordExpiresAt = now + N dias | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.enabled` | 2FA (seedgrid.security.2f.*) | boolean | **`true`** (mp-config; `@WithDefault` `false`) | Runtime | false: /2f/enable responde 400 "2FA is disabled" e o login não inicia desafio 2FA | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.allowed-methods` | 2FA (seedgrid.security.2f.*) | List\<String\> | `EMAIL,TOTP` | Runtime | Interseção com as estratégias disponíveis e com canEnroll(user) define o que o usuário pode ativar | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.totp.issuer` | 2FA (seedgrid.security.2f.*) | String | `SeedGrid` | Runtime | Issuer na URL otpauth:// e no QR | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.totp.digits` | 2FA (seedgrid.security.2f.*) | int | `6` | Runtime | Dígitos do código TOTP | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.totp.period` | 2FA (seedgrid.security.2f.*) | int | `30` | Runtime | Período do código | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.totp.window` | 2FA (seedgrid.security.2f.*) | int | `1` | Runtime | Tolerância de clock skew (períodos antes/depois) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.otp-qrcode.branding.enabled` | 2FA (seedgrid.security.2f.*) | boolean | `false` | Runtime | Sobrepõe logo no QR code | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.otp-qrcode.logo` | 2FA (seedgrid.security.2f.*) | Optional\<String\> | — | Runtime | Caminho do logo | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.otp-qrcode.size` | 2FA (seedgrid.security.2f.*) | int | `256` | Runtime | Largura/altura da imagem QR | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.verify.max-attempts` | 2FA (seedgrid.security.2f.*) | int | `5` | Runtime | Ao exceder, a sessão 2FA (tempToken) é removida e a verificação falha | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.session.ttl` | 2FA (seedgrid.security.2f.*) | Duration | `PT5M` | Runtime | Validade do tempToken (sessão 2FA em cache) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.email.code-ttl` | 2FA (seedgrid.security.2f.*) | Duration | `PT5M` | Runtime | Validade do código por e-mail | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.backup-codes.count` | 2FA (seedgrid.security.2f.*) | int | `10` | Runtime | Quantidade de backup codes gerados | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.backup-codes.length` | 2FA (seedgrid.security.2f.*) | int | `6` | Runtime | Tamanho de cada backup code | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.whatsapp.channel-id` | 2FA (seedgrid.security.2f.*) | Optional\<String\> | vazio (mp-config `${SEEDGRID_SECURITY_2F_WHATSAPP_CHANNEL_ID:}`) | Runtime | Sem valor, a ativação de WHATSAPP responde "WHATSAPP 2FA is not configured | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.2f.whatsapp.code-ttl` | 2FA (seedgrid.security.2f.*) | Duration | `PT5M` | Runtime | Validade do código por WhatsApp | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.enabled` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | boolean | `false` | Runtime | false: SelfEnterDisabledFilter (@PreMatching) responde 404 para /self-enter, /public/self-enter (também com prefixo… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.public-enabled` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | boolean | `true` | Runtime | Libera o signup público (POST /public/self-enter/requests e o link público) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.invite-enabled` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | boolean | `true` | Runtime | Libera convites (/self-enter/invitations, /public/self-enter/invitations/{token}) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.invite-needs-approval` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | boolean | `true` | Runtime | false: convite aceito já cria o usuário (quem convidou é aprovador implícito) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.request-ttl` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Duration | `PT48H` | Runtime | Validade da solicitação de entrada (confirmar e-mail + aprovação) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.invite-ttl` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Duration | `PT168H` | Runtime | Validade do convite; também enviada em horas no e-mail | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.email-token-ttl` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Duration | `PT30M` | Runtime | Validade do código OTP de confirmação de e-mail | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.default-role` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | — (sem padrão) | Runtime | Usada só quando nem o convite nem a aprovação trazem roles (SelfEnterService#resolveApprovalRoles) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.cleanup.enabled` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | boolean | `true` | Runtime | Liga o job que expira solicitações antigas e purga finalizadas (todos os tenants) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.cleanup.cron` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `0 */10 * * * ?` | Runtime (lido ao iniciar o scheduler) | Agenda do job (@Scheduled(cron = "{seedgrid.security.self-enter.cleanup.cron}"), execução concorrente SKIP) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.cleanup.purge-after` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Duration | `PT168H` | Runtime | Idade após a qual solicitações APPROVED/REJECTED/EXPIRED são apagadas | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.email.confirm-subject` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `Confirme seu e-mail` | Runtime | Assunto do e-mail com código de confirmação | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.self-enter.email.invite-subject` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `Voce recebeu um convite para cadastro` | Runtime | Assunto do e-mail de convite | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.from` | E-mail / SMTP (seedgrid.security.mailer.*) | String | `noreply@example.com` (mp-config) | Runtime | From de todos os e-mails do DefaultEmailService | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.host` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | `smtp.gmail.com` (mp-config) | Runtime | Efeito só pela ponte (quarkus.mailer."security".host) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.port` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<Integer\> | `587` (mp-config) | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.start-tls` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | `REQUIRED` (mp-config) | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.username` 🔒 | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.password` 🔒 | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.mailer.auth-methods` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | `PLAIN LOGIN` (mp-config) | Runtime | Evita que o Vert.x escolha XOAUTH2 (Gmail) com senha comum | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.base-url` | URLs do frontend (seedgrid.security.frontend.*) | String | `http://localhost:3000` (mp-config) | Runtime | Prefixo de todos os links dos e-mails | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.login-path` | URLs do frontend (seedgrid.security.frontend.*) | String | `/login` | Runtime | Monta a URL de login em SecurityLinkBuilder#buildLoginUrl (bean público; DefaultEmailService#buildLoginLink a expõe a… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.password-reset-path` | URLs do frontend (seedgrid.security.frontend.*) | String | `/auth/forgot-password/confirm` | Runtime | Link de reset, com ?token= | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.email-confirmation-path` | URLs do frontend (seedgrid.security.frontend.*) | String | `/auth/confirm-email` | Runtime | Link de confirmação de e-mail, com ?token= | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.welcome-path` | URLs do frontend (seedgrid.security.frontend.*) | String | `/auth/welcome` | Runtime | Link do e-mail de boas-vindas (1º admin / usuários criados), com ?token= | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.frontend.self-enter-path` | URLs do frontend (seedgrid.security.frontend.*) | String | `/auth/self-enter` (mp-config) | Runtime | Link do convite de self-enter, com ?token= | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.bootstrap.enabled` | Bootstrap: empresa default e primeiro admin | boolean | `true` | Runtime | No StartupEvent: cria a empresa default (se não existir pelo CNPJ), vincula usuários sem empresa (se só houver 1… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.cnpj` | Bootstrap: empresa default e primeiro admin | String | — (mp-config `${SEEDGRID_SECURITY_DEFAULT_COMPANY_CNPJ}` **sem default**) | Runtime | Identifica a "empresa-plataforma": criada no bootstrap; excluída do seletor de empresas do cliente; define quem é… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.corporate-name` | Bootstrap: empresa default e primeiro admin | String | — (env sem default) | Runtime | Razão social da empresa criada | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.trade-name` | Bootstrap: empresa default e primeiro admin | String | — (env sem default) | Runtime | Nome fantasia | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-street` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | Endereço da empresa criada (trim → null) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-number` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-complement` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-postal-code` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-city` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-state` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-district` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.addr-phone` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-first-name` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | Representante legal | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-last-name` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-cpf` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem (PII) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-birth-date` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-phone` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-whatsapp` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.default-company.rep-email` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.first-admin-user.email` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio | Runtime | Vazio → 1º admin não é criado | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.first-admin-user.name` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio (fallback em código: `Administrador`) | Runtime | Nome do 1º admin | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.first-admin-user.whatsapp` | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio (→ `""`) | Runtime | WhatsApp do 1º admin | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.first-admin-user.initial-password` 🔒 | Bootstrap: empresa default e primeiro admin | Optional\<String\> | vazio (→ senha gerada por `PasswordGenerator`) | Runtime | Validada pela política de senha; guardada cifrada (encryption.key) até a troca e enviada no e-mail de boas-vindas | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.storage` | Avatar (seedgrid.security.avatar.*) | String | `filesystem` | Runtime | Backend onde o avatar é gravado | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.user-prefix` | Avatar (seedgrid.security.avatar.*) | String | `avatars/users` | Runtime | Prefixo dos avatares de usuário (+ publicId) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.default-prefix` | Avatar (seedgrid.security.avatar.*) | String | `avatars/defaults` | Runtime | Prefixo dos avatares padrão | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.public-read` | Avatar (seedgrid.security.avatar.*) | boolean | `false` | Runtime | StorageOptions.publicRead | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.filesystem.base-path` | Avatar (seedgrid.security.avatar.*) | String | `/var/seedgrid/files` | Runtime | Raiz do storage filesystem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.s3.bucket` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.s3.region` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.s3.access-key` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.s3.secret-key` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.s3.endpoint` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | Endpoint customizado | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.minio.bucket` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.minio.region` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | `us-east-1` (mp-config) | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.minio.access-key` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.minio.secret-key` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.minio.endpoint` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.azure-blob.connection-string` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.azure-blob.container` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.azure-blob.account-name` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.azure-blob.account-key` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.google-drive.root-folder-id` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.google-drive.credentials-file` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.google-drive.credentials-json` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.onedrive.client-id` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.onedrive.client-secret` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.onedrive.tenant-id` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.onedrive.root-folder-path` | Avatar (seedgrid.security.avatar.*) | String | `/seedgrid/files` | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.gcs.bucket` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.gcs.project-id` | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.gcs.credentials-file` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.avatar.gcs.credentials-json` 🔒 | Avatar (seedgrid.security.avatar.*) | Optional\<String\> | vazio | Runtime | — | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.user.additional-attributes.max-size-bytes` | Usuário, RBAC e gestão pela conta | int | `16384` | Runtime | Tamanho máximo do JSON final (bytes UTF-8) após merge; excedeu → HTTP 400 (InvalidUserAdditionalAttributesException) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.user.additional-attributes.max-depth` | Usuário, RBAC e gestão pela conta | int | `5` | Runtime | Profundidade máxima de aninhamento | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.user.additional-attributes.max-keys` | Usuário, RBAC e gestão pela conta | int | `100` | Runtime | Total de chaves em todos os níveis (inclusive dentro de arrays) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.rbac.cache-ttl` | Usuário, RBAC e gestão pela conta | Duration | `PT5M` | Runtime | TTL do cache roles→permissões efetivas (chave security:rbac:perm: + versão RBAC + nonce de boot + audience + empresa)… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.account.assignable-permission-audiences` | Usuário, RBAC e gestão pela conta | Optional\<List\<String\>\> | — (vazio = só permissões sem audience) | Runtime | Audiences de permissão que o admin de uma conta pode atribuir aos perfis da conta em /me/security/roles; permissão com… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.show-dev-message` | Outras chaves lidas pelo security (@ConfigProperty) | boolean | `false` | Runtime | Inclui mensagem de desenvolvimento nas respostas RFC 7807 das exceções do security | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.app.email-alert.window` | Outras chaves lidas pelo security (@ConfigProperty) | Duration | `PT15M` | Runtime | Anti-flood: só a 1ª falha de envio de e-mail em cada janela publica o evento platform.email-delivery-failed no… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.login.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | boolean / long / Duration | `true` / `100` / `PT1M` (anotação) | Runtime | Limite por IP | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.auth-refresh.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `30` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.auth-confirm-email.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `10` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.forgot-password.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `5` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.auth-reset-password.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `10` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.public-companies.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `30` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.self-enter-request.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `5` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.self-enter-confirm.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `10` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.self-enter-resend.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `3` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.self-enter-invitation.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `10` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.self-enter-complete.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `5` / `PT1M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.2fa-verify.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `5` / `PT15M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.2fa-resend.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `3` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.ratelimit.user-activation-resend.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `3` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+
+### subdomain-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.subdomain-tenancy.domain-suffix` | Resolução de tenant e rotas | `Optional<String>` | `—` (MPC: `${SEEDGRID_SUBDOMAIN_TENANCY_DOMAIN_SUFFIX:}` → vazio = ausente) | runtime | TenantHostExtractor remove porta, põe em minúsculas, exige host.endsWith(suffix), retira o sufixo e o ponto; o prefixo… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant-header` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Se presente e o header vier preenchido, QuarkusTenantResolver usa seu valor como tenant — mas só quando o… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.default-tenant` | Resolução de tenant e rotas | `String` | `master` | runtime | Tenant devolvido quando nada é resolvido; também decide "contexto master" no OpenAPI e a claim audience (platform ×… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.product-prefix` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Nome do banco do tenant = <prefix>_<tenant> (sem prefixo: <tenant>) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.openapi.master-only-paths` | Resolução de tenant e rotas | `List<String>` (CSV) | `/admin` (MPC: `${SEEDGRID_SUBDOMAIN_TENANCY_OPENAPI_MASTER_ONLY_PATHS:/admin}`) | runtime | Em contexto de tenant, GET /public/tenant-openapi remove os paths com esses prefixos (barra final removida), além das… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.datasource.jdbc.url` | Datasource master | `Optional<String>` | MPC: `jdbc:postgresql://localhost:5432/master` (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL`) | runtime | Copiada para quarkus.datasource.master.jdbc.url; usada para abrir um SimpleDriverDataSource próprio nas migrations do… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.datasource.username` | Datasource master | `Optional<String>` | MPC: `postgres` (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_USERNAME`) | runtime | Ponte para quarkus.datasource.master.username; fallback postgres no código | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| 🔒 `seedgrid.subdomain-tenancy.master.datasource.password` | Datasource master | `Optional<String>` | MPC: `postgres` (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_PASSWORD`) — valor de desenvolvimento | runtime | Ponte para quarkus.datasource.master.password; fallback postgres no código | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.datasource.jdbc.min-size` | Datasource master | `Optional<Integer>` | MPC: `1` (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_POOL_MIN`) | runtime | Só é lida via ponte quarkus.datasource.master.jdbc.min-size | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.datasource.jdbc.max-size` | Datasource master | `Optional<Integer>` | MPC: `10` (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_POOL_MAX`) | runtime | Ponte quarkus.datasource.master.jdbc.max-size | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.entity-packages` | Datasource master | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_ENTITY_PACKAGES`) | build (via expansão — Inferência) | Prefixada em quarkus.hibernate-orm.master.packages=${…master.entity-packages},br.com.seedgrid.subdomaintenancy.entities… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.master.migrations.location.additional` | Datasource master | `Optional<String>` (CSV) | MPC: vazio | runtime | Anexadas à base classpath:db/migration/master no mesmo history flyway_schema_history_master; versões precisam ser… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `database.master.subdomain` | Datasource master | `Optional<String>` | MPC: `${PRODUCT_PREFIX:app}` | runtime | Nenhum código da extension a lê (DatabaseMasterConfig não é injetado); é um valor auxiliar publicado para o host… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `database.master.name` | Datasource master | `Optional<String>` | MPC: `${database.master.subdomain}_master` | runtime | Valor auxiliar para expressões do host; ex. real em java/seedgrid-test-multitenancy/src/main/resources/application.prop… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.url` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` (sem `url` nem `url-pattern`: `jdbc:postgresql://localhost:5439/{tenant}`) | runtime | getEffectiveUrlPattern() remove / final e acrescenta /{tenant}; {tenant} vira o nome do banco (<prefix>_<tenant>) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.url-pattern` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` | runtime | Se não-vazia, usada como está (Javadoc: compatibilidade/legado) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.username` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` no MPC; fallback `postgres` no código | runtime | Usuário de todos os bancos de tenant; também usado como OWNER no CREATE DATABASE (provisionamento) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| 🔒 `seedgrid.subdomain-tenancy.tenant.datasource.password` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` no MPC; fallback `postgres` no código | runtime | idem | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.driver` | Datasource dos tenants (pool, cache e limite) | `String` | `org.postgresql.Driver` | runtime | Class.forName(driver) antes de criar o pool do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.min-size` | Datasource dos tenants (pool, cache e limite) | `Optional<Integer>` | MPC: `0` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_POOL_MIN`) | runtime | Pool mínimo por tenant (Math.max(0, v)) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.max-size` | Datasource dos tenants (pool, cache e limite) | `Optional<Integer>` | MPC: `5` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_POOL_MAX`) | runtime | Pool máximo por tenant (Math.max(1, v)) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.idle-timeout` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_IDLE_TIMEOUT`) | runtime | Idle timeout das conexões do pool do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.acquisition-timeout` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30S` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_ACQUISITION_TIMEOUT`) | runtime | Timeout para obter conexão do pool | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.max-active-datasources` | Datasource dos tenants (pool, cache e limite) | `int` | `200` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_MAX_ACTIVE_DATASOURCES`) | runtime | Teto de pools de tenant em cache por instância | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.cache.idle-eviction` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DS_CACHE_IDLE_EVICTION`) | runtime | Pool sem acesso há esse tempo e sem conexões ativas é fechado (TTL) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.cache.cleanup-interval` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT1M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DS_CACHE_CLEANUP_INTERVAL`) | runtime | Período da thread daemon tenant-datasource-cache-evictor. ≤ 0 vira 1 min; mínimo efetivo 1 s | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.entity-packages` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_ENTITY_PACKAGES`) | build (via expansão — Inferência) | Prefixada em quarkus.hibernate-orm.packages=${…tenant.entity-packages},br.com.seedgrid.security.entities,br.com.seedgri… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.migrations.location.additional` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` (CSV) | MPC: vazio | runtime | Anexadas à base classpath:db/migration/tenant no history flyway_schema_history_tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.circuit-breaker.failure-ratio` | Circuit breaker das conexões de tenant | `double` | `0.5` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_CB_FAILURE_RATIO`) | runtime | Razão de falhas que abre o circuito | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.circuit-breaker.request-volume-threshold` | Circuit breaker das conexões de tenant | `int` | `6` (env `…_TENANT_DB_CB_REQUEST_VOLUME_THRESHOLD`) | runtime | Janela mínima de chamadas para avaliar a razão | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.circuit-breaker.delay` | Circuit breaker das conexões de tenant | `Duration` | `PT30S` (env `…_TENANT_DB_CB_DELAY`) | runtime | Tempo aberto antes de half-open | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.circuit-breaker.success-threshold` | Circuit breaker das conexões de tenant | `int` | `2` (env `…_TENANT_DB_CB_SUCCESS_THRESHOLD`) | runtime | Sucessos em half-open para fechar | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.enabled` | Orquestração de migrations por tenant | `boolean` | `true` (env `SEEDGRID_SUBDOMAIN_TENANCY_MIGRATION_ENABLED`) | runtime | false: o gate de login não age e o coordinator devolve "Migration bypassed" (READY) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.trigger-on-login` | Orquestração de migrations por tenant | `boolean` | `true` (env `…_MIGRATION_TRIGGER_ON_LOGIN`) | runtime | Em request (não-OPTIONS) cujo path começa com um login-paths, para tenant ≠ master, garante a migração; se não estiver… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.login-paths` | Orquestração de migrations por tenant | `String` (CSV) | `/auth/login` (env `…_MIGRATION_LOGIN_PATHS`) | runtime | Separado por vírgula, trim, match por startsWith | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.startup-migrate-all-tenants` | Orquestração de migrations por tenant | `boolean` | `false` (env `…_MIGRATION_STARTUP_ALL_TENANTS`) | runtime | true: após migrar o master, enfileira (assíncrono) a migração de todos os tenants ativos, em páginas de 200 | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.target-version` | Orquestração de migrations por tenant | `String` | `v1` (env `…_MIGRATION_TARGET_VERSION`) | runtime | Tenant só é "pronto" se status=READY e targetVersion == currentVersion == target-version; mudar o valor força nova… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.max-concurrency` | Orquestração de migrations por tenant | `int` | `3` (env `…_MIGRATION_MAX_CONCURRENCY`) | runtime | Tamanho do pool tenant-migration-login e do semáforo; sem vaga devolve "Migration capacity reached" | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.lock-lease` | Orquestração de migrations por tenant | `Duration` | `PT10M` (env `…_MIGRATION_LOCK_LEASE`) | runtime | Validade do lock; heartbeat a cada lease/3 (mínimo 5 s) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.migration.instance-id` | Orquestração de migrations por tenant | `Optional<String>` | `—` (MPC: `${…_MIGRATION_INSTANCE_ID:}` → vazio = ausente) | runtime | Dono do lock; vazio → instance-<UUID aleatório> a cada boot | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.admin-user.name` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME`) | runtime | Nome do admin global | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.admin-user.email` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL`) | runtime | Normalizado (trim().toLowerCase()) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| 🔒 `seedgrid.subdomain-tenancy.admin-user.initial-password` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD`) | runtime | Vazia → senha gerada por PasswordGenerator e enviada por e-mail de boas-vindas (se o e-mail falhar, o admin fica sem a… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.from` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: `noreply@example.com` (env `SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM`) | runtime | → quarkus.mailer."subdomaintenancy".from | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.host` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: `smtp.gmail.com` (env `…_MAILER_HOST`) | runtime | → …".host | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.port` | E-mail (mailer nomeado subdomaintenancy) | `Optional<Integer>` | MPC: `587` (env `…_MAILER_PORT`) | runtime | → …".port | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.start-tls` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: `REQUIRED` (env `…_MAILER_START_TLS`) | runtime | → …".start-tls | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.username` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: vazio (env `…_MAILER_USERNAME`) | runtime | → …".username | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| 🔒 `seedgrid.subdomain-tenancy.mailer.password` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: vazio (env `…_MAILER_PASSWORD`) | runtime | → …".password | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.mailer.auth-methods` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: `PLAIN LOGIN` (env `…_MAILER_AUTH_METHODS`) | runtime | → …".auth-methods; evita XOAUTH2 automático do Vert.x (Gmail) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.otp-expiry-minutes` | Signup, OTP e limpeza | `int` | `10` | runtime | Validade do código OTP de 6 dígitos (TenantValidationToken.expiresAt) e valor passado no… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.cleanup.not-validated-ttl` | Signup, OTP e limpeza | `String` | `48H` (env `SEEDGRID_SUBDOMAIN_TENANCY_CLEANUP_NOT_VALIDATED_TTL`) | runtime | Tenants não validados criados antes de now - ttl têm o registro removido do master | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.cleanup.not-validated-cron` | Signup, OTP e limpeza | `String` | `0 0 * * * ?` (env `…_CLEANUP_NOT_VALIDATED_CRON`) | runtime | Agenda cleanupExpiredTenants (só roda se flyway_schema_history_subdomain_tenancy existir) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+
+### whatsapp
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.whatsapp.api` | Seleção do provider | `String` | default (@WithDefault("default"); também ${SEEDGRID_WHATSAPP_API:default} no… | Runtime | WhatsAppProvider.fromConfig faz trim().toLowerCase(); valor vazio ou desconhecido vira DEFAULT | [[SeedGrid/Extensions/whatsapp/Configuracao\|whatsapp/Configuracao]] |
+| `seedgrid.whatsapp.evolution.api-key` 🔒 | Provider Evolution API | `Optional<String>` | — (no `microprofile-config.properties`: `${SEEDGRID_WHATSAPP_EVOLUTION_API_KEY:}`, ou seja vazio) | Runtime | Lida a cada chamada por requireApiKey(); vazia/ausente → IllegalStateException("Missing required config… | [[SeedGrid/Extensions/whatsapp/Configuracao\|whatsapp/Configuracao]] |
+| `seedgrid.whatsapp.rest-client.evolution.url` | Provider Evolution API | `Optional<String>` | — (no `microprofile-config.properties`: `${SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL:}`, vazio) | Runtime | Funciona via ponte: é consumida pela expressão quarkus.rest-client.evolution.url=${seedgrid.whatsapp.rest-client.evolut… | [[SeedGrid/Extensions/whatsapp/Configuracao\|whatsapp/Configuracao]] |
+| `seedgrid.whatsapp.cloud.access-token` 🔒 | Provider WhatsApp Cloud API (Meta Graph API) | `Optional<String>` | — (no `microprofile-config.properties`: `${SEEDGRID_WHATSAPP_CLOUD_ACCESS_TOKEN:}`, vazio) | Runtime | Lida a cada chamada por bearer(); vazia/ausente → IllegalStateException("Missing required config… | [[SeedGrid/Extensions/whatsapp/Configuracao\|whatsapp/Configuracao]] |
+| `seedgrid.whatsapp.rest-client.cloud.url` | Provider WhatsApp Cloud API (Meta Graph API) | `String` | https://graph.facebook.com/v21.0 (@WithDefault e ${SEEDGRID_WHATSAPP_REST_CLIENT_CLOUD_URL:https://… | Runtime | Funciona via ponte: é consumida por quarkus.rest-client.cloud.url=${seedgrid.whatsapp.rest-client.cloud.url:} no jar… | [[SeedGrid/Extensions/whatsapp/Configuracao\|whatsapp/Configuracao]] |
+
+## Rust — variáveis de ambiente e structs de config
+
+### apikeys
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_APIKEYS_PREFIX_LENGTH` → `prefix_length` | Propriedades do crate | `usize` | `8` | boot (from_env) ou struct | nº de caracteres da parte aleatória persistidos como prefixo (sem sgkey_); extract_prefix exige ao menos esse tamanho | [[SeedGrid/Extensions/apikeys/Configuracao-Rust\|apikeys/Configuracao-Rust]] |
+| `SEEDGRID_APIKEYS_KEY_BYTES` → `key_bytes` | Propriedades do crate | `usize` | `32` | boot ou struct | nº de bytes aleatórios (OsRng) codificados em Base64 URL-safe sem padding | [[SeedGrid/Extensions/apikeys/Configuracao-Rust\|apikeys/Configuracao-Rust]] |
+
+### audit
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_AUDIT_ENABLED` | Ativação e estratégia | bool | `true` | from_env() | false torna Auditor::record no-op e faz AuditPlatform::assemble devolver Ok(None) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| `AUDIT_STRATEGY` (Java: `seedgrid.audit.persistence.strategy`, via `${AUDIT_STRATEGY:...}`) | Ativação e estratégia | enum `AuditPersistenceStrategy` | derivado da feature: Jpa com postgres (também quando ambas ou nenhuma); Mongodb só com mongodb sem… | from_env() | valor desconhecido → default da feature | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| `SEEDGRID_AUDIT_DB_URL` (Java: `seedgrid.audit.jpa.jdbc.url`) | Relacional (JPA/Postgres) | `Option<String>` | — | from_env() | AuditConfig::pg_connection_url() remove jdbc:; outro formato → AuditError::Config | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_AUDIT_MONGODB_URI` (Java: `seedgrid.audit.mongodb.connection-string`, via `${SEEDGRID_AUDIT_MONGODB_URI:...}`) | MongoDB | `Option<String>` (sempre `Some` após `from_env`) | DEFAULT_MONGODB_URI = mongodb://<usuario>:<SEGREDO:mongo-dev>@localhost:27017 (credenciais de dev… | from_env() | URI usada por effective_mongo_uri(); falha de conexão → auditoria no-op (Ok(None)) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| `SEEDGRID_AUDIT_MONGODB_DATABASE` (Java: `seedgrid.audit.mongodb.database`) | MongoDB | `Option<String>` | sem padrão no config; `AuditPlatform` usa `seedgrid_audit` quando ausente | from_env() | nome do banco Mongo | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+
+### backup
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_BACKUP_ENABLED` / alias `BACKUP_ENABLED` | Habilitação (fora do BackupConfig) | bool | falso (ausente) | assemble() | sem opt-in, BackupPlatform::assemble devolve Ok(None) (backup desligado) | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_RETENTION_DAYS` / alias `SEEDGRID_BACKUP_RETENTION_DAYS` (Java `seedgrid.backup.retention-days`) | Geral | i64 | `7` | from_env() | expires_at = agora + N dias | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_MAX_CONCURRENT_EXPORTS` / `SEEDGRID_BACKUP_MAX_CONCURRENT_EXPORTS` (Java `max-concurrent-exports`) | Geral | i64 | `1` | from_env() | limite de exports simultâneos | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_STORAGE` / `SEEDGRID_BACKUP_STORAGE` (Java `storage`, `${SEEDGRID_BACKUP_STORAGE:filesystem}`) | Geral | String | `filesystem` | from_env() | outro valor → erro Unknown storage type em build_storage_config | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_QUEUE_POLL_INTERVAL` / `SEEDGRID_BACKUP_QUEUE_POLL_INTERVAL` (Java `queue-poll-interval`) | Geral | Duration | `30s` | from_env() | intervalo do loop de fila | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_ASYNC_ENABLED` / `SEEDGRID_BACKUP_ASYNC_ENABLED` (Java `async-enabled`) | Geral | bool | `true` | from_env() | dispara worker assíncrono após criar o job | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_NOTIFICATION_ENABLED` / `SEEDGRID_BACKUP_NOTIFICATION_ENABLED` (Java `notification.enabled`) | Notificação | bool | `true` | from_env() | desliga o loop de notificação e is_enabled() | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_NOTIFICATION_POLL_INTERVAL` / `SEEDGRID_BACKUP_NOTIFICATION_POLL_INTERVAL` (Java `notification.poll-interval`) | Notificação | Duration | `5m` | from_env() | intervalo do loop | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_NOTIFICATION_MAX_RETRIES` / `SEEDGRID_BACKUP_NOTIFICATION_MAX_RETRIES` (Java `notification.max-retries`) | Notificação | i32 (lido como i64) | `3` | from_env() | máx. tentativas de e-mail | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_NOTIFICATION_RETRY_DELAY` / `SEEDGRID_BACKUP_NOTIFICATION_RETRY_DELAY` (Java `notification.retry-delay`) | Notificação | Duration | `PT15M` | from_env() | atraso mínimo entre tentativas | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `SEEDGRID_BACKUP_MAILER_FROM` / `BACKUP_MAILER_FROM` (Java `mailer.from`) | Mailer (SMTP) | `Option<String>` | `noreply@example.com` | from_env() | remetente; ausente → erro no envio | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `SEEDGRID_BACKUP_MAILER_HOST` / `BACKUP_MAILER_HOST` (Java `mailer.host`) | Mailer (SMTP) | `Option<String>` | `smtp.gmail.com` | from_env() | host SMTP | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `SEEDGRID_BACKUP_MAILER_PORT` / `BACKUP_MAILER_PORT` (Java `mailer.port`) | Mailer (SMTP) | `Option<u16>` | `587` | from_env() | 465 → TLS implícito; senão STARTTLS | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `SEEDGRID_BACKUP_MAILER_START_TLS` / `BACKUP_MAILER_START_TLS` (Java `mailer.start-tls`) | Mailer (SMTP) | `Option<String>` | `REQUIRED` | from_env() | só DISABLED muda o comportamento (texto puro) | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `SEEDGRID_BACKUP_MAILER_USERNAME` / `BACKUP_MAILER_USERNAME` (Java `mailer.username`) | Mailer (SMTP) | `Option<String>` | — | from_env() | credencial SMTP | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_BACKUP_MAILER_PASSWORD` / `BACKUP_MAILER_PASSWORD` (Java `mailer.password`) | Mailer (SMTP) | `Option<String>` | — | from_env() | credencial SMTP | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_CSV_DELIMITER` / `SEEDGRID_BACKUP_CSV_DELIMITER` (Java `csv.delimiter`) | CSV e filesystem | String | `,` | from_env() | delimitador do CSV e do manifest | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_CSV_QUOTE_CHAR` / `SEEDGRID_BACKUP_CSV_QUOTE_CHAR` (Java `csv.quote-char`) | CSV e filesystem | String | `"` | from_env() | aspas do CSV | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_FILESYSTEM_BASE` / `SEEDGRID_BACKUP_FILESYSTEM_BASE_PATH` (Java `filesystem.base-path`) | CSV e filesystem | String | `/var/seedgrid/files` | from_env() | base-path do storage filesystem | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_MINIO_BUCKET` / `SEEDGRID_BACKUP_MINIO_BUCKET` (Java `minio.bucket`) | MinIO | `Option<String>` | — | from_env() | chave bucket | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_MINIO_REGION` / `SEEDGRID_BACKUP_MINIO_REGION` (Java `minio.region`) | MinIO | `Option<String>` | — (Java: `us-east-1`) | from_env() | chave region | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| 🔒 `BACKUP_MINIO_ACCESS_KEY` / `SEEDGRID_BACKUP_MINIO_ACCESS_KEY` | MinIO | `Option<String>` | — | from_env() | chave access-key | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| 🔒 `BACKUP_MINIO_SECRET_KEY` / `SEEDGRID_BACKUP_MINIO_SECRET_KEY` | MinIO | `Option<String>` | — | from_env() | chave secret-key | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+| `BACKUP_MINIO_ENDPOINT` / `SEEDGRID_BACKUP_MINIO_ENDPOINT` | MinIO | `Option<String>` | — | from_env() | chave endpoint | [[SeedGrid/Extensions/backup/Configuracao-Rust\|backup/Configuracao-Rust]] |
+
+### billing
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| 🔒 `SEEDGRID_BILLING_STRIPE_APIKEY` / alias `SEEDGRID_BILLING_STRIPE_API_KEY` (Java `seedgrid.billing.stripe.apiKey`) | Stripe | String | `""` | StripeConfig::from_env() | Authorization: Bearer; prefixo sk_test habilita Test Clock | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_BILLING_STRIPE_WEBHOOK_SECRET` (Java `webhookSecret`) | Stripe | String | `""` | from_env() | verifica assinatura do webhook | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_DEFAULT_SUCCESS_URL` / alias `SEEDGRID_BILLING_STRPE_DEFAULT_SUCCESS_URL` (Java `defaultSuccessUrl`) | Stripe | String | `""` | from_env() | usada no checkout quando o request não traz URL | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_DEFAULT_CANCEL_URL` (Java `defaultCancelUrl`) | Stripe | String | `""` | from_env() | idem para cancelamento | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_TEST_CLOCK_ENABLED` (Java `test-clock-enabled`) | Stripe | bool | `true` | from_env() | com chave sk_test, cria a assinatura sob um Test Clock | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_PRODUCT` (Java `seedgrid.billing.stripe.product`) | Stripe | `Option<String>` | — | from_env() | ensure_product_bootstrap garante o produto se definido | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_PRODUCT_NAME` (Java `product-name`) | Stripe | `Option<String>` | — | from_env() | nome do produto no bootstrap | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+| `SEEDGRID_BILLING_STRIPE_API_BASE` | Stripe | String | `https://api.stripe.com` (`DEFAULT_STRIPE_API_BASE`) | from_env() | base da API (útil em testes/mocks) | [[SeedGrid/Extensions/billing/Configuracao-Rust\|billing/Configuracao-Rust]] |
+
+### broker
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `MemoryBroker::new(capacity)` | Parâmetros por backend | usize | `512` (`Default`) | construtor | capacidade do broadcast; assinante atrasado além disso deixa de receber | [[SeedGrid/Extensions/broker/Configuracao-Rust\|broker/Configuracao-Rust]] |
+| `RedisBroker::connect(url, _)` | Parâmetros por backend | &str | — | construtor | conecta e faz PING (falha → erro) | [[SeedGrid/Extensions/broker/Configuracao-Rust\|broker/Configuracao-Rust]] |
+| `RedisBroker::connect(_, channel)` | Parâmetros por backend | &str | — | construtor | canal único de PUBLISH/SUBSCRIBE; vazio só é rejeitado pela função livre connect | [[SeedGrid/Extensions/broker/Configuracao-Rust\|broker/Configuracao-Rust]] |
+| `NatsConfig.url` / `NatsConfig.subject` | Parâmetros por backend | String | sem `Default` | NatsBroker::connect | apenas armazenados (scaffold) | [[SeedGrid/Extensions/broker/Configuracao-Rust\|broker/Configuracao-Rust]] |
+| `RabbitMqConfig.url` / `.exchange` / `.routing_key` | Parâmetros por backend | String | sem `Default` | RabbitMqBroker::connect | apenas armazenados (scaffold) | [[SeedGrid/Extensions/broker/Configuracao-Rust\|broker/Configuracao-Rust]] |
+
+### cache
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_CACHE_HOSTS` / fallback `QUARKUS_REDIS_HOSTS` (Java `seedgrid.cache.hosts` / `quarkus.redis.hosts`) | Variáveis de ambiente | String | `localhost:6379` | from_env() | montado em URL por redis_url() (prefixa redis:// se faltar esquema) | [[SeedGrid/Extensions/cache/Configuracao-Rust\|cache/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_CACHE_PASSWORD` / `QUARKUS_REDIS_PASSWORD` | Variáveis de ambiente | `Option<String>` | — | from_env() | injetada como :<senha>@ na URL se ela ainda não tiver @ | [[SeedGrid/Extensions/cache/Configuracao-Rust\|cache/Configuracao-Rust]] |
+| `SEEDGRID_CACHE_TIMEOUT` / `QUARKUS_REDIS_TIMEOUT` | Variáveis de ambiente | `Option<Duration>` | — | from_env() | timeout de conexão e de resposta; inválido → ignorado | [[SeedGrid/Extensions/cache/Configuracao-Rust\|cache/Configuracao-Rust]] |
+| `SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN` (Java `seedgrid.cache.if-provider-is-down`) | Variáveis de ambiente | `ProviderDownLog` | `WARN` | from_env() | só muda o nível do log; Rust sempre degrada (Java ERROR relança) | [[SeedGrid/Extensions/cache/Configuracao-Rust\|cache/Configuracao-Rust]] |
+
+### filemanagement
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `base-path` | filesystem (sempre disponível) | String | — | create | cria o diretório se faltar; valida que é diretório e gravável (arquivo de teste .seedgrid-write-test-*) | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `bucket` | s3 (feature s3) | String | — | create | bucket alvo | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `region` | s3 (feature s3) | String | `us-east-1` | create | sem endpoint, precisa ser região válida (Invalid S3 region) | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `endpoint` | s3 (feature s3) | String | — | create | se presente: região custom + path-style (MinIO/LocalStack) | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `access-key` / 🔒 `secret-key` | s3 (feature s3) | String | — | create | só usadas se ambas presentes; senão cadeia default de credenciais do rust-s3 | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `endpoint` | minio (feature s3 ou minio) | String | — | create | sempre path-style | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `access-key` | minio (feature s3 ou minio) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `secret-key` | minio (feature s3 ou minio) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `bucket` | minio (feature s3 ou minio) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `region` | minio (feature s3 ou minio) | String | `us-east-1` | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `container` | azure-blob (feature azure) | String | — | create | criado se não existir (ensure_container) | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `connection-string` | azure-blob (feature azure) | String | — | create | tem precedência; EndpointSuffix padrão core.windows.net, protocolo padrão https | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `account-name` | azure-blob (feature azure) | String | — | create | host https://<conta>.blob.core.windows.net | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `account-key` | azure-blob (feature azure) | String | — | create | assinatura SharedKey | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `bucket` | gcs (feature gcs) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `project-id` | gcs (feature gcs) | String | — | create | só validado (paridade com o Java) | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `credentials-file` | gcs (feature gcs) | String | — | create | lido do disco; tem precedência | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `credentials-json` | gcs (feature gcs) | String | — | create | usado se não houver credentials-file | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `root-folder-id` | google-drive (feature google-drive) | String | — | create | pasta raiz | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `credentials-file` / 🔒 `credentials-json` | google-drive (feature google-drive) | String | — | create | idem GCS | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `client-id` | onedrive (feature onedrive) | String | — | create | OAuth client-credentials | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| 🔒 `client-secret` | onedrive (feature onedrive) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `tenant-id` | onedrive (feature onedrive) | String | — | create | — | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+| `root-folder-path` | onedrive (feature onedrive) | String | `/seedgrid/files` | create | pasta raiz | [[SeedGrid/Extensions/filemanagement/Configuracao-Rust\|filemanagement/Configuracao-Rust]] |
+
+### login-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_LOGIN_TENANCY_APP_CODE` → `app.code` | Aplicação | `String` | `seedgrid-app` | boot | código da aplicação | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_APP_NAME` → `app.name` | Aplicação | `String` | `SeedGrid Application` | boot | nome de exibição | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_FOUNDATION_STATUS_ENABLED` → `foundation.status_enabled` | Superfície técnica e bootstrap | `bool` | `true` | boot | false → GET /public/login-tenancy/status responde 404 | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_BOOTSTRAP_ENABLED` → `bootstrap.enabled` | Superfície técnica e bootstrap | `bool` | `true` | boot | só reportado no status (bootstrap.enabled); não controla o bootstrap do security (que é… | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_BOOTSTRAP_ADMIN_ENABLED` → `bootstrap.admin_enabled` | Superfície técnica e bootstrap | `bool` | `true` | boot | admin_bootstrap_enabled() = bootstrap.enabled && admin_enabled; só reportado no status | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_MODULES_BILLING_ENABLED` | Módulos de foundation | `bool` | `true` | boot | ativação lógica; aparece em activeModules do status | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_MODULES_APIKEYS_ENABLED` | Módulos de foundation | `bool` | `true` | boot | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_MODULES_BACKUP_ENABLED` | Módulos de foundation | `bool` | `true` | boot | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_LOGIN_TENANCY_MODULES_FILEMANAGEMENT_ENABLED` | Módulos de foundation | `bool` | `true` | boot | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_SHOW_DEV_MESSAGE` | Erros e leituras cruzadas | `bool` | `false` | por request | inclui devMessage (mensagem da exceção) no corpo RFC 7807 | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_DEFAULT_COMPANY_CNPJ` (lida aqui) | Erros e leituras cruzadas | `String` | — | boot (assemble_all) | super-leitura + audiência JWT | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL` (lida aqui) | Erros e leituras cruzadas | `String` | — | boot (assemble_all) | alimenta firstAdminConfigured do status | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_ACCOUNT_ASSIGNABLE_PERMISSION_AUDIENCES` (existência testada) | Erros e leituras cruzadas | — | se **ausente**, `assemble_all` força `["client"]` | boot | default do login-tenancy para audiences atribuíveis pela conta | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `LoginTenancyPlatformOverrides.email` | Seams/struct do host (sem env) | `Option<Arc<dyn EmailService>>` | `LoggingEmailService` do security (só loga) | — | transporte do e-mail de signup | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `.template` | Seams/struct do host (sem env) | `Option<Arc<dyn LoginTenancyTemplateProvider>>` | `DefaultLoginTenancyTemplateProvider` | — | template do e-mail | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `.signup_confirmed` | Seams/struct do host (sem env) | `Option<Arc<dyn SignupConfirmedHandler>>` | `None` | — | pós-processamento de domínio | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `.password_policy` | Seams/struct do host (sem env) | `Option<PasswordPolicy>` | `PasswordPolicy::default()` = `min_length 8`, `require_upper/lower/special = false` | — | política de senha do signup — independente da política do security (SECURITY_PASSWORD_* não se aplica aqui) | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+| `.run_security_bootstrap` | Seams/struct do host (sem env) | `bool` | `true` | — | roda seedgrid_security::bootstrap | [[SeedGrid/Extensions/login-tenancy/Configuracao-Rust\|login-tenancy/Configuracao-Rust]] |
+
+### privacy
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_PRIVACY_ENCRYPTION_ENABLED` (Java `seedgrid.privacy.encryption.enabled`) | Variáveis de ambiente | bool | `false` | a cada chamada | ligado: EncryptedFieldConverter::from_provider cifra na escrita e o listener gera hash; desligado: grava cru e não… | [[SeedGrid/Extensions/privacy/Configuracao-Rust\|privacy/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_PRIVACY_CRYPTO_KEY` (Java `seedgrid.privacy.crypto.key`) | Variáveis de ambiente | String | — | 1ª chamada, depois cache | cria AesGcmCryptoService; ausente/inválida → serviço None (ver nota) | [[SeedGrid/Extensions/privacy/Configuracao-Rust\|privacy/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_PRIVACY_SEARCH_KEY` (Java `seedgrid.privacy.search.key`) | Variáveis de ambiente | String | — | 1ª chamada, depois cache | cria HmacSha256SearchHashService | [[SeedGrid/Extensions/privacy/Configuracao-Rust\|privacy/Configuracao-Rust]] |
+
+### realtime
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_REALTIME_ENABLED` (Java `seedgrid.realtime.enabled`) | Variáveis de ambiente | bool | `false` | from_env() | desligado: connect responde {enabled:false} e avisos são no-op | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+| `SEEDGRID_REALTIME_PULSE_BASE_URL` (Java `seedgrid.realtime.pulse.base-url`) | Variáveis de ambiente | `Option<String>` | — | from_env() | ligado sem ela → log de erro e realtime desligado | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_REALTIME_PULSE_PROJECT_KEY` (Java `seedgrid.realtime.pulse.project-key`) | Variáveis de ambiente | `Option<String>` | — | from_env() | idem | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+| `SEEDGRID_REALTIME_TOKEN_TTL` (Java `seedgrid.realtime.token-ttl`) | Variáveis de ambiente | Duration | `PT5M` (300 s) | from_env() | janela para conectar com o token (ttl_seconds, mínimo 1) | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+| `SEEDGRID_REALTIME_CHANNELS` (Java `seedgrid.realtime.channels`) | Variáveis de ambiente | `Option<Vec<String>>` | todos os da conta (`None`) | from_env() | channels que o token deixa assinar; também devolvidos no JSON | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+| `SEEDGRID_REALTIME_CONNECT_RATE_PER_MINUTE` (Java `seedgrid.realtime.connect-rate-per-minute`) | Variáveis de ambiente | u32 | `30` | from_env(); fixado em router() | pedidos de token por minuto, por usuário, por instância | [[SeedGrid/Extensions/realtime/Configuracao-Rust\|realtime/Configuracao-Rust]] |
+
+### resilience
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.ratelimit.{configKey}.enabled` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Bool` | `true` | por chamada | false libera sem tocar o cache (kill switch) | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.permits` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | `SeedGridRateLimit.permits` (5) | por chamada | permits por janela; ≤ 0 → panic | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.window` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Duration` | `window` × `window_unit` (30 s) | por chamada | tamanho da janela | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.min-spacing` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Duration` | `min_spacing` × `min_spacing_unit` (0) | por chamada | espaçamento mínimo entre chamadas | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.burst-capacity` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | `burst_capacity` (0) | por chamada | capacidade do token bucket | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.algorithm` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Str` | `algorithm` (`FIXED_WINDOW`) | por chamada | escolhe a estratégia | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.circuitbreaker.{name}.enabled` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Bool` | `true` | por chamada | false desliga o circuito | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.sliding-window-size` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Int` | `100` | idem | slots da janela (em TIME_BASED, segundos) | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.window-type` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Str` | `COUNT_BASED` | idem | tipo de janela | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.failure-rate-threshold` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Double` | `50.0` | idem | abre ao atingir a taxa de falha | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.slow-call-duration` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Duration` | `0` (desligado) | idem | limiar de chamada lenta | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.slow-call-rate-threshold` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Double` | `100.0` | idem | abre pela taxa de lentidão | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.minimum-number-of-calls` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Int` | `20` | idem | mínimo antes de avaliar | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.open-state-duration` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Duration` | `30000` ms | idem | tempo em OPEN antes de HALF_OPEN | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `.permitted-calls-in-half-open` | Overrides de circuit breaker — seedgrid.circuitbreaker.{name}.* | `Int` | `10` | idem | sondagens em HALF_OPEN | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+
+### runtime
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `BootstrapOptions.fail_fast` | Runtime: BootstrapOptions e gate | bool | `true` | bootstrap_with | primeiro erro de #[startup] aborta o boot (Err com contexto); false loga e segue | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `BootstrapOptions.run_startup` | Runtime: BootstrapOptions e gate | bool | `true` | idem | roda as #[startup] | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `BootstrapOptions.run_scheduled` | Runtime: BootstrapOptions e gate | bool | `true` | idem | spawna as #[scheduled] | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `BootstrapOptions.gate` (`with_gate`) | Runtime: BootstrapOptions e gate | `Fn(&str) -> bool` | `default_gate` | idem | decide se cada enabled_if está ligado | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `<valor de enabled_if>` (env var dinâmica) | Runtime: BootstrapOptions e gate | bool | desligado | no bootstrap | task não é spawnada quando falso (log info) | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `priority` | #[startup] | i32 | `100` (neutra; `seedgrid-macros/src/lib.rs` → `startup`) | — | menor roda antes | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `cron` | #[scheduled] (exatamente um de cron/every) | String | — | — | quartz de 6 campos (seg min hora dia-mes mes dia-semana); inválido → task não iniciada (log de erro) | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `every` | #[scheduled] (exatamente um de cron/every) | String | — | — | Nms, Ns, Nm, Nh, Nd; zero/inválido → não iniciada | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `enabled_if` | #[scheduled] (exatamente um de cron/every) | String | — (sempre ligada) | — | nome da env var do gate | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `concurrent` | #[scheduled] (exatamente um de cron/every) | bool | `false` (SKIP) | — | true = PROCEED | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `delay` | #[scheduled] (exatamente um de cron/every) | String | — | — | atraso inicial, mesmo formato de every | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `config_key` | #[rate_limit] (→ seedgrid-resilience) | — | `""` | — | habilita overrides seedgrid.ratelimit.<key>.* da ConfigSource do RateLimitService (Configuração Rust do resilience) | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `permits` | #[rate_limit] (→ seedgrid-resilience) | — | `5` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `window` | #[rate_limit] (→ seedgrid-resilience) | — | `"30s"` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `algorithm` | #[rate_limit] (→ seedgrid-resilience) | — | `"fixed_window"` | — | fixed_window, sliding_window, token_bucket | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `service` | #[rate_limit] (→ seedgrid-resilience) | — | — | — | obrigatório: caminho de função que devolve Arc<RateLimitService> | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `context` | #[rate_limit] (→ seedgrid-resilience) | — | `EmptySeedGridInvocationContext` | — | expressão de contexto (limite global por método se omitido) | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `name` | #[circuit_breaker] (→ seedgrid-resilience) | — | — | — | obrigatório | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `failure_rate_threshold` | #[circuit_breaker] (→ seedgrid-resilience) | — | `50.0` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `open_state_duration` | #[circuit_breaker] (→ seedgrid-resilience) | — | `"30s"` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `minimum_number_of_calls` | #[circuit_breaker] (→ seedgrid-resilience) | — | `20` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `sliding_window_size` | #[circuit_breaker] (→ seedgrid-resilience) | — | `100` | — | — | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `cache` | #[circuit_breaker] (→ seedgrid-resilience) | — | — | — | obrigatório: provider de Arc<InMemoryCache> ou Arc<dyn SeedGridCacheProvider> | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+| `fallback` | #[circuit_breaker] (→ seedgrid-resilience) | — | — | — | função sem argumentos com o mesmo Result<T, E> | [[SeedGrid/Extensions/runtime/Configuracao-Rust\|runtime/Configuracao-Rust]] |
+
+### security
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| 🔒 `SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64` → `jwt.private_key_pem` | JWT (chaves RSA, issuer, TTL) | `Vec<u8>` | — | boot | 1ª na precedência; DER é reembrulhado em PEM PRIVATE KEY (der_to_pem) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64` → `jwt.public_key_pem` | JWT (chaves RSA, issuer, TTL) | `Vec<u8>` | — | boot | idem, label PUBLIC KEY | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_JWT_PRIVATE_KEY_LOCATION` · alias `SECURITY_PRIVATE_KEY_LOCATION` | JWT (chaves RSA, issuer, TTL) | caminho | — | boot | 2ª fonte; lê o arquivo inteiro | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_JWT_PUBLIC_KEY_LOCATION` · alias `SECURITY_PUBLIC_KEY_LOCATION` | JWT (chaves RSA, issuer, TTL) | caminho | — | boot | idem | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SECURITY_JWT_PRIVATE_KEY_PEM` | JWT (chaves RSA, issuer, TTL) | string | — | boot | 3ª fonte (ignorada se branca) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_PUBLIC_KEY_PEM` | JWT (chaves RSA, issuer, TTL) | string | — | boot | 3ª fonte | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_PRIVATE_KEY_PEM_FILE` | JWT (chaves RSA, issuer, TTL) | caminho | — | boot | 4ª fonte (nome antigo do crate) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_PUBLIC_KEY_PEM_FILE` | JWT (chaves RSA, issuer, TTL) | caminho | — | boot | 4ª fonte | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_ISSUER` → `jwt.issuer` | JWT (chaves RSA, issuer, TTL) | `String` | `seedgrid` | boot | claim iss | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_KID` → `jwt.kid` | JWT (chaves RSA, issuer, TTL) | `Option<String>` | `None` (header sem `kid`) | boot | aparado; branco = None | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_TTL` → `jwt.ttl_seconds` | JWT (chaves RSA, issuer, TTL) | `i64` (s) | `28800` (8h) | boot | precede SECURITY_JWT_TTL_SECONDS | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_JWT_TTL_SECONDS` | JWT (chaves RSA, issuer, TTL) | `i64` | `28800` | boot | usado só se SECURITY_JWT_TTL ausente/inválida (compat) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_REFRESH_TOKEN_TTL` → `refresh.ttl_days` | Refresh token | `i64` (dias) | `30` | boot | convertido para dias (secs/86400, mínimo 1) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_REFRESH_TOKEN_REUSE_GRACE_WINDOW` → `refresh.reuse_grace_window_secs` | Refresh token | `i64` (s) | `30` | boot | janela em que a reapresentação concorrente do mesmo refresh não é tratada como reuso | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `refresh.reuse_detection` (campo) | Refresh token | `bool` | `true` | struct | reuso detectado revoga a family inteira | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_MIN_SIZE` → `password.min_length` | Política de senha | `usize` | `8` | boot | tamanho mínimo | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_EXPIRATION_DAYS` → `password.expiry_days` | Política de senha | `i64` | `0` | boot | data de expiração da senha | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_MAX_HISTORY` → `password.history_size` | Política de senha | `usize` | `5` | boot | senhas anteriores proibidas | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_UPPER` → `password.require_upper` | Política de senha | `bool` | `true` | boot | exige maiúscula | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_LOWER` → `password.require_lower` | Política de senha | `bool` | `true` | boot | exige minúscula | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_SPECIAL` → `password.require_special` | Política de senha | `bool` | `true` | boot | exige especial de !@#$%^&*(),.?":{}\|<> | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_PASSWORD_NO_REPEAT` → `password.prohibit_repeated_sequence` | Política de senha | `bool` | `true` | boot | proíbe 2 caracteres iguais seguidos | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_PRIVACY_CRYPTO_KEY` · aliases `SECURITY_ENCRYPTION_KEY`, `SEEDGRID_SECURITY_ENCRYPTION_KEY` → `encryption.key_b64` | Criptografia (segredo TOTP e PII) e privacidade | `Option<String>` | `None` | boot | precedência na ordem listada; chave inválida faz build() falhar | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_PRIVACY_ENCRYPTION_ENABLED` · alias `SECURITY_PRIVACY_ENABLED` → `privacy.enabled` | Criptografia (segredo TOTP e PII) e privacidade | `bool` | `false` | boot | liga a cifra at-rest de PII (email, whatsApp, cnpj, rep_*) e os hashes de busca — só se as chaves existirem | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_PRIVACY_SEARCH_KEY` · alias `SECURITY_PRIVACY_HMAC_KEY` → `privacy.hmac_key_b64` | Criptografia (segredo TOTP e PII) e privacidade | `Option<String>` | `None` | boot | HMAC-SHA256 dos *_hash | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_ENABLED` → `two_factor.enabled` | 2FA (seedgrid.security.2f.*) | `bool` | `false` | boot | liga o fluxo 2FA no login; /2f/* informa featureEnabled | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_EMAIL_CODE_TTL` → `two_factor.email_code_ttl_seconds` | 2FA (seedgrid.security.2f.*) | `i64` (s) | `300` | boot | validade do código por e-mail | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_ALLOWED_METHODS` → `two_factor.allowed_methods` | 2FA (seedgrid.security.2f.*) | `Vec<String>` | `EMAIL,TOTP` | boot | lista vazia é ignorada | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_DEFAULT_METHOD` → `two_factor.default_method` | 2FA (seedgrid.security.2f.*) | `String` | `TOTP` | boot | método default da sessão 2FA | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_TOTP_ISSUER` → `two_factor.totp_issuer` | 2FA (seedgrid.security.2f.*) | `String` | `SeedGrid` | boot | issuer do otpauth:// | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_TOTP_DIGITS` → `two_factor.totp_digits` | 2FA (seedgrid.security.2f.*) | `usize` | `6` | boot | dígitos TOTP e dos OTP numéricos | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_TOTP_PERIOD` → `two_factor.totp_period_seconds` | 2FA (seedgrid.security.2f.*) | `u64` | `30` | boot | período TOTP | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_VERIFY_MAX_ATTEMPTS` → `two_factor.verify_max_attempts` | 2FA (seedgrid.security.2f.*) | `u32` | `5` | boot | tentativas por sessão | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_SESSION_TTL` → `two_factor.session_ttl_seconds` | 2FA (seedgrid.security.2f.*) | `i64` (s) | `300` | boot | sessão temporária login→verify | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_WHATSAPP_CHANNEL_ID` → `two_factor.whatsapp_channel_id` | 2FA (seedgrid.security.2f.*) | `String` | vazio | boot | vazio → WHATSAPP nunca oferecido; preenchido → build() cria WhatsAppCrateSender com… | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_2F_BACKUP_CODES_COUNT` → `two_factor.backup_codes_count` | 2FA (seedgrid.security.2f.*) | `usize` | `10` | boot | nº de backup codes gerados | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_BASE_URL` · aliases `SECURITY_FRONTEND_BASE_URL`, `SECURITY_BASE_URL` → `frontend.base_url` | Frontend (links de e-mail) | `String` | `http://localhost:3000` | boot | branco ignorado; / final removida no uso | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_LOGIN_PATH` · alias `SECURITY_FRONTEND_LOGIN_PATH` | Frontend (links de e-mail) | `String` | `/login` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_PASSWORD_RESET_PATH` · alias `SECURITY_FRONTEND_PASSWORD_RESET_PATH` | Frontend (links de e-mail) | `String` | `/auth/forgot-password/confirm` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_EMAIL_CONFIRMATION_PATH` · alias `SECURITY_FRONTEND_EMAIL_CONFIRMATION_PATH` | Frontend (links de e-mail) | `String` | `/auth/confirm-email` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_WELCOME_PATH` · alias `SECURITY_FRONTEND_WELCOME_PATH` | Frontend (links de e-mail) | `String` | `/auth/welcome` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FRONTEND_SELF_ENTER_PATH` · alias `SECURITY_FRONTEND_SELF_ENTER_PATH` | Frontend (links de e-mail) | `String` | `/auth/self-enter` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_SELF_ENTER_ENABLED` → `self_enter.enabled` | Self-enter (auto-registro e convites) | `bool` | `false` | boot | desligado → toda rota /self-enter* responde 404 (middleware antes da auth) e o cleanup não roda | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_SELF_ENTER_PUBLIC_ENABLED` → `self_enter.public_enabled` | Self-enter (auto-registro e convites) | `bool` | `true` | boot | false = modo só-convite (signup público 404) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SECURITY_SELF_ENTER_INVITE_ENABLED` → `self_enter.invite_enabled` | Self-enter (auto-registro e convites) | `bool` | `true` | boot | false = convites 404 | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_REQUEST_TTL` · alias `SECURITY_SELF_ENTER_REQUEST_TTL` → `request_ttl_hours` | Self-enter (auto-registro e convites) | `i64` (h) | `48` | boot | convertido para horas (mín. 1) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_INVITE_TTL` · alias `SECURITY_SELF_ENTER_INVITE_TTL` → `invite_ttl_hours` | Self-enter (auto-registro e convites) | `i64` (h) | `168` | boot | idem | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_EMAIL_TOKEN_TTL` · alias `SECURITY_SELF_ENTER_EMAIL_TOKEN_TTL` → `otp_ttl_seconds` | Self-enter (auto-registro e convites) | `i64` (s) | `1800` | boot | validade de cada OTP de e-mail | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_DEFAULT_ROLE` · alias `SECURITY_SELF_ENTER_DEFAULT_ROLE` → `default_role` | Self-enter (auto-registro e convites) | `Option<String>` | — (sem padrão) | boot | role atribuída na aprovação quando o convite não traz roles | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_CLEANUP_ENABLED` · alias `SECURITY_SELF_ENTER_CLEANUP_ENABLED` → `cleanup_enabled` | Self-enter (auto-registro e convites) | `bool` | `true` | boot | gate do cleanup_entry_requests | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_SELF_ENTER_CLEANUP_PURGE_AFTER` · alias `SECURITY_SELF_ENTER_CLEANUP_PURGE_AFTER` → `purge_after_hours` | Self-enter (auto-registro e convites) | `i64` (h) | `168` | boot | retenção de pedidos finalizados | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `self_enter.otp_accept_last_n` (campo) | Self-enter (auto-registro e convites) | `i64` | `4` | struct | aceita os últimos N OTPs válidos | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_AVATAR_USER_PREFIX` · alias `SECURITY_AVATAR_USER_PREFIX` → `avatar.user_prefix` | Avatar | `String` | `avatars/users` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_AVATAR_DEFAULT_PREFIX` · alias `SECURITY_AVATAR_DEFAULT_PREFIX` → `avatar.default_prefix` | Avatar | `String` | `avatars/defaults` | boot | pool compartilhado de avatares default | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `avatar.max_bytes` (campo) | Avatar | `u64` | `2097152` via `SecurityConfig::new`/`from_env` (`AvatarConfig::default` = `0`) | struct | rejeita upload maior | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `avatar.allowed_content_types` (campo) | Avatar | `Vec<String>` | `image/png`, `image/jpeg`, `image/webp` via `new` (vazio no `Default` = aceita tudo) | struct | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_MAILER_FROM` · alias `SECURITY_MAILER_FROM` | Mailer SMTP | `String` | `noreply@example.com` | boot | remetente | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_MAILER_HOST` · alias `SECURITY_MAILER_HOST` | Mailer SMTP | `String` | `smtp.gmail.com` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_MAILER_PORT` · alias `SECURITY_MAILER_PORT` | Mailer SMTP | `u16` | `587` | boot | inválido ignorado | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_MAILER_START_TLS` · alias `SECURITY_MAILER_START_TLS` | Mailer SMTP | `String` | `REQUIRED` | boot | DISABLED (sem caixa) desliga STARTTLS | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_MAILER_USERNAME` · alias `SECURITY_MAILER_USERNAME` | Mailer SMTP | `String` | vazio | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_SECURITY_MAILER_PASSWORD` · alias `SECURITY_MAILER_PASSWORD` | Mailer SMTP | `String` | vazio | boot | sem trim; vazio ignorado | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_SIZE_BYTES` · alias `SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_SIZE_BYTES` | Atributos adicionais do usuário | `usize` | `16384` | boot | excedeu → 400 INVALID_USER_ADDITIONAL_ATTRIBUTES | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_DEPTH` · alias `SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_DEPTH` | Atributos adicionais do usuário | `usize` | `5` | boot | idem | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_KEYS` · alias `SECURITY_USER_ADDITIONAL_ATTRIBUTES_MAX_KEYS` | Atributos adicionais do usuário | `usize` | `100` | boot | idem | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL` · alias `SECURITY_FIRST_ADMIN_EMAIL` | Bootstrap: primeiro admin e empresa-plataforma | `Option<String>` | `None` | boot | se setado, bootstrap() cria/garante o admin | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FIRST_ADMIN_USER_NAME` · alias `SECURITY_FIRST_ADMIN_NAME` | Bootstrap: primeiro admin e empresa-plataforma | `Option<String>` | `None` (bootstrap usa `Administrador`) | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_FIRST_ADMIN_USER_WHATSAPP` · alias `SECURITY_FIRST_ADMIN_WHATSAPP` | Bootstrap: primeiro admin e empresa-plataforma | `Option<String>` | `None` | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_SECURITY_FIRST_ADMIN_USER_INITIAL_PASSWORD` · alias `SECURITY_FIRST_ADMIN_INITIAL_PASSWORD` | Bootstrap: primeiro admin e empresa-plataforma | `Option<String>` | `None` | boot | senha inicial (com change_password_required) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_DEFAULT_COMPANY_CNPJ` · alias `SECURITY_DEFAULT_COMPANY_CNPJ` | Bootstrap: primeiro admin e empresa-plataforma | `String` | vazio | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_DEFAULT_COMPANY_CORPORATE_NAME` | Bootstrap: primeiro admin e empresa-plataforma | `String` | vazio | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_DEFAULT_COMPANY_TRADE_NAME` | Bootstrap: primeiro admin e empresa-plataforma | `String` | vazio | boot | — | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SecurityOverrides.run_bootstrap` (campo) | Bootstrap: primeiro admin e empresa-plataforma | `bool` | `true` em `SecurityOverrides::enabled()`; `false` em `Default` (derive) | struct | roda bootstrap() no fim do SecurityPlatform::assemble | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_ACCOUNT_ASSIGNABLE_PERMISSION_AUDIENCES` → `account.assignable_permission_audiences` | Gestão pela conta e templates | `Vec<String>` | vazio (só permissões sem audience). O login-tenancy::assemble_all usa client quando a env não existe | boot | audiences que o admin da conta pode atribuir em /me/security/roles | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+| `SEEDGRID_SECURITY_TEMPLATES_DIR` · alias `SECURITY_TEMPLATES_DIR` | Gestão pela conta e templates | caminho | `./templates/security` (relativo ao cwd) | build | overrides <nome>.html/.txt vencem os templates embutidos; só usado se o host não injetar .template_provider(...) | [[SeedGrid/Extensions/security/Configuracao-Rust\|security/Configuracao-Rust]] |
+
+### subdomain-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `DOMAIN_SUFFIX` · fallback `SEEDGRID_MULTITENANCY_DOMAIN_SUFFIX` → `domain_suffix` | Resolução de tenant | `Option<String>` | `None` (tenancy OFF) | boot | {tenant}.{suffix} → tenant; vazio = ausente | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `PRODUCT_PREFIX` → `product_prefix` | Resolução de tenant | `Option<String>` | `None` | boot | nome do banco por tenant <prefix>_<tenant> | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `default_tenant` (campo) | Resolução de tenant | `String` | `master` | struct | tenant de fallback/escopo plataforma (bypass do gate de migração) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MASTER_DB_URL` | Datasources (master e tenant) | URL | — (fallback: `master_url_fallback` do host) | boot | base para derivar host:port (e creds embutidas) do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MASTER_DB_USERNAME` | Datasources (master e tenant) | `String` | — | boot | fallback das creds do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_MULTITENANCY_MASTER_DB_PASSWORD` | Datasources (master e tenant) | `String` | — | boot | idem | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_URL` → `tenant_url_pattern` | Datasources (master e tenant) | URL base | `jdbc:postgresql://localhost:5439/{tenant}` | boot | precedência: TENANT_URL_PATTERN > TENANT_DB_URL > host:port do master > default | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_URL_PATTERN` → `tenant_url_pattern` | Datasources (master e tenant) | `String` | — | boot | legado; tem a última palavra | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_USERNAME` → `tenant_username` | Datasources (master e tenant) | `String` | `postgres` | boot | precedência: env tenant > creds do master > default; também vira OWNER do CREATE DATABASE | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_MULTITENANCY_TENANT_DB_PASSWORD` → `tenant_password` | Datasources (master e tenant) | `String` | `postgres` | boot | idem | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_POOL_MIN` / `_MAX` → `tenant_pool_min/max` | Datasources (master e tenant) | `u32` | `1` / `10` | boot | conexões por pool de tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_MAX_ACTIVE_DATASOURCES` → `tenant_max_active_datasources` | Datasources (master e tenant) | `usize` | `200` | boot | teto de pools em cache; LRU fecha o menos usado | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_ENABLED` → `tenant_cb_enabled` | Datasources (master e tenant) | `bool` | `true` | boot | CB em volta da abertura do pool de cada tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_FAILURE_RATIO` | Datasources (master e tenant) | `f64` | `0.5` | boot | convertido para % | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_REQUEST_VOLUME_THRESHOLD` | Datasources (master e tenant) | `i32` | `6` | boot | mínimo de chamadas | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_DELAY` → `tenant_cb_delay_secs` | Datasources (master e tenant) | `i64` (s) | `30` | boot | tempo aberto; inválido → 48h | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_SUCCESS_THRESHOLD` | Datasources (master e tenant) | `i32` | `2` | boot | chamadas permitidas em half-open | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TRIAL_DAYS` → `trial_days` | Signup e trial | `i64` | `0` | boot | > 0 → tenant ativo após validar, com trial_ends_at; 0 → billing exigido | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_OTP_EXPIRY_MINUTES` → `otp_expiry_minutes` | Signup e trial | `i64` | `10` | boot | validade do OTP de validação de e-mail | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_ENABLED` → `migration_enabled` | Migração por tenant | `bool` | `true` | boot | liga coordinator e gate | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_TARGET_VERSION` | Migração por tenant | `String` | `v1` | boot | versão-alvo registrada em tenant_migration_state | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_MAX_CONCURRENCY` | Migração por tenant | `usize` | `3` | boot | migrations de tenant em paralelo | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_LOCK_LEASE` → `migration_lock_lease_secs` | Migração por tenant | `i64` (s) | `600` | boot | lease do lock (heartbeat a cada lease/3) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_INSTANCE_ID` | Migração por tenant | `Option<String>` | `None` | boot | id da instância dona do lock | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_TRIGGER_ON_LOGIN` | Migração por tenant | `bool` | `true` | boot | gate dispara/bloqueia login enquanto o tenant migra | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_LOGIN_PATHS` | Migração por tenant | `Vec<String>` | `/auth/login` | boot | paths gateados (starts_with ou ends_with) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_MIGRATION_STARTUP_ALL_TENANTS` · fallback `SEEDGRID_MULTITENANCY_MIGRATION_STARTUP_MIGRATE_ALL_TENANTS` | Migração por tenant | `bool` | `false` | boot | startup migra todos os tenants (senão só master + lazy no login) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_CLEANUP_ENABLED` → `cleanup_enabled` | Schedulers | `bool` | `true` | boot | gate do spawn do scheduler de cleanup | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_CLEANUP_NOT_VALIDATED_TTL` · fallback `SEEDGRID_MULTITENANCY_CLEAN_NOT_VALIDATED_TTL` | Schedulers | `i64` (s) | `172800` (48h) | boot | expira tenants não validados | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_CLEANUP_NOT_VALIDATED_CRON` · fallback `SEEDGRID_MULTITENANCY_CLEAN_NOT_VALIDATED_CRON` | Schedulers | `String` | `0 0 * * * ?` | boot | cron inválido → scheduler não inicia (warn) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TRIAL_SCHEDULER_ENABLED` | Schedulers | `bool` | `true` | boot | gate do scheduler de trial | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `SEEDGRID_MULTITENANCY_TRIAL_CRON` → `trial_cron` | Schedulers | `String` | `0 10 * * * ?` | boot | processamento de trials expirados | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `PlatformOverrides.password_encoder` | Seams/struct do host (sem env) | — | `SecurityBcryptPasswordEncoder` (delegando a política ao security) | — | encoder do signup do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `.business_migrator` | Seams/struct do host (sem env) | — | `None` | — | migrations de negócio por tenant (TenantBusinessSchemaMigrator) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `.backup_domain_provider` | Seams/struct do host (sem env) | — | `EmptyDomainDatasetProvider` | — | datasets do backup | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `.backup_require_opt_in` | Seams/struct do host (sem env) | — | `true` | — | exige o opt-in SEEDGRID_BACKUP_ENABLED (env lida pelo crate backup) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `.run_security_bootstrap` | Seams/struct do host (sem env) | — | `true` | — | bootstrap do primeiro admin no master | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `.billing_event_handler` / `.user_events` | Seams/struct do host (sem env) | — | `None` / no-op | — | eventos | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+| `HostOverrides` (`TenancyPlatform::assemble`) | Seams/struct do host (sem env) | — | encoder BCrypt do security, LoggingNotificationService, DefaultEmailTemplateProvider, sem… | — | — | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao-Rust\|subdomain-tenancy/Configuracao-Rust]] |
+
+### whatsapp
+
+| Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_WHATSAPP_API` (Java `seedgrid.whatsapp.api`) | Variáveis de ambiente | String | `default` | from_env() | escolhe o provider em create_whatsapp_api | [[SeedGrid/Extensions/whatsapp/Configuracao-Rust\|whatsapp/Configuracao-Rust]] |
+| `SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL` (Java `seedgrid.whatsapp.rest-client.evolution.url`) | Variáveis de ambiente | `Option<String>` | — (vira `""` no transporte) | from_env() | base das requisições | [[SeedGrid/Extensions/whatsapp/Configuracao-Rust\|whatsapp/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_WHATSAPP_EVOLUTION_API_KEY` (Java `seedgrid.whatsapp.evolution.api-key`) | Variáveis de ambiente | `Option<String>` | — | from_env() | ausente/branco → is_configured() = false e IllegalState na chamada | [[SeedGrid/Extensions/whatsapp/Configuracao-Rust\|whatsapp/Configuracao-Rust]] |
+| `SEEDGRID_WHATSAPP_REST_CLIENT_CLOUD_URL` (Java `seedgrid.whatsapp.rest-client.cloud.url`) | Variáveis de ambiente | String | `https://graph.facebook.com/v21.0` (`DEFAULT_CLOUD_URL`; vazio → padrão) | from_env() | base da Graph API | [[SeedGrid/Extensions/whatsapp/Configuracao-Rust\|whatsapp/Configuracao-Rust]] |
+| 🔒 `SEEDGRID_WHATSAPP_CLOUD_ACCESS_TOKEN` (Java `seedgrid.whatsapp.cloud.access-token`) | Variáveis de ambiente | `Option<String>` | — | from_env() | Authorization: Bearer; ausente → is_configured() = false e IllegalState na chamada | [[SeedGrid/Extensions/whatsapp/Configuracao-Rust\|whatsapp/Configuracao-Rust]] |
+
+## Front-end — variáveis de ambiente / config dos módulos
+
+### fe-backup
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `backupConfig.apiBaseUrl` | Configuração | string | `"/api"` no browser; `appEnvironment.hosts.apiOrigin` no server | runtime client / runtime server | Base do createApiClient do scaffold | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.pagination.defaultPageSize` | Configuração | number | `10` | runtime client | Tamanho de página inicial | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.polling.intervalMs` | Configuração | number | `5000` | runtime client | Intervalo de polling dos jobs em andamento | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.routes.exports` | Configuração | string | `"/backup/exports"` | runtime client | Rota da lista / menu | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.routes.newExport` | Configuração | string | `"/backup/exports/new"` | runtime client | Rota de criação | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+
+### fe-billing-platform
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_access_token` (slug substituído pelo CLI) | runtime server | Nome do cookie do access token usado pela sessão; trim(), vazio cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_refresh_token` | runtime server | Nome do cookie do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `billingPlatformConfig.pagination.defaultPageSize` | Configuração | number | `10` | runtime client | Página inicial | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `billingPlatformConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `billingPlatformConfig.routes.*` | Configuração | string / função | plans=/platform/plans, newPlan=/platform/plans/new, trial=/platform/plans/trial… | runtime client | Rotas das telas e do menu | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+
+### fe-billing-user
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_access_token` | runtime server | Cookie do access token da sessão; vazio cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-billing-user\|modulos/fe-billing-user]] |
+| `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_refresh_token` | runtime server | Cookie do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-billing-user\|modulos/fe-billing-user]] |
+| `billingUserConfig.routes.overview` / `.plans` / `.invoices` | Configuração | string | `/billing`, `/billing/plans`, `/billing/invoices` | runtime client | Rotas do menu | [[SeedGrid/SeedGrid-components/modulos/fe-billing-user\|modulos/fe-billing-user]] |
+
+### fe-login-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_access_token` | runtime server | Cookie do access token; vazio cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-login-tenancy\|modulos/fe-login-tenancy]] |
+| `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_refresh_token` | runtime server | Cookie do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-login-tenancy\|modulos/fe-login-tenancy]] |
+
+### fe-playground
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `NEXT_PUBLIC_SANDPACK_SEEDGRID_DEPENDENCY` | Configuração (variáveis de ambiente) | string | `latest` | build (NEXT_PUBLIC inline) | versão do @seedgrid/fe-components no sandbox | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_BUNDLER_URL` | Configuração (variáveis de ambiente) | string | `https://sandpack.seedgrid.com.br` | build (NEXT_PUBLIC inline) | URL do bundler; inválida → padrão; barra final removida | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_BUNDLER_TIMEOUT_MS` | Configuração (variáveis de ambiente) | número | `60000` | build (NEXT_PUBLIC inline) | timeout do bundler; inválido/≤0 → padrão | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_DEBUG` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | loga a config do Sandpack (console.info) quando interactive | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_URL` | Configuração (variáveis de ambiente) | string | — | build (NEXT_PUBLIC inline) | registry npm privado; barras finais removidas | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_SCOPES` | Configuração (variáveis de ambiente) | string CSV | `@seedgrid` | build (NEXT_PUBLIC inline) | enabledScopes | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_LIMIT_TO_SCOPES` | Configuração (variáveis de ambiente) | boolean | `true` | build (NEXT_PUBLIC inline) | limitToScopes | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_PROXY_ENABLED` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | proxyEnabled | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| 🔒 `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_AUTH_TOKEN` | Configuração (variáveis de ambiente) | string | — | build (NEXT_PUBLIC inline) | registryAuthToken do registry | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+
+### fe-security
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED` | Variáveis de ambiente | string → boolean | `false` (ausente) | build (NEXT_PUBLIC inline) | Define securityConfig.features.selfEnterEnabled | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Variáveis de ambiente | string | `sg_{{project_slug}}_access_token` | runtime server | Nome do cookie httpOnly do access token (trim; vazio cai no padrão) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Variáveis de ambiente | string | `sg_{{project_slug}}_refresh_token` | runtime server | Nome do cookie httpOnly do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `SEEDGRID_SECURITY_REFRESH_COOKIE_MAX_AGE_SECONDS` | Variáveis de ambiente | string → inteiro | `2592000` (30 dias) | runtime server | maxAge do cookie de refresh; inválido/≤0 cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `NODE_ENV` | Variáveis de ambiente | string | — | runtime server (Inferência: o Next pode inlinear NODE_ENV no build) | secure dos cookies = NODE_ENV === "production" | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `apiBaseUrl` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory), resolvido em runtime server | Prefixo de todas as chamadas | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `cookies.token` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory) | Lê o access token → Authorization: Bearer | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `cookies.refresh` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory) | Refresh token usado em 401 | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `cookies.passwordChangeRequired` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory) | Cookie "1" quando login exige troca de senha | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `secureCookies` | SecurityServerConfig (lib — createSecurityServer) | `boolean` | `process.env.NODE_ENV === "production"` | código (factory) / runtime server | Flag secure dos cookies gravados | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `serviceToken` 🔒 | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory) | Bearer usado apenas sem cookie de sessão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `resolveTenancyHeaders` | SecurityServerConfig (lib — createSecurityServer) | `() => Promise<HeadersInit> \| HeadersInit` | — | código (factory), runtime server | Headers extras por request (ex.: X-Company-Id, header de tenant) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `PermissionProvider.meUrl` | Props/parâmetros configuráveis da lib (client/menu) | `string` | `"/api/auth/me"` | runtime client | Fetch a cada troca de pathname | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `PermissionProvider.adminRole` | Props/parâmetros configuráveis da lib (client/menu) | `string` | `"ADMIN"` | runtime client | Role que implica todas as permissões | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `canShowItem` / `filterNavItems` `adminRole` | Props/parâmetros configuráveis da lib (client/menu) | `string` | `"ADMIN"` | runtime client | Itens folha sem permission só aparecem para essa role | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `apiBaseUrl` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | `string` | client: `"/api"`; server: `appEnvironment.hosts.apiOrigin` | runtime client / runtime server (avaliado no import) | Base dos clients createApiClient privado/público | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `pagination.defaultPageSize` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | number | `10` | código (scaffold) | Tamanho de página padrão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `pagination.pageSizeOptions` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | number[] | `[10, 20, 50]` | código (scaffold) | Opções de página | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `search.debounceMs` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | number | `1000` | código (scaffold) | Debounce da busca | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `search.minLength` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | number | `3` | código (scaffold) | Mínimo de caracteres da busca | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `storage.sessionKey` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `` `${appEnvironment.persistence.scope}:security:session` `` | runtime client | Chave no localStorage da sessão client | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `storage.pendingTwoFactorKey` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `` `${scope}:security:pending-2fa` `` | runtime client | Chave do 2FA pendente (tempToken) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `features.selfEnterEnabled` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | boolean | `false` | build (NEXT_PUBLIC inline) | Ver NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.dashboard` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/` | código (scaffold) | Destino pós-login padrão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.profile` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/profile` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.login` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/login` | código (scaffold) | Redirect do RouteGuard | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.welcome` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/welcome` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.forgotPassword` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.forgotPasswordConfirm` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password/confirm` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.forgotPasswordSuccess` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password/success` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.verifyTwoFactor` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/2fa/verify` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.users` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/users` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.companies` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/companies` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.roles` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/roles` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.twoFactor` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/2fa` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.apiKeys` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/api-keys` | código (scaffold) | Página vem de fe-apikeys | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.changePassword` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/users/change-password` | código (scaffold) | Redirect forçado quando changePasswordRequired | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.selfEnterPublic` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/self-enter` | código (scaffold) | Página vem de fe-self-enter | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.selfEnterApproval` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/self-enter/requests/to-approve` | código (scaffold) | idem | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.selfEnterInvitations` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/self-enter/invitations` | código (scaffold) | idem | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `project_slug` | Variáveis de template (CLI) | string | não confirmado (definido pelo CLI) | geração (CLI/.hbs) | Compõe nomes padrão de cookie | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `security_api_keys_enabled` | Variáveis de template (CLI) | boolean | não confirmado | geração (CLI/.hbs) | Inclui menu/atalhos de API keys | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `security_self_enter_enabled` | Variáveis de template (CLI) | boolean | não confirmado | geração (CLI/.hbs) | Inclui menu de self-enter | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+
+### fe-subdomain-tenancy
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `SEEDGRID_CITIES_API_USERNAME` | Configuração | string (env) | — | runtime server | Compõe Basic auth com a key; ausente → responde [] 200 | [[SeedGrid/SeedGrid-components/modulos/fe-subdomain-tenancy\|modulos/fe-subdomain-tenancy]] |
+| 🔒 `SEEDGRID_CITIES_API_KEY` | Configuração | string (env) | — | runtime server | Senha do Basic auth para cities.seedgrid.com.br | [[SeedGrid/SeedGrid-components/modulos/fe-subdomain-tenancy\|modulos/fe-subdomain-tenancy]] |
