@@ -25,6 +25,7 @@ Estado na análise (2026-10-14): todos na branch `main` e **sem alterações loc
 | `seedgrid-quarkus-ext-billing` | Extension (core + stripe) | 2026.10.14 | `ba38efc347` | 2026-10-14 | [[SeedGrid/Extensions/billing/Visao-geral\|billing]] |
 | `seedgrid-quarkus-ext-ai-pricing` | Extension | 2026.10.13 | `0608ca66b5` | 2026-10-13 | [[SeedGrid/Extensions/ai-pricing/Visao-geral\|ai-pricing]] |
 | `seedgrid-quarkus-ext-exchange` | Extension | 2026.10.13 | `30f1fd6005` | 2026-10-13 | [[SeedGrid/Extensions/exchange/Visao-geral\|exchange]] |
+| `seedgrid-quarkus-ext-business-days` | Extension (repositório ainda não criado) | 2026.10.15 | — | 2026-10-16 | [[SeedGrid/Extensions/business-days/Visao-geral|business-days]] |
 | `seedgrid-quarkus-ext-audit` | Extension (core + postgresql + mongodb) | 2026.09.25 | `d5bf32e509` | 2026-09-25 | [[SeedGrid/Extensions/audit/Visao-geral\|audit]] |
 | `seedgrid-quarkus-ext-backup` | Extension | 2026.10.09 | `3bed4075ea` | 2026-10-10 | [[SeedGrid/Extensions/backup/Visao-geral\|backup]] |
 | `seedgrid-quarkus-ext-notification` | Extension (+ `api`) | 2026.10.15 | `3d00bee` | 2026-10-15 | [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
@@ -63,6 +64,14 @@ Cada crate é o **porte** da extension/lib Java de mesmo nome; a paridade é reg
 Documentação: [[SeedGrid/SeedGrid-components/Indice|Índice dos componentes]].
 
 `front/next-projects/` contém apenas documentação de padrões/decisões (sem código) e não foi analisado.
+
+### Produtos (`seedgrid-products/`)
+
+Fora de `seedgrid-platform`; consomem as crates/extensions acima.
+
+| Repositório | Tipo | Versão | Commit | Consome | Nota |
+|---|---|---|---|---|---|
+| `seedgrid-pulse` | Produto (servidor Rust + UI Next.js + SDKs) | 0.2.1 (servidor e UI) | `862d936` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
 
 ## Dependências entre módulos Java
 
