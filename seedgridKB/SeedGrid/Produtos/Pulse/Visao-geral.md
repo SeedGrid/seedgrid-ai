@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, realtime]
 fonte: seedgrid-products/seedgrid-pulse
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 
@@ -22,6 +22,21 @@ Hub **realtime** da plataforma SeedGrid: um produto (servidor Rust + UI Next.js 
 | Confirmar recebimento e execução | `ack` (recebimento) e `result` (execução, com retry e DLQ) |
 | Operar: ver conexões, backlog, falhas, apagar com segurança | UI operacional, métricas Prometheus, lixeira e audit |
 
+## Duas funções: mensagens e tarefas
+
+O Pulse faz dois trabalhos diferentes com o mesmo caminho `publisher → Pulse → subscriber`. Quem publica escolhe o trabalho com o `deliveryMode`:
+
+| | **Mensagem** (envio simples) | **Tarefa** (execução) |
+|---|---|---|
+| Para que serve | avisar, notificar, atualizar tela: "o pedido mudou" | mandar alguém **fazer** algo e saber se deu certo: "renderize este relatório" |
+| `deliveryMode` | `notification` (padrão) ou `acknowledged` | `processed` |
+| O que o subscriber devolve | nada (`notification`) ou só o `ack` de recebimento (`acknowledged`) | `ack` e depois o `result`: `success`, `retryable` ou `permanent` |
+| Se a execução falhar | não existe execução: não há o que falhar | retry automático e, esgotado o retry, **DLQ**; se o consumidor travar, o prazo de execução (`resultTimeoutSeconds`, Pulse 0.3.0) conta como falha |
+| Termina quando | o servidor escreve no socket (`notification`) ou o `ack` chega (`acknowledged`) | `result: success` |
+| Pode ir à DLQ | **nunca** | **sim**, e só ela |
+
+Regra prática: se você só precisa que a informação **chegue**, use mensagem. Se precisa que algo seja **executado** e quer ser avisado (e poder reprocessar) quando falhar, use tarefa. Detalhes: [[SeedGrid/Produtos/Pulse/Protocolo-e-API#Delivery modes|Delivery modes]] e [[SeedGrid/Produtos/Pulse/Protocolo-e-API#DLQ: quando uma mensagem vai para lá|DLQ]].
+
 ## Peças
 
 | Peça | Onde (no repo) | Tecnologia |
@@ -33,7 +48,7 @@ Hub **realtime** da plataforma SeedGrid: um produto (servidor Rust + UI Next.js 
 | Exemplos prontos | `examples/` | Delphi VCL, Flutter, React (e Angular) |
 | Harness de integração | `integration/seedgrid-pulse-sdk-it/` | contra Pulse real |
 
-Versão do servidor e da UI na análise: **0.2.1** (Confirmado — `backend/Cargo.toml`, `frontend/seedgrid-pulse-ui/package.json`).
+Versão do servidor e da UI na análise: **0.3.0** (Confirmado — `backend/Cargo.toml`, `frontend/seedgrid-pulse-ui/package.json`).
 
 ## Modelo mental (3 minutos)
 

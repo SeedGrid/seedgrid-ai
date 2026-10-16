@@ -70,8 +70,6 @@ Total `seedgrid.login-tenancy.*`: **13 propriedades**.
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.audit.mongodb.database` | `Optional<String>` | nome de banco Mongo | — (deriva `<app.code>_audit_db`, ou `audit_db`) | Não | Override do banco Mongo de auditoria produzido pela foundation (banco único). | Audit MongoDB | Só existe bean se o Mongo estiver no classpath; conexão via `seedgrid.audit.mongodb.connection-string` (módulo audit — ver [[SeedGrid/Extensions/audit/Configuracao|audit]]) | Runtime | `LoginTenancyMongoAuditDatabaseProducer#auditDatabase` |
 | `seedgrid.audit.persistence.strategy` | `Optional<String>` | `jpa` (case-insensitive) habilita | — | Condicional (sem `jpa`, a migration de audit é pulada) | Decide se as migrations `db/migration/audit` rodam. | Orquestração | Chave do módulo audit | Runtime | `LoginTenancyMigrationService#isAuditJpa` |
-| `seedgrid.ai-pricing.migration.enabled` | `boolean` | `true`/`false` | `false` | Não | Roda `classpath:db/migration/ai-pricing` com `flyway_schema_history_ai_pricing`. | Hosts com ai-pricing | Mesma chave lida pelo `MigrationService` do subdomain-tenancy | Runtime | `LoginTenancyMigrationService#aiPricingMigrationsEnabled` |
-| `seedgrid.exchange.migration.enabled` | `boolean` | `true`/`false` | `false` | Não | Roda `classpath:db/migration/exchange` com `flyway_schema_history_exchange`. | Hosts com exchange | Idem | Runtime | `LoginTenancyMigrationService#exchangeMigrationsEnabled` |
 | `seedgrid.security.first-admin-user.email` | `Optional<String>` | e-mail | — | Não | Só lida para decidir logs/WARN e `firstAdminConfigured` no status. | Coordenação | Ver [[SeedGrid/Extensions/security/Configuracao|security]] | Runtime | `LoginTenancyBootstrapService`, `LoginTenancySecurityBridge` |
 | `seedgrid.security.jwt.issuer` | `Optional<String>` | URL/issuer | — | Não | Exibido em `security.jwtIssuer` no status. | Informativo | security | Runtime | `LoginTenancySecurityBridge` |
 | `seedgrid.show-dev-message` | `boolean` | `true`/`false` | `false` | Não | Inclui `devMessage` nos problem+json das exceções da login-tenancy. | Depuração | Mesma chave usada por security e billing | Runtime | `LoginTenancyApiExceptionExtension` (construtor) |
@@ -171,9 +169,10 @@ seedgrid.login-tenancy.modules.billing.enabled=true
 seedgrid.login-tenancy.modules.apikeys.enabled=true
 seedgrid.login-tenancy.modules.backup.enabled=true
 seedgrid.login-tenancy.modules.filemanagement.enabled=true
-# Migrations opcionais de produto
-seedgrid.ai-pricing.migration.enabled=false
-seedgrid.exchange.migration.enabled=false
+# Modulos de produto (default true): desligado = nao migra e as rotas respondem 404
+seedgrid.login-tenancy.modules.ai-pricing.enabled=true
+seedgrid.login-tenancy.modules.exchange.enabled=true
+seedgrid.login-tenancy.modules.business-days.enabled=true
 # Auditoria
 seedgrid.audit.persistence.strategy=jpa
 #seedgrid.audit.mongodb.database=<banco-de-auditoria>

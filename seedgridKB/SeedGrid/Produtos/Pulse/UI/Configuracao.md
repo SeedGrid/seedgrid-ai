@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, ui, configuracao, variaveis]
 fonte: seedgrid-products/seedgrid-pulse/frontend/seedgrid-pulse-ui (.env.example, src/app/layout.tsx)
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 

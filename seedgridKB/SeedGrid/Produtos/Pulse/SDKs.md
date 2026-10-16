@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, sdk, publisher, subscriber]
 fonte: seedgrid-products/seedgrid-pulse/components
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 
@@ -69,7 +69,138 @@ $publisher = HttpPulsePublisher::create(baseUrl: getenv('PULSE_BASE_URL'), proje
 $publisher->publish(PublishMessageInput::toUser('orders', 'order.updated', 'usr_7f3a9c1e', ['orderId' => 'o-1']));
 ```
 
-Dart / Rust / Delphi seguem o mesmo desenho (ver o README de cada SDK). Variáveis recomendadas no backend: `PULSE_BASE_URL`, `PULSE_PROJECT_KEY` 🔒.
+Dart:
+
+```dart
+final publisher = PulsePublisher.create(
+  baseUrl: Platform.environment['PULSE_BASE_URL']!,
+  projectKey: Platform.environment['PULSE_PROJECT_KEY']!,
+);
+final result = await publisher.publish(
+  PublishMessageInput.toUser('orders', 'order.updated', 'usr_7f3a9c1e', {'orderId': 'o-1'}),
+);
+print(result.messageId);
+publisher.close();
+```
+
+Rust:
+
+```rust
+let publisher = PulsePublisher::builder(base_url, project_key).build()?;
+let result = publisher
+    .publish(PublishMessageInput::to_user("orders", "order.updated", "usr_7f3a9c1e", json!({ "orderId": "o-1" })))
+    .await?;
+println!("{}", result.message_id);
+```
+
+Delphi:
+
+```pascal
+Config := TPulsePublisherConfig.Create(GetEnvironmentVariable('PULSE_BASE_URL'), GetEnvironmentVariable('PULSE_PROJECT_KEY'));
+Publisher := TPulsePublisher.Create(Config, TIndyPulseHttpTransport.Create); // Delphi moderno: transporte NetHttp
+R := Publisher.Publish(TPublishMessageInput.ToUser('orders', 'order.updated', 'usr_7f3a9c1e', '{"orderId":"o-1"}'));
+Writeln(R.MessageId);
+```
+
+Variáveis recomendadas no backend: `PULSE_BASE_URL`, `PULSE_PROJECT_KEY` 🔒. Os exemplos completos de cada SDK ficam em `examples/` (ou `example/`) da pasta do pacote.
+
+### Publicar com modo e política de entrega
+
+`deliveryMode` escolhe o ciclo de vida da mensagem e `deliveryPolicy` diz **como insistir** (tentativas, validade, espaçamento). Os dois são opcionais e independentes; o significado campo a campo está em [[SeedGrid/Produtos/Pulse/Protocolo-e-API#deliveryPolicy: campo a campo|Protocolo e API]]. Omitidos, vale `notification` e os padrões do servidor. Um job que o consumidor precisa **executar** usa `processed` (único modo com `result`, retry de execução e DLQ):
+
+Java:
+
+```java
+publisher.publish(PublishMessageInput.builder()
+    .channel("render").event("render.requested").toUser("agent:render-node-7")
+    .data(Map.of("jobId", "job_9f2"))
+    .deliveryMode(DeliveryMode.PROCESSED)
+    .deliveryPolicy(DeliveryPolicy.builder()
+        .maxAttempts(5).ttlSeconds(300).resultTimeoutSeconds(120)
+        .retryBaseMs(200).retryMaxMs(2000)
+        .retryStrategy(RetryStrategy.EXPONENTIAL)
+        .build())
+    .build());
+```
+
+Next.js:
+
+```ts
+await pulse.publish({
+  channel: "render",
+  event: "render.requested",
+  target: { user: "agent:render-node-7" },
+  data: { jobId: "job_9f2" },
+  deliveryMode: "processed",
+  deliveryPolicy: { maxAttempts: 5, ttlSeconds: 300, resultTimeoutSeconds: 120, retryBaseMs: 200, retryMaxMs: 2000, retryStrategy: "exponential" },
+  metadata: { correlationId: "report-4471", source: "report-api" },
+});
+```
+
+PHP:
+
+```php
+$input = PublishMessageInput::toUser('render', 'render.requested', 'agent:render-node-7', ['jobId' => 'job_9f2'])
+    ->withDeliveryMode(DeliveryMode::Processed)
+    ->withDeliveryPolicy(new DeliveryPolicy(
+        maxAttempts: 5, ttlSeconds: 300, retryBaseMs: 200, retryMaxMs: 2000,
+        retryStrategy: RetryStrategy::Exponential,
+        resultTimeoutSeconds: 120, // último parâmetro do construtor
+    ))
+    ->withMetadata(new Metadata(correlationId: 'report-4471', source: 'report-api'));
+$publisher->publish($input);
+```
+
+Dart:
+
+```dart
+await publisher.publish(
+  PublishMessageInput.toUser('render', 'render.requested', 'agent:render-node-7', {'jobId': 'job_9f2'})
+      .withDeliveryMode(DeliveryMode.processed)
+      .withDeliveryPolicy(const DeliveryPolicy(
+        maxAttempts: 5, ttlSeconds: 300, retryBaseMs: 200, retryMaxMs: 2000,
+        retryStrategy: RetryStrategy.exponential,
+        resultTimeoutSeconds: 120,
+      ))
+      .withCorrelationId('report-4471'),
+);
+```
+
+Rust:
+
+```rust
+publisher.publish(
+    PublishMessageInput::to_user("render", "render.requested", "agent:render-node-7", json!({ "jobId": "job_9f2" }))
+        .with_delivery_mode(DeliveryMode::Processed)
+        .with_delivery_policy(DeliveryPolicy {
+            max_attempts: Some(5),
+            ttl_seconds: Some(300),
+            result_timeout_seconds: Some(120),
+            retry_base_ms: Some(200),
+            retry_max_ms: Some(2000),
+            retry_strategy: Some(RetryStrategy::Exponential),
+        }),
+).await?;
+```
+
+Delphi (campo `0`/`rsUnset` = omitir):
+
+```pascal
+Policy := TDeliveryPolicy.Empty;
+Policy.MaxAttempts := 5;
+Policy.TtlSeconds := 300;
+Policy.ResultTimeoutSeconds := 120;
+Policy.RetryBaseMs := 200;
+Policy.RetryMaxMs := 2000;
+Policy.RetryStrategy := rsExponential;
+R := Publisher.Publish(TPublishMessageInput.ToUser('render', 'render.requested', 'agent:render-node-7', '{"jobId":"job_9f2"}')
+  .WithDeliveryMode(dmProcessed)
+  .WithDeliveryPolicy(Policy));
+```
+
+Valores inválidos (`0`, `retryMaxMs < retryBaseMs`, estratégia desconhecida) voltam como **422** `INVALID_MESSAGE_REQUEST` e viram a exceção de validação do SDK (por exemplo `PulseValidationException`). Valores acima dos tetos do servidor **não** dão erro: são reduzidos ao teto.
+
+`resultTimeoutSeconds` (SDKs a partir do Pulse 0.3.0) é o prazo, em segundos, para o consumidor devolver o `result` depois do `ack`; só vale com `processed`. Omitido, vale o padrão do servidor (`0` = sem prazo). Cuidado: um prazo curto reentrega a tarefa ainda em execução, então use um valor maior que o pior caso e deduplique por `messageId`. Os SDKs não validam o valor (o servidor responde 422 para `0`). Notas por linguagem: PHP recebe o parâmetro **no fim** do construtor de `DeliveryPolicy`; no Rust, literais de `DeliveryPolicy` precisam do campo (ou `..Default::default()`); no Delphi, `ResultTimeoutSeconds = 0` omite o campo; no Java o construtor antigo continua existindo. Semântica completa: [[SeedGrid/Produtos/Pulse/Protocolo-e-API#Prazo de execução (resultTimeoutSeconds)|Prazo de execução]].
 
 ## Subscribers (`components/subscribers/`)
 

@@ -47,11 +47,14 @@ Variáveis de ambiente pela regra MP, sem ambiguidade:
 
 Origem: `rt/entities/AiPricingConfigEntity.java`, `runtime/src/main/resources/db/migration/ai-pricing/V902__seed_ai_models_and_pricing_config.sql`, `rt/controllers/AdminAiPriceApprovalResource#saveConfig`.
 
-### 2.3 Propriedades de outras extensions que governam o ai-pricing
+### 2.3 Toggle do módulo
 
-| Propriedade | Dona | Padrão | Efeito |
-|---|---|---|---|
-| `seedgrid.ai-pricing.migration.enabled` | login-tenancy (`LoginTenancyMigrationService`) e subdomain-tenancy (`flyway/MigrationService`) | `false` | Roda `classpath:db/migration/ai-pricing` com a tabela `flyway_schema_history_ai_pricing`. **Não** é lida por esta extension. |
+| Propriedade | Padrão | Efeito |
+|---|---|---|
+| `seedgrid.ai-pricing.enabled` | `true` | `false`: sem migrations, sem robô e as rotas `/admin/ai/**` respondem 404. Nas tenancy o default vem de `seedgrid.<tenancy>.modules.ai-pricing.enabled`. |
+| `seedgrid.migrations.host-managed` | `false` | `true` (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco. |
+
+A extension **sempre migra** o datasource default na subida (`AiPricingMigrationRunner`, histórico `flyway_schema_history_ai_pricing`). Não existe mais `seedgrid.ai-pricing.migration.enabled`.
 
 ## 3. Propriedades de frameworks
 
@@ -59,8 +62,6 @@ A extension não define nenhuma propriedade de framework: não há `microprofile
 
 | Propriedade | Recomendação |
 |---|---|
-| `quarkus.flyway.locations` | Incluir `db/migration/ai-pricing` no Flyway nativo, ou ligar `seedgrid.ai-pricing.migration.enabled` nos tenancies. |
-| `quarkus.flyway.table` | Os testes usam `flyway_schema_history_ai_pricing` (o mesmo nome do runner dos tenancies). |
 | `quarkus.hibernate-orm.physical-naming-strategy` | `org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy` (as entidades são camelCase e as colunas snake_case). |
 | `quarkus.hibernate-orm.<pu>.packages` | Mapear `br.com.seedgrid.aipricing.entities` na PU configurada. No subdomain-tenancy, só em master (README). |
 
@@ -68,26 +69,18 @@ A extension não define nenhuma propriedade de framework: não há `microprofile
 
 Arquivo `integration-tests/src/test/resources/application.properties`:
 - `quarkus.devservices.enabled=false`
-- `quarkus.flyway.migrate-at-start=true`
-- `quarkus.flyway.locations=db/migration/ai-pricing`
-- `quarkus.flyway.table=flyway_schema_history_ai_pricing`
-- `quarkus.flyway.baseline-on-migrate=true`
 - naming strategy
 - `quarkus.hibernate-orm.schema-management.strategy=none`
 - `quarkus.scheduler.enabled=false`
 - `quarkus.http.test-port=0`
 
-O `ModuloDesligadoTest` sobrescreve `quarkus.flyway.migrate-at-start=false` via `QuarkusTestProfile`.
+Sem Flyway nativo: a própria extension migra. O `ModuloDesligadoTest` usa `seedgrid.ai-pricing.enabled=false` via `QuarkusTestProfile`.
 
 ## 5. Aliases, obsoletas e renomeações
 Não encontradas. O prefixo duplo (`seedgrid.ai-pricing` contra `seedgrid.app.ai-pricing`) é uma inconsistência, não um alias.
 
 ## 6. Configuração mínima
-Nenhuma propriedade é obrigatória. No login-tenancy:
-
-```properties
-seedgrid.ai-pricing.migration.enabled=true
-```
+Nenhuma propriedade é obrigatória: colocou a extension, ela migra.
 
 O robô só funciona com um bean `AiPriceExtractor` do host (ver [[SeedGrid/Extensions/ai-pricing/Exemplos|Exemplos]]).
 
@@ -104,8 +97,8 @@ seedgrid.app.ai-pricing.timezone=America/Sao_Paulo
 # Default https://developers.openai.com/api/docs/pricing
 #seedgrid.app.ai-pricing.source-url=https://<pagina-de-precos>
 
-# (tenancies) aplicar as migrations V900-V903. Default false.
-seedgrid.ai-pricing.migration.enabled=true
+# Liga/desliga o módulo (migrations, robô e rotas). Default true.
+#seedgrid.ai-pricing.enabled=true
 ```
 
 ## 8. Receitas

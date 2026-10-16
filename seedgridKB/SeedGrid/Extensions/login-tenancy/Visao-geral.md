@@ -66,7 +66,7 @@ flowchart LR
     BI -- on --> BL[billing] --> AK
     BI -- off --> AK{modules.apikeys}
     AK -- on --> AP[apikeys] --> X
-    AK -- off --> X{ai-pricing / exchange<br/>migration.enabled}
+    AK -- off --> X{ai-pricing / exchange / business-days<br/>modules.*.enabled}
     X --> LT[login-tenancy<br/>V700-V703] --> APP["app (database.locations)<br/>flyway_schema_history"]
 ```
 

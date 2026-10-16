@@ -13,7 +13,7 @@ Encontre problemas reais e verificáveis; evite comentários de estilo sem impac
 
 1. **Escopo.** Obtenha o diff (por exemplo, `git diff` ou `git diff <base>...HEAD`) e o objetivo da mudança. Sem diff disponível, peça a lista de arquivos alterados.
 2. **Contexto.** Leia o código ao redor de cada trecho alterado e os pontos que o chamam.
-3. **Análise.** Percorra o [checklist](references/checklist.md). Para cada suspeita, construa um cenário concreto: entrada/estado → comportamento errado.
+3. **Análise.** Percorra o [checklist](references/code-review-checklist.md). Para cada suspeita, construa um cenário concreto: entrada/estado → comportamento errado.
 4. **Filtro.** Descarte suspeitas que não sustentam um cenário concreto. Não reporte preferências pessoais como defeitos.
 5. **Verificações somente leitura.** Se útil, rode testes ou lint existentes para confirmar um achado. Não altere arquivos.
 

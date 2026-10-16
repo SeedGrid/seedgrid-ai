@@ -22,7 +22,7 @@ Fonte: README.
 </dependency>
 ```
 
-Security e audit-core vêm do host. Nos tenancies, ligue também `seedgrid.exchange.migration.enabled=true`.
+Security e audit-core vêm do host. A extension migra sozinha; nas tenancy o toggle é `modules.exchange.enabled` (default `true`).
 
 ## 2. Cadastrar uma moeda com fonte PTAX
 
@@ -76,7 +76,7 @@ POST /admin/currency-exchange-rates/{publicId}/retry
 ## 5. Configuração (properties)
 
 ```properties
-seedgrid.exchange.migration.enabled=true          # tenancies
+#seedgrid.login-tenancy.modules.exchange.enabled=true   # tenancies (default true)
 #seedgrid.exchange.persistence-unit=master        # subdomain-tenancy já define
 seedgrid.app.business-timezone=America/Sao_Paulo  # fuso dos avisos
 ```

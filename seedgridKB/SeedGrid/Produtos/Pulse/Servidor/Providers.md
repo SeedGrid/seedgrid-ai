@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, servidor, broker, redis, valkey, dragonfly, nats, rabbitmq, postgres]
 fonte: seedgrid-products/seedgrid-pulse/backend (src/config.rs, src/broker.rs, tests/) + seedgrid-platform/rust/seedgrid-rust-crate-broker
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 

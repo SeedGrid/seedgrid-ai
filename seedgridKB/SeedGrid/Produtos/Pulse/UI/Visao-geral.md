@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, ui, nextjs]
 fonte: seedgrid-products/seedgrid-pulse/frontend/seedgrid-pulse-ui
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 
@@ -17,7 +17,7 @@ Voltar: [[SeedGrid/Produtos/Pulse/Visao-geral|Visão geral do Pulse]]
 | Área | Telas |
 |---|---|
 | Visão operacional | dashboard, conexões ativas, métricas e agregados |
-| Mensagens | listagem, detalhe (entregas por destinatário e tentativas), publicação manual, **lixeira** (filtro "Na lixeira") |
+| Mensagens | listagem (mais recente primeiro), detalhe (entregas por destinatário e tentativas, com o motivo `result_timeout` traduzido), publicação manual (inclui o campo opcional "Prazo de execução (s)"), **lixeira** (filtro "Na lixeira") |
 | Pendências | backlog, descarte |
 | Falhas | DLQ (reprocessar, limpar), lixeira da DLQ |
 | Entregas | entregas por destinatário |

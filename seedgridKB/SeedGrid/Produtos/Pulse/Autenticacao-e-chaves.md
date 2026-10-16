@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, autenticacao, chaves, seguranca]
 fonte: seedgrid-products/seedgrid-pulse (backend/env.md, backend/PROTOCOL.md, migrations)
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 

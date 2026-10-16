@@ -18,7 +18,7 @@ Câmbio para hosts Quarkus. Mantém moedas e cotações diárias, com histórico
 
 | Módulo | Artefato |
 |---|---|
-| parent | `br.com.seedgrid:seedgrid-exchange-parent:2026.10.14` (parent `seedgrid-parent:2026.07.02`) |
+| parent | `br.com.seedgrid:seedgrid-exchange-parent:2026.10.16` (parent `seedgrid-parent:2026.07.02`) |
 | runtime | `br.com.seedgrid:seedgrid-exchange` |
 | deployment | `br.com.seedgrid:seedgrid-exchange-deployment` |
 | integration-tests | não publicado |
@@ -106,7 +106,7 @@ Os `{id}` são `publicId`. **Confirmado** nos resources.
 | V803 | histórico PTAX sem `$select` |
 | V804 | `currency_exchange_rates.active` |
 
-Nos tenancies, o runner só aplica essas migrations com `seedgrid.exchange.migration.enabled=true` (default `false`).
+A extension migra sozinha o datasource default na subida (sem flag). Nas tenancy, quem migra é a tenancy (master do subdomain-tenancy; banco único do login-tenancy), com o toggle `modules.exchange.enabled` (default `true`).
 
 ## Testes (não executados)
 - `runtime/src/test`: `CurrencyRateNotificationTest`, `CurrencySourceResolverTest` e `ExchangeNotificationCatalogTest`.

@@ -47,7 +47,7 @@ describe('instalação', () => {
       }
     }
     // Recursos relativos acompanham a skill e as cópias são idênticas.
-    assert.ok(files['.claude/skills/sg-code-review/references/checklist.md']);
+    assert.ok(files['.claude/skills/sg-code-review/references/code-review-checklist.md']);
     assert.ok(files['.agents/skills/sg-plan-change/assets/especificacao-tarefa.md']);
     for (const [rel, text] of Object.entries(files).filter(([k]) => k.startsWith('.claude/skills/'))) {
       assert.equal(files[rel.replace('.claude/', '.agents/')], text);
@@ -252,7 +252,7 @@ describe('instalação', () => {
     assert.equal(res.exitCode, EXIT_OK, res.lines.join('\n'));
     const files = await snapshot(project);
     for (const dir of ['.claude/skills', '.agents/skills']) {
-      assert.ok(files[`${dir}/sg-crud-front/references/patterns.md`]);
+      assert.ok(files[`${dir}/sg-crud-front/references/crud-front-patterns.md`]);
       assert.ok(files[`${dir}/sg-new-screen/agents/openai.yaml`]);
     }
     const lock = JSON.parse(files['.ai/toolkit-lock.json']!);

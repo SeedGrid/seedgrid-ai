@@ -51,11 +51,14 @@ Variáveis de ambiente pela regra MP, sem ambiguidade:
 
 Origem: `rt/entities/CurrencyEntity.java`, `rt/dtos/CurrencyUpsertRequest.java`, `runtime/src/main/resources/db/migration/exchange/V802__seed_currencies.sql`. A seed V802 cria `USD-BRL` com a fonte PTAX/BCB, `cotacaoVenda`, cron às 7h e fuso `America/Sao_Paulo`.
 
-### 2.3 Propriedades de outras extensions que governam o exchange
+### 2.3 Toggle do módulo
 
-| Propriedade | Dona | Padrão | Efeito |
-|---|---|---|---|
-| `seedgrid.exchange.migration.enabled` | login-tenancy (`LoginTenancyMigrationService`) e subdomain-tenancy (`flyway/MigrationService`) | `false` | Aplica `classpath:db/migration/exchange` com a tabela `flyway_schema_history_exchange`. Não é lida pela extension. |
+| Propriedade | Padrão | Efeito |
+|---|---|---|
+| `seedgrid.exchange.enabled` | `true` | `false`: sem migrations, sem scheduler e as rotas `/admin/exchange-rate`, `/admin/currencies` e `/admin/currency-exchange-rates` respondem 404. Nas tenancy o default vem de `seedgrid.<tenancy>.modules.exchange.enabled`. |
+| `seedgrid.migrations.host-managed` | `false` | `true` (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco. |
+
+A extension **sempre migra** o datasource default na subida (`ExchangeMigrationRunner`, histórico `flyway_schema_history_exchange`). Não existe mais `seedgrid.exchange.migration.enabled`.
 
 ## 3. Propriedades de frameworks
 
@@ -63,7 +66,6 @@ A extension não define nenhuma. Recomendações extraídas do `integration-test
 
 | Propriedade | Recomendação |
 |---|---|
-| `quarkus.flyway.locations` / `quarkus.flyway.table` | `db/migration/exchange` / `flyway_schema_history_exchange` (Flyway nativo). Nos tenancies, use `seedgrid.exchange.migration.enabled`. |
 | `quarkus.hibernate-orm.physical-naming-strategy` | `org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy` |
 | `quarkus.hibernate-orm.<pu>.packages` | Incluir `br.com.seedgrid.exchange.entities` na PU configurada (no subdomain-tenancy, só master). |
 | `quarkus.scheduler.enabled` | Os testes usam `false` para controlar os disparos. Em produção, deixe ligado. |
@@ -72,10 +74,6 @@ A extension não define nenhuma. Recomendações extraídas do `integration-test
 
 Arquivo `integration-tests/src/test/resources/application.properties`:
 - `quarkus.devservices.enabled=false`
-- `quarkus.flyway.migrate-at-start=true`
-- `quarkus.flyway.locations=db/migration/exchange,db/migration/exchange-test`
-- `quarkus.flyway.table=flyway_schema_history_exchange`
-- `quarkus.flyway.baseline-on-migrate=true`
 - naming strategy
 - `quarkus.hibernate-orm.schema-management.strategy=none`
 - `quarkus.scheduler.enabled=false`
@@ -86,11 +84,7 @@ Arquivo `integration-tests/src/test/resources/application.properties`:
 Não encontradas. Atenção: `seedgrid.app.business-timezone` é diferente de `seedgrid.billing.business-timezone` (ver [[SeedGrid/Extensions/billing/Configuracao|Configuração do billing]]).
 
 ## 6. Configuração mínima
-Nenhuma propriedade é obrigatória. Nos tenancies:
-
-```properties
-seedgrid.exchange.migration.enabled=true
-```
+Nenhuma propriedade é obrigatória: colocou a extension, ela migra.
 
 ## 7. Configuração completa comentada
 
@@ -102,8 +96,8 @@ seedgrid.exchange.migration.enabled=true
 # Default America/Sao_Paulo.
 seedgrid.app.business-timezone=America/Sao_Paulo
 
-# (tenancies) aplicar V800-V804. Default false.
-seedgrid.exchange.migration.enabled=true
+# Liga/desliga o módulo (migrations, scheduler e rotas). Default true.
+#seedgrid.exchange.enabled=true
 ```
 
 ## 8. Receitas

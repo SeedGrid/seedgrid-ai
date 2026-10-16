@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, servidor, instalacao, deploy]
 fonte: seedgrid-products/seedgrid-pulse/backend
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 

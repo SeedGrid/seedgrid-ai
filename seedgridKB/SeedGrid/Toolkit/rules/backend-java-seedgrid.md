@@ -11,7 +11,31 @@ Regras **obrigatórias** para novos projetos e bibliotecas SeedGrid. Cada regra 
 - **BE-02.** Toda pasta (pacote) no **plural**.
 - **BE-03.** Resources REST terminam em `Controller`, não `Resource` (`ClienteController`).
 - **BE-04.** Use sempre a biblioteca `seedgrid-commons` nos projetos.
-- **BE-05.** DTOs: sufixo `Request` para entrada e `Response` para saída; se o mesmo DTO serve aos dois, sufixo `DTO`. O Request tem só as propriedades necessárias (um update não precisa do `id`). O Response é "raso": ids e descrições em vez de objetos aninhados (`categoriaId`, `categoriaDescricao`).
+- **BE-05.** DTOs: sufixo `DTOReq` para entrada (request) e `DTORes` para saída (response): `ClienteDTOReq`, `ClienteDTORes`.
+  - O **Req** leva só as propriedades necessárias (um update não precisa do `id`) e, para relacionamentos, **somente a chave estrangeira** pelo `publicId` (`cidadePublicId`), nunca campos nem objeto da entidade relacionada. Validações (`@NotNull`, `@Size`...) ficam no próprio record; para exigir os obrigatórios só no POST/PUT, use um grupo `Full extends Default` dentro do record.
+  - O **Res** é **plano** ("plain"): tudo no mesmo nível, sem objetos aninhados. Traz o `publicId` (nunca o `id` interno) e, para cada relacionamento, o `publicId` e a descrição (`cidadePublicId`, `cidadeDescricao`), inclusive os de mais de um nível (`paisPublicId`, `paisDescricao`). Pode existir mais de um Res para a mesma entidade, com menos campos, conforme o uso (por exemplo uma listagem enxuta).
+  - Records Java, na pasta `dtos/` (BE-01).
+
+```java
+public record ClienteDTOReq(
+        @NotNull(groups = ClienteDTOReq.Full.class, message = "Informe o nome.")
+        @Pattern(regexp = ".*\\S.*", message = "Informe o nome.")
+        @Size(max = 255) String nome,
+        @NotNull(groups = ClienteDTOReq.Full.class) String cidadePublicId,
+        @NotNull(groups = ClienteDTOReq.Full.class) String categoriaPublicId
+) {
+    /** Grupo do POST/PUT: exige os obrigatórios. Estende Default para manter @Size e @Pattern. */
+    public interface Full extends Default {}
+}
+
+public record ClienteDTORes(
+        String publicId,
+        String nome,
+        String cidadePublicId, String cidadeDescricao,
+        String paisPublicId, String paisDescricao,
+        String categoriaPublicId, String categoriaDescricao
+) {}
+```
 - **BE-06.** Todo SPI criado é indexado com o `jandex-maven-plugin` (goal `jandex`).
 
 ## Injeção e exceptions

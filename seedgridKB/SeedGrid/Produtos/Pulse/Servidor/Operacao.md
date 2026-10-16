@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, servidor, operacao, lixeira, retencao]
 fonte: seedgrid-products/seedgrid-pulse/backend (docs/LIXEIRA-mensagens-e-contas.md, README.md)
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 
@@ -23,6 +23,7 @@ Lixeira, retenção, auditoria, observabilidade e escala. Voltar: [[SeedGrid/Pro
 - API: `POST /api/v1/messages/trash` · `/trash/restore` · `/trash/purge`, lote de até **1000** ids (`400 BATCH_TOO_LARGE`), resposta `{requested, affected, skipped}`.
 - Mensagem na lixeira não é entregue, não expira por TTL e some das listas padrão.
 - **Descartar** (tela Pendências, `PULSE_BACKLOG_DISCARD`) e **Lixeira** coexistem como ações distintas; só a lixeira tem restaurar e limpar de vez.
+- Tarefas `delivered` sem `result` e sem prazo de execução (as anteriores ao Pulse 0.3.0, ou quando `resultTimeoutSeconds` não foi usado) só saem por **descarte**; veja [[SeedGrid/Produtos/Pulse/Protocolo-e-API#Prazo de execução (resultTimeoutSeconds)|Prazo de execução]].
 
 ## Lixeira de contas
 
@@ -43,6 +44,10 @@ As duas **não se sobrepõem**: a primeira atua no histórico (estados finais), 
 
 Sem consumidor, uma `pending` não fica para sempre: o TTL (`DELIVERY_TTL_SECONDS`, 1 dia) a expira.
 
+## Ordem das listas e paginação
+
+As telas listam **da mais recente para a mais antiga** (quem acabou de publicar vê a sua primeira): contas por `created_at`, mensagens por `published_at` e entregas por destinatário por `delivered_at`, todas **com desempate por id**. A paginação é 1-based (`page`, `pageSize`; a Auditoria usa `page`/`size` e o backend dela é base 0, convertido pela UI). Até o Pulse 0.2.1 a lista de contas ordenava sem desempate, e contas criadas no mesmo segundo repetiam ou sumiam entre páginas (corrigido no 0.2.2). O **replay** e as pendências devidas continuam em ordem cronológica (do mais antigo ao mais novo), porque entregar na ordem de publicação é o comportamento certo (Confirmado em `delivery/repo.rs`).
+
 ## Auditoria
 
 Toda operação destrutiva (mover para lixeira, restaurar, limpar; contas e mensagens) grava em `audit_log` o autor (claim `sub` do JWT, e-mail na descrição), a ação e as contagens, **somente se algo mudou**. Visível em **Segurança → Auditoria** (escopo por `company_id`).
@@ -56,7 +61,7 @@ Toda operação destrutiva (mover para lixeira, restaurar, limpar; contas e mens
 | Dashboards | Prometheus + Grafana no compose (`SeedGrid Pulse Overview`) |
 | Telas | dashboard, conexões, backlog, DLQ, mensagens, entregas por destinatário |
 
-Métricas úteis: `publish_requests_total`, `delivery_attempts_total`, `delivery_success_total`, `delivery_dead_letter_total`, `delivery_expired_total`, `ack_total`, `ws_connections_opened_total`/`_closed_total`, latências `publish_to_deliver_*` e `deliver_to_ack_*`.
+Métricas úteis: `publish_requests_total`, `delivery_attempts_total`, `delivery_success_total`, `delivery_dead_letter_total`, `delivery_expired_total`, `delivery_result_timeout_total` (prazo de execução estourado), `ack_total`, `ws_connections_opened_total`/`_closed_total`, latências `publish_to_deliver_*` e `deliver_to_ack_*`.
 
 ## Escala (várias réplicas)
 

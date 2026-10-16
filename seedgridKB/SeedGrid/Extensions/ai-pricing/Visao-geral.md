@@ -18,7 +18,7 @@ Mantém o catálogo de modelos de LLM e o histórico de preços por 1M de tokens
 
 | Módulo | Artefato |
 |---|---|
-| parent | `br.com.seedgrid:seedgrid-ai-pricing-parent:2026.10.14` (parent `seedgrid-parent:2026.07.02`) |
+| parent | `br.com.seedgrid:seedgrid-ai-pricing-parent:2026.10.16` (parent `seedgrid-parent:2026.07.02`) |
 | runtime | `br.com.seedgrid:seedgrid-ai-pricing` |
 | deployment | `br.com.seedgrid:seedgrid-ai-pricing-deployment` |
 | integration-tests | não publicado |
@@ -94,7 +94,7 @@ Declarados em `AiPricingNotificationCatalog`:
 | V902 | seed de modelos OpenAI (`gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-5.1`) e da config do robô (ligado, cron `0 0 6 * * ?`, `source_url` = página de preços da OpenAI) |
 | V903 | coluna `active` |
 
-Nos tenancies, o runner aplica essa location só quando `seedgrid.ai-pricing.migration.enabled=true` (default `false`, declarado em login-tenancy e subdomain-tenancy). Ver [[SeedGrid/Extensions/ai-pricing/Configuracao|Configuração]].
+A extension migra sozinha o datasource default na subida (sem flag). Nas tenancy, quem migra é a tenancy (master do subdomain-tenancy; banco único do login-tenancy), com o toggle `modules.ai-pricing.enabled` (default `true`). Ver [[SeedGrid/Extensions/ai-pricing/Configuracao|Configuração]].
 
 ## Testes (não executados)
 - `runtime/src/test`:

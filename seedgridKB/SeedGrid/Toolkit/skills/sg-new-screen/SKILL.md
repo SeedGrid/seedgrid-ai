@@ -19,7 +19,7 @@ Nao executar sem o usuario pedir.)
 
 ## Passo a passo
 
-Detalhes e exemplos de codigo de cada passo em `references/steps.md`.
+Detalhes e exemplos de codigo de cada passo em `references/new-screen-steps.md`.
 
 1. **Permissao (backend)** - migration nova em `backend/src/main/resources/db/migration/app/`
    (`V3xxx__<assunto>.sql`, nunca editar uma ja aplicada): `insert into permissions` com o `audience` certo,
@@ -43,7 +43,7 @@ Detalhes e exemplos de codigo de cada passo em `references/steps.md`.
 
 ## Verificacao
 
-Rodar o checklist de `references/checklist.md` antes de encerrar. No minimo:
+Rodar o checklist de `references/new-screen-checklist.md` antes de encerrar. No minimo:
 
 ```bash
 # os dois catalogos do cliente iguais (ignorando fim de linha)

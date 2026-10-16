@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, exemplos]
 fonte: seedgrid-products/seedgrid-pulse/examples
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 

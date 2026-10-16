@@ -31,10 +31,10 @@ To register the menu item, icon and permission of a new screen, use the `sg-new-
 
 ## Required Patterns
 
-- Use the list/edit split described in `references/patterns.md`.
-- Use `publicId` routing and proxy conventions from `references/routing.md`.
+- Use the list/edit split described in `references/crud-front-patterns.md`.
+- Use `publicId` routing and proxy conventions from `references/crud-front-routing.md`.
 - Use `SgInputTextSearch` as the standard remote-search input.
-- Use the checklist in `references/checklist.md` before closing the task.
+- Use the checklist in `references/crud-front-checklist.md` before closing the task.
 
 ## Required UI Components
 

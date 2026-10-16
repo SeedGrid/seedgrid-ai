@@ -2,7 +2,7 @@
 tags: [seedgrid, produto, pulse, servidor, configuracao, variaveis]
 fonte: seedgrid-products/seedgrid-pulse/backend (src/config.rs, env.md)
 branch: main
-commit: 862d936
+commit: 9dcbdad
 analisado-em: 2026-10-16
 ---
 
@@ -62,13 +62,15 @@ Os pares `*_CAP` são o **teto** que uma configuração por mensagem pode pedir;
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `DELIVERY_RETRY_STRATEGY` | `exponential` | `exponential` (qualquer outro valor = linear). |
+| `DELIVERY_RETRY_STRATEGY` | `exponential` | `exponential` (qualquer outro valor = `fixed`: atraso constante de `DELIVERY_RETRY_BASE_MS`). |
 | `DELIVERY_RETRY_BASE_MS` | `300` | Backoff base. |
 | `DELIVERY_RETRY_MAX_MS` | `5000` | Backoff máximo. |
 | `DELIVERY_MAX_ATTEMPTS` | `20` | Tentativas de execução por mensagem (modo `processed`). |
 | `DELIVERY_TTL_SECONDS` | `86400` | TTL da mensagem (1 dia). |
+| `DELIVERY_RESULT_TIMEOUT_SECONDS` | `0` (sem prazo) | **Prazo de execução** padrão (modo `processed`): segundos entre o `ack` e o `result`. `0` desliga. Estourado, vale como `retryable` com motivo `result_timeout`. Editável em Configurações, sem reinício. |
+| `DELIVERY_RESULT_TIMEOUT_SECONDS_CAP` | `86400` (ou o padrão, se maior) | Teto do prazo que o publisher pode pedir; `0` **proíbe** o prazo de execução. |
 | `DELIVERY_RETRY_BASE_MS_CAP` / `DELIVERY_RETRY_MAX_MS_CAP` / `DELIVERY_MAX_ATTEMPTS_CAP` / `DELIVERY_TTL_SECONDS_CAP` | = valor base | Tetos para o override por mensagem. |
-| `DELIVERY_CLEANUP_INTERVAL_SECONDS` | `60` | Intervalo do poller de limpeza/expiração. Exige reinício. |
+| `DELIVERY_CLEANUP_INTERVAL_SECONDS` | `60` | Intervalo da varredura de retenção (`DELIVERY_CLEANUP_RETENTION_DAYS`) e da limpeza automática da lixeira. **Não** controla a expiração por TTL, que tem verificador próprio (a cada `ceil(DELIVERY_RETRY_BASE_MS/1000)` s, mínimo 1 s). Exige reinício. |
 | `DELIVERY_CLEANUP_RETENTION_DAYS` | `0` (nunca apaga) | **Dias** que uma mensagem em estado final (`completed`/`dead_letter`/`expired`) é mantida. `0` desliga a varredura: o histórico é prova. Obsoleta: `DELIVERY_CLEANUP_RETENTION_SECONDS` (lida só se a de dias não existir). |
 | `DELIVERY_TRASH_AUTO_CLEAN_DAYS` | `0` (só manual) | Dias na lixeira antes da limpeza automática. Cada limpeza vai ao audit como `system:pulse`. |
 

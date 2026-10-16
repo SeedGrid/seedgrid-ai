@@ -71,7 +71,7 @@ Fora de `seedgrid-platform`; consomem as crates/extensions acima.
 
 | Repositório | Tipo | Versão | Commit | Consome | Nota |
 |---|---|---|---|---|---|
-| `seedgrid-pulse` | Produto (servidor Rust + UI Next.js + SDKs) | 0.2.1 (servidor e UI) | `862d936` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
+| `seedgrid-pulse` | Produto (servidor Rust + UI Next.js + SDKs) | 0.3.0 (servidor e UI) | `9dcbdad` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
 
 ## Dependências entre módulos Java
 

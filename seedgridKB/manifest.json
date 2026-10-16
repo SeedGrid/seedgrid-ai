@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.2",
+  "contentVersion": "0.3.3",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -63,7 +63,7 @@
       "name": "sg-code-review",
       "files": [
         "SKILL.md",
-        "references/checklist.md"
+        "references/code-review-checklist.md"
       ]
     },
     {
@@ -92,9 +92,9 @@
       "name": "sg-crud-front",
       "files": [
         "SKILL.md",
-        "references/patterns.md",
-        "references/routing.md",
-        "references/checklist.md",
+        "references/crud-front-patterns.md",
+        "references/crud-front-routing.md",
+        "references/crud-front-checklist.md",
         "agents/openai.yaml"
       ]
     },
@@ -104,8 +104,8 @@
       "name": "sg-new-screen",
       "files": [
         "SKILL.md",
-        "references/steps.md",
-        "references/checklist.md",
+        "references/new-screen-steps.md",
+        "references/new-screen-checklist.md",
         "agents/openai.yaml"
       ]
     },
