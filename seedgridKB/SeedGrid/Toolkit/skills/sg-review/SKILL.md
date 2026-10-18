@@ -12,17 +12,17 @@ Confere o código contra as regras do toolkit e devolve uma lista objetiva de vi
 ## Escopo
 
 - `front`: revisa só o front-end (regras `FE-nn`, arquivo `.ai/rules/frontend-seedgrid.md`).
-- `back`: revisa só o back-end Java (regras `BE-nn`, arquivo `.ai/rules/backend-java-seedgrid.md`).
+- `back`: revisa só o back-end Java (regras `BE-nn`, arquivos `.ai/rules/backend-seedgrid.md` e `.ai/rules/backend-java-seedgrid.md`).
 - Sem argumento: revisa os dois. Se o projeto só tiver um lado (sem `pom.xml`/`*.java` ou sem `package.json`/`*.tsx`), diga isso e revise apenas o que existe.
 
 Alvo: por padrão, os arquivos alterados (`git diff --name-only <base>...HEAD` mais os não commitados). Se o usuário pedir "o projeto inteiro" ou não houver diff, varra `src/` (back) e `app/`, `components/` (front).
 
 ## Passos
 
-1. Leia **apenas** a rule do escopo (`.ai/rules/frontend-seedgrid.md` e/ou `.ai/rules/backend-java-seedgrid.md`). Para dúvida sobre um componente ou extension, abra pelo índice da KB (`.ai/brain/SeedGrid/SeedGrid-components/Indice.md`, `.ai/brain/SeedGrid/Extensions/Indice.md`) e só a nota do grupo; nunca varra `.ai/brain/` inteira.
+1. Leia **apenas** a rule do escopo (`.ai/rules/frontend-seedgrid.md` e/ou `.ai/rules/backend-seedgrid.md` com `.ai/rules/backend-java-seedgrid.md`). Para dúvida sobre um componente ou extension, abra pelo índice da KB (`.ai/brain/SeedGrid/SeedGrid-components/Indice.md`, `.ai/brain/SeedGrid/Extensions/Indice.md`) e só a nota do grupo; nunca varra `.ai/brain/` inteira.
 2. Faça primeiro as buscas mecânicas, sem abrir arquivo por arquivo. Exemplos:
    - Front: `<input`, `<button`, `<select`, `<textarea`, `<table` em `*.tsx`; `window.confirm`, `alert(`; `SgInputText` em campo cujo nome/label indique telefone, whatsapp, cpf, cnpj, e-mail, cep, senha, valor, data (FE-10 a FE-19).
-   - Back: `@Inject` em atributo; `throw new RuntimeException`; `Resource` no nome de classe; `UPDATE ` em JPQL/SQL de código; Panache em módulo de lib; endpoint que devolve `id` em vez de `publicId`; `"%" +` em `LIKE`; pacote no singular.
+   - Back: `@Inject` em atributo; `throw new RuntimeException`; `Resource` no nome de classe; `UPDATE ` em JPQL/SQL de código; endpoint que devolve `id` em vez de `publicId`; `"%" +` em `LIKE`; pacote no singular.
 3. Abra só os arquivos com suspeita e confirme no contexto. Descarte falsos positivos (por exemplo, `<input>` dentro do próprio pacote de componentes, ou comentário que justifica a exceção da FE-01).
 4. Para regras que exigem julgamento (FE-02, BE-05, BE-11, BE-40), reporte só o que você consegue sustentar com o trecho de código. Diga o que **não** conseguiu verificar.
 

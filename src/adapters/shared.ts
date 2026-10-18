@@ -121,6 +121,7 @@ function brainLines(bundle: ContentBundle): string[] {
 
 const STANDARD_RULES: [string, string][] = [
   ['rules/frontend-seedgrid.md', 'front-end'],
+  ['rules/backend-seedgrid.md', 'back-end, comum a todas as linguagens'],
   ['rules/backend-java-seedgrid.md', 'back-end Java'],
 ];
 

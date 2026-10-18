@@ -21,7 +21,7 @@ Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]]
 
 ## Regras
 
-[[SeedGrid/Toolkit/rules/frontend-seedgrid|Front-end SeedGrid]] · [[SeedGrid/Toolkit/rules/backend-java-seedgrid|Back-end Java SeedGrid]] · [[SeedGrid/Toolkit/rules/formato-entrega|Formato da entrega]] · [[SeedGrid/Toolkit/rules/documentos|Documentos gerados]] · [[SeedGrid/Toolkit/rules/personalizacao-local|Personalização local]]
+[[SeedGrid/Toolkit/rules/frontend-seedgrid|Front-end SeedGrid]] · [[SeedGrid/Toolkit/rules/backend-seedgrid|Back-end SeedGrid (comum)]] · [[SeedGrid/Toolkit/rules/backend-java-seedgrid|Back-end Java SeedGrid]] · [[SeedGrid/Toolkit/rules/formato-entrega|Formato da entrega]] · [[SeedGrid/Toolkit/rules/documentos|Documentos gerados]] · [[SeedGrid/Toolkit/rules/personalizacao-local|Personalização local]]
 
 ## Skills
 

@@ -23,7 +23,7 @@ Cada pasta de `.ai/` (`rules`, `agents`, `skills`, `templates`, `references`) te
 | Destino | Conteúdo |
 | --- | --- |
 | `.ai/agents/` | Papéis (`arquiteto`, `backend-java`, `backend-rust`, `frontend-react`, `qa`, `revisor`) e `index.md` gerado |
-| `.ai/rules/` | Coordenação, formato de entrega, personalização local e os **padrões SeedGrid obrigatórios** (`frontend-seedgrid`, `backend-java-seedgrid`) |
+| `.ai/rules/` | Coordenação, formato de entrega, personalização local e os **padrões SeedGrid obrigatórios** (`frontend-seedgrid`, `backend-seedgrid`, `backend-java-seedgrid`) |
 | `.ai/templates/` | Especificação de tarefa, decisão de arquitetura, relatório de validação |
 | `.ai/references/` | Modos shared/native e glossário |
 | `.ai/skills/index.md` | Índice gerado das skills (o que faz e quando usar) |
@@ -101,7 +101,7 @@ seedgrid-ai review back --tool codex             # só o back-end, usando o Code
 
 ### `seedgrid-ai review`
 
-Executa a skill `sg-review` na ferramenta de IA instalada, em modo não interativo e somente leitura (Claude Code: `claude -p` com ferramentas de leitura; Codex: `codex exec --sandbox read-only`). A skill confere o código contra as regras `FE-nn` e `BE-nn` (`.ai/rules/frontend-seedgrid.md` e `backend-java-seedgrid.md`) e o CLI mostra o relatório e devolve o código de saída.
+Executa a skill `sg-review` na ferramenta de IA instalada, em modo não interativo e somente leitura (Claude Code: `claude -p` com ferramentas de leitura; Codex: `codex exec --sandbox read-only`). A skill confere o código contra as regras `FE-nn` e `BE-nn` (`.ai/rules/frontend-seedgrid.md`, `backend-seedgrid.md` e `backend-java-seedgrid.md`) e o CLI mostra o relatório e devolve o código de saída.
 
 - **Escopo:** `front`, `back` ou nenhum (os dois). Por padrão revisa os arquivos alterados (diff); `--full` revisa o projeto inteiro.
 - **Ferramenta:** `--tool claude|codex`. Sem a opção, usa a primeira disponível nesta ordem: Claude Code, Codex. Considera só os targets instalados no projeto que tenham a skill e o executável no `PATH`. O CLI não detecta em qual ferramenta você está trabalhando.

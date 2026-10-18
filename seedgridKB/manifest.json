@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.3",
+  "contentVersion": "0.3.4",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -24,6 +24,7 @@
         "rules/documentos.md",
         "rules/personalizacao-local.md",
         "rules/frontend-seedgrid.md",
+        "rules/backend-seedgrid.md",
         "rules/backend-java-seedgrid.md"
       ]
     },
