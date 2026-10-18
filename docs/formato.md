@@ -87,6 +87,7 @@ Arquivos e pastas que começam com ponto são ignorados.
 | --- | --- |
 | `schemaVersion` | `2` (versão do formato do manifesto) |
 | `contentVersion` | semver; deve ser **igual** à versão do pacote (`package.json`); aumente a cada mudança de conteúdo |
+| `agentsNotes` | (opcional) até 10 linhas curtas que o bloco do `AGENTS.md` mostra no topo, como aviso (ex.: o modo de trabalho que uma camada adicional exige) |
 | `toolkitBase` | pasta do vault onde ficam `agents/`, `rules/`, `templates/`, `references/` e `skills/` (aqui, `SeedGrid/Toolkit`) |
 | `components[].id` | único; para skills, `skill:<name>` |
 | `components[].type` | `agents`, `rules`, `templates`, `references`, `skill` ou `brain` |

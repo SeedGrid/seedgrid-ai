@@ -2,6 +2,11 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [0.4.2] — 2026-10-18
+
+### Adicionado
+- Manifesto: `agentsNotes` (opcional), até 10 linhas curtas que o bloco do `AGENTS.md` mostra no topo. Serve para uma camada adicional (como a de plataforma) avisar o modo de trabalho a quem abre a sessão.
+
 ## [0.4.1] — 2026-10-18
 
 ### Adicionado

@@ -152,6 +152,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     '',
     `Bloco gerenciado pelo \`seedgrid-ai\` (conteúdo ${bundle.contentVersion}, modo \`${mode}\`). Não edite entre os marcadores; personalize em \`.ai/local/\`.`,
     '',
+    ...(bundle.agentsNotes.length > 0 ? [...bundle.agentsNotes.map((n) => `> ${n}`), ''] : []),
     'Cada pasta de `.ai/` tem um `index.md` com o que há nela: comece por ele e leia só o que a tarefa pedir.',
     '',
     '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',

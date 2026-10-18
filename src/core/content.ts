@@ -86,6 +86,8 @@ export interface ContentBundle {
   skills: SkillDef[];
   /** Base de conhecimento instalada em .ai/brain/, ou null se o manifesto não a declara. */
   brain: { notes: number; entrypoints: string[] } | null;
+  /** Avisos que o conteúdo pede para constar no bloco do AGENTS.md (ex.: modo de trabalho da camada interna). */
+  agentsNotes: string[];
   /** Todos os arquivos de origem (relativos à raiz do vault) que serão instalados. */
   sourceFiles: string[];
 }
@@ -549,6 +551,10 @@ export async function loadContent(root: string): Promise<ContentBundle> {
     shared.push(...brain.notes);
   }
 
+  const rawNotes = manifest.agentsNotes ?? [];
+  if (!Array.isArray(rawNotes) || rawNotes.length > 10 || rawNotes.some((n) => typeof n !== 'string' || n.trim() === '' || n.length > 600 || n.includes('\n'))) {
+    ctx.errors.push('manifest: agentsNotes deve ser uma lista de até 10 linhas de texto (até 600 caracteres, sem quebra de linha)');
+  }
   if (ctx.errors.length > 0) {
     throw new ToolkitError(`Conteúdo inválido em ${absRoot}`, ctx.errors);
   }
@@ -562,6 +568,7 @@ export async function loadContent(root: string): Promise<ContentBundle> {
     brain: brain
       ? { notes: brain.notes.length, entrypoints: brain.entrypoints.map((e) => `.ai/brain/${brain.base}/${e}`) }
       : null,
+    agentsNotes: rawNotes as string[],
     sourceFiles: [...ctx.sources].sort(),
   };
 }

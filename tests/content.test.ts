@@ -157,3 +157,12 @@ test('KB: entrypoint inexistente é rejeitado e o Toolkit não é duplicado dent
   assert.ok(!bundle.shared.some((s) => s.path.startsWith('brain/SeedGrid/Toolkit/')));
   assert.ok(bundle.brain && bundle.brain.notes > 100);
 });
+
+test('agentsNotes: aceita linhas curtas e rejeita lista inválida', async () => {
+  const ok = await copyContent();
+  await editManifest(ok, (m) => { m.agentsNotes = ['Modo X: leia a nota Y primeiro.']; });
+  assert.deepEqual((await loadContent(ok)).agentsNotes, ['Modo X: leia a nota Y primeiro.']);
+  const bad = await copyContent();
+  await editManifest(bad, (m) => { m.agentsNotes = ['linha\ncom quebra']; });
+  await expectInvalid(bad, /agentsNotes/);
+});

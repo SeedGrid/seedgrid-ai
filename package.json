@@ -1,6 +1,6 @@
 {
   "name": "@seedgrid/ai-toolkit",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Instala agentes, skills, regras, templates e referências versionados em projetos locais para Claude Code e Codex.",
   "type": "module",
   "license": "MIT",
