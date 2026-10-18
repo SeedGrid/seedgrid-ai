@@ -2,6 +2,12 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [0.4.1] — 2026-10-18
+
+### Adicionado
+- ADR: campo `numero` (sequencial, dado na criação, nunca alterado) no cabeçalho e no índice, para falar de "a ADR #7"; o script valida unicidade e ausência de lacunas e ganhou `--proximo` e `--numerar` (numera só as ADRs sem número).
+- ADR: status `implementada` (confirmada pelo dono e já no código); o que já foi implementado não fica `proposta`.
+
 ## [0.4.0] — 2026-10-18
 
 ### Adicionado

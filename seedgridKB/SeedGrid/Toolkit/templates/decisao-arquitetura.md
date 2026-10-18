@@ -11,8 +11,9 @@ Cabeçalho (obrigatório, no topo do arquivo, entre `---`):
 ---
 description: Uma linha com a decisão.
 titulo: Título curto da decisão
+numero: 1                 # sequencial, dado na criação (--proximo); nunca muda
 data: AAAA-MM-DD
-status: proposta          # proposta | aceita | substituida | rejeitada
+status: proposta          # proposta | aceita | implementada | substituida | rejeitada
 decidido-por: nome ou papel
 consultados: [nomes, quando houver]
 dominio: [seguranca]      # lista do projeto (docs/ai/decisions/dominios.txt)
@@ -22,6 +23,8 @@ substituida-por:          # preencha na ADR antiga quando houver outra
 origem: plano, commit ou tarefa que gerou a decisão
 ---
 ```
+
+Status: `proposta` (a IA propôs; o dono não confirmou); `aceita` (confirmada, ainda não está no código); `implementada` (confirmada e já no código; o que já foi implementado não fica `proposta`).
 
 ## Contexto
 Problema, forças em jogo e restrições.

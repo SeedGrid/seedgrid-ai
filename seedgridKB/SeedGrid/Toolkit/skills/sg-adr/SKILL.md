@@ -17,10 +17,11 @@ Crie uma ADR quando a decisão: muda um comportamento observável; cria, remove 
 
 1. **Listar as decisões.** Escreva cada uma em uma frase e **mostre ao usuário** para confirmar: você propõe, quem decide é o usuário. Ao registrar, repita a decisão em uma frase (decisão registrada errada só aparece quando alguém relê).
 2. **Domínio.** Escolha na lista `docs/ai/decisions/dominios.txt` (um domínio por linha). Se o arquivo não existir, proponha 5 a 10 domínios do projeto (por exemplo `seguranca`, `dados`, `api`, `configuracao`, `processo`), confirme e crie. Domínio novo só com confirmação do usuário.
-3. **Criar o arquivo** `docs/ai/decisions/AAAA-MM-DD-slug.md` a partir do modelo `.ai/templates/decisao-arquitetura.md`: cabeçalho completo (`titulo`, `data`, `status`, `decidido-por`, `consultados`, `dominio`, `modulos`, `origem`) e as seções Contexto, Decisão, Alternativas e Consequências. Comece com `status: proposta` e mude para `aceita` quando o usuário confirmar.
-4. **Substituição.** Se a decisão troca outra, não edite a antiga: crie a nova com `substitui: [arquivo-antigo.md]` e apenas marque a antiga como `status: substituida` e `substituida-por`.
-5. **Índice.** Rode `node .ai/skills/sg-adr/scripts/adr-index.mjs`. Ele valida o cabeçalho e gera `docs/ai/decisions/INDEX.md` em ordem decrescente de data. Nunca edite o `INDEX.md` à mão; use `--check` para conferir se está em dia.
-6. **Entregar** listando as ADRs criadas e o que ficou como `proposta`.
+3. **Número.** `node .ai/skills/sg-adr/scripts/adr-index.mjs --proximo` dá o próximo número livre; ele é sequencial, vai em `numero:` e **nunca muda** (dá para conversar sobre "a ADR #7"). Para ADRs antigas sem número, `--numerar` numera só as que não têm.
+4. **Criar o arquivo** `docs/ai/decisions/AAAA-MM-DD-slug.md` a partir do modelo `.ai/templates/decisao-arquitetura.md`: cabeçalho completo (`titulo`, `numero`, `data`, `status`, `decidido-por`, `consultados`, `dominio`, `modulos`, `origem`) e as seções Contexto, Decisão, Alternativas e Consequências. Comece com `status: proposta` e mude para `aceita` quando o usuário confirmar.
+5. **Substituição.** Se a decisão troca outra, não edite a antiga: crie a nova com `substitui: [arquivo-antigo.md]` e apenas marque a antiga como `status: substituida` e `substituida-por`.
+6. **Índice.** Rode `node .ai/skills/sg-adr/scripts/adr-index.mjs`. Ele valida o cabeçalho e gera `docs/ai/decisions/INDEX.md` em ordem decrescente de data. Nunca edite o `INDEX.md` à mão; use `--check` para conferir se está em dia.
+7. **Entregar** listando as ADRs criadas e o que ficou como `proposta` (o que o dono confirmou e já está no código é `implementada`).
 
 ## Consultar
 
