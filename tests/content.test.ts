@@ -26,7 +26,7 @@ test('o conteúdo empacotado é válido', async () => {
   );
   assert.deepEqual(
     bundle.skills.map((s) => s.name),
-    ['sg-bump', 'sg-code-review', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-review', 'sg-validate-change'],
+    ['sg-adr', 'sg-bump', 'sg-code-review', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-review', 'sg-validate-change'],
   );
   for (const s of bundle.skills) assert.ok(s.description.length > 20);
 });

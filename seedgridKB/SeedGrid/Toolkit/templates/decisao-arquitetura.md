@@ -1,19 +1,33 @@
 ---
-description: "Modelo de registro de decisão de arquitetura (ADR): contexto, alternativas, decisão e consequências."
+description: "Modelo de ADR (registro de decisão): cabeçalho com quem decidiu, data, consultados e domínio, mais contexto, decisão, alternativas e consequências."
 ---
-# Decisão de arquitetura: <título>
+# <título da decisão>
 
-> Modelo do SeedGrid AI Toolkit. Copie para o local de documentação do projeto antes de preencher; não edite o modelo.
+> Modelo do SeedGrid AI Toolkit. Use a skill `sg-adr`: ela copia este modelo para `docs/ai/decisions/AAAA-MM-DD-slug.md` e atualiza o índice. ADR aceita **não se edita**: se a decisão mudar, crie outra e marque a antiga como `substituida`.
 
-- **Status:** proposta | aceita | substituída por <link>
-- **Data:** AAAA-MM-DD
-- **Responsáveis:** <pessoas ou papéis>
+Cabeçalho (obrigatório, no topo do arquivo, entre `---`):
+
+```yaml
+---
+description: Uma linha com a decisão.
+titulo: Título curto da decisão
+data: AAAA-MM-DD
+status: proposta          # proposta | aceita | substituida | rejeitada
+decidido-por: nome ou papel
+consultados: [nomes, quando houver]
+dominio: [seguranca]      # lista do projeto (docs/ai/decisions/dominios.txt)
+modulos: [modulo-a, modulo-b]
+substitui: []             # arquivos de ADR que esta substitui
+substituida-por:          # preencha na ADR antiga quando houver outra
+origem: plano, commit ou tarefa que gerou a decisão
+---
+```
 
 ## Contexto
 Problema, forças em jogo e restrições.
 
 ## Decisão
-O que foi decidido, em termos objetivos.
+O que foi decidido, em termos objetivos (comportamento, propriedade, arquitetura).
 
 ## Alternativas consideradas
 | Alternativa | Prós | Contras | Motivo da rejeição |

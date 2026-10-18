@@ -45,8 +45,8 @@ public record ClienteDTORes(
 ## Persistência
 
 - **BE-20.** Flyway, com migrations separadas por projeto: `src/main/resources/db/migration/<project-name>` e `src/test/resources/db/migration/<project-name>`.
-- **BE-21.** Em hosts, Panache é livre e recomendado para os repositórios.
-- **BE-23.** Toda entidade JPA estende uma base de `br.com.seedgrid.commons.persistence` (traz `id`, `publicId`, datas e usuário de criação/alteração): `BaseEntityPanache` (estende `PanacheEntityBase`, sem `active`) em hosts que usam Panache (BE-21), ou `BaseEntity` (JPA puro, inclui `active`) quando o projeto não usa Panache. Os relacionamentos usam o `id`; o `publicId` é só para busca externa.
+- **BE-21.** Em hosts, usar ou não o Panache é **opcional**: a escolha é do host.
+- **BE-23.** Toda entidade JPA estende uma base de `br.com.seedgrid.commons.persistence` (traz `id`, `publicId`, datas e usuário de criação/alteração): `BaseEntityPanache` (estende `PanacheEntityBase`, sem `active`) em hosts que usam Panache (BE-21), ou `BaseEntity` (JPA puro, inclui `active`) em hosts que não usam. Os relacionamentos usam o `id`; o `publicId` é só para busca externa.
 
 ## API REST
 

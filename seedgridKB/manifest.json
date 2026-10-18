@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.3.4",
+  "contentVersion": "0.4.0",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -130,6 +130,23 @@
       "id": "skill:sg-review",
       "type": "skill",
       "name": "sg-review",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:sg-adr",
+      "type": "skill",
+      "name": "sg-adr",
+      "files": [
+        "SKILL.md",
+        "scripts/adr-index.mjs"
+      ]
+    },
+    {
+      "id": "skill:sg-plan-goal",
+      "type": "skill",
+      "name": "sg-plan-goal",
       "files": [
         "SKILL.md"
       ]

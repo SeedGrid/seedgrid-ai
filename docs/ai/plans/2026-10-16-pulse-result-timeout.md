@@ -1,3 +1,12 @@
+---
+titulo: "Plano: prazo de execução (resultTimeoutSeconds) no Pulse"
+status: concluido
+data: 2026-10-16
+autor: sessão seedgrid-ai
+modulos: [pulse]
+adrs: []
+---
+
 # Plano: prazo de execução (`resultTimeoutSeconds`) no Pulse
 
 Status: **IMPLEMENTADO** no Pulse 0.3.0 (commit `9dcbdad`) e documentado na KB. Diferenças em relação a este plano: padrão `0` (sem prazo), coluna `NOT NULL DEFAULT 0` (e não nullable), log de tentativa `execution_retryable` com detalhe `result_timeout` (sem outcome próprio) e `result` tardio ignorado só enquanto a mensagem está `pending` com `lastExecutionError = "result_timeout"`. Texto original abaixo, mantido como histórico.

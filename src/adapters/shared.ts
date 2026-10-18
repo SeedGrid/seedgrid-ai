@@ -155,7 +155,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     'Cada pasta de `.ai/` tem um `index.md` com o que há nela: comece por ele e leia só o que a tarefa pedir.',
     '',
     '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',
-    '- **Documentos que você gerar** (planos, handoff, decisões, especificações, relatórios) são salvos em `.ai/docs/<tipo>/`, por exemplo `.ai/docs/plans/` e `.ai/docs/handoff/`; veja `.ai/rules/documentos.md`.',
+    '- **Documentos que você gerar** (planos, handoff, decisões, especificações, relatórios) são salvos em `docs/ai/<tipo>/` (planos em `docs/ai/plans/`, decisões/ADR em `docs/ai/decisions/`), nunca em outro lugar do projeto; veja `.ai/rules/documentos.md`.',
     ...standardsLines(bundle),
     '- Papéis: `.ai/agents/`.',
     `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,

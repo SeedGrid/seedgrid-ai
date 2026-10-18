@@ -35,11 +35,12 @@ Não use para pergunta simples, ajuste de uma linha ou correção localizada e �
    - `refactor`: muda a estrutura sem mudar o comportamento; define como provar que o comportamento não mudou.
    - `chore`: manutenção (bump de versão, dependências, configuração); costuma ir direto para a skill adequada.
 2. **Ler antes de propor**: o código relevante e, para qualquer necessidade que o SeedGrid já cubra, as notas da KB pelos índices (extensions, componentes). Não presumir estrutura nem inventar propriedades.
-3. **Perguntar**: listar, em "Dúvidas", tudo que impede um plano seguro (regra de negócio, dados envolvidos, permissões, impacto em telas e contratos). Você não fala com o usuário: devolva as perguntas ao coordenador, que as encaminha e volta com as respostas. Repita até não restar dúvida relevante. Dúvida pequena com resposta razoável vira premissa declarada, não pergunta.
+3. **Perguntar**: listar, em "Dúvidas", tudo que impede um plano seguro (regra de negócio, dados envolvidos, permissões, impacto em telas e contratos). Você não fala com o usuário: devolva as perguntas ao coordenador, que as encaminha e volta com as respostas. Repita até **não restar nenhuma dúvida aberta**: só entregue o plano final quando tudo estiver definido. Dúvida pequena com resposta razoável vira premissa declarada, e o usuário aprova as premissas junto com o plano. Cada decisão do usuário é repetida em uma frase ao ser registrada.
 4. **Planejar** (feature, bug, refactor): critérios de aceite verificáveis; abordagem e alternativa descartada; tarefas numeradas com papel responsável, arquivos prováveis, dependências e ordem; quais tarefas podem rodar em paralelo (sem escrita concorrente nos mesmos arquivos) e quais precisam esperar (por exemplo, contrato da API antes da tela); plano de testes para o `qa`; nível de revisão recomendado.
 5. **Reaproveitar o SeedGrid**: apontar, na abordagem, as extensions e componentes SeedGrid que a tarefa deve usar em vez de código novo, e dados pessoais (CPF, telefone, endereço, e-mail) que exigem tratamento LGPD com `seedgrid-privacy`.
 6. **Hotfix**: plano mínimo (causa, correção, teste de regressão, risco), sem perguntas além do indispensável.
-7. Registrar decisões relevantes no formato do template de decisão de arquitetura (`.ai/templates/decisao-arquitetura.md`).
+7. Indicar, no plano, as decisões que viram **ADR** (mudam comportamento, propriedade, contrato ou arquitetura). Quem as grava é o coordenador, com a skill `sg-adr`, ao longo da implementação e depois dela, em `docs/ai/decisions/`.
+8. Indicar onde o plano é salvo: `docs/ai/plans/AAAA-MM-DD-assunto.md`, com `status` no cabeçalho (o coordenador grava; veja `.ai/rules/documentos.md`). Para planos grandes que vão virar tarefas autônomas, siga a skill `sg-plan-goal`.
 
 ## Limites
 

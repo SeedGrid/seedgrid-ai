@@ -29,6 +29,7 @@ Encontrar problemas reais na mudança antes que ela seja entregue, com achados v
 - Classificar cada achado (bloqueante, importante, sugestão) com arquivo, linha e cenário concreto de falha.
 - Descartar achados que não consegue sustentar com um cenário concreto.
 - Conferir o padrão SeedGrid do que foi alterado (skill `sg-review`): componentes e regras `FE-nn`, `BE-nn`.
+- Conferir onde os documentos foram parar: `.md` novo de trabalho (plano, handoff, relatório) fora de `docs/ai/` é achado; decisão que mudou comportamento, propriedade ou arquitetura sem ADR em `docs/ai/decisions/` também.
 
 ## Limites
 
