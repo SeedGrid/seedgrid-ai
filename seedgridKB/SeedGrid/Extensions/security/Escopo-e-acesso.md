@@ -1,5 +1,5 @@
 ---
-description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
+description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard; roles de integração com for_integration, V255 e API key com auth proativa). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
 tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, escopo]
 ---
 
@@ -167,8 +167,43 @@ O 409 `LAST_ADMIN_PROTECTED` já aparece no toast com a lista de empresas. As te
 
 `LastAdminGuardianIT`, `LastAdminDatabaseScopeGuardianIT`, `LastAdminGuardTest` (security); `SeatServiceTest` e `SubscriptionFlowTest` (`downgradeNuncaEliminaOUltimoAdminDaEmpresa`, `checkoutEmPlanoComMenosVagasRecusaDesativarOUltimoAdmin`, `empresaComUmUnicoUsuarioAtivoNaoExigeSelecaoNemPerdeOAdmin`) no billing; `JpaAuditLogUsersConcurrencyIT` (ext-audit).
 
+## Fase 4 — roles de integração e `apikeys`
+
+Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: **V255**.
+
+### Regra
+
+- `permissions.for_integration` = "pode ser concedida a integrações". `roles.for_integration` = "é role de integração" (nunca atribuída a usuário; só via API key).
+- Toda permissão nasce `for_integration = false`. **A software house libera por migration do host:** `UPDATE permissions SET for_integration = true WHERE name IN (...)`. O cliente nunca libera.
+- Role de integração só aceita permissões liberadas: **422** `PERMISSION_NOT_FOR_INTEGRATION` (criar, alterar ou transformar role comum em integração; rota da conta `/me/security/roles` e a global `/roles`).
+- Quem monta a role não concede permissão que não tem: **403** `INTEGRATION_PERMISSION_NOT_HELD` (só o acréscimo é conferido; fora de requisição autenticada não se aplica).
+- O dono altera e exclui as próprias roles de integração (antes: `RoleProtectedException`); só as de **sistema** seguem protegidas.
+- Excluir role que tem API key, mesmo revogada: **409** `RoleInUseException` (SPI `RoleUsageChecker`, implementado pelo `apikeys`), no lugar de 500 por FK.
+- `PermissionDTORes.forIntegration` (também em `/me/security/roles/permissions`). `GET /apikeys/roles` lista as roles de integração ativas com `permissions` (só as liberadas). `requireRole` casa o nome exato.
+
+### V255
+
+- Coluna `permissions.for_integration BOOLEAN NOT NULL DEFAULT FALSE`.
+- Remove de `role_permissions` os vínculos não liberados **só das roles de integração**; as demais roles não se relacionam com o flag.
+- Trigger `trg_permission_revoke_integration`: se o host faz `UPDATE permissions SET for_integration = FALSE`, a permissão sai das roles de integração.
+
+### Migração do host
+
+- **Antes de criar role de integração, o host precisa liberar a permissão.**
+- Roles de integração existentes perdem na V255 os vínculos não liberados: o host **libera as permissões e refaz o vínculo** em migration própria e idempotente. Exemplos: boilerplates (`V3004`, e `V3102` no `app-tenant`; `INTEGRACAO_USUARIOS` com `USER_READ/CREATE/UPDATE`) e report (`V3003`; `AGENTE_REPORT` com `AGENTE_CAMBIO_READ` e `AGENTE_PULSE_CREDENTIAL`).
+- Role criada por `em.persist` ou SQL direto, sem liberar a permissão, não quebra testes, mas **ainda pode violar a invariante**: a garantia está no `RoleService` e na V255.
+- Front (boilerplates e report-admin): `role_edit` com "Uso para integração" mostra só as permissões liberadas; `apikey_edit` mostra as liberadas da role escolhida.
+
+### API key com `quarkus.http.auth.proactive=true` (subdomain-tenancy)
+
+- Com `proactive=true` a autenticação roda antes do filtro de tenant e sem contexto CDI; a chave dava 500. Novo SPI `ApiKeyScopeRunner` (`apikeys`; padrão só executa) e `SubdomainApiKeyScopeRunner` (`subdomain-tenancy`): o tenant vem do `X-Forwarded-Host` ou do `Host`, senão `master`. `X-Tenant` e `X-Company-Id` não participam. Sem container CDI, falha fechada.
+- `ApiKeyAuthenticationRequest` ganhou `host` e `forwardedHost` (o construtor antigo foi mantido).
+
+### Guardiões da Fase 4
+
+`IntegrationRoleGuardianIT`, `PermissionForIntegrationMigrationIT`, `AccessRuleBookTest` (invertido), `ApiKeyIsolationGuardianIT` (no subdomain-tenancy, com `proactive=true`, e no login-tenancy), `ApiKeyRoleSelectionTest`, `ApiKeyRoleInUseTest`, `SubdomainApiKeyScopeRunnerTest`, `RoleDeIntegracaoDoAgenteTest` (report).
+
 ## Pendente neste ciclo
 
 - Fase 2b: login social (decisão acima registrada, sem implementação).
-- Fase 4 (T4.0): limitação da API key com `quarkus.http.auth.proactive=true`.
 - Fases 5 e 7: estado de empresa, boilerplates.
