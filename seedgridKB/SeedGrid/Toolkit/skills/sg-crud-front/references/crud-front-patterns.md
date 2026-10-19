@@ -78,7 +78,12 @@ numbers or money: it accepts letters and only fails at submit.
 | Money (price, fee, overage, balance) | `SgInputCurrency` | `currency="BRL"`, `decimals={2}`, `minValue={0}` | `parseDecimalInput` |
 | Integer count (requests, users, qty, billing day) | `SgInputNumber` | `decimals={0}`, `minValue={...}` | `Number.parseInt(v, 10)` |
 | Decimal non-money (rate, factor) | `SgInputNumber` | `decimals={2}` | `parseDecimalInput` |
-| Date | `SgInputDate` | — | ISO on submit |
+| Date | `SgInputDate` | `minDate`, `maxDate` | ISO on submit |
+| Birth date | `SgInputBirthDate` | `minAge` | ISO on submit |
+| CPF / CNPJ / either | `SgInputCPF` / `SgInputCNPJ` / `SgInputCPFCNPJ` | `required` | `onlyDigits` if the API wants digits |
+| Phone | `SgInputPhone` | `required` | `onlyDigits` if the API wants digits |
+| Postal code | `SgInputPostalCode` | `country`, `validateWithViaCep` (BR, opt-in) | `onlyDigits` if the API wants digits |
+| E-mail | `SgInputEmail` | `required` | trim |
 | Free text | `SgInputText` | — | trim |
 
 Both numeric inputs are controlled via `inputProps={{ value }}` and emit a string
