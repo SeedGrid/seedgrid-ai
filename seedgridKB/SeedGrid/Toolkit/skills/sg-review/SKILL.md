@@ -25,6 +25,7 @@ Alvo: por padrão, os arquivos alterados (`git diff --name-only <base>...HEAD` m
    - Back: `@Inject` em atributo; `throw new RuntimeException`; `Resource` no nome de classe; `UPDATE ` em JPQL/SQL de código; endpoint que devolve `id` em vez de `publicId`; `"%" +` em `LIKE`; pacote no singular.
 3. Abra só os arquivos com suspeita e confirme no contexto. Descarte falsos positivos (por exemplo, `<input>` dentro do próprio pacote de componentes, ou comentário que justifica a exceção da FE-01).
 4. Para regras que exigem julgamento (FE-02, BE-05, BE-11, BE-40), reporte só o que você consegue sustentar com o trecho de código. Diga o que **não** conseguiu verificar.
+5. Ao revisar uma tarefa concluída, rode também `node .ai/skills/sg-branch-status/scripts/branch-status.mjs` e reporte como violação **HO-04** (`.ai/rules/branches.md`) a branch da tarefa que continua existindo (local ou remota) ou o worktree que sobrou depois do merge.
 
 ## Saída
 

@@ -31,6 +31,10 @@ Triagem rápida do `arquiteto` (causa, menor correção segura, risco), correç�
 - **Modo shared:** use o mecanismo de subagentes da ferramenta (quando houver), passando a definição do papel como instrução. Se não houver subagentes, aplique o papel na própria sessão, um de cada vez, e **informe ao usuário** que a delegação não estava disponível.
 - **Modo native:** os papéis também estão registrados como subagentes nativos com os mesmos ids. Prefira-os. Se a ferramenta não os reconhecer, siga o modo shared e informe isso.
 
+## Branches
+
+Toda tarefa não trivial trabalha em uma branch própria, criada a partir da `develop` e integrada por squash; a limpeza e as autorizações estão em [branches](branches.md). Para criar a branch, siga o tipo que o `arquiteto` classificou (`feature/`, `bugfix/`, `refactor/`, `chore/`, `hotfix/`).
+
 ## Fluxos obrigatórios
 
 Se o projeto exigir um fluxo obrigatório (por exemplo, revisão antes de todo commit), declare-o em `.ai/local/` (veja [personalização local](personalizacao-local.md)). Sem declaração explícita, o fluxo acima é uma recomendação.
