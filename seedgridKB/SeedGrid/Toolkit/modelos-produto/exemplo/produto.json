@@ -1,0 +1,11 @@
+{
+  "slug": "meu-produto",
+  "nome": "Meu Produto",
+  "dominio": "meuproduto.example.com",
+  "registry": "ghcr.io/minha-org",
+  "servicos": [
+    { "nome": "backend", "tipo": "backend", "porta": 8080 },
+    { "nome": "frontend", "tipo": "frontend", "porta": 3000 },
+    { "nome": "admin", "tipo": "admin", "porta": 3001 }
+  ]
+}

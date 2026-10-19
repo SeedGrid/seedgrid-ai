@@ -7,6 +7,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ### Adicionado
 - Skill `sg-branch-status`: lista branches e worktrees já mergeados (inclusive por squash, comparando conteúdo) ou sem dono e limpa, com confirmação, branch local, remota e worktree das mergeadas; recusa `main`, `develop` e branch não mergeada. A `coordenacao.md` manda rodá-la no início de toda tarefa não trivial. Versão do pacote inalterada: a release é única e adiada.
 - Regra `branches.md` (HO-01 a HO-07): `main` e `develop`, uma branch por tarefa, squash na `develop`, release por merge normal, limpeza de branch e worktree e autorização pelo ato irreversível; o `sg-review` reporta como HO-04 a branch ou o worktree que sobrou depois do merge.
+- Modelos de publicação de produto novo em `seedgridKB/SeedGrid/Toolkit/modelos-produto/` (T1.3): Dockerfile de backend (Quarkus), frontend e admin (Next.js) e workflow GitHub Actions de publicação no EasyPanel (webhook em secret), parametrizados por `produto.json` via `render.mjs` (placeholders `{{nome}}`, sem dependências). Ainda não registrado no `manifest.json`; versão inalterada.
 
 - KB: notas `Extensions/Propriedades-para-subir.md` (variáveis do `dev.env` e geração de segredos), `Extensions/Servicos-de-apoio.md` (serviços do compose) e `SeedGrid-components/modulos/Composicao-do-admin.md` (módulos do front: o que adicionar e remover).
 
