@@ -11,7 +11,7 @@ seedgrid-ai init --target both --mode shared
 seedgrid-ai doctor
 ```
 
-**Projeto novo:** crie a pasta, entre nela e rode `init`. Se a pasta ainda não é um repositório git, o `init` faz `git init -b main`, um commit inicial com tudo o que instalou e cria a `develop` (branch atual). A branch de trabalho (`feature/...`) sai da `develop` e é criada pela IA (veja `.ai/rules/branches.md`). Em pasta que já é repositório, o `init` não altera branches. `--no-develop` cria só a `main` (usado pelo `seedgrid-ai-plt`, que não usa `develop`). `SEEDGRID_AI_SKIP_GIT=1` desliga.
+**Projeto novo:** crie a pasta, entre nela e rode `init`. Se a pasta ainda não é um repositório git, o `init` faz `git init -b main`, um commit inicial com tudo o que instalou e cria a `develop` (branch atual). A branch de trabalho (`feature/...`) sai da `develop` e é criada pela IA (veja `.ai/rules/branches.md`). Em pasta que já é repositório, o `init` não altera branches. `SEEDGRID_AI_SKIP_GIT=1` desliga.
 
 Depois, abra uma **nova sessão** do Claude Code ou do Codex na pasta do projeto.
 
