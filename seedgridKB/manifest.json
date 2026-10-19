@@ -144,6 +144,15 @@
       ]
     },
     {
+      "id": "skill:sg-branch-status",
+      "type": "skill",
+      "name": "sg-branch-status",
+      "files": [
+        "SKILL.md",
+        "scripts/branch-status.mjs"
+      ]
+    },
+    {
       "id": "skill:sg-componente",
       "type": "skill",
       "name": "sg-componente",

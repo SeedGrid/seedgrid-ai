@@ -2,6 +2,11 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [Não publicado]
+
+### Adicionado
+- Skill `sg-branch-status`: lista branches e worktrees já mergeados (inclusive por squash, comparando conteúdo) ou sem dono e limpa, com confirmação, branch local, remota e worktree das mergeadas; recusa `main`, `develop` e branch não mergeada. A `coordenacao.md` manda rodá-la no início de toda tarefa não trivial. Versão do pacote inalterada: a release é única e adiada.
+
 ## [0.5.0] — 2026-10-19
 
 ### Adicionado

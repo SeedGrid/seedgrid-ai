@@ -17,7 +17,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const SKILLS = ['sg-adr', 'sg-bump', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-review', 'sg-validate-change'];
+const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-review', 'sg-validate-change'];
 const AGENTS = ['arquiteto', 'backend-java', 'backend-rust', 'frontend-react', 'qa', 'revisor'];
 
 /** Gera uma nova versão de conteúdo alterando uma regra. */
@@ -129,7 +129,7 @@ describe('instalação', () => {
       assert.ok(files[`.ai/skills/${name}/SKILL.md`], `${name} tem cópia canônica em .ai/skills`);
       assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
     }
-    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \((12)\)/);
+    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \((13)\)/);
     for (const dir of ['rules', 'agents', 'templates', 'references']) {
       assert.ok(files[`.ai/${dir}/index.md`], `${dir}/index.md gerado`);
       assert.ok(files['AGENTS.md']!.includes(`.ai/${dir}/`), `AGENTS.md aponta para ${dir}/`);
