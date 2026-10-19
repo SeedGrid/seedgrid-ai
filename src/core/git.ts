@@ -21,7 +21,8 @@ async function git(cwd: string, args: string[], env: NodeJS.ProcessEnv = process
  * (`feature/...`) sai da `develop` e é criada pelo orquestrador, não pelo init.
  * Não mexe em pasta que já está dentro de um repositório git. Falha de git nunca desfaz a instalação.
  */
-export async function setupProductRepo(projectRoot: string, paths: string[]): Promise<GitSetup> {
+export async function setupProductRepo(projectRoot: string, paths: string[], opts: { develop?: boolean } = {}): Promise<GitSetup> {
+  const develop = opts.develop !== false;
   if (process.env.SEEDGRID_AI_SKIP_GIT === '1') return { status: 'skipped', reason: 'SEEDGRID_AI_SKIP_GIT=1' };
   try {
     await git(projectRoot, ['--version']);
@@ -49,8 +50,12 @@ export async function setupProductRepo(projectRoot: string, paths: string[]): Pr
       Object.assign(env, { GIT_AUTHOR_NAME: 'SeedGrid AI', GIT_AUTHOR_EMAIL: 'seedgrid-ai@localhost', GIT_COMMITTER_NAME: 'SeedGrid AI', GIT_COMMITTER_EMAIL: 'seedgrid-ai@localhost' });
     }
     await git(projectRoot, ['-c', 'commit.gpgsign=false', 'commit', '-m', 'chore: instala o seedgrid-ai toolkit'], env);
-    await git(projectRoot, ['switch', '-c', 'develop']);
-    return { status: 'created', reason: 'git init -b main, commit inicial e develop', branches: ['main', 'develop'] };
+    if (develop) await git(projectRoot, ['switch', '-c', 'develop']);
+    return {
+      status: 'created',
+      reason: develop ? 'git init -b main, commit inicial e develop' : 'git init -b main e commit inicial',
+      branches: develop ? ['main', 'develop'] : ['main'],
+    };
   } catch (err) {
     return { status: 'failed', reason: `git: ${(err as Error).message.split('\n')[0]}` };
   }

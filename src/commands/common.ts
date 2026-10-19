@@ -10,6 +10,8 @@ export interface CommandOptions {
   target?: string;
   mode?: string;
   dryRun?: boolean;
+  /** init: em pasta nova, cria só a main (sem a develop). */
+  noDevelop?: boolean;
   json?: boolean;
   /** doctor: executa sondas locais das ferramentas (sem chamar modelos). */
   probe?: boolean;

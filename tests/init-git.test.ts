@@ -52,6 +52,15 @@ describe('init: repositório git do produto', () => {
     assert.equal((res.report as any).git.status, 'skipped');
   });
 
+  test('--no-develop (seedgrid-ai-plt) cria só a main', async () => {
+    const project = await tempProject();
+    const res = await initCommand({ project, noDevelop: true });
+    assert.equal(res.exitCode, EXIT_OK);
+    assert.equal(git(project, 'branch', '--format=%(refname:short)').trim(), 'main');
+    assert.equal(git(project, 'status', '--porcelain'), '');
+    assert.ok(res.lines.some((l) => l.includes('Repositório git criado: main') && !l.includes('develop')));
+  });
+
   test('dry-run não cria repositório', async () => {
     const project = await tempProject();
     await initCommand({ project, dryRun: true });

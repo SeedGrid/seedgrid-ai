@@ -101,6 +101,7 @@ export async function runInstall(kind: 'init' | 'update', opts: CommandOptions):
         ? await setupProductRepo(
             projectRoot,
             planOperations(plan).filter((o) => o.action !== 'unchanged' && o.action !== 'delete').map((o) => o.path),
+            { develop: !opts.noDevelop },
           )
         : null;
     return {
@@ -110,7 +111,7 @@ export async function runInstall(kind: 'init' | 'update', opts: CommandOptions):
         ...lines,
         '',
         `Concluído (operação ${operationId}).`,
-        ...(repo?.status === 'created' ? ['Repositório git criado: branches main e develop (atual: develop). A branch de trabalho sai da develop.'] : []),
+        ...(repo?.status === 'created' ? [`Repositório git criado: ${repo.branches?.join(' e ')} (atual: ${repo.branches?.at(-1)}).${repo.branches?.includes('develop') ? ' A branch de trabalho sai da develop.' : ''}`] : []),
         ...(repo?.status === 'failed' ? [`Aviso: ${repo.reason}. A instalação foi concluída; crie as branches main e develop manualmente.`] : []),
         ...(result.backupDir ? [`Backup dos arquivos alterados: ${result.backupDir}/`] : []),
         'Abra uma nova sessão do Claude Code ou do Codex para carregar as mudanças.',

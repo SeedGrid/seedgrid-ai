@@ -38,7 +38,7 @@ Comandos:
 
 Uso:
   seedgrid-ai install  [--dry-run]
-  seedgrid-ai init     [--target claude|codex|both] [--mode shared|native] [--source <pasta>] [--dry-run]
+  seedgrid-ai init     [--target claude|codex|both] [--mode shared|native] [--source <pasta>] [--dry-run] [--no-develop]
   seedgrid-ai update   [--target ...] [--mode ...] [--source <pasta>] [--dry-run]
   seedgrid-ai status
   seedgrid-ai doctor   [--probe]
@@ -50,6 +50,7 @@ Opções comuns:
   --project <caminho>  Projeto alvo (padrão: pasta atual)
   --json               Saída JSON para scripts
   --dry-run            Mostra o plano sem escrever nenhum arquivo
+  --no-develop         (init) Em pasta nova cria só a branch main, sem a develop (usado pelo seedgrid-ai-plt)
   --probe              (doctor) Confirma a descoberta real onde a ferramenta oferece sonda local
                        (Codex: codex debug prompt-input; não chama o modelo, mas inicia a CLI com sua configuração)
   --tool, --full       (review) Ferramenta que executa a revisão (padrão: Claude Code, depois Codex) e revisão do projeto inteiro
@@ -67,7 +68,7 @@ type Handler = (opts: CommandOptions) => Promise<CommandResult>;
 
 const COMMANDS: Record<string, { handler: Handler; allowed: string[] }> = {
   install: { handler: selfInstallCommand, allowed: ['dry-run'] },
-  init: { handler: initCommand, allowed: ['target', 'mode', 'source', 'dry-run'] },
+  init: { handler: initCommand, allowed: ['target', 'mode', 'source', 'dry-run', 'no-develop'] },
   update: { handler: updateCommand, allowed: ['target', 'mode', 'source', 'dry-run'] },
   status: { handler: statusCommand, allowed: [] },
   doctor: { handler: doctorCommand, allowed: ['probe'] },
@@ -93,6 +94,7 @@ export async function main(argv: string[]): Promise<number> {
         probe: { type: 'boolean' },
         tool: { type: 'string' },
         full: { type: 'boolean' },
+        'no-develop': { type: 'boolean' },
         'no-update-check': { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
         version: { type: 'boolean', short: 'v' },
@@ -118,7 +120,7 @@ export async function main(argv: string[]): Promise<number> {
     console.error(`Comando desconhecido: ${positionals.join(' ')}\n\n${HELP}`);
     return EXIT_ERROR;
   }
-  for (const opt of ['target', 'mode', 'source', 'dry-run', 'probe', 'tool', 'full'] as const) {
+  for (const opt of ['target', 'mode', 'source', 'dry-run', 'probe', 'tool', 'full', 'no-develop'] as const) {
     if (values[opt] !== undefined && !command.allowed.includes(opt)) {
       console.error(`A opção --${opt} não se aplica ao comando ${name}.`);
       return EXIT_ERROR;
@@ -135,6 +137,7 @@ export async function main(argv: string[]): Promise<number> {
     scope: name === 'review' ? positionals[1] : undefined,
     tool: values.tool,
     full: values.full ?? false,
+    noDevelop: values['no-develop'] ?? false,
   };
   // Consulta somente leitura ao npm; nunca com --source (conteúdo local em teste).
   const checkUpdates = ['init', 'update', 'status', 'doctor'].includes(name) && !values['no-update-check'] && !opts.source;
