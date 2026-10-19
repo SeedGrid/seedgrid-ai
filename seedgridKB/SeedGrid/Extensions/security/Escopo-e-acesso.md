@@ -1,5 +1,5 @@
 ---
-description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
+description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
 tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, escopo]
 ---
 
@@ -51,8 +51,47 @@ Cobre `seedgrid-quarkus-ext-security`, `-login-tenancy`, `-subdomain-tenancy` e 
 
 `PermissionsReadOnlyGuardianTest`, `CompanyNeverDeletedGuardianTest`, `NoSgPermissionAllowedGuardianTest`, `MigrationNumberingGuardianTest`, `AccountManagementDedicatedDatabaseGuardianTest`, `PlatformScopeDedicatedDatabaseGuardianTest`, `QueryMethodGuardianTest`, `AccessRuleBookTest` (nome de role, audience, delegação, empresa só CRU, contrato por publicId), exemplo `TenantAdminTwoCompaniesGuardianIT`.
 
+## Fase 1b — B2C: pessoa física, `cpf_cnpj`, cadastro e termos
+
+Cobre security, billing-core, login-tenancy e subdomain-tenancy. B2C vale **só para o `login-tenancy`** (`shared-database`); o `subdomain-tenancy` segue PJ (`tenants.cnpj`).
+
+### Propriedades novas
+
+| Chave | Tipo | Padrão | Efeito |
+|---|---|---|---|
+| `seedgrid.login-tenancy.signup.customer-type` | `B2B` \| `B2C` \| `BOTH` | `B2B` | Quem pode se cadastrar. Fora do tipo: 403 `SIGNUP_TYPE_NOT_ALLOWED`. |
+| `seedgrid.security.terms.required` | boolean | `false` | Exige aceite dos termos no cadastro e no login. |
+| `seedgrid.security.terms.version` | string | `1` | Versão vigente; subir a versão exige novo aceite. |
+| `seedgrid.security.terms.documents.<nome>` | URL | vazio | Documentos públicos (ex.: `terms`, `privacy`). |
+
+### Contratos e comportamento (quebras de compatibilidade, sem alias)
+
+- **`companies`** (migration V238 do security): `person_type` (`PJ` \| `PF`); `cnpj` virou `cpf_cnpj` e `cnpj_hash` virou `cpf_cnpj_hash`, ambos **anuláveis** (PF pode não ter CPF; dois PF sem documento não colidem). API: `personType` e `cpfCnpj` em `CompanyDTOReq/Patch/Res`; **não existe mais `cnpj`**. PJ exige CNPJ válido (inclui alfanumérico); PF aceita CPF válido ou nenhum. Erro: 400 `COMPANY_DOCUMENT_INVALID`; documento repetido: 409.
+- **Empresa-plataforma** continua sendo a `Company` PJ cujo CNPJ é `seedgrid.security.default-company.cnpj` (propriedade inalterada). Empresa PF nunca é plataforma.
+- **`accounts`** (billing-core, V514): `cpf_cnpj` anulável e `person_type`; `AccountHolder(companyId, personType, cpfCnpj, ...)`; `GET /admin/accounts?personType=PF|PJ`; `AdminAccountResponse` e `AccountOptionResponse` trazem `personType` e `cpfCnpj` (sem `cnpj`).
+- **`signup_request`** (login-tenancy, V704 e V705): `cpf_cnpj`, `person_type`, índice de pendente PF por e-mail; guarda o aceite dos termos até a confirmação do e-mail.
+- **Endpoints do login-tenancy:**
+  - `POST /public/signup` (empresa): campo `cpfCnpj` (CNPJ) no lugar de `cnpj`.
+  - `POST /public/signup/personal` (PF): `name`, `email`, `password`, `whatsapp`, `cpf` (opcional), `acceptedTerms`, `termsVersion`. E-mail que já tem conta: **409** (PF nunca vincula).
+  - `GET /public/signup/document-status?cpfCnpj=` substitui `cnpj-status`.
+  - `GET /public/signup/config` devolve `{customerType, termsRequired, termsVersion, termsDocuments}` (o front monta PF, PJ ou o seletor).
+  - `SignupConfirmedEvent(personType, cpfCnpj, ...)`.
+- **Termos** (security, V239): tabela `terms_acceptance` (um registro por usuário e versão, com instante, IP e user-agent); `GET /public/terms`; `POST /me/terms/accept` (`{version}`; versão diferente da vigente: 409 `TERMS_VERSION_MISMATCH`); o login devolve `termsAcceptanceRequired`; cadastro sem aceite da versão vigente: 400 `TERMS_NOT_ACCEPTED`.
+- **Login social (decisão para a Fase 2b, 2026-10-19):** o e-mail do provedor é opcional (o Facebook nem sempre devolve); a identidade é `(provider, subject)`, sem coluna por rede; sem e-mail verificado o fluxo pede e confirma o e-mail antes de criar ou vincular; CPF não é pedido no login social. Ainda não implementado.
+
+### Migração do host
+
+- Trocar `cnpj` por `cpfCnpj` em payloads e na leitura de `Company` e `Account`. `Company#getCnpj` virou `getCpfCnpj` e `CompanyRepository.findByCnpj` virou `findByDocument`.
+- Host com SQL cru em `companies`, `accounts` ou `signup_request` (ex.: provisionamento do subdomain-tenancy) usa `cpf_cnpj` e `cpf_cnpj_hash`.
+- Host que não muda `customer-type` nem `terms.required` continua B2B e sem termos.
+- Front: campo de documento com `SgInputCPFCNPJ` (ou `SgInputCPF`/`SgInputCNPJ` quando o tipo é fixo); veja as regras FE-13 e FE-29.
+
+### Guardiões da Fase 1b
+
+`PlatformCompanyNullSafeGuardianIT`, `TermsAcceptanceGuardianIT` (security); `SignupCustomerTypeB2bGuardianIT`, `SignupCustomerTypeB2cGuardianIT`, `SignupTermsGuardianIT` (login-tenancy); `SignupPersonalIT`, `CompanyPersonTypeResourceTest`, `DocumentValidatorTest`, `AdminAccountTest` (filtro PF/PJ) e `LegacyHostSchemaMigrationTest` (V514 sobre banco legado).
+
 ## Pendente neste ciclo
 
-- Fase 1b (B2C, `cpf_cnpj`): o insumo ainda não chegou.
+- Fase 2b: login social (decisão acima registrada, sem implementação).
 - Fase 4 (T4.0): limitação da API key com `quarkus.http.auth.proactive=true`.
 - Fases 3, 5 e 7: invariante de ADMIN, boilerplates.
