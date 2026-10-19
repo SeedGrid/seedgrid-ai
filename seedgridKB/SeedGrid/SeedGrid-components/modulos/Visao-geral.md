@@ -12,6 +12,8 @@ Os módulos são pacotes npm `@seedgrid/fe-<domínio>` que entregam a parte **fr
 
 Relacionados: [[SeedGrid/SeedGrid-components/pacotes/fe-core|@seedgrid/fe-core]] (contrato do manifesto e `createApiClient`) · [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes de base]].
 
+Para montar ou enxugar um app (o que já vem padrão e o que acrescentar ou remover por módulo): [[SeedGrid/SeedGrid-components/modulos/Composicao-do-admin|Composição do admin]].
+
 ## Modelo de distribuição: lib + scaffold
 
 Decisão registrada em `packages/modules/SECURITY-EXTRACTION-MAP.md` e `FE-SECURITY-PACKAGE-CONTRACT.md` (Confirmado no código):

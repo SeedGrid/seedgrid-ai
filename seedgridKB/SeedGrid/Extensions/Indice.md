@@ -54,6 +54,11 @@ Contagens de propriedades por extension e plataforma: [[SeedGrid/Extensions/Cata
 | commons *(library)* | Utilitários, validadores, entidades base, CORS, timezone de negócio. | [[SeedGrid/Extensions/commons/Visao-geral\|Visão geral]] · [[SeedGrid/Extensions/commons/Configuracao\|Config]] · [[SeedGrid/Extensions/commons/Exemplos\|Exemplos]] · [[SeedGrid/Extensions/commons/Enums|Enums]] | — |
 | runtime | `seedgrid-runtime` + `seedgrid-macros`: auto-wiring `#[startup]`/`#[scheduled]` (só Rust). | — | [[SeedGrid/Extensions/runtime/Visao-geral\|Visão geral]] · [[SeedGrid/Extensions/runtime/Configuracao-Rust\|Config]] |
 
+## Montar um produto
+
+- [[SeedGrid/Extensions/Propriedades-para-subir|Propriedades para subir]]: o que o `dev.env` precisa e como gerar cada segredo.
+- [[SeedGrid/Extensions/Servicos-de-apoio|Serviços de apoio]]: imagem, porta e variáveis de cada serviço do `docker-compose.yml`.
+
 ## Totais
 
 - 17 módulos Java documentados (13 extensions + 4 libraries) e 15 unidades Rust (13 crates de porte + broker + runtime/macros).
