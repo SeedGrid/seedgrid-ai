@@ -26,11 +26,12 @@ export const AGENT_REQUIRED_SECTIONS = [
 ];
 const MAX_AGENT_DESCRIPTION = 300;
 const SHARED_TYPES = ['agents', 'rules', 'templates', 'references'] as const;
-type SharedType = (typeof SHARED_TYPES)[number] | 'brain';
+type SharedType = (typeof SHARED_TYPES)[number] | 'brain' | 'boilerplates';
 
 /** Padrões que nunca devem ir para um pacote público (verificados em todo o conteúdo). */
 const SECRET_PATTERNS: [RegExp, string][] = [
-  [/\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{10,}/, 'chave Stripe'],
+  // "placeholder" é o valor-modelo dos boilerplates (sk_test_placeholder), não uma chave.
+  [/\b(?:sk|rk)_(?:live|test)_(?!placeholder\b)[A-Za-z0-9]{10,}/, 'chave Stripe'],
   [/\bwhsec_[A-Za-z0-9]{10,}/, 'segredo de webhook Stripe'],
   [/\bAKIA[0-9A-Z]{16}\b/, 'chave de acesso AWS'],
   [/\bgh[pousr]_[A-Za-z0-9]{30,}/, 'token do GitHub'],
@@ -84,6 +85,8 @@ export interface ContentBundle {
   shared: SharedFile[];
   agents: AgentDef[];
   skills: SkillDef[];
+  /** Boilerplates instalados em .ai/boilerplates/ (modelos; a cópia de um produto nunca é tocada), ou null se o manifesto não os declara. */
+  boilerplates: { names: string[]; files: number; bytes: number } | null;
   /** Base de conhecimento instalada em .ai/brain/, ou null se o manifesto não a declara. */
   brain: { notes: number; entrypoints: string[] } | null;
   /** Avisos que o conteúdo pede para constar no bloco do AGENTS.md (ex.: modo de trabalho da camada interna). */
@@ -142,6 +145,28 @@ async function readContentFile(ctx: Ctx, relUnderBase: string, where: string, ba
     ctx.errors.push(`${where}: arquivo ausente ${rel}`);
     return null;
   }
+}
+
+/** Pasta (relativa a toolkitBase) dos boilerplates e extensão de um arquivo binário guardado em base64. */
+export const BOILERPLATES_DIR = 'boilerplates';
+export const BINARY_SUFFIX = '.b64';
+/** Arquivos que o npm (ou o git do repositório do toolkit) trataria de forma especial: entram com este sufixo. */
+export const RENAMED_DOTFILES = ['.gitignore', '.gitattributes', '.npmignore'];
+export const TEMPLATE_SUFFIX = '.template';
+const FORBIDDEN_DIRS = ['node_modules', 'target', '.git', 'infra', 'chave-mvn-central', 'dist', 'build', '.next'];
+
+/** Nome de arquivo que nunca pode entrar na cópia dos boilerplates (ambiente, chaves, backups). Só *.example/.sample/.template passam. */
+export function forbiddenBoilerplateFile(name: string): string | null {
+  const lower = name.toLowerCase();
+  if (RENAMED_DOTFILES.includes(lower)) return `use ${name}${TEMPLATE_SUFFIX} (o npm descarta ${name} do pacote)`;
+  const bare = lower.replace(/\.(example|sample|template)$/, '');
+  if (bare !== lower && bare.length > 0) {
+    // modelo explícito: só é aceito se não for chave/backup
+    return /\.(pem|key|p12|pfx|jks|keystore|bak|orig|old|swp|tmp)$/.test(bare) ? 'chave ou backup' : null;
+  }
+  if (/(^|[._-])env$/.test(lower) || /^\.env(\.|$)/.test(lower) || /\.env\./.test(lower)) return 'arquivo de ambiente (só *.example, *.sample ou *.template)';
+  if (/\.(pem|key|p12|pfx|jks|keystore|bak|orig|old|swp|tmp)$/.test(lower) || lower.endsWith('~')) return 'chave, backup ou temporário';
+  return null;
 }
 
 async function listFilesRecursive(dir: string, prefix = ''): Promise<string[]> {
@@ -368,6 +393,7 @@ export async function loadContent(root: string): Promise<ContentBundle> {
     throw new ToolkitError('manifest: toolkitBase deve ser um caminho relativo (ex.: SeedGrid/Toolkit)');
   }
   ctx.base = toolkitBase;
+  let boilerplates: { names: string[]; notes: SharedFile[] } | null = null;
   let brain: { base: string; notes: SharedFile[]; entrypoints: string[] } | null = null;
 
   const shared: SharedFile[] = [];
@@ -424,6 +450,56 @@ export async function loadContent(root: string): Promise<ContentBundle> {
       }
       if (notes.length === 0) ctx.errors.push(`${where}: nenhuma nota encontrada em ${base}/`);
       brain = { base, notes, entrypoints };
+      continue;
+    }
+
+    if (comp.type === 'boilerplates') {
+      // Modelos de produto: toda a pasta boilerplates/<nome>/ do toolkit vira .ai/boilerplates/<nome>/ (gerenciada).
+      if (boilerplates) {
+        ctx.errors.push(`${where}: só pode haver um componente boilerplates`);
+        continue;
+      }
+      const names = Array.isArray(comp.names) && comp.names.length > 0 && comp.names.every((n) => typeof n === 'string' && validName(n)) ? (comp.names as string[]) : null;
+      if (!names || new Set(names).size !== names.length) {
+        ctx.errors.push(`${where}: names deve ser uma lista não vazia, sem repetição, de nomes válidos`);
+        continue;
+      }
+      const found: SharedFile[] = [];
+      const baseAbs = path.join(absRoot, ...(ctx.base ? ctx.base.split('/') : []), BOILERPLATES_DIR);
+      const present = new Set<string>();
+      try {
+        for (const e of await readdir(baseAbs, { withFileTypes: true })) if (e.isDirectory()) present.add(e.name);
+      } catch {
+        // tratado abaixo
+      }
+      for (const extra of [...present].filter((n) => !names.includes(n))) {
+        ctx.errors.push(`${where}: pasta de boilerplate sem entrada em names: ${BOILERPLATES_DIR}/${extra}`);
+      }
+      for (const name of names) {
+        const rels = (await listFilesRecursive(path.join(baseAbs, name))).sort();
+        if (rels.length === 0) {
+          ctx.errors.push(`${where}: boilerplate sem arquivos: ${BOILERPLATES_DIR}/${name}`);
+          continue;
+        }
+        for (const rel of rels) {
+          const segs = rel.split('/');
+          const bad = segs.slice(0, -1).find((sg) => FORBIDDEN_DIRS.includes(sg.toLowerCase()));
+          if (bad) {
+            ctx.errors.push(`boilerplate ${name}: pasta proibida no pacote (${bad}) em ${rel}`);
+            continue;
+          }
+          const why = forbiddenBoilerplateFile(segs[segs.length - 1]!);
+          if (why) {
+            ctx.errors.push(`boilerplate ${name}: ${rel} não pode entrar no pacote: ${why}`);
+            continue;
+          }
+          const under = `${BOILERPLATES_DIR}/${name}/${rel}`;
+          const text = await readContentFile(ctx, under, `boilerplate ${name}`);
+          if (text === null) continue;
+          found.push({ path: under, src: ctx.base ? `${ctx.base}/${under}` : under, type: 'boilerplates', component: comp.id, content: text });
+        }
+      }
+      boilerplates = { names, notes: found };
       continue;
     }
 
@@ -546,6 +622,7 @@ export async function loadContent(root: string): Promise<ContentBundle> {
   for (const s of shared) {
     if (s.path.endsWith('.md')) checkLinks(ctx, s.path, s.content, sharedAvailable, 'conteúdo');
   }
+  if (boilerplates) shared.push(...boilerplates.notes); // depois dos links: o conteúdo dos modelos é opaco
   if (brain) {
     checkBrain(ctx, brain.notes, brain.entrypoints, brain.base);
     shared.push(...brain.notes);
@@ -565,6 +642,9 @@ export async function loadContent(root: string): Promise<ContentBundle> {
     shared,
     agents: agents.sort((a, b) => a.id.localeCompare(b.id)),
     skills: skills.sort((a, b) => a.name.localeCompare(b.name)),
+    boilerplates: boilerplates
+      ? { names: boilerplates.names, files: boilerplates.notes.length, bytes: boilerplates.notes.reduce((n, f) => n + Buffer.byteLength(f.content, 'utf8'), 0) }
+      : null,
     brain: brain
       ? { notes: brain.notes.length, entrypoints: brain.entrypoints.map((e) => `.ai/brain/${brain.base}/${e}`) }
       : null,

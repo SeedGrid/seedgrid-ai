@@ -1,0 +1,4 @@
+interface:
+  display_name: "SeedGrid tela nova"
+  short_description: "Tela, menu e permissoes sincronizados"
+  default_prompt: "Use $seedgrid-new-screen to add a new screen with its permissions, menu item, icon, profile-editor catalog and, if sellable, the plan feature tree."

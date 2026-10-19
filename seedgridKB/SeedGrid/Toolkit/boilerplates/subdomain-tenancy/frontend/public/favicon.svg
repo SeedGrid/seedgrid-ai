@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="SeedGrid Report">
+  <style>
+    .ink { fill: #222222; }
+    @media (prefers-color-scheme: dark) { .ink { fill: #E8E8E8; } }
+  </style>
+  <g transform="translate(54 54)">
+    <g class="ink">
+      <rect x="0" y="0" width="116" height="116" rx="16"/>
+      <rect x="144" y="0" width="116" height="116" rx="16"/>
+      <rect x="0" y="144" width="116" height="116" rx="16"/>
+      <rect x="0" y="288" width="116" height="116" rx="16"/>
+      <rect x="144" y="288" width="116" height="116" rx="16"/>
+      <rect x="288" y="288" width="116" height="116" rx="16"/>
+    </g>
+    <rect x="144" y="144" width="116" height="116" rx="16" fill="#B65F3A"/>
+    <path d="M288 0h102l62 62v174a24 24 0 0 1-24 24H288a24 24 0 0 1-24-24V24a24 24 0 0 1 24-24Z" fill="#B65F3A"/>
+    <path d="M390 0v46a16 16 0 0 0 16 16h46Z" fill="#D98763"/>
+    <g fill="#FFFFFF">
+      <rect x="302" y="144" width="28" height="74" rx="8"/>
+      <rect x="348" y="110" width="28" height="108" rx="8"/>
+      <rect x="394" y="78" width="28" height="140" rx="8"/>
+    </g>
+    <rect x="288" y="284" width="130" height="24" rx="12" class="ink"/>
+  </g>
+</svg>

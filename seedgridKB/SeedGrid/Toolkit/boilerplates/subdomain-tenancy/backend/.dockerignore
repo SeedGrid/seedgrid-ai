@@ -1,0 +1,10 @@
+target/
+dev.env
+dev_old.env
+.env
+.env.*
+**/*.pem
+**/*.p12
+**/*.jks
+data/
+*.log

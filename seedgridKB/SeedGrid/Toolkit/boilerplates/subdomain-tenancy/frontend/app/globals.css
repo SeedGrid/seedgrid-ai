@@ -1,0 +1,359 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --brand-bg: 244 242 239;
+  --brand-surface: 255 255 255;
+  --brand-surface-alt: 248 244 240;
+  --brand-text: 23 24 28;
+  --brand-muted: 75 82 90;
+  --brand-accent: 201 106 45;
+  --brand-accent-strong: 167 80 32;
+  --brand-line: 15 23 42;
+  --primary: 24 63% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 32 33% 95%;
+  --secondary-foreground: 220 10% 12%;
+  --accent: 32 33% 95%;
+  --accent-foreground: 220 10% 12%;
+  --ring: 24 63% 48%;
+  --border: 220 20% 88%;
+  --input: 220 20% 88%;
+  --background: 36 19% 95%;
+  --foreground: 220 10% 12%;
+  --muted: 32 33% 95%;
+  --muted-foreground: 215 9% 36%;
+  /* Raio base do tema (shadcn-style). O tailwind.config mapeia rounded-lg/md/sm a
+     partir daqui; sem isso, rounded-md/lg/sm ficam com calc() invalido (raio 0).
+     8px alinha com o client e com os raios padrao do showcase (md = 6px). */
+  --radius: 8px;
+}
+
+/* Botoes secundarios (SgButton severity="secondary") em cinza neutro, em vez do
+   tom gerado pelo seed laranja (que sai esquisito em botoes utilitarios). Mantem
+   a hierarquia: primario = cor da marca, secundario = discreto. !important porque
+   o SeedThemeProvider injeta os tokens inline no <html>. Serve para solid (fundo
+   cinza) e outline/ghost (texto/borda cinza, que usam --sg-btn-bg). */
+:root {
+  --sg-btn-secondary-bg: #475569 !important; /* slate-600 */
+  --sg-btn-secondary-fg: #ffffff !important;
+  --sg-btn-secondary-border: #475569 !important;
+  --sg-btn-secondary-hover-bg: #334155 !important; /* slate-700 */
+  --sg-btn-secondary-ring: rgb(71 85 105 / 0.35) !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  /* Fundo e texto seguem os tokens do tema (--sg-*), que o SeedThemeProvider flipa entre claro
+     e escuro. Antes usavam --brand-* fixos (light-only), o que no dark deixava o texto escuro
+     invisivel sobre os cards escuros ("as coisas pretas somem"). */
+  background: rgb(var(--sg-bg));
+  color: rgb(var(--sg-text));
+  font-family: var(--font-body), sans-serif;
+  background-attachment: fixed;
+}
+
+body {
+  padding: 24px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(201, 106, 45, 0.14) 0.6px, transparent 0);
+  background-size: 120px 120px;
+  opacity: 0.9;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display), sans-serif;
+}
+
+.shell-screen {
+  /* SgScreen com fullscreen={false} nao injeta width:100%, e como o pai (body)
+     e um bloco, o flex encolhe ao conteudo — deixando o layout estreito e
+     centralizado. Forcamos a largura total e alinhamos a esquerda. */
+  width: 100%;
+  margin: 0;
+  max-width: 1600px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-screen {
+  margin: 0 auto;
+  max-width: 1440px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-shell {
+  min-height: calc(100vh - 48px);
+  display: grid;
+  place-items: center;
+}
+
+.login-shell > * {
+  width: min(100%, 420px);
+}
+
+.login-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.login-error {
+  padding: 12px 14px;
+  border: 1px solid rgba(var(--sg-error-400), 0.4);
+  border-radius: 14px;
+  background: rgba(var(--sg-error-50), 0.9);
+  color: rgb(var(--sg-error-700));
+  font-size: 0.95rem;
+}
+
+.login-info {
+  padding: 12px 14px;
+  border: 1px solid rgba(var(--sg-info-400), 0.35);
+  border-radius: 14px;
+  background: rgba(var(--sg-info-50), 0.9);
+  color: rgb(var(--sg-info-700));
+  font-size: 0.95rem;
+}
+
+.shell-grid {
+  display: grid;
+  grid-template-columns: var(--shell-sidebar-width, 320px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.shell-sidebar,
+.hero-panel {
+  border: 1px solid rgba(var(--sg-border), 0.6);
+  background: rgba(var(--sg-surface), 0.84);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+}
+
+.shell-sidebar {
+  min-height: calc(100vh - 48px);
+  position: sticky;
+  top: 24px;
+}
+
+.shell-menu {
+  background: transparent;
+}
+
+.shell-menu [data-sg-menu-brand] img,
+.shell-menu img[src="/logo-seedgrid.svg"] {
+  width: auto;
+  max-width: 180px;
+  height: 48px;
+}
+
+.shell-content {
+  display: grid;
+  gap: 20px;
+}
+
+.sidebar-note {
+  color: rgb(var(--sg-muted));
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: rgb(var(--brand-accent));
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
+  line-height: 0.92;
+}
+
+.lede {
+  max-width: 42rem;
+  margin: 16px 0 0;
+  color: rgb(var(--sg-muted));
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.hero-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0;
+}
+
+.hero-brand-logo {
+  display: block;
+  width: auto;
+  height: 40px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: rgb(var(--sg-text));
+}
+
+/* Dialog "full" do catalogo: aproveita a altura da janela em vez dos 70vh antigos, descontando
+   cabecalho do dialog e respiro. O conteudo (JSON da spec, creation log) rola dentro do corpo. */
+.report-dialog-body {
+  max-height: calc(100vh - 180px);
+}
+
+.report-dialog-body .creation-log-block {
+  max-height: calc(100vh - 340px);
+}
+
+.report-dialog-body .chat-dialogue-block {
+  max-height: calc(100vh - 320px);
+}
+
+.creation-log-block {
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid rgba(var(--sg-border), 0.9);
+  border-radius: 16px;
+  background: rgba(var(--sg-surface), 0.92);
+  color: rgb(var(--sg-text));
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.report-reference-image {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border: 1px solid rgba(var(--sg-border), 0.9);
+  border-radius: 16px;
+  background: rgba(var(--sg-surface), 0.92);
+}
+
+.chat-dialogue-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 4px;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(var(--sg-border), 0.9);
+}
+
+.chat-bubble-user {
+  align-self: flex-end;
+  background: rgba(var(--sg-muted-surface), 0.9);
+}
+
+.chat-bubble-assistant {
+  align-self: flex-start;
+  background: rgba(var(--sg-surface), 0.92);
+}
+
+.chat-bubble-role {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(var(--sg-text), 0.6);
+}
+
+.chat-bubble-text {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: rgb(var(--sg-text));
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+  }
+
+  .shell-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shell-sidebar {
+    min-height: auto;
+    position: static;
+  }
+}
+
+/* Filtros em grid responsivo (ex.: AI Requests). Sem isso as labels fluem inline e ficam "emboladas". */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px 16px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+.form-grid .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.form-grid .field > span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(var(--sg-muted));
+}
+.form-grid .field select,
+.form-grid .field input {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgb(var(--sg-border));
+  border-radius: 10px;
+  background: rgb(var(--sg-surface));
+  font-size: 0.9rem;
+  color: rgb(var(--sg-text));
+  width: 100%;
+}
+.form-grid .action-row {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}

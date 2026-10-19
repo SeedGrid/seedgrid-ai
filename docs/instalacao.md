@@ -15,13 +15,25 @@ seedgrid-ai doctor
 
 Depois, abra uma **nova sessão** do Claude Code ou do Codex na pasta do projeto.
 
-Versione no Git: `.ai/` (inclusive `.ai/brain/`, cerca de 2 MB de Markdown; exceto `.ai/backups/`, que já se auto-ignora), `.claude/skills/`, `.agents/skills/`, os agentes nativos (se usados), `AGENTS.md`, `CLAUDE.md` e `.ai/toolkit-lock.json`. Assim toda a equipe recebe a mesma versão.
+Versione no Git: `.ai/` (inclusive `.ai/brain/`, cerca de 2 MB de Markdown, e `.ai/boilerplates/`, cerca de 4 MB; exceto `.ai/backups/`, que já se auto-ignora), `.claude/skills/`, `.agents/skills/`, os agentes nativos (se usados), `AGENTS.md`, `CLAUDE.md` e `.ai/toolkit-lock.json`. Assim toda a equipe recebe a mesma versão.
 
 ## A base de conhecimento (`.ai/brain/`)
 
 Toda instalação traz as notas de documentação das extensions e dos componentes SeedGrid em `.ai/brain/SeedGrid/`. O bloco do `AGENTS.md` manda a IA consultá-las pelos índices antes de usar ou configurar qualquer extension ou componente, e responder "não encontrei" em vez de inventar. A pasta é gerenciada: edições locais geram conflito no `update`. Anotações do projeto vão em `.ai/local/`.
 
 As notas indicam, no frontmatter, o `commit` e a data (`analisado-em`) do código que descrevem. Se o projeto usa uma versão diferente das extensions, a IA é instruída a confirmar no código, no jar ou no pacote e a avisar.
+
+## Os boilerplates (`.ai/boilerplates/`)
+
+Toda instalação traz os modelos de produto `login-tenancy` e `subdomain-tenancy` (backend, frontend e admin) em `.ai/boilerplates/<modelo>/` — cerca de 3,9 MB em 795 arquivos, copiados direto, sem `.tgz`. A pasta é **gerenciada** como o resto de `.ai/`: o `update` troca o modelo pelo da versão do CLI, o `remove` a retira e edição local gera conflito.
+
+O `update` só mexe em `.ai/boilerplates/`. Um produto criado a partir de um modelo vive **fora** de `.ai/` (por exemplo `backend/`, `frontend/`, `admin/`) e nunca é tocado, nem lido, pelo `init`, `update` ou `remove`.
+
+Regras do conteúdo dos modelos, conferidas pelo `validate` e pelo `npm test`:
+- Nenhum arquivo de ambiente, chave ou backup (`dev.env`, `_dev.env`, `.env*`, `*.pem`, `*.bak`...). Só entram modelos `*.example`, `*.sample` e `*.template`. Também não entram `node_modules`, `target`, `.git`, `infra` nem `chave-mvn-central`.
+- `.gitignore`, `.gitattributes` e `.npmignore` entram como `<nome>.template` (o npm descarta `.gitignore` do pacote, e um `.gitignore` vivo dentro de `.ai/` afetaria o Git do projeto). Quem cria o produto a partir do modelo remove o sufixo.
+- Arquivos binários entram em base64, com o sufixo `.b64` (hoje só `public/logo-seedgrid-email.png.b64`, nos frontends). Quem cria o produto decodifica e remove o sufixo.
+- O `init` mostra os modelos em uma linha por modelo (`.ai/boilerplates/login-tenancy/ (N arquivo(s))`), não uma linha por arquivo.
 
 ## Escolhendo target e modo
 

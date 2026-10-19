@@ -1,0 +1,7 @@
+Olá, {name}.
+
+{explanation}
+Plano: {plan}.
+{notice}
+
+Se você acredita que isso não deveria acontecer, fale com o administrador da sua conta.

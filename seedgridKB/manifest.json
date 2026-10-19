@@ -172,6 +172,14 @@
       ]
     },
     {
+      "id": "boilerplates",
+      "type": "boilerplates",
+      "names": [
+        "login-tenancy",
+        "subdomain-tenancy"
+      ]
+    },
+    {
       "id": "brain",
       "type": "brain",
       "base": "SeedGrid",

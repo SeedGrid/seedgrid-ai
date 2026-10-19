@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="SeedGrid Report">
+  <style>
+    .ink { fill: #222222; }
+    .ink-muted { fill: #6C6C6C; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #E8E8E8; }
+      .ink-muted { fill: #A8A8A8; }
+    }
+  </style>
+  <g transform="translate(45 43)">
+    <g class="ink">
+      <rect x="0" y="0" width="58" height="58" rx="8"/>
+      <rect x="72" y="0" width="58" height="58" rx="8"/>
+      <rect x="0" y="72" width="58" height="58" rx="8"/>
+      <rect x="0" y="144" width="58" height="58" rx="8"/>
+      <rect x="72" y="144" width="58" height="58" rx="8"/>
+      <rect x="144" y="144" width="58" height="58" rx="8"/>
+    </g>
+    <rect x="72" y="72" width="58" height="58" rx="8" fill="#B65F3A"/>
+
+    <path d="M144 0h51l31 31v87a12 12 0 0 1-12 12h-70a12 12 0 0 1-12-12V12a12 12 0 0 1 12-12Z" fill="#B65F3A"/>
+    <path d="M195 0v23a8 8 0 0 0 8 8h23Z" fill="#D98763"/>
+    <g fill="#FFFFFF">
+      <rect x="151" y="72" width="14" height="37" rx="4"/>
+      <rect x="174" y="55" width="14" height="54" rx="4"/>
+      <rect x="197" y="39" width="14" height="70" rx="4"/>
+    </g>
+    <rect x="144" y="142" width="65" height="12" rx="6" class="ink"/>
+  </g>
+
+  <g font-family="Inter, Montserrat, Arial, sans-serif" dominant-baseline="middle">
+    <text x="315" y="151" class="ink" font-size="112" font-weight="650" letter-spacing="-5">SeedGrid</text>
+    <text x="805" y="157" class="ink-muted" font-size="79" font-weight="400" letter-spacing="-2">Report</text>
+  </g>
+</svg>

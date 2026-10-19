@@ -1,0 +1,10 @@
+# A origem (seedgrid-report) e' CRLF; os arquivos tocados durante a copia viraram LF.
+# Sem isto o primeiro commit vira um diff gigante de fim-de-linha, escondendo a mudanca real.
+* text=auto eol=lf
+*.sh text eol=lf
+*.pem text eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.ttf binary
+*.svg text eol=lf

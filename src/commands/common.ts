@@ -101,10 +101,21 @@ export function renderPlan(plan: Plan): string[] {
   const lines: string[] = [];
   const ops = planOperations(plan);
   const changing = ops.filter((o) => o.action !== 'unchanged');
+  // Os modelos de boilerplate têm centenas de arquivos: uma linha por modelo e ação.
+  const grouped = new Map<string, { label: string; dir: string; n: number }>();
   for (const o of changing) {
     const label = o.type === 'block' && o.action === 'update' ? 'atualizar bloco' : FILE_LABELS[o.action] ?? o.action;
+    const model = /^(\.ai\/boilerplates\/[^/]+)\//.exec(o.path);
+    if (model) {
+      const key = `${label}|${model[1]}`;
+      const g = grouped.get(key) ?? { label, dir: model[1]!, n: 0 };
+      g.n += 1;
+      grouped.set(key, g);
+      continue;
+    }
     lines.push(`  ${label.padEnd(16)} ${o.path}`);
   }
+  for (const g of grouped.values()) lines.push(`  ${g.label.padEnd(16)} ${g.dir}/ (${g.n} arquivo(s))`);
   const unchanged = ops.length - changing.length;
   if (unchanged > 0) lines.push(`  ${'sem mudança'.padEnd(16)} ${unchanged} item(ns)`);
   if (plan.warnings.length > 0) {

@@ -15,6 +15,7 @@ export async function validateCommand(opts: CommandOptions): Promise<CommandResu
       source: dir,
       contentVersion: bundle.contentVersion,
       agents: bundle.agents.map((a) => a.id),
+      boilerplates: bundle.boilerplates,
       brainNotes: bundle.brain?.notes ?? 0,
       skills: bundle.skills.map((s) => s.name),
       files,
@@ -23,6 +24,7 @@ export async function validateCommand(opts: CommandOptions): Promise<CommandResu
     lines: [
       `Conteúdo válido: ${dir}`,
       `  versão ${bundle.contentVersion}; ${bundle.agents.length} papéis, ${bundle.skills.length} skills, ${bundle.brain?.notes ?? 0} notas da KB, ${files} arquivos`,
+      ...(bundle.boilerplates ? [`  boilerplates: ${bundle.boilerplates.names.join(', ')} (${bundle.boilerplates.files} arquivos, ${(bundle.boilerplates.bytes / 1048576).toFixed(1)} MB)`] : []),
     ],
   };
 }
