@@ -16,6 +16,8 @@ Foundation **orquestradora** para aplicações **banco único, multi-empresa (po
 - Porte Rust (crate `seedgrid-rust-crate-login-tenancy`): [[SeedGrid/Extensions/login-tenancy/Rust|Porte Rust]]
 - Alternativa com isolamento físico por tenant: [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|subdomain-tenancy]] (mutuamente exclusivas, segundo o README).
 
+> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+
 ## Módulos Maven e coordenadas (Confirmado — `pom.xml`)
 
 | Módulo | groupId | artifactId | Versão |

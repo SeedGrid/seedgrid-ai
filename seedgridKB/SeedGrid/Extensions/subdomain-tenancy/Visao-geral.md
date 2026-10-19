@@ -13,6 +13,8 @@ Configuração: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuraç
 > [!note] Fontes
 > Lido no código do commit `fe62530a29`. O `README.md` e os `docs/` da extension foram revisados contra o código em 2026-10-14. Os relatórios `AJUSTES_REALIZADOS.md`, `AUDITORIA_FINAL_CONFORMIDADE.md`, `CORRECOES_FINALIZADAS.md`, `IMPLEMENTATION_SUMMARY.md`, `RELATORIO_CONFORMIDADE.md`, `REVISAO_FINAL_CONFORMIDADE.md` e `SETUP_ENVIRONMENT.md` (raiz do repo) são históricos.
 
+> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+
 ## Objetivo
 
 Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo **subdomínio** do host (`cliente1.crm.example.com` → tenant `cliente1`). Inclui:

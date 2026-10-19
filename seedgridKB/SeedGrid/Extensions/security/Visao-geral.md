@@ -10,6 +10,8 @@ analisado-em: 2026-10-14
 
 Notas relacionadas: [[SeedGrid/Extensions/security/Enums|Enums do security]] · [[SeedGrid/Extensions/security/Configuracao|Configuração do security]] · [[SeedGrid/Extensions/security/Exemplos|Exemplos do security]] · [[SeedGrid/Extensions/security/Rust|Porte Rust]]
 
+> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+
 ## Objetivo e funcionalidades
 
 Plano de segurança pronto para aplicações Quarkus da plataforma SeedGrid (Confirmado, `README.md` + código):
