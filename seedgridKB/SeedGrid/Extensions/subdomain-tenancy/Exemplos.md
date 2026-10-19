@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Visão geral: [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|Visão geral do subdomain-tenancy]] · Catálogo de propriedades: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuração do subdomain-tenancy]] · [[SeedGrid/Extensions/subdomain-tenancy/Rust|Porte Rust]]
 
-Fontes: app de exemplo `java/examples/seedgrid-subdomain-tenancy-example` (repositório git próprio, commit `cd83edd` — fora da tabela de commits da análise), `README.md` da extension e o código do runtime (commit `fe62530a29`). Outro consumidor no monorepo: `java/seedgrid-test-multitenancy`.
+Fontes: app de exemplo `java/examples/seedgrid-subdomain-tenancy-example` (repositório git próprio, commit `cd83edd` — fora da tabela de commits da análise), `README.md` da extension e o código do runtime (commit `fe62530a29`).
 
 ## 1. Dependência
 

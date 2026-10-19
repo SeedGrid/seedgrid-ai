@@ -2,6 +2,11 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [0.4.3] — 2026-10-19
+
+### Alterado
+- Regra `documentos.md`: exceção para o aviso de modo de trabalho no `AGENTS.md` (ex. `MODO PLATAFORMA`), que passa a prevalecer sobre `docs/ai/` e elimina a contradição no `seedgrid-ai-plt`.
+
 ## [0.4.2] — 2026-10-18
 
 ### Adicionado

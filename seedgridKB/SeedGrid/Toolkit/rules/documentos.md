@@ -5,6 +5,8 @@ description: "Onde salvar os documentos que a IA gera (planos, handoff, decisõe
 
 Todo documento de trabalho que a IA produzir (plano, handoff, decisão, especificação, relatório, análise, anotações de sessão) é salvo em **`docs/ai/<tipo>/`** do projeto: uma pasta fixa, visível e **versionada**. Nunca na raiz do projeto, em outra pasta de `docs/` nem dentro de `.ai/`, que o toolkit gerencia e reescreve no `update`.
 
+**Exceção — modo de trabalho avisado no `AGENTS.md`:** se o bloco do `AGENTS.md` trouxer um aviso de modo (por exemplo `MODO PLATAFORMA`, do `seedgrid-ai-plt`) que define outro lugar para planos, handoffs, relatórios e ADR, siga o aviso; o que está abaixo vale para projeto host.
+
 **Não crie arquivo `.md` fora de `docs/ai/`**, exceto o que o pedido nomeou (por exemplo um README) e os documentos permanentes do próprio projeto. Rascunho e saída de comando não são documentos: não os grave no projeto.
 
 ## Pastas por tipo
