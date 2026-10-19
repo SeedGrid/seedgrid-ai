@@ -1,5 +1,5 @@
 ---
-description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard; roles de integração com for_integration, V255 e API key com auth proativa). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
+description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; login social Google e Facebook (módulo security-social, V270); invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard; roles de integração com for_integration, V255 e API key com auth proativa). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
 tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, escopo]
 ---
 
@@ -77,7 +77,7 @@ Cobre security, billing-core, login-tenancy e subdomain-tenancy. B2C vale **só 
   - `GET /public/signup/config` devolve `{customerType, termsRequired, termsVersion, termsDocuments}` (o front monta PF, PJ ou o seletor).
   - `SignupConfirmedEvent(personType, cpfCnpj, ...)`.
 - **Termos** (security, V239): tabela `terms_acceptance` (um registro por usuário e versão, com instante, IP e user-agent); `GET /public/terms`; `POST /me/terms/accept` (`{version}`; versão diferente da vigente: 409 `TERMS_VERSION_MISMATCH`); o login devolve `termsAcceptanceRequired`; cadastro sem aceite da versão vigente: 400 `TERMS_NOT_ACCEPTED`.
-- **Login social (decisão para a Fase 2b, 2026-10-19):** o e-mail do provedor é opcional (o Facebook nem sempre devolve); a identidade é `(provider, subject)`, sem coluna por rede; sem e-mail verificado o fluxo pede e confirma o e-mail antes de criar ou vincular; CPF não é pedido no login social. Ainda não implementado.
+- **Login social (decisão para a Fase 2b, 2026-10-19):** o e-mail do provedor é opcional (o Facebook nem sempre devolve); a identidade é `(provider, subject)`, sem coluna por rede; sem e-mail verificado o fluxo pede e confirma o e-mail antes de criar ou vincular; CPF não é pedido no login social. Implementado na Fase 2b abaixo.
 
 ### Migração do host
 
@@ -98,7 +98,7 @@ Cobre `security`, `lib-cache` (core, redis, valkey, dragonfly) e os fronts. Sem 
 
 - Depois de revogar, todo token emitido **antes** do marcador responde **401** `application/problem+json` com `code: SESSION_REVOKED`. Token novo (login depois da revogação) funciona. **API keys ignoram o marcador** (não têm `iat` de sessão).
 - Escopos, em 3 chaves no cache: usuário, usuário+empresa e empresa. Chaves `sg:session-revoked:{escopo}:{user}`, `…:{user}:{company}` e `…:company:{company}`. Valor = epoch em ms; TTL = o do access token (`seedgrid.security.jwt.ttl`, padrão 8 h). `{escopo}` é a claim `subdomain` (subdomain-tenancy) ou `default`.
-- **Falha fechada:** erro ao ler o cache, ou token sem `sub`/`iat` havendo marcador, resulta em 401.
+- **Falha fechada só em parte:** token sem `sub`/`iat` havendo marcador resulta em 401, e erro ao ler o cache também, **mas apenas com `seedgrid.cache.if-provider-is-down=ERROR`**. No padrão `WARN`, com o Redis caído a leitura volta vazia e o token passa como "não revogado" (fail-open). **Não conte com falha fechada** até a correção do `business-day` (em andamento) ser documentada aqui; para exigir revogação imediata, use `ERROR`.
 - Quem grava o marcador: desativar/excluir usuário; trocar senha (própria, reset por admin e `reset-password`); desativar/remover vínculo; inativar empresa (`PATCH /companies` com `active=false`). Ganchos prontos e sem chamador: mudança de estado da empresa (Fase 5, `revokeCompany`) e desvincular identidade social (Fase 2b, `revokeUser`).
 - O `iat` tem resolução de segundo: login no mesmo segundo da revogação também recebe 401 (lado seguro). A claim `companyPublicId` passou a ser emitida no token. Token sem empresa escopada não cai ao remover vínculo com empresa que ele não escopa.
 
@@ -124,6 +124,54 @@ Cobre `security`, `lib-cache` (core, redis, valkey, dragonfly) e os fronts. Sem 
 ### Guardiões da Fase 2
 
 `SessionRevocationGuardianIT` (um no exemplo `login-tenancy`, outro no `subdomain-tenancy`), `SessionRevocationTest`, `JwtAuthenticationFilterRevocationTest`, `SessionRevocationServiceTest` (security); `FailoverCacheTest` e `SeedGridCacheRedisFailoverIT` (lib-cache, com Redis real parando e subindo).
+
+## Fase 2b — login social (Google e Facebook)
+
+Cobre `security`, `login-tenancy` e o **módulo novo e opcional** `seedgrid-quarkus-ext-security-social` (usa `quarkus-oidc`; host que não o adiciona não carrega OIDC). Migration nova do security: **V270** (`user_identity`, `social_login_pending`, `users.password` anulável). **Verificado com servidor OIDC falso:** o login com Google e Facebook reais ainda não foi testado (fica para a fase E2E, manual do dono).
+
+### Como funciona
+
+- Cada provedor é um tenant OIDC `web-app` escolhido por caminho (`/public/auth/social/{provider}/**`). O callback termina no `SocialLoginService` do security, que aplica a política e emite o token SeedGrid (o mesmo `AuthResponse` do login por senha).
+- Convive com e-mail e senha: a mesma conta pode ter os dois métodos; desvincular um mantém o outro. Remover o último método devolve **409** `LAST_LOGIN_METHOD`.
+
+### Propriedades
+
+| Chave | Efeito |
+|---|---|
+| `seedgrid.security.social.providers` | Lista (`google,facebook`; use `google`, **não** `gmail`). Ausente ou vazia: nenhum provedor (módulo inerte). Id desconhecido ou provedor sem credencial: **o boot falha** com mensagem clara. Provedor desligado: 404 `SOCIAL_PROVIDER_DISABLED` |
+| `seedgrid.security.social.<provedor>.*` | `client-id`, segredo, `redirect-uri` (por ambiente) e segredos de estado e de cookie (≥ 32 caracteres, **os mesmos em todos os pods**) |
+| `seedgrid.security.social.allowed-return-hosts` | Hosts permitidos em `returnTo` (anti open-redirect) |
+| `seedgrid.security.social-login.*` | `pending-ttl`, `code-ttl`, `max-code-attempts` (fluxo de e-mail) |
+
+### Contrato
+
+- `GET /public/auth/social/{provider}/login?returnTo=&acceptedTerms=&termsVersion=` inicia o fluxo e volta em `returnTo` com `?ticket=` (sucesso) ou `?status=EMAIL_REQUIRED&pendingToken=`, `TERMS_REQUIRED` ou `REJECTED&code=`.
+- `POST /public/auth/social/exchange {ticket}` devolve o `AuthResponse` (ticket de uso único, TTL 60 s). O 2FA ativo continua valendo.
+- Provedor sem e-mail (Facebook): `POST /public/social/email {pendingToken,email}` envia um **código de 6 dígitos** e `POST /public/social/confirm-email {pendingToken,code}` cria ou vincula e autentica. Não existe confirmação só por link (o código evita sessão por link aberto em outro navegador). A segunda entrada com o mesmo `(provider, sub)` entra direto.
+- `GET /me/identities`, `DELETE /me/identities/{publicId}` (204 ou 409 `LAST_LOGIN_METHOD`) e `POST /me/password` (primeira senha de conta social).
+- `GET /public/signup/config` traz `socialProviders` (lista habilitada; o front só mostra os botões dela).
+
+### Política de segurança
+
+Identidade = `(provider, subject)`, nunca o e-mail. Vincular a usuário existente só com e-mail verificado (a senha anterior é invalidada se o e-mail dele não estava confirmado). Login por senha de conta sem senha dá o mesmo 401 genérico. 2FA mantido. O último método não sai. "Esqueci a senha" exige e-mail confirmado (403). Desvincular e trocar senha revogam sessões. CPF não é pedido no login social. O aceite de termos é exigido na criação quando `seedgrid.security.terms.required`. B2C só no login-tenancy (`SocialAccountCreator` ligado com `customer-type` B2C ou BOTH).
+
+### Facebook (spike, quarkus-oidc 3.30.8, sem conta real)
+
+Preset `provider=facebook` é OIDC com ID token: sem discovery e sem PKCE; o ID token vem sem `email`/`email_verified`; o preset aceitou `iss` errado (fixado `token.issuer`); segredo do cliente por `post`; access token opaco exige `verify-access-token=false`. **A confirmar na conta real (E2E):** `id_token` com escopo `openid`, `iss`/`aud`, versão da Graph API e exigências da Meta (política de privacidade e exclusão de dados).
+
+### Cookie de sessão OIDC
+
+O `quarkus-oidc` autentica **qualquer** caminho que receba o cookie `q_session_*`. Mitigações: `cookie-path` restrito, cookie apagado no callback, `SocialIdentityPathGuard` (401 fora do fluxo) e o `RbacSecurityIdentityAugmentor` ignora identidade com `tenant-id`.
+
+### Quebras de compatibilidade
+
+- Login por senha de conta só-social: o mesmo 401 genérico.
+- "Esqueci a senha" exige e-mail confirmado (403).
+- `users.password` aceita NULL: SQL cru que assuma NOT NULL deve ser revisado.
+
+### Guardiões da Fase 2b
+
+`SocialLoginPolicyGuardianIT`, `SocialLoginNoEmailGuardianIT`, `SocialLoginSameAccountGuardianIT`, `SocialLoginTermsGuardianIT`, `PasswordServiceNullSafeTest` (security); `SocialLoginFlowGuardianIT`, `SocialFacebookNoEmailEndToEndGuardianIT`, `SocialLoginChainGuardianIT`, `SocialNoTenantBootGuardianIT`, `SocialMultiPodA/B/CIT` (módulo social); `SocialAccountCreatorIT` (login-tenancy).
 
 ## Fase 3 — invariante "mínimo 1 ADMIN ativo"
 
@@ -205,5 +253,4 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 
 ## Pendente neste ciclo
 
-- Fase 2b: login social (decisão acima registrada, sem implementação).
 - Fases 5 e 7: estado de empresa, boilerplates.
