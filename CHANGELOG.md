@@ -11,6 +11,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 - KB: notas `Extensions/Propriedades-para-subir.md` (variáveis do `dev.env` e geração de segredos), `Extensions/Servicos-de-apoio.md` (serviços do compose) e `SeedGrid-components/modulos/Composicao-do-admin.md` (módulos do front: o que adicionar e remover).
 
+- Trava de credenciais no empacotamento: `scripts/check-secrets.mjs` (copiado do boilerplate, com `--dir` e `--kb-dir` repetíveis) confere nome e conteúdo de `seedgridKB/SeedGrid/Toolkit/boilerplates/` e de `seedgridKB/` inteiro; falha com arquivo de ambiente, backup ou segredo sob qualquer nome (`_dev.env`, `dev.env.bak`, `.pem`) e com token ou atribuição literal. Roda em `npm run check-secrets`, no `prepack` (antes do build) e no `npm test`. Única folga, só em `--kb-dir` e só em `*.md`: atribuição e valor longo (as notas citam variáveis) e marcador de chave privada citado entre crases; `.env`, `.txt`, `.ts`, `.json` e demais tipos não são relaxados. Pasta de boilerplates ainda inexistente: aviso e segue. Versão do pacote inalterada.
+
 ### Alterado
 - `init` em pasta que ainda não é repositório faz `git init -b main`, um commit inicial só com o que instalou e cria a `develop` (branch atual). Em repositório existente não altera branches. `--no-develop` cria só a `main` (o `seedgrid-ai-plt` a passa sempre, sem opção própria); `SEEDGRID_AI_SKIP_GIT=1` desliga.
 

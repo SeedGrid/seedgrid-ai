@@ -29,9 +29,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:test": "tsc -p tsconfig.test.json",
-    "test": "npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
+    "check-secrets": "node scripts/check-secrets.mjs --dir seedgridKB/SeedGrid/Toolkit/boilerplates --kb-dir seedgridKB",
+    "test": "npm run check-secrets && npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
     "validate-content": "npm run build && node dist/cli.js validate",
-    "prepack": "npm run clean && npm run build",
+    "prepack": "npm run check-secrets && npm run clean && npm run build",
     "clean": "node -e \"for (const d of ['dist','build-test']) require('node:fs').rmSync(d,{recursive:true,force:true})\""
   },
   "dependencies": {
