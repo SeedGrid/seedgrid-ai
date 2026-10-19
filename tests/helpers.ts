@@ -7,6 +7,7 @@ import { bundledContentDir } from '../src/core/env.js';
 export const TK = 'SeedGrid/Toolkit/'; // pasta do conteúdo do toolkit dentro do vault
 process.env.SEEDGRID_AI_SKIP_TOOL_DETECTION = '1';
 process.env.SEEDGRID_AI_NO_UPDATE_CHECK = '1';
+process.env.SEEDGRID_AI_SKIP_GIT = '1'; // testes de git ligam de novo, em tests/init-git.test.ts
 
 const created: string[] = [];
 

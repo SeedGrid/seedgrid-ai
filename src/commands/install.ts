@@ -2,6 +2,7 @@ import path from 'node:path';
 import { ADAPTERS, buildDesiredState } from '../adapters/index.js';
 import { ApplyError, applyPlan, newOperationId } from '../core/apply.js';
 import { loadContent } from '../core/content.js';
+import { setupProductRepo } from '../core/git.js';
 import { bundledContentDir, cliVersion, resolveProject } from '../core/env.js';
 import { readLock, type LockSource } from '../core/lock.js';
 import { planInstall } from '../core/plan.js';
@@ -95,13 +96,22 @@ export async function runInstall(kind: 'init' | 'update', opts: CommandOptions):
   }
   try {
     const result = await applyPlan(plan, operationId, opts.io);
+    const repo =
+      kind === 'init'
+        ? await setupProductRepo(
+            projectRoot,
+            planOperations(plan).filter((o) => o.action !== 'unchanged' && o.action !== 'delete').map((o) => o.path),
+          )
+        : null;
     return {
       exitCode: EXIT_OK,
-      report: { ...report, applied: true, operationId, result },
+      report: { ...report, applied: true, operationId, result, ...(repo ? { git: repo } : {}) },
       lines: [
         ...lines,
         '',
         `Concluído (operação ${operationId}).`,
+        ...(repo?.status === 'created' ? ['Repositório git criado: branches main e develop (atual: develop). A branch de trabalho sai da develop.'] : []),
+        ...(repo?.status === 'failed' ? [`Aviso: ${repo.reason}. A instalação foi concluída; crie as branches main e develop manualmente.`] : []),
         ...(result.backupDir ? [`Backup dos arquivos alterados: ${result.backupDir}/`] : []),
         'Abra uma nova sessão do Claude Code ou do Codex para carregar as mudanças.',
         'Verifique com: seedgrid-ai doctor',
