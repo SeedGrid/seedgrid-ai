@@ -26,6 +26,7 @@ Alvo: por padrão, os arquivos alterados (`git diff --name-only <base>...HEAD` m
 3. Abra só os arquivos com suspeita e confirme no contexto. Descarte falsos positivos (por exemplo, `<input>` dentro do próprio pacote de componentes, ou comentário que justifica a exceção da FE-01).
 4. Para regras que exigem julgamento (FE-02, BE-05, BE-11, BE-40), reporte só o que você consegue sustentar com o trecho de código. Diga o que **não** conseguiu verificar.
 5. Ao revisar uma tarefa concluída, rode também `node .ai/skills/sg-branch-status/scripts/branch-status.mjs` e reporte como violação **HO-04** (`.ai/rules/branches.md`) a branch da tarefa que continua existindo (local ou remota) ou o worktree que sobrou depois do merge.
+6. Reporte como violação **HO-08/HO-09** (`.ai/rules/limites-do-host.md`): alteração em fonte ou `pom.xml` de extension SeedGrid dentro do produto; referência, link ou gravação em `seedgrid-platform-work`, na KB de plataforma ou em ADR de plataforma; documento do produto fora de `docs/ai/`.
 
 ## Saída
 
