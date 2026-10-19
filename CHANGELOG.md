@@ -2,6 +2,12 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [0.4.4] — 2026-10-19
+
+### Alterado
+- Economia de tokens: `SeedGrid-components/Indice.md` cai de 38 KB para ~10 KB (nomes por grupo); o resumo de cada símbolo foi para a nova nota `Catalogo.md`, lida só quando preciso escolher. O índice ensina a abrir só a seção do componente (`Grep "^## SgNome"` + faixa). As notas grandes (catálogos de propriedades e de enums) avisam para usar `Grep`.
+- `scripts/kb-catalogs.mjs`: novo alvo `catalogo`.
+
 ## [0.4.3] — 2026-10-19
 
 ### Alterado

@@ -9,6 +9,8 @@ gerado-de: notas Enums (Java) e seção Enums das notas Rust/Visao-geral desta v
 
 Todos os enums públicos documentados, por extension. Cada linha leva à seção do enum na nota `Enums` (Java) ou `Rust`/`Visao-geral` (seção "Enums"), com significado de cada valor, onde é tratado, serialização (JSON, config, banco) e divergências Java × Rust. Valores que existem no enum mas nenhum código trata estão marcados nas notas.
 
+**Nota grande (~30 KB): use `Grep` pelo nome do enum** e leia só a faixa.
+
 Como ler: **Quarkus** = enum Java; **Rust** = enum do crate equivalente (variantes e grafia de serde podem diferir — veja a nota). Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only enums --write`) a partir das próprias notas; "—" em Valores = a nota não lista as variantes.
 
 | Enum | Plataforma | Extension | Valores | Usado em | Nota |

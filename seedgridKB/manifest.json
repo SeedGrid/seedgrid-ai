@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.4.3",
+  "contentVersion": "0.4.4",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -162,6 +162,7 @@
         "Extensions/Catalogo-de-enums.md",
         "Extensions/Indice.md",
         "SeedGrid-components/Indice.md",
+        "SeedGrid-components/Catalogo.md",
         "Mapa-dos-repositorios.md"
       ]
     }

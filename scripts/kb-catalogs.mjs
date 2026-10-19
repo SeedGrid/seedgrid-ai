@@ -3,7 +3,8 @@
 //
 //   properties  seedgridKB/SeedGrid/Extensions/Catalogo-de-propriedades.md
 //   enums       seedgridKB/SeedGrid/Extensions/Catalogo-de-enums.md
-//   components  seedgridKB/SeedGrid/SeedGrid-components/Indice.md
+//   components  seedgridKB/SeedGrid/SeedGrid-components/Indice.md (enxuto: nomes por grupo, lido em toda consulta)
+//   catalogo    seedgridKB/SeedGrid/SeedGrid-components/Catalogo.md (resumo de cada símbolo, lido só quando preciso escolher)
 //
 // Fontes (todas notas da vault):
 //   properties  Extensions/<ext>/Configuracao.md (Quarkus) e Configuracao-Rust.md (Rust); front: tabelas de
@@ -30,7 +31,7 @@
 //   - Funções "lógicas" (menu-logic etc.) saem uma linha por função (o catálogo antigo as agrupava em 1 linha).
 //
 // Uso (a partir de seedgrid-ia, sem build):
-//   node scripts/kb-catalogs.mjs [--only properties|enums|components] [--write | --check]
+//   node scripts/kb-catalogs.mjs [--only properties|enums|components|catalogo] [--write | --check]
 //     (sem flag)  imprime um resumo (contagens) do que seria gerado
 //     --write     grava os catálogos (preserva o fim de linha do arquivo existente; novo arquivo = LF)
 //     --check     sai com código 1 se algum arquivo existente difere do que seria gerado
@@ -48,7 +49,7 @@ const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
 const optIdx = args.indexOf('--only');
 const only = optIdx >= 0 ? args[optIdx + 1] : null;
-const KINDS = ['properties', 'enums', 'components'];
+const KINDS = ['properties', 'enums', 'components', 'catalogo'];
 if (only && !KINDS.includes(only)) {
   console.error(`--only inválido: ${only} (use ${KINDS.join('|')})`);
   process.exit(2);
@@ -227,6 +228,7 @@ function buildProperties() {
     `gerado-por: ${GENERATOR} --only properties`, 'gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault', '---', '');
   L.push('# Catálogo de propriedades', '');
   L.push('Tabela geral de **todas as propriedades públicas** de configuração documentadas nas notas `Configuracao` das extensions/libraries (Quarkus), `Configuracao-Rust` dos crates (Rust, variáveis de ambiente e campos de config) e nos módulos/pacotes front. Propriedades de teste e de frameworks (`quarkus.*`, `mp.*`), aliases/obsoletas e exemplos **não** entram aqui — estão nas respectivas notas.', '');
+  L.push('- **Nota grande (~200 KB): nunca leia inteira.** Use `Grep` pelo nome ou prefixo da propriedade (ex. `seedgrid.audit.`) e leia só as linhas achadas.');
   L.push('- Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only properties --write`) a partir das próprias notas; não edite à mão — corrija a nota de origem e regenere.');
   L.push('- Detalhes (valores aceitos, obrigatoriedade, relações, origem no código): siga o link da coluna **Nota**.');
   L.push('- "Padrão" `—` = sem valor padrão (ou coluna ausente na tabela de origem); "não confirmado" = não foi possível confirmar no código.');
@@ -395,6 +397,7 @@ function buildEnums() {
   L.push('---', 'tags: [seedgrid, enum, catalogo]', `analisado-em: ${maxDate(sources)}`, `gerado-por: ${GENERATOR} --only enums`, 'gerado-de: notas Enums (Java) e seção Enums das notas Rust/Visao-geral desta vault', '---', '');
   L.push('# Catálogo de enums', '');
   L.push('Todos os enums públicos documentados, por extension. Cada linha leva à seção do enum na nota `Enums` (Java) ou `Rust`/`Visao-geral` (seção "Enums"), com significado de cada valor, onde é tratado, serialização (JSON, config, banco) e divergências Java × Rust. Valores que existem no enum mas nenhum código trata estão marcados nas notas.', '');
+  L.push('**Nota grande (~30 KB): use `Grep` pelo nome do enum** e leia só a faixa.', '');
   L.push('Como ler: **Quarkus** = enum Java; **Rust** = enum do crate equivalente (variantes e grafia de serde podem diferir — veja a nota). Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only enums --write`) a partir das próprias notas; "—" em Valores = a nota não lista as variantes.', '');
   L.push('| Enum | Plataforma | Extension | Valores | Usado em | Nota |', '|---|---|---|---|---|---|');
   for (const r of rows) L.push(rowOf([`\`${r.name}\``, r.platform, r.ext, r.values, r.used, r.note]));
@@ -576,7 +579,7 @@ function firstParagraph(text) {
   return para.join(' ');
 }
 
-function buildComponents() {
+function buildComponents(detail = false) {
   const fundVG = path.join(compDir, 'fundamentos', 'Visao-geral.md');
   const fm = frontmatter(read(fundVG));
   const fundText = read(fundVG);
@@ -651,10 +654,10 @@ function buildComponents() {
   const totalSg = groupsOut.reduce((n, x) => n + x.sg, 0);
   const totalOther = groupsOut.reduce((n, x) => n + x.other, 0);
   const L = [];
-  L.push('---', 'tags: [seedgrid, component, indice]');
+  L.push('---', detail ? 'tags: [seedgrid, component, catalogo]' : 'tags: [seedgrid, component, indice]');
   for (const k of ['fonte', 'branch', 'commit']) if (fm[k]) L.push(`${k}: ${fm[k]}`);
-  L.push(`analisado-em: ${maxDate(sources)}`, `gerado-por: ${GENERATOR} --only components`, '---', '');
-  L.push('# Índice dos componentes SeedGrid (front-end)', '');
+  L.push(`analisado-em: ${maxDate(sources)}`, `gerado-por: ${GENERATOR} --only ${detail ? 'catalogo' : 'components'}`, '---', '');
+  L.push(detail ? '# Catálogo dos componentes SeedGrid (resumo de cada símbolo)' : '# Índice dos componentes SeedGrid (front-end)', '');
   L.push(`Monorepo \`front/seedgrid-fe-components\` (pnpm + Turborepo, React 19). Pacote principal \`@seedgrid/fe-components\` ${version}; importação pública pelo barrel \`src/index.ts\` (\`import { SgButton } from "@seedgrid/fe-components"\`) e CSS em \`@seedgrid/fe-components/style.css\` — detalhes em ${SG}fundamentos/Visao-geral|Fundamentos]].`, '');
   L.push('- **Exportado = sim**: disponível no barrel público. **não**: interno (documentado só para referência).');
   L.push('- Cada grupo tem `Visao-geral` (quando usar), `API` (props completas, eventos, a11y) e `Exemplos` (TSX validado contra a API).');
@@ -664,9 +667,15 @@ function buildComponents() {
   L.push('## Resumo', '', '| Grupo | Componentes `Sg*` | Outros símbolos (hooks, funções, pacotes) | Notas |', '|---|---|---|---|');
   for (const x of groupsOut) L.push(rowOf([x.title, x.sg, x.other, x.noteLinks.join(' · ')]));
   L.push(rowOf(['**Total**', `**${totalSg}**`, `**${totalOther}**`, '']), '');
-  for (const x of groupsOut) {
-    L.push(`## ${x.title}`, '', '| Nome | Exportado | Resumo | Nota |', '|---|---|---|---|');
-    for (const r of x.rows) L.push(rowOf([`\`${r.name}\``, r.exp, r.sum, r.note]));
+  if (detail) {
+    for (const x of groupsOut) {
+      L.push(`## ${x.title}`, '', '| Nome | Exportado | Resumo | Nota |', '|---|---|---|---|');
+      for (const r of x.rows) L.push(rowOf([`\`${r.name}\``, r.exp, r.sum, r.note]));
+      L.push('');
+    }
+  } else {
+    L.push('## Onde está cada símbolo', '', `Procure o nome abaixo e abra só a seção dele: \`Grep "^## NomeDoComponente"\` no \`API.md\` do grupo (props completas) e depois leia essa faixa com \`offset\`/\`limit\`. O resumo de cada símbolo, e se ele é exportado, está em ${SG}Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).`, '');
+    for (const x of groupsOut) L.push(`- **${x.title}** (\`${x.g}/\`): ${x.rows.map((r) => r.name).join(', ')}`);
     L.push('');
   }
   const extra = unknown.length ? `; grupos não mapeados no script: ${unknown.join(', ')}` : '';
@@ -685,7 +694,8 @@ function noteSet(g) {
 const targets = {
   properties: { file: path.join(extDir, 'Catalogo-de-propriedades.md'), build: buildProperties },
   enums: { file: path.join(extDir, 'Catalogo-de-enums.md'), build: buildEnums },
-  components: { file: path.join(compDir, 'Indice.md'), build: buildComponents },
+  components: { file: path.join(compDir, 'Indice.md'), build: () => buildComponents(false) },
+  catalogo: { file: path.join(compDir, 'Catalogo.md'), build: () => buildComponents(true) },
 };
 let failed = false;
 for (const kind of only ? [only] : KINDS) {

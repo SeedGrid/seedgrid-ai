@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-10-14
+analisado-em: 2026-10-16
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -9,6 +9,7 @@ gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e m
 
 Tabela geral de **todas as propriedades públicas** de configuração documentadas nas notas `Configuracao` das extensions/libraries (Quarkus), `Configuracao-Rust` dos crates (Rust, variáveis de ambiente e campos de config) e nos módulos/pacotes front. Propriedades de teste e de frameworks (`quarkus.*`, `mp.*`), aliases/obsoletas e exemplos **não** entram aqui — estão nas respectivas notas.
 
+- **Nota grande (~200 KB): nunca leia inteira.** Use `Grep` pelo nome ou prefixo da propriedade (ex. `seedgrid.audit.`) e leia só as linhas achadas.
 - Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only properties --write`) a partir das próprias notas; não edite à mão — corrija a nota de origem e regenere.
 - Detalhes (valores aceitos, obrigatoriedade, relações, origem no código): siga o link da coluna **Nota**.
 - "Padrão" `—` = sem valor padrão (ou coluna ausente na tabela de origem); "não confirmado" = não foi possível confirmar no código.
@@ -28,7 +29,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | commons | 5 |
 | Quarkus | exchange | 2 |
 | Quarkus | filemanagement | 26 |
-| Quarkus | login-tenancy | 35 |
+| Quarkus | login-tenancy | 33 |
 | Quarkus | notification | 9 |
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
@@ -58,7 +59,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **709** |
+| **Total** | | **707** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -249,9 +250,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.login-tenancy.modules.filemanagement.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só afeta activeModules (status/log); filemanagement não tem migrations no baseline | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.audit.mongodb.database` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — (deriva `<app.code>_audit_db`, ou `audit_db`) | audit]]) | Override do banco Mongo de auditoria produzido pela foundation (banco único) | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.audit.persistence.strategy` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | Runtime | Decide se as migrations db/migration/audit rodam | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
-| `seedgrid.login-tenancy.modules.ai-pricing.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não migra o ai-pricing e as rotas respondem 404 | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
-| `seedgrid.login-tenancy.modules.exchange.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não migra o exchange e as rotas respondem 404 | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
-| `seedgrid.login-tenancy.modules.business-days.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não migra o business-days e as rotas respondem 404 | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.security.first-admin-user.email` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | security]] | Só lida para decidir logs/WARN e firstAdminConfigured no status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.security.jwt.issuer` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | Runtime | Exibido em security.jwtIssuer no status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.show-dev-message` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `boolean` | `false` | Runtime | Inclui devMessage nos problem+json das exceções da login-tenancy | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
@@ -479,7 +477,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.master.entity-packages` | Datasource master | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_ENTITY_PACKAGES`) | build (via expansão — Inferência) | Prefixada em quarkus.hibernate-orm.master.packages=${…master.entity-packages},br.com.seedgrid.subdomaintenancy.entities… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.master.migrations.location.additional` | Datasource master | `Optional<String>` (CSV) | MPC: vazio | runtime | Anexadas à base classpath:db/migration/master no mesmo history flyway_schema_history_master; versões precisam ser… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `database.master.subdomain` | Datasource master | `Optional<String>` | MPC: `${PRODUCT_PREFIX:app}` | runtime | Nenhum código da extension a lê (DatabaseMasterConfig não é injetado); é um valor auxiliar publicado para o host… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
-| `database.master.name` | Datasource master | `Optional<String>` | MPC: `${database.master.subdomain}_master` | runtime | Valor auxiliar para expressões do host; usado em expressões `${database.master.name}` do `application.properties` do host | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `database.master.name` | Datasource master | `Optional<String>` | MPC: `${database.master.subdomain}_master` | runtime | Valor auxiliar para expressões do host; ex.: …master.datasource.jdbc.url=${SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL:jdb… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.url` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` (sem `url` nem `url-pattern`: `jdbc:postgresql://localhost:5439/{tenant}`) | runtime | getEffectiveUrlPattern() remove / final e acrescenta /{tenant}; {tenant} vira o nome do banco (<prefix>_<tenant>) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.url-pattern` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` | runtime | Se não-vazia, usada como está (Javadoc: compatibilidade/legado) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.username` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | `—` no MPC; fallback `postgres` no código | runtime | Usuário de todos os bancos de tenant; também usado como OWNER no CREATE DATABASE (provisionamento) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
