@@ -2,7 +2,7 @@
 id: frontend-react
 description: Implementa telas, componentes e integração com APIs em React quando a tarefa altera o frontend.
 capabilities: [read-files, edit-files, run-checks]
-preferred_skills: [sg-crud-front, sg-new-screen, sg-validate-change]
+preferred_skills: [sg-componente, sg-crud-front, sg-new-screen, sg-validate-change]
 ---
 
 # Frontend React

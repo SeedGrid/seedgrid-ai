@@ -40,7 +40,7 @@ Monorepo `front/seedgrid-fe-components` (pnpm + Turborepo, React 19). Pacote pri
 
 ## Onde está cada símbolo
 
-Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` no `API.md` do grupo (props completas) e depois leia essa faixa com `offset`/`limit`. O resumo de cada símbolo, e se ele é exportado, está em [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).
+Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` no `API.md` do grupo (props completas) e depois leia essa faixa com `offset`/`limit`. Para escolher o componente por necessidade ("preciso de X"), leia [[SeedGrid/SeedGrid-components/Preciso-de|Preciso de X, use Y]] e valide as props com a skill `sg-componente`. O resumo de cada símbolo, e se ele é exportado, está em [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).
 
 - **Inputs de texto e documentos** (`inputs-texto/`): SgInputText, SgInputTextArea, SgInputTextSearch, SgInputEmail, SgInputPassword, SgInputPhone, SgInputCPF, SgInputCNPJ, SgInputCPFCNPJ, SgInputPostalCode, SgInputDate, SgInputBirthDate, SgInputNumber, SgInputCurrency, SgInputOTP
 - **Inputs de seleção e valores** (`inputs-selecao/`): SgAutocomplete, SgCombobox, SgCheckboxGroup, SgRadioGroup, SgMultiSelect, SgMultiSelectChips, SgOrderList, SgPickList, SgPeriodSelector, SgYearPartSelector, SgToggleSwitch, SgRating, SgSlider, SgStepperInput

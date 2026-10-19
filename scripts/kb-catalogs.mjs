@@ -674,7 +674,7 @@ function buildComponents(detail = false) {
       L.push('');
     }
   } else {
-    L.push('## Onde está cada símbolo', '', `Procure o nome abaixo e abra só a seção dele: \`Grep "^## NomeDoComponente"\` no \`API.md\` do grupo (props completas) e depois leia essa faixa com \`offset\`/\`limit\`. O resumo de cada símbolo, e se ele é exportado, está em ${SG}Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).`, '');
+    L.push('## Onde está cada símbolo', '', `Procure o nome abaixo e abra só a seção dele: \`Grep "^## NomeDoComponente"\` no \`API.md\` do grupo (props completas) e depois leia essa faixa com \`offset\`/\`limit\`. Para escolher o componente por necessidade ("preciso de X"), leia ${SG}Preciso-de|Preciso de X, use Y]] e valide as props com a skill \`sg-componente\`. O resumo de cada símbolo, e se ele é exportado, está em ${SG}Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).`, '');
     for (const x of groupsOut) L.push(`- **${x.title}** (\`${x.g}/\`): ${x.rows.map((r) => r.name).join(', ')}`);
     L.push('');
   }

@@ -28,7 +28,7 @@ Base de documentação técnica do ecossistema SeedGrid, gerada a partir do cód
 - **Quais valores um enum aceita / o que cada valor faz** → [[SeedGrid/Extensions/Catalogo-de-enums|Catálogo de enums]] (~29 KB: `Grep` pelo nome do enum).
 - **Quero usar o Pulse (realtime, notificações, WebSocket)** → [[SeedGrid/Produtos/Pulse/Visao-geral|Pulse]].
 - **Quero entender uma extension** → [[SeedGrid/Extensions/Indice|Índice das extensions]].
-- **Quero usar um componente React** → [[SeedGrid/SeedGrid-components/Indice|Índice dos componentes]] (nomes por grupo; depois `Grep "^## SgNome"` no `API.md` do grupo e leia só a faixa).
+- **Quero usar um componente React** → [[SeedGrid/SeedGrid-components/Indice|Índice dos componentes]] (por necessidade: [[SeedGrid/SeedGrid-components/Preciso-de|Preciso de X, use Y]] e a skill `sg-componente`; nomes por grupo; depois `Grep "^## SgNome"` no `API.md` do grupo e leia só a faixa).
 - **Quero saber o que depende do quê** → [[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]].
 - **Qual versão do artefato esta documentação descreve** (e se o seu projeto usa outra) → [[SeedGrid/Versoes|Versões documentadas × atuais]].
 

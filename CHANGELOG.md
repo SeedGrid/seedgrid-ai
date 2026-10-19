@@ -2,6 +2,11 @@
 
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão do pacote (`package.json`) é a mesma do conteúdo (`seedgridKB/manifest.json`). Atualize este arquivo no mesmo commit do bump.
 
+## [0.5.0] — 2026-10-19
+
+### Adicionado
+- Skill `sg-componente`: escolhe o componente pela nota `Preciso-de.md` ("preciso de X, use Y", gerada dos manifestos de IA, ~12 KB) e valida props com `scripts/validate-props.mjs` contra os tipos reais (`data/props.json`): prop inexistente com sugestão, obrigatória ausente, valor fora do enum, tipo errado. Substitui `find_by_semantic`/`suggest_for_field`/`validate_props` do MCP com poucos tokens.
+
 ## [0.4.4] — 2026-10-19
 
 ### Alterado

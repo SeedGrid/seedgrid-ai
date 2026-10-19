@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.4.4",
+  "contentVersion": "0.5.0",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -144,6 +144,16 @@
       ]
     },
     {
+      "id": "skill:sg-componente",
+      "type": "skill",
+      "name": "sg-componente",
+      "files": [
+        "SKILL.md",
+        "scripts/validate-props.mjs",
+        "data/props.json"
+      ]
+    },
+    {
       "id": "skill:sg-plan-goal",
       "type": "skill",
       "name": "sg-plan-goal",
@@ -162,7 +172,7 @@
         "Extensions/Catalogo-de-enums.md",
         "Extensions/Indice.md",
         "SeedGrid-components/Indice.md",
-        "SeedGrid-components/Catalogo.md",
+        "SeedGrid-components/Preciso-de.md",
         "Mapa-dos-repositorios.md"
       ]
     }
