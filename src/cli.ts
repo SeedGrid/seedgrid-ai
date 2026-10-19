@@ -38,7 +38,7 @@ Comandos:
 
 Uso:
   seedgrid-ai install  [--dry-run]
-  seedgrid-ai init     [--target claude|codex|both] [--mode shared|native] [--source <pasta>] [--dry-run]
+  seedgrid-ai init     [--target claude|codex|both] [--mode shared|native] [--source <pasta>] [--dry-run] [--no-develop]
   seedgrid-ai update   [--target ...] [--mode ...] [--source <pasta>] [--dry-run]
   seedgrid-ai status
   seedgrid-ai doctor   [--probe]
@@ -50,6 +50,7 @@ Opções comuns:
   --project <caminho>  Projeto alvo (padrão: pasta atual)
   --json               Saída JSON para scripts
   --dry-run            Mostra o plano sem escrever nenhum arquivo
+  --no-develop         (init) Em pasta nova cria só a branch main, sem a develop (usado pelo seedgrid-ai-plt)
   --probe              (doctor) Confirma a descoberta real onde a ferramenta oferece sonda local
                        (Codex: codex debug prompt-input; não chama o modelo, mas inicia a CLI com sua configuração)
   --tool, --full       (review) Ferramenta que executa a revisão (padrão: Claude Code, depois Codex) e revisão do projeto inteiro
@@ -93,7 +94,6 @@ export async function main(argv: string[]): Promise<number> {
         probe: { type: 'boolean' },
         tool: { type: 'string' },
         full: { type: 'boolean' },
-        // Interna (fora da ajuda): o seedgrid-ai-plt a passa porque o fluxo de plataforma trabalha sem develop.
         'no-develop': { type: 'boolean' },
         'no-update-check': { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },

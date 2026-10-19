@@ -6,6 +6,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ### Adicionado
 - Skill `sg-branch-status`: lista branches e worktrees já mergeados (inclusive por squash, comparando conteúdo) ou sem dono e limpa, com confirmação, branch local, remota e worktree das mergeadas; recusa `main`, `develop` e branch não mergeada. A `coordenacao.md` manda rodá-la no início de toda tarefa não trivial. Versão do pacote inalterada: a release é única e adiada.
+- Regra `branches.md` (HO-01 a HO-07): `main` e `develop`, uma branch por tarefa, squash na `develop`, release por merge normal, limpeza de branch e worktree e autorização pelo ato irreversível; o `sg-review` reporta como HO-04 a branch ou o worktree que sobrou depois do merge.
+
+### Alterado
+- `init` em pasta que ainda não é repositório faz `git init -b main`, um commit inicial só com o que instalou e cria a `develop` (branch atual). Em repositório existente não altera branches. `--no-develop` cria só a `main` (o `seedgrid-ai-plt` a passa sempre, sem opção própria); `SEEDGRID_AI_SKIP_GIT=1` desliga.
 
 ## [0.5.0] — 2026-10-19
 
