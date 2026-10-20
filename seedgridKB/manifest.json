@@ -182,6 +182,7 @@
         "data/matriz-produto.json",
         "data/matriz-produto.schema.json",
         "scripts/matriz.mjs",
+        "scripts/scaffold-produto.mjs",
         "assets/admin.Dockerfile.tpl",
         "assets/backend.Dockerfile.tpl",
         "assets/frontend.Dockerfile.tpl",

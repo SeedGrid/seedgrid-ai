@@ -11,7 +11,7 @@
     "fixo": { "type": "object" },
     "segredos": {
       "type": "object",
-      "additionalProperties": { "enum": ["senha", "senha-politica", "base64-32", "hex-32", "rsa-privada-b64", "rsa-publica-b64"] }
+      "additionalProperties": { "enum": ["senha", "politica-admin", "base64-32", "hex-32", "rsa-privada-b64", "rsa-publica-b64"] }
     },
     "blocos_env": {
       "type": "object",

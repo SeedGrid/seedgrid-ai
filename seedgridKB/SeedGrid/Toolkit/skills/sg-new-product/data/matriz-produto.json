@@ -19,25 +19,25 @@
     "ENCRYPTION_KEY": "base64-32",
     "PRIVACY_CRYPTO_KEY": "base64-32",
     "PRIVACY_SEARCH_KEY": "hex-32",
-    "ADMIN_INITIAL_PASSWORD": "senha-politica"
+    "ADMIN_BOOTSTRAP": "politica-admin"
   },
   "blocos_env": {
     "banco-login-tenancy": {
       "SEEDGRID_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}/{{slugSnake}}_app",
       "SEEDGRID_DB_USERNAME": "postgres",
-      "SEEDGRID_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD"
+      "SEEDGRID_DB_PASSWORD": "${segredo:POSTGRES_PASSWORD}"
     },
     "banco-subdomain-tenancy": {
       "PRODUCT_PREFIX": "{{slugSnake}}",
       "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}/{{slugSnake}}_master",
       "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_USERNAME": "postgres",
-      "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_PASSWORD": "${segredo:POSTGRES_PASSWORD}",
       "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}",
       "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_USERNAME": "postgres",
-      "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_PASSWORD": "${segredo:POSTGRES_PASSWORD}",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME": "Administrador",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL": "{{emailAdmin}}",
-      "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD": "@segredo:ADMIN_INITIAL_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD": "${segredo:ADMIN_BOOTSTRAP}",
       "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{emailRemetente}}"
     },
     "aplicacao": {
@@ -46,24 +46,38 @@
     "security": {
       "SECURITY_JWT_ISSUER": "https://{{dominioFront}}",
       "SECURITY_JWT_KID": "{{slug}}-local",
-      "SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64": "@segredo:JWT_PRIVATE",
-      "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64": "@segredo:JWT_PUBLIC",
-      "MP_JWT_VERIFY_PUBLICKEY": "@segredo:JWT_PUBLIC",
-      "SEEDGRID_SECURITY_ENCRYPTION_KEY": "@segredo:ENCRYPTION_KEY",
+      "SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64": "${segredo:JWT_PRIVATE}",
+      "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64": "${segredo:JWT_PUBLIC}",
+      "MP_JWT_VERIFY_PUBLICKEY": "${segredo:JWT_PUBLIC}",
+      "SEEDGRID_SECURITY_ENCRYPTION_KEY": "${segredo:ENCRYPTION_KEY}",
       "SECURITY_MAILER_FROM": "{{nome}} <{{emailRemetente}}>",
-      "SEEDGRID_SECURITY_2F_TOTP_ISSUER": "{{appName}}"
+      "SEEDGRID_SECURITY_2F_TOTP_ISSUER": "{{appName}}",
+      "SECURITY_MAILER_HOST": "localhost",
+      "SECURITY_MAILER_PORT": "{{portaSmtp}}",
+      "SECURITY_MAILER_START_TLS": "DISABLED"
     },
     "privacy": {
       "SEEDGRID_PRIVACY_ENCRYPTION_ENABLED": "true",
-      "SEEDGRID_PRIVACY_CRYPTO_KEY": "@segredo:PRIVACY_CRYPTO_KEY",
-      "SEEDGRID_PRIVACY_SEARCH_KEY": "@segredo:PRIVACY_SEARCH_KEY"
+      "SEEDGRID_PRIVACY_CRYPTO_KEY": "${segredo:PRIVACY_CRYPTO_KEY}",
+      "SEEDGRID_PRIVACY_SEARCH_KEY": "${segredo:PRIVACY_SEARCH_KEY}"
     },
     "primeiro-admin": {
       "SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL": "{{emailAdmin}}",
       "SEEDGRID_SECURITY_FIRST_ADMIN_USER_NAME": "Administrador",
-      "SEEDGRID_SECURITY_FIRST_ADMIN_USER_INITIAL_PASSWORD": "@segredo:ADMIN_INITIAL_PASSWORD",
+      "SEEDGRID_SECURITY_FIRST_ADMIN_USER_INITIAL_PASSWORD": "${segredo:ADMIN_BOOTSTRAP}",
       "SEEDGRID_SECURITY_DEFAULT_COMPANY_CORPORATE_NAME": "{{nome}}",
       "SEEDGRID_SECURITY_DEFAULT_COMPANY_TRADE_NAME": "{{nome}}"
+    },
+    "frontend-login-tenancy": {
+      "SEEDGRID_SECURITY_FRONTEND_BASE_URL": "http://localhost:3001"
+    },
+    "backup-mailer": {
+      "SEEDGRID_BACKUP_MAILER_FROM": "{{nome}} <{{emailRemetente}}>",
+      "SEEDGRID_BACKUP_MAILER_HOST": "localhost",
+      "SEEDGRID_BACKUP_MAILER_PORT": "{{portaSmtp}}",
+      "SEEDGRID_BACKUP_MAILER_START_TLS": "DISABLED",
+      "SEEDGRID_BACKUP_MAILER_USERNAME": "",
+      "SEEDGRID_BACKUP_MAILER_PASSWORD": ""
     }
   },
   "perguntas": [
@@ -145,7 +159,9 @@
               "banco-login-tenancy",
               "security",
               "privacy",
-              "primeiro-admin"
+              "primeiro-admin",
+              "frontend-login-tenancy",
+              "backup-mailer"
             ],
             "compose": [
               "postgres",
@@ -203,7 +219,8 @@
               "aplicacao",
               "banco-subdomain-tenancy",
               "security",
-              "privacy"
+              "privacy",
+              "backup-mailer"
             ],
             "compose": [
               "postgres",
@@ -223,8 +240,8 @@
               "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8085",
               "SEEDGRID_TENANCY_DOMAIN": "localhost",
               "OTEL_SDK_DISABLED": "true",
-              "SEEDGRID_CITIES_API_USERNAME": "@externo",
-              "SEEDGRID_CITIES_API_KEY": "@externo"
+              "SEEDGRID_CITIES_API_USERNAME": "${externo}",
+              "SEEDGRID_CITIES_API_KEY": "${externo}"
             }
           }
         },
@@ -337,7 +354,7 @@
             ],
             "env": {
               "SEEDGRID_WHATSAPP_API": "evolution",
-              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "@externo"
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "${externo}"
             }
           },
           "efeito_ausente": {
@@ -450,6 +467,9 @@
           "efeito": {
             "extensions": [
               "backup"
+            ],
+            "blocos_env": [
+              "backup-mailer"
             ]
           }
         },
@@ -540,7 +560,7 @@
             ],
             "env": {
               "SEEDGRID_WHATSAPP_API": "evolution",
-              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "@externo"
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "${externo}"
             }
           }
         },
@@ -700,7 +720,7 @@
             },
             "env": {
               "SEEDGRID_AUDIT_PERSISTENCE_STRATEGY": "MONGODB",
-              "SEEDGRID_AUDIT_MONGODB_URI": "mongodb://admin:@segredo:MONGO_ROOT_PASSWORD@localhost:27017/?tls=false&authSource=admin"
+              "SEEDGRID_AUDIT_MONGODB_URI": "mongodb://admin:${segredo:MONGO_ROOT_PASSWORD}@localhost:27017/?tls=false&authSource=admin"
             },
             "compose": [
               "mongodb"
@@ -766,12 +786,12 @@
               "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET": "{{slug}}-avatars",
               "SEEDGRID_SECURITY_AVATAR_MINIO_REGION": "us-east-1",
               "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY": "admin",
-              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY": "@segredo:MINIO_ROOT_PASSWORD",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}",
               "SEEDGRID_BACKUP_STORAGE": "minio",
               "SEEDGRID_BACKUP_MINIO_ENDPOINT": "http://localhost:9000",
               "SEEDGRID_BACKUP_MINIO_BUCKET": "{{slug}}-backups",
               "SEEDGRID_BACKUP_MINIO_ACCESS_KEY": "admin",
-              "SEEDGRID_BACKUP_MINIO_SECRET_KEY": "@segredo:MINIO_ROOT_PASSWORD",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}",
               "SEEDGRID_BACKUP_MINIO_REGION": "us-east-1"
             },
             "compose": [
@@ -823,8 +843,8 @@
           "efeito": {
             "env": {
               "SEEDGRID_BILLING_PROVIDER": "stripe",
-              "SEEDGRID_BILLING_STRIPE_APIKEY": "@externo",
-              "SEEDGRID_BILLING_STRIPE_WEBHOOKSECRET": "@externo",
+              "SEEDGRID_BILLING_STRIPE_APIKEY": "${externo}",
+              "SEEDGRID_BILLING_STRIPE_WEBHOOKSECRET": "${externo}",
               "SEEDGRID_BILLING_STRIPE_PRODUCT": "{{slug}}",
               "SEEDGRID_BILLING_STRIPE_PRODUCT_NAME": "{{nome}}",
               "SEEDGRID_BILLING_STRIPE_DEFAULTSUCCESSURL": "http://localhost:3001/assinatura/sucesso",

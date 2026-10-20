@@ -36,6 +36,8 @@ function validar(regra, valor) {
   return f(valor);
 }
 
+// Marcador de segredo nos valores de env: ${segredo:NOME}. O valor e gerado por produto, nunca fixo.
+export const SEGREDO = /\$\{segredo:([A-Z0-9_]+)\}/g;
 const vazio = (e) => !e || Object.keys(e).length === 0;
 const TENANCIES = ['login-tenancy', 'subdomain-tenancy'];
 const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'portas', 'servicos', 'pom_remover', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
@@ -56,13 +58,13 @@ export function validarMatriz(matriz, catalogo) {
     for (const x of [...(ef.extensions ?? []), ...(ef.extensions_remover ?? [])]) if (!extensoesCatalogo.has(x)) e(`${onde}: extension fora do catalogo: ${x}`);
     for (const b of ef.blocos_env ?? []) if (!blocos[b]) e(`${onde}: bloco_env inexistente: ${b}`);
     const envs = [...Object.values(ef.env ?? {}), ...Object.values(ef.env_front ?? {})];
-    for (const v of envs) for (const m of String(v).matchAll(/@segredo:([A-Z0-9_]+)/g)) if (!segredos.has(m[1])) e(`${onde}: segredo nao declarado: ${m[1]}`);
+    for (const v of envs) for (const m of String(v).matchAll(SEGREDO)) if (!segredos.has(m[1])) e(`${onde}: segredo nao declarado: ${m[1]}`);
     for (const k of [...Object.keys(ef.env ?? {}), ...(ef.env_remover ?? [])]) if (!/^[A-Z][A-Z0-9_]*$/.test(k)) e(`${onde}: nome de variavel invalido: ${k}`);
   };
   for (const [nome, b] of Object.entries(blocos)) {
     for (const [k, v] of Object.entries(b)) {
       if (!/^[A-Z][A-Z0-9_]*$/.test(k)) e(`bloco ${nome}: variavel invalida ${k}`);
-      for (const m of String(v).matchAll(/@segredo:([A-Z0-9_]+)/g)) if (!segredos.has(m[1])) e(`bloco ${nome}: segredo nao declarado ${m[1]}`);
+      for (const m of String(v).matchAll(SEGREDO)) if (!segredos.has(m[1])) e(`bloco ${nome}: segredo nao declarado ${m[1]}`);
     }
   }
   for (const p of matriz.perguntas) {
