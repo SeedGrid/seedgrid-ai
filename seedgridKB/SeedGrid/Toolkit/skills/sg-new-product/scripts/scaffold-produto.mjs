@@ -376,7 +376,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
   gravar(destino, 'produto.json', JSON.stringify(JSON.parse(JSON.stringify(produto)), null, 2) + '\n', criados);
 
   // 8. docs/ai
-  for (const d of ['plans', 'decisions', 'handoffs', 'reports']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
+  for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
 
   const unicos = [...new Set(criados)].sort();
   return { ok: true, criados: unicos, notas, pendencias: produto.pendencias, adicionadas: res.adicionadas, extensoes: res.extensoes, segredosGerados: Object.keys(matriz.segredos).filter((n) => [...r.env.values()].some((v) => String(v).includes(`\${segredo:${n}}`)) || nomes.includes(n)) };

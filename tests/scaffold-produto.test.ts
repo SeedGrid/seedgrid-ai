@@ -50,7 +50,7 @@ const hashArvore = (raiz: string) => {
 test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter por convite', async () => {
   const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/decisions/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep']) assert.ok(existsSync(join(destino, f)), f);
+  for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/decisions/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep', 'docs/ai/demands/.gitkeep']) assert.ok(existsSync(join(destino, f)), f);
   const e = env(ler(destino, 'backend/dev.env'));
   const raiz = env(ler(destino, '.env'));
   assert.equal(e.SEEDGRID_AUDIT_PERSISTENCE_STRATEGY, 'MONGODB');

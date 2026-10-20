@@ -17,7 +17,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-review', 'sg-validate-change'];
+const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-new-product', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-review', 'sg-validate-change'];
 const AGENTS = ['arquiteto', 'backend-java', 'backend-rust', 'frontend-react', 'qa', 'revisor'];
 
 /** Gera uma nova versão de conteúdo alterando uma regra. */
@@ -129,7 +129,7 @@ describe('instalação', () => {
       assert.ok(files[`.ai/skills/${name}/SKILL.md`], `${name} tem cópia canônica em .ai/skills`);
       assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
     }
-    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \((13)\)/);
+    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((14))\)/);
     for (const dir of ['rules', 'agents', 'templates', 'references']) {
       assert.ok(files[`.ai/${dir}/index.md`], `${dir}/index.md gerado`);
       assert.ok(files['AGENTS.md']!.includes(`.ai/${dir}/`), `AGENTS.md aponta para ${dir}/`);
@@ -137,8 +137,8 @@ describe('instalação', () => {
     assert.match(files['.ai/rules/index.md']!, /\| \[coordenacao\.md\]\(coordenacao\.md\) \| Fluxo de coordenação/);
     assert.match(files['.ai/templates/index.md']!, /relatorio-validacao\.md/);
     assert.doesNotMatch(files['AGENTS.md']!, /coordenacao\.md.*formato-entrega|relatorio-validacao/s, 'AGENTS.md não lista arquivos');
-    // A única skill citada pelo nome é a de revisão, que o bloco recomenda explicitamente.
-    for (const name of SKILLS.filter((n) => n !== 'sg-review')) {
+    // As únicas skills citadas pelo nome são a de revisão e a de produto novo, que o bloco recomenda explicitamente.
+    for (const name of SKILLS.filter((n) => n !== 'sg-review' && n !== 'sg-new-product')) {
       assert.ok(!files['AGENTS.md']!.includes(`\`${name}\``), `AGENTS.md não deve listar ${name}`);
     }
     assert.match(files['AGENTS.md']!, /Padrões SeedGrid obrigatórios.*frontend-seedgrid\.md.*backend-java-seedgrid\.md.*sg-review/);
@@ -238,6 +238,7 @@ describe('instalação', () => {
     await rm(path.join(old, TK, 'skills', 'sg-crud-back'), { recursive: true });
     await rm(path.join(old, TK, 'skills', 'sg-bump'), { recursive: true });
     await rm(path.join(old, TK, 'skills', 'sg-new-skill'), { recursive: true });
+    await rm(path.join(old, TK, 'skills', 'sg-new-product'), { recursive: true });
     // Os papéis atuais citam essas skills; no conteúdo "anterior" elas deixam de existir.
     for (const id of ['backend-java', 'frontend-react', 'revisor']) {
       const p = `${TK}agents/${id}.md`;
