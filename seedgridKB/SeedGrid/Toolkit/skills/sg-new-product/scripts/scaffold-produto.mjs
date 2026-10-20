@@ -366,6 +366,13 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   }
 
   // 7. publicacao (workflow; Dockerfile so onde o boilerplate nao trouxe)
+  const tenantsExemplo = R.modelo === 'subdomain-tenancy' ? (Array.isArray(R.tenantsExemplo) ? R.tenantsExemplo : String(R.tenantsExemplo ?? '').split(',').map((x) => x.trim()).filter(Boolean)) : [];
+  if (tenantsExemplo.length) {
+    const portaFront = r.servicos?.frontend ?? 3000;
+    const enderecos = tenantsExemplo.map((t) => `http://${t}.localhost:${portaFront}`).join(', ');
+    gravar(destino, 'tenants-exemplo.hosts', ['# Tenants de exemplo de ' + slug + ' (sg-new-product). Acrescente estas linhas ao arquivo hosts do sistema:', '#   Windows: C:/Windows/System32/drivers/etc/hosts (abra o editor como administrador)', '#   Linux e macOS: /etc/hosts (com sudo)', ...tenantsExemplo.map((t) => `127.0.0.1 ${t}.localhost`), ''].join('\n'), criados);
+    r.pendencias.push(`Tenants de exemplo (${tenantsExemplo.join(', ')}): crie cada um pelo cadastro do produto (http://localhost:${portaFront}/signup) escolhendo esse subdominio e depois acesse ${enderecos}. Navegadores modernos resolvem *.localhost sozinhos; para curl e outros programas, acrescente tenants-exemplo.hosts ao arquivo hosts do sistema (precisa de administrador; a skill nao altera arquivos fora da pasta do produto).`);
+  }
   const servicos = Object.entries(r.servicos).map(([nomeSvc, porta]) => ({ nome: nomeSvc, tipo: nomeSvc, porta }));
   const produto = {
     schema: 1,
@@ -382,6 +389,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
     servicos,
     billing: R.billingProvider ? { provider: R.billingProvider, trialDias: R.trialDias, planos: Array.isArray(R.planos) ? R.planos : String(R.planos).split(',').map((x) => x.trim()).filter(Boolean) } : undefined,
     apikeysUso: R.apikeysUso,
+    ...(tenantsExemplo.length ? { tenantsExemplo } : {}),
     pendencias: [...new Set(r.pendencias)],
   };
   const render = await import(pathToFileURL(join(ASSETS, 'render.mjs')).href);

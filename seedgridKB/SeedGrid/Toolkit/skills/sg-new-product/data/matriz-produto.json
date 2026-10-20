@@ -1464,9 +1464,37 @@
       ]
     },
     {
+      "id": "tenants-exemplo",
+      "numero": "9b",
+      "ordem": 13,
+      "tipo": "campos",
+      "se": {
+        "modelo": [
+          "subdomain-tenancy"
+        ]
+      },
+      "pergunta": "Quais tenants de exemplo usar nos testes locais?",
+      "recomendacao": "Dois nomes curtos (acme, beta). Cada tenant e um subdominio (acme.localhost) com banco proprio; voce os cria pelo cadastro do produto e testa em http://acme.localhost:3000. O produto ja sai com um arquivo hosts pronto para essas entradas.",
+      "campos": [
+        {
+          "id": "tenantsExemplo",
+          "rotulo": "Tenants de exemplo (separados por virgula)",
+          "validacao": "subdominios",
+          "padrao": "acme,beta",
+          "efeito": {
+            "usado_em": [
+              "produto.json:tenantsExemplo",
+              "arquivo:tenants-exemplo.hosts",
+              "pendencia:como criar e acessar os tenants de teste"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "dados-para-rodar",
       "numero": "10",
-      "ordem": 13,
+      "ordem": 14,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
       "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",

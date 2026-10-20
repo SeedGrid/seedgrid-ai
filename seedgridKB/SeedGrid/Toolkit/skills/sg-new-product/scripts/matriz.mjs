@@ -24,6 +24,7 @@ const VALIDADORES = {
   dominio: (v) => typeof v === 'string' && /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(v),
   email: (v) => typeof v === 'string' && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(v),
   registry: (v) => typeof v === 'string' && /^[a-z0-9.-]+(:\d+)?(\/[a-z0-9._-]+)*$/.test(v),
+  subdominios: (v) => { const l = Array.isArray(v) ? v : typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []; return l.length > 0 && l.length <= 10 && new Set(l).size === l.length && l.every((x) => typeof x === 'string' && /^[a-z][a-z0-9-]{1,30}[a-z0-9]$/.test(x)); },
   lista: (v) => Array.isArray(v) ? v.length > 0 && v.every((x) => typeof x === 'string' && x.trim()) : typeof v === 'string' && v.split(',').some((x) => x.trim()),
 };
 

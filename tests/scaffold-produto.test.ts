@@ -318,3 +318,22 @@ test('o guia de credenciais existe e cada pendencia de armazenamento aponta para
   for (const ancora of ['filesystem', 'minio', 's3', 'azure-blob', 'gcs', 'google-drive', 'onedrive']) assert.match(guia, new RegExp(`^## ${ancora}( |$)`, 'm'), ancora);
   assert.match(guia, /Procedimento do fornecedor, n.o da KB/);
 });
+
+test('subdomain-tenancy: tenants de exemplo viram arquivo hosts, produto.json e pendencia; login-tenancy nao os tem', async () => {
+  const padrao = await gerar(SUB);
+  const hosts = ler(padrao.destino, 'tenants-exemplo.hosts');
+  assert.match(hosts, /^127\.0\.0\.1 acme\.localhost$/m);
+  assert.match(hosts, /^127\.0\.0\.1 beta\.localhost$/m);
+  assert.deepEqual(JSON.parse(ler(padrao.destino, 'produto.json')).tenantsExemplo, ['acme', 'beta']);
+  assert.ok(padrao.saida.pendencias.some((p) => /http:\/\/acme\.localhost:3000/.test(p) && /signup/.test(p) && /administrador/.test(p)));
+  assert.equal(env(ler(padrao.destino, 'frontend/.env.local')).SEEDGRID_TENANCY_DOMAIN, 'localhost');
+  const meus = await gerar({ ...SUB, tenantsExemplo: 'lazim,joao,felipe' });
+  assert.match(ler(meus.destino, 'tenants-exemplo.hosts'), /^127\.0\.0\.1 felipe\.localhost$/m);
+  const ruim = await scaffold({ respostas: { ...SUB, tenantsExemplo: 'Acme,beta' }, destino: novaPasta(), boilerplates: BOILERPLATES });
+  assert.equal(ruim.ok, false);
+  assert.match((ruim.erros ?? []).join(' '), /tenantsExemplo/);
+  const login = await gerar(B2B);
+  assert.ok(!existsSync(join(login.destino, 'tenants-exemplo.hosts')));
+  const naoPergunta = await scaffold({ respostas: { ...B2B, tenantsExemplo: 'acme' }, destino: novaPasta(), boilerplates: BOILERPLATES });
+  assert.equal(naoPergunta.ok, false, 'login-tenancy nao aceita tenantsExemplo');
+});
