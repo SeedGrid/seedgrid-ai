@@ -211,12 +211,12 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
       timeout: 5s
       retries: 10
 `,
-    mailhog: `  mailhog:
-    image: mailhog/mailhog:v1.0.1
+    mailpit: `  mailpit:
+    image: axllent/mailpit:v1.31.6
     restart: unless-stopped
     ports:
       - "127.0.0.1:${portas.smtp}:1025"
-      - "127.0.0.1:${portas['mailhog-ui']}:8025"
+      - "127.0.0.1:${portas['mailpit-ui']}:8025"
 `,
     minio: `  minio:
     image: soldevelo/minio:2026.7.17
@@ -250,7 +250,7 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
 `,
   };
   const volumes = { postgres: 'postgres_data', minio: 'minio_data', mongodb: 'mongo_data' };
-  const ordem = ['postgres', 'mailhog', 'minio', 'mongodb'].filter((s) => servicos.includes(s));
+  const ordem = ['postgres', 'mailpit', 'minio', 'mongodb'].filter((s) => servicos.includes(s));
   return `name: ${slug}\n\n# Infraestrutura local. API, admin e frontend rodam no host. Senhas vem do .env desta pasta (nao versionado).\nservices:\n${ordem.map((s) => blocos[s]).join('\n')}\nvolumes:\n${ordem.filter((s) => volumes[s]).map((s) => `  ${volumes[s]}:`).join('\n')}\n`;
 }
 

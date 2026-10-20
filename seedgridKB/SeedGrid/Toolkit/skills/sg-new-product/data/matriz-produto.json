@@ -38,7 +38,7 @@
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME": "Administrador",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL": "{{emailAdmin}}",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD": "${segredo:ADMIN_BOOTSTRAP}",
-      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{emailRemetente}}"
+      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{nome}} <subdomain.tenancy@eu-dev.com.br>"
     },
     "aplicacao": {
       "APP_NAME": "{{slug}}-api"
@@ -50,7 +50,7 @@
       "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64": "${segredo:JWT_PUBLIC}",
       "MP_JWT_VERIFY_PUBLICKEY": "${segredo:JWT_PUBLIC}",
       "SEEDGRID_SECURITY_ENCRYPTION_KEY": "${segredo:ENCRYPTION_KEY}",
-      "SECURITY_MAILER_FROM": "{{nome}} <{{emailRemetente}}>",
+      "SECURITY_MAILER_FROM": "{{nome}} <security@eu-dev.com.br>",
       "SEEDGRID_SECURITY_2F_TOTP_ISSUER": "{{appName}}",
       "SECURITY_MAILER_HOST": "localhost",
       "SECURITY_MAILER_PORT": "{{portaSmtp}}",
@@ -72,7 +72,7 @@
       "SEEDGRID_SECURITY_FRONTEND_BASE_URL": "http://localhost:3001"
     },
     "backup-mailer": {
-      "SEEDGRID_BACKUP_MAILER_FROM": "{{nome}} <{{emailRemetente}}>",
+      "SEEDGRID_BACKUP_MAILER_FROM": "{{nome}} <backup@eu-dev.com.br>",
       "SEEDGRID_BACKUP_MAILER_HOST": "localhost",
       "SEEDGRID_BACKUP_MAILER_PORT": "{{portaSmtp}}",
       "SEEDGRID_BACKUP_MAILER_START_TLS": "DISABLED",
@@ -165,12 +165,12 @@
             ],
             "compose": [
               "postgres",
-              "mailhog"
+              "mailpit"
             ],
             "portas": {
               "postgres": 5440,
               "smtp": 1025,
-              "mailhog-ui": 8025
+              "mailpit-ui": 8025
             },
             "servicos": {
               "backend": 8080,
@@ -224,12 +224,12 @@
             ],
             "compose": [
               "postgres",
-              "mailhog"
+              "mailpit"
             ],
             "portas": {
               "postgres": 5441,
               "smtp": 1026,
-              "mailhog-ui": 8026
+              "mailpit-ui": 8026
             },
             "servicos": {
               "backend": 8085,
@@ -254,12 +254,12 @@
             },
             "compose": [
               "postgres",
-              "mailhog"
+              "mailpit"
             ],
             "portas": {
               "postgres": 5440,
               "smtp": 1025,
-              "mailhog-ui": 8025
+              "mailpit-ui": 8025
             },
             "servicos": {
               "backend": 8080,
@@ -926,7 +926,7 @@
           "efeito": {
             "usado_em": [
               "produto.json:emailRemetente",
-              "env:SECURITY_MAILER_FROM"
+              "publicacao:remetente de producao (em desenvolvimento os remetentes sao os do Mailpit local)"
             ]
           }
         },

@@ -1,5 +1,5 @@
 ---
-description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; login social Google e Facebook (módulo security-social, V270); invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard; roles de integração com for_integration, V255 e API key com auth proativa). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
+description: "Mudanças do ciclo escopo/acesso do security e do subdomain-tenancy (isolamento de RBAC entre tenants, propriedades isolation/account/platform-scope/admin-guard, permissões somente leitura, empresa sem DELETE, nome de role, cadastro por publicId, code no ProblemDetails, método QUERY; B2C com pessoa física, cpf_cnpj, signup pessoal e termos de uso; revogação imediata de sessão SESSION_REVOKED e failover do cache; estado de acesso da empresa (READ_ONLY, DISABLED, COMPANY_ACCESS_MODE_UPDATE, cota de empresas, inadimplência no billing); login social Google e Facebook (módulo security-social, V270); invariante de mínimo 1 ADMIN ativo, 409 LAST_ADMIN_PROTECTED e LastAdminGuard; roles de integração com for_integration, V255 e API key com auth proativa). Leia antes de configurar permissões, roles ou cadastro de usuário. AINDA NÃO PUBLICADO."
 tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, escopo]
 ---
 
@@ -252,6 +252,29 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 
 `IntegrationRoleGuardianIT`, `PermissionForIntegrationMigrationIT`, `AccessRuleBookTest` (invertido), `ApiKeyIsolationGuardianIT` (no subdomain-tenancy, com `proactive=true`, e no login-tenancy), `ApiKeyRoleSelectionTest`, `ApiKeyRoleInUseTest`, `SubdomainApiKeyScopeRunnerTest`, `RoleDeIntegracaoDoAgenteTest` (report).
 
+## Fase 5 — estado de acesso da empresa, somente leitura e cota de empresas
+
+### Estado da empresa (security)
+
+- `companies.access_mode`: `ACTIVE` (padrão), `READ_ONLY` ou `DISABLED`, com data e motivo da última mudança. Quem muda é o billing ou o host, por `CompanyAccessService.setMode(companyPublicId, mode, reason)` ou `PUT /companies/{publicId}/access-mode`; o security só aplica.
+- `READ_ONLY`: o login funciona; `GET`, `HEAD`, `OPTIONS` e `QUERY` passam; qualquer outro método dá **403 `COMPANY_READ_ONLY`**, salvo caminho da lista de exceções ou método com `@ReadOnlySafe`. Vale para JWT e API key. Job interno não passa pelo filtro: use `CompanyAccessService.isWritable(companyId)`.
+- `DISABLED`: login, `select-company` e `refresh` nessa empresa dão **403 `COMPANY_DISABLED`**; as sessões existentes caem (401 `SESSION_REVOKED`). Voltar a `ACTIVE` exige novo login.
+- Toda mudança real revoga as sessões da empresa, audita e dispara `CompanyAccessChangedEvent` (síncrono, na transação; para e-mail use `@Observes(during = TransactionPhase.AFTER_SUCCESS)`).
+- Proteções: a empresa da plataforma nunca muda (409 `COMPANY_ACCESS_PLATFORM_PROTECTED`); a conta nunca fica com todas as empresas `DISABLED` (409 `COMPANY_ACCESS_ALL_DISABLED`); em `dedicated-database`, desligar a empresa do único ADMIN dá 409 `LAST_ADMIN_PROTECTED`.
+- Front: `AuthResponse.currentCompany { publicId, name, accessMode, personType }`; `GET /me/companies` traz `accessMode` e `personType`. O BFF repassa o 403 com o `code`; o front trata `COMPANY_READ_ONLY` e `COMPANY_DISABLED`.
+- **Permissão `COMPANY_ACCESS_MODE_UPDATE`** (V261, audiência `platform`): **não é concedida ao ADMIN do tenant**, para não quebrar a delegação de papéis. O host cria um perfil da plataforma com ela e o atribui aos operadores da empresa-plataforma. O billing não precisa dela (chama `setMode` direto).
+- Propriedades: `seedgrid.security.company-access.cache-ttl` (`PT60S`; cache fora do ar lê o banco), `...read-only.allowed-paths` (**sobrescrever substitui o padrão**) e `...read-only.contributions.<nome>` (aditiva; prefira esta).
+- **Cota de empresas**: SPI `CompanyQuotaValidator`, chamado ao criar e ao reativar empresa; padrão sem limite; a implementação do host lança `CompanyQuotaExceededException` (**402 `COMPANY_QUOTA_EXCEEDED`**). Migrations V260 e V261.
+
+### Billing (cota, downgrade e inadimplência)
+
+- `PlanTerm`: `maxCompanies`, `maxReadOnlyCompanies`, `pastDueReadOnlyAfterDays`, `pastDueDisableAfterDays` (nos limites, nulo ou `0` = sem limite; nos prazos, nulo usa a propriedade e `0` não aplica o passo). O billing implementa o SPI de cota (402 ao criar ou reativar além do limite).
+- Downgrade: `change-plan` aceita `companySelection { keepActive, readOnly, disable }` com contagens exatas (erro = 400 e nada muda); a escolha é agendada para a virada do ciclo. A empresa do responsável e a que o `LastAdminGuard` protege nunca mudam.
+- Evento `CompanyAccessEvent` (`CHANGE_SCHEDULED`, `CHANGE_APPLIED`, `RESTORED`); o billing não envia e-mail, o host observa e avisa.
+- Inadimplência **desligada por padrão** (`seedgrid.billing.past-due.enabled=false`; `read-only-after-days=7`, `disable-after-days=30`). Ligada, substitui o bloqueio geral 402 `PAYMENT_PAST_DUE`; pagar devolve só as empresas que o billing mexeu. O subdomain-tenancy traz o gateway por tenant.
+- Limites: o teste de API key imita o filtro real; inativar empresa ainda conta as `DISABLED` ao proteger a "última ativa".
+- Guardiões: `CompanyAccessGuardianIT`, `CompanyAccessAdminInvariantIT`, `CompanyAccessFilterTest`, `ReadOnlyPathMatcherTest`, `CompanyAccessProblemMappingTest`. As classes `*IT` do security não entram no `mvn install` padrão.
+
 ## Pendente neste ciclo
 
-- Fases 5 e 7: estado de empresa, boilerplates.
+- Fase 7: boilerplates.

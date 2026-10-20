@@ -62,7 +62,7 @@ test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter 
   assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'true');
   assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED, 'false');
   const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, unknown> };
-  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailhog', 'minio', 'mongodb']);
+  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit', 'minio', 'mongodb']);
   assert.ok(ler(destino, 'backend/pom.xml').includes('<artifactId>seedgrid-exchange</artifactId>'));
 });
 
@@ -70,7 +70,7 @@ test('auditoria Postgres + filesystem: sem mongodb e sem minio, pom sem o SDK do
   const { destino, saida } = await gerar(B2B);
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
   const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, unknown> };
-  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailhog']);
+  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit']);
   const e = env(ler(destino, 'backend/dev.env'));
   assert.equal(e.SEEDGRID_AUDIT_PERSISTENCE_STRATEGY, 'jpa');
   assert.equal(e.SEEDGRID_AUDIT_MONGODB_URI, undefined);
@@ -219,4 +219,20 @@ test('compose e workflow validos: variaveis do compose definidas no .env; docker
   assert.ok(Object.keys(wf.jobs).length >= 3);
   const docker = spawnSync('docker', ['compose', 'version'], { encoding: 'utf8' });
   if (docker.status === 0) execFileSync('docker', ['compose', '--env-file', join(destino, '.env'), '-f', join(destino, 'docker-compose.yml'), 'config', '-q']);
+});
+
+test('e-mail de desenvolvimento: Mailpit local no compose, sem autenticacao, remetentes por extension no dev.env', async () => {
+  const b2b = await gerar(B2B);
+  const compose = ler(b2b.destino, 'docker-compose.yml');
+  assert.match(compose, /image: axllent\/mailpit:v\d+\.\d+\.\d+/);
+  assert.doesNotMatch(compose, /mailhog/i);
+  assert.match(compose, /:8025"/);
+  const e = env(ler(b2b.destino, 'backend/dev.env'));
+  assert.equal(e.SECURITY_MAILER_HOST, 'localhost');
+  assert.match(e.SECURITY_MAILER_FROM!, /<security@eu-dev\.com\.br>$/);
+  assert.match(e.SEEDGRID_BACKUP_MAILER_FROM!, /<backup@eu-dev\.com\.br>$/);
+  assert.ok(!e.SECURITY_MAILER_PASSWORD);
+  const sub = await gerar(SUB);
+  assert.match(env(ler(sub.destino, 'backend/dev.env')).SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM!, /<subdomain\.tenancy@eu-dev\.com\.br>$/);
+  assert.match(ler(sub.destino, 'docker-compose.yml'), /:8026:8025"/);
 });

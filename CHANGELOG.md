@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Adicionado
+- Skill `sg-new-product`: o compose gerado sobe o Mailpit local (`axllent/mailpit:v1.31.6`, SMTP sem autenticação) no lugar do Mailhog; o `dev.env` traz um remetente por extension em `eu-dev.com.br` (security, backup, subdomain.tenancy).
 - Skill `sg-branch-status`: lista branches e worktrees já mergeados (inclusive por squash, comparando conteúdo) ou sem dono e limpa, com confirmação, branch local, remota e worktree das mergeadas; recusa `main`, `develop` e branch não mergeada. A `coordenacao.md` manda rodá-la no início de toda tarefa não trivial. Versão do pacote inalterada: a release é única e adiada.
 - Regra `branches.md` (HO-01 a HO-07): `main` e `develop`, uma branch por tarefa, squash na `develop`, release por merge normal, limpeza de branch e worktree e autorização pelo ato irreversível; o `sg-review` reporta como HO-04 a branch ou o worktree que sobrou depois do merge.
 - Modelos de publicação de produto novo em `seedgridKB/SeedGrid/Toolkit/skills/sg-new-product/assets/` (T1.3): Dockerfile de backend (Quarkus), frontend e admin (Next.js) e workflow GitHub Actions de publicação no EasyPanel (webhook em secret), parametrizados por `produto.json` via `render.mjs` (placeholders `{{nome}}`, sem dependências). Registrados com a skill `sg-new-product`; versão inalterada.
