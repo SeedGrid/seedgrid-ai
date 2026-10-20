@@ -9,6 +9,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, wri
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { carregar, resolver, SEGREDO } from './matriz.mjs';
+import { removerModulosFront, validarAlvos } from './modulos-front.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ASSETS = join(AQUI, '..', 'assets');
@@ -65,7 +66,7 @@ export function criarGerador() {
 // ---------- efeitos ----------
 // Reune os efeitos das respostas, na ordem das perguntas; env de uma resposta mais tarde vence a anterior.
 function juntar(efeitos, matriz) {
-  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], pomRemover: [], pendencias: [], produto: {}, docs: [] };
+  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pendencias: [], produto: {}, docs: [] };
   for (const { efeito } of efeitos) {
     for (const b of efeito.blocos_env ?? []) for (const [k, v] of Object.entries(matriz.blocos_env[b])) r.env.set(k, v);
     for (const [k, v] of Object.entries(efeito.env && !Array.isArray(efeito.env) ? efeito.env : {})) r.env.set(k, v);
@@ -76,6 +77,7 @@ function juntar(efeitos, matriz) {
     if (efeito.servicos) r.servicos = efeito.servicos;
     if (efeito.boilerplate) r.boilerplate = efeito.boilerplate;
     r.extRemover.push(...(efeito.extensions_remover ?? []));
+    r.frontRemover.push(...(efeito.modulos_front_remover ?? []));
     r.pomRemover.push(...(efeito.pom_remover ?? []));
     r.pendencias.push(...(efeito.pendencias ?? []));
     r.docs.push(...(efeito.docs ?? []));
@@ -261,13 +263,15 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
 
 // ---------- principal ----------
 export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
-  const { matriz, catalogo } = carregar(dataDir);
+  const { matriz, catalogo, modulosFront } = carregar(dataDir);
   const res = resolver(matriz, catalogo, respostas);
   if (res.erros.length) return { ok: false, erros: res.erros };
   const R = res.respostas;
   const modeloOpcao = matriz.perguntas.find((p) => p.id === 'modelo').opcoes.find((o) => o.id === R.modelo);
   const efeitos = res.efeitos;
   const r = juntar(efeitos, matriz);
+  const errosFront = validarAlvos(r.frontRemover, modulosFront);
+  if (errosFront.length) return { ok: false, erros: errosFront };
 
   if (existsSync(join(destino, 'produto.json'))) return { ok: false, erros: ['produto.json ja existe nesta pasta: o scaffold nao sobrescreve um produto'] };
   if (r.boilerplate && existsSync(join(destino, 'backend'))) return { ok: false, erros: ['a pasta backend/ ja existe: o scaffold nao sobrescreve codigo'] };
@@ -309,6 +313,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
   const artefatoApi = `${slug}-api`;
   const feitoPom = origem ? ajustarPom(destino, { artefatoApi, nome: R.nome, r, catalogo, removerPom: r.pomRemover, adicionar }) : [];
   notas.push(...feitoPom);
+  if (origem) notas.push(...removerModulosFront(destino, r.frontRemover, modulosFront));
   const apagar = [...new Set(r.extRemover.flatMap((id) => catalogo.extensions[id].remover_se_ausente_arquivos ?? []))];
   if (origem) notas.push(...removerArquivos(destino, apagar));
 

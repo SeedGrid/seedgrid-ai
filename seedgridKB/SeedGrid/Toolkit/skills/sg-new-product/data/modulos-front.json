@@ -1,0 +1,37 @@
+{
+  "_regra": "Receita de REMOCAO de um modulo das telas do front (frontend) e do admin, para os boilerplates login-tenancy e subdomain-tenancy. Nos boilerplates os modulos sao codigo copiado no app (nao pacotes @seedgrid/fe-*): remover = apagar as pastas da rota e as linhas do menu. 'apagar' sao caminhos relativos a pasta do app; 'linhas' remove toda linha do arquivo que contenha o trecho 'contem'. Uma receita so entra aqui depois de provada: o app sem o modulo passa em 'pnpm build'. O que ficar de fora (lib, permissoes, traducoes) e inofensivo e permanece, para a volta do modulo ser so copiar de novo do boilerplate.",
+  "modulos": {
+    "self-enter": {
+      "descricao": "Convite e auto-cadastro de usuario (telas de convite e aprovacao, pagina publica de cadastro e os proxies da API).",
+      "escopos": {
+        "frontend": {
+          "apagar": [
+            "app/auth/self-enter",
+            "app/auth/SelfEnterRequestView.tsx",
+            "app/auth/SelfEnterView.tsx",
+            "app/security/self-enter",
+            "app/api/security/self-enter",
+            "app/api/self-enter"
+          ],
+          "linhas": [
+            { "arquivo": "app/data.ts", "contem": "href: \"/security/self-enter\"" },
+            { "arquivo": "app/components/Shell.tsx", "contem": "\"/security/self-enter\":" }
+          ]
+        },
+        "admin": {
+          "apagar": [
+            "app/auth/self-enter",
+            "app/auth/SelfEnterView.tsx",
+            "app/security/self-enter",
+            "app/api/admin/self-enter",
+            "app/api/self-enter"
+          ],
+          "linhas": [
+            { "arquivo": "app/data.ts", "contem": "href: \"/security/self-enter\"" },
+            { "arquivo": "app/components/Shell.tsx", "contem": "\"/security/self-enter\":" }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validarAlvos } from './modulos-front.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 export const DATA = join(AQUI, '..', 'data');
@@ -12,6 +13,7 @@ export function carregar(dataDir = DATA) {
   return {
     matriz: JSON.parse(readFileSync(join(dataDir, 'matriz-produto.json'), 'utf8')),
     catalogo: JSON.parse(readFileSync(join(dataDir, 'catalogo.json'), 'utf8')),
+    modulosFront: JSON.parse(readFileSync(join(dataDir, 'modulos-front.json'), 'utf8')),
   };
 }
 
@@ -40,10 +42,10 @@ function validar(regra, valor) {
 export const SEGREDO = /\$\{segredo:([A-Z0-9_]+)\}/g;
 const vazio = (e) => !e || Object.keys(e).length === 0;
 const TENANCIES = ['login-tenancy', 'subdomain-tenancy'];
-const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'portas', 'servicos', 'pom_remover', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
+const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'modulos_front_remover', 'portas', 'servicos', 'pom_remover', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
 
 // Confere a matriz contra o catalogo. Retorna a lista de problemas (vazia = valida).
-export function validarMatriz(matriz, catalogo) {
+export function validarMatriz(matriz, catalogo, modulosFront = null) {
   const erros = [];
   const e = (m) => erros.push(m);
   const ids = new Set();
@@ -56,6 +58,7 @@ export function validarMatriz(matriz, catalogo) {
     if (vazio(ef)) return e(`${onde}: opcao sem efeito declarado`);
     for (const k of Object.keys(ef)) if (!CHAVES_EFEITO.has(k)) e(`${onde}: chave de efeito desconhecida "${k}"`);
     for (const x of [...(ef.extensions ?? []), ...(ef.extensions_remover ?? [])]) if (!extensoesCatalogo.has(x)) e(`${onde}: extension fora do catalogo: ${x}`);
+    if (modulosFront) for (const m of validarAlvos(ef.modulos_front_remover ?? [], modulosFront)) e(`${onde}: ${m}`);
     for (const b of ef.blocos_env ?? []) if (!blocos[b]) e(`${onde}: bloco_env inexistente: ${b}`);
     const envs = [...Object.values(ef.env ?? {}), ...Object.values(ef.env_front ?? {})];
     for (const v of envs) for (const m of String(v).matchAll(SEGREDO)) if (!segredos.has(m[1])) e(`${onde}: segredo nao declarado: ${m[1]}`);

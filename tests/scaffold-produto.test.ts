@@ -48,7 +48,7 @@ const hashArvore = (raiz: string) => {
 };
 
 test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter por convite', async () => {
-  const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
+  const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
   for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/decisions/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep', 'docs/ai/demands/.gitkeep']) assert.ok(existsSync(join(destino, f)), f);
   const e = env(ler(destino, 'backend/dev.env'));
@@ -83,10 +83,10 @@ test('self-enter desligado, convite+cadastro (ambos) e cadastro publico', async 
   const off = env(ler((await gerar(B2B)).destino, 'backend/dev.env'));
   assert.equal(off.SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');
   assert.equal(off.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'false');
-  const ambos = env(ler((await gerar({ ...B2B, selfEnter: 'sim', selfEnterModo: 'ambos' })).destino, 'backend/dev.env'));
+  const ambos = env(ler((await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'ambos' })).destino, 'backend/dev.env'));
   assert.equal(ambos.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'true');
   assert.equal(ambos.SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED, 'true');
-  const pub = env(ler((await gerar({ ...B2B, selfEnter: 'sim', selfEnterModo: 'cadastro-publico' })).destino, 'backend/dev.env'));
+  const pub = env(ler((await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'cadastro-publico' })).destino, 'backend/dev.env'));
   assert.equal(pub.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'false');
   assert.equal(pub.SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED, 'true');
 });
@@ -137,7 +137,7 @@ test('nao sobrescreve um produto existente', async () => {
 });
 
 test('determinismo: mesmas respostas, arvore versionada identica; segredos diferentes a cada produto', async () => {
-  const r = { ...B2B, extensoes: ['exchange', 'business-days'], selfEnter: 'sim', selfEnterModo: 'ambos', auditoria: 'mongodb', armazenamento: 'minio' };
+  const r = { ...B2B, extensoes: ['exchange', 'business-days'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'ambos', auditoria: 'mongodb', armazenamento: 'minio' };
   const a = await gerar(r);
   const b = await gerar(r);
   assert.equal(hashArvore(a.destino), hashArvore(b.destino));
@@ -147,7 +147,7 @@ test('determinismo: mesmas respostas, arvore versionada identica; segredos difer
 });
 
 test('segredos: o par do JWT em arquivo bate com o do dev.env e nada de segredo vai para o que e versionado', async () => {
-  const { destino } = await gerar({ ...B2B, selfEnter: 'sim', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
+  const { destino } = await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
   const e = env(ler(destino, 'backend/dev.env'));
   const pem = ler(destino, 'backend/src/main/resources/keys/public.pem').replace(/-----[A-Z ]+-----|\s/g, '');
   assert.equal(pem, e.SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64);
@@ -239,4 +239,45 @@ test('e-mail de desenvolvimento: Mailpit local no compose, sem autenticacao, rem
   const sub = await gerar(SUB);
   assert.match(env(ler(sub.destino, 'backend/dev.env')).SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM!, /<subdomain\.tenancy@eu-dev\.com\.br>$/);
   assert.match(ler(sub.destino, 'docker-compose.yml'), /:8026:8025"/);
+});
+
+test('escopo do self-enter: desligado tira as telas do front e do admin; so no front tira so do admin; so no admin tira so do front', async () => {
+  const tem = (d: string, rel: string) => existsSync(join(d, rel));
+  const nao = await gerar(B2B); // selfEnter 'nao'
+  for (const rel of ['frontend/app/security/self-enter', 'frontend/app/api/self-enter', 'admin/app/security/self-enter', 'admin/app/api/admin/self-enter']) assert.ok(!tem(nao.destino, rel), `${rel} devia ter sido removido`);
+  assert.ok(!ler(nao.destino, 'frontend/app/data.ts').includes('/security/self-enter'));
+  assert.ok(!ler(nao.destino, 'admin/app/components/Shell.tsx').includes('"/security/self-enter":'));
+  assert.ok(nao.saida.notas.some((n) => /self-enter@admin: removido admin\/app\/security\/self-enter/.test(n)));
+
+  const base = { ...B2B, selfEnter: 'sim', selfEnterModo: 'convite' };
+  const ambos = await gerar({ ...base, selfEnterEscopo: 'ambos' });
+  assert.ok(tem(ambos.destino, 'frontend/app/security/self-enter') && tem(ambos.destino, 'admin/app/security/self-enter'));
+
+  const soFront = await gerar({ ...base, selfEnterEscopo: 'front' });
+  assert.ok(tem(soFront.destino, 'frontend/app/security/self-enter'), 'front mantem');
+  assert.ok(!tem(soFront.destino, 'admin/app/security/self-enter'), 'admin perde');
+  assert.ok(!ler(soFront.destino, 'admin/app/data.ts').includes('/security/self-enter'));
+
+  const soAdmin = await gerar({ ...base, selfEnterEscopo: 'admin' });
+  assert.ok(tem(soAdmin.destino, 'admin/app/security/self-enter'), 'admin mantem');
+  assert.ok(!tem(soAdmin.destino, 'frontend/app/security/self-enter'), 'front perde');
+  assert.ok(!tem(soAdmin.destino, 'frontend/app/auth/self-enter'), 'front perde a pagina publica');
+  assert.ok(soAdmin.saida.pendencias.some((p) => /frontend\.base-url/.test(p)), 'avisa do link do convite');
+});
+
+test('receitas de remocao: toda receita aponta para caminhos que existem nos boilerplates', async () => {
+  const { carregar } = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)) as { carregar: () => { modulosFront: { modulos: Record<string, { escopos: Record<string, { apagar: string[]; linhas: { arquivo: string; contem: string }[] }> }> } } };
+  const { modulosFront } = carregar();
+  for (const bp of ['login-tenancy', 'subdomain-tenancy']) {
+    for (const [mod, def] of Object.entries(modulosFront.modulos)) {
+      for (const [escopo, rec] of Object.entries(def.escopos)) {
+        const raiz = join(BOILERPLATES, bp, escopo);
+        for (const rel of rec.apagar) assert.ok(existsSync(join(raiz, rel)), `${bp}/${escopo}/${rel} (${mod}) nao existe`);
+        for (const { arquivo, contem } of rec.linhas) {
+          const f = join(raiz, arquivo);
+          assert.ok(existsSync(f) && readFileSync(f, 'utf8').includes(contem), `${bp}/${escopo}/${arquivo}: trecho nao encontrado (${contem})`);
+        }
+      }
+    }
+  }
 });

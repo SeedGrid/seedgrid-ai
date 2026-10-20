@@ -35,7 +35,7 @@ test('GUARDIAO determinismo da matriz: toda combinacao valida resolve sem erro e
   let combinacoes = 0;
   for (const modelo of modelos) for (const selfEnter of ['nao', 'sim']) for (const auditoria of ['postgres', 'mongodb']) for (const armazenamento of ['filesystem', 'minio']) {
     const extras = modelo === 'outro' ? ['security', 'audit', 'backup', 'apikeys', 'billing'] : ['exchange', 'cache'];
-    const r = { ...COMPLETA, modelo, extensoes: extras, selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite' } : {}), auditoria, armazenamento };
+    const r = { ...COMPLETA, modelo, extensoes: extras, selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamento };
     const a = lib.resolver(matriz, catalogo, r);
     const b = lib.resolver(matriz, catalogo, JSON.parse(JSON.stringify(r)));
     assert.deepEqual(a.erros, [], `${modelo}/${selfEnter}/${auditoria}/${armazenamento}`);

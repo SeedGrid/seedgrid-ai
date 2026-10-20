@@ -620,7 +620,11 @@
               "SEEDGRID_SECURITY_SELF_ENTER_ENABLED": "false",
               "SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED": "false",
               "SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED": "false"
-            }
+            },
+            "modulos_front_remover": [
+              "self-enter@frontend",
+              "self-enter@admin"
+            ]
           }
         },
         {
@@ -688,9 +692,61 @@
       ]
     },
     {
+      "id": "self-enter-escopo",
+      "numero": "5b",
+      "ordem": 7,
+      "tipo": "escolha",
+      "chave": "selfEnterEscopo",
+      "se": {
+        "resposta": {
+          "selfEnter": "sim"
+        }
+      },
+      "pergunta": "Em quais telas o self-enter fica disponivel?",
+      "recomendacao": "Nos dois: o convite e o cadastro publico moram no front do cliente, e a gestao de convites e aprovacoes no admin. Se escolher so um, as telas do outro sao removidas do produto (e voltam depois se voce pedir).",
+      "opcoes": [
+        {
+          "id": "ambos",
+          "rotulo": "Front e admin",
+          "efeito": {
+            "produto": {
+              "selfEnterEscopo": "ambos"
+            }
+          }
+        },
+        {
+          "id": "front",
+          "rotulo": "So no front (o admin nao tem as telas de convite)",
+          "efeito": {
+            "produto": {
+              "selfEnterEscopo": "front"
+            },
+            "modulos_front_remover": [
+              "self-enter@admin"
+            ]
+          }
+        },
+        {
+          "id": "admin",
+          "rotulo": "So no admin (o front do cliente nao tem a pagina publica de cadastro nem de convite)",
+          "efeito": {
+            "produto": {
+              "selfEnterEscopo": "admin"
+            },
+            "modulos_front_remover": [
+              "self-enter@frontend"
+            ],
+            "pendencias": [
+              "Self-enter so no admin: o link do convite usa seedgrid.security.frontend.base-url; aponte SEEDGRID_SECURITY_FRONTEND_BASE_URL para o dominio do admin, que e quem tem a pagina de cadastro."
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "auditoria",
       "numero": "6",
-      "ordem": 7,
+      "ordem": 8,
       "tipo": "escolha",
       "chave": "auditoria",
       "se": {
@@ -737,7 +793,7 @@
     {
       "id": "armazenamento",
       "numero": "7",
-      "ordem": 8,
+      "ordem": 9,
       "tipo": "escolha",
       "chave": "armazenamento",
       "se": {
@@ -809,7 +865,7 @@
     {
       "id": "apikeys-uso",
       "numero": "8",
-      "ordem": 9,
+      "ordem": 10,
       "tipo": "texto",
       "chave": "apikeysUso",
       "se": {
@@ -831,7 +887,7 @@
     {
       "id": "billing",
       "numero": "9",
-      "ordem": 10,
+      "ordem": 11,
       "tipo": "campos",
       "se": {
         "extensao": [
@@ -896,7 +952,7 @@
     {
       "id": "dados-para-rodar",
       "numero": "10",
-      "ordem": 11,
+      "ordem": 12,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
       "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",

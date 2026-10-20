@@ -26,7 +26,7 @@ test('ordem estavel: ordens crescentes, numeros e ids unicos, mesma ordem em dua
   const ordens = matriz.perguntas.map((p) => p.ordem);
   assert.deepEqual(ordens, [...ordens].sort((a, b) => a - b));
   assert.equal(new Set(matriz.perguntas.map((p) => p.numero)).size, matriz.perguntas.length);
-  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '6', '7', '8', '9', '10']);
+  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '5b', '6', '7', '8', '9', '10']);
   const h = (m: Matriz) => createHash('sha256').update(JSON.stringify(m)).digest('hex');
   assert.equal(h(lib.carregar().matriz), h(matriz));
 });
