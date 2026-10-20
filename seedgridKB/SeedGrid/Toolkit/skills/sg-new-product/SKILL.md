@@ -1,6 +1,6 @@
 ---
 name: sg-new-product
-description: Cria um produto SeedGrid novo na pasta corrente - entrevista fixa (matriz determinística), script que gera backend, frontend, admin, dev.env, docker-compose, Dockerfile e workflow, e depois plano, ADRs e documentos em docs/ai/. Use quando pedirem produto novo, projeto novo, sistema novo ou "começar um produto" SeedGrid, antes de acionar o arquiteto.
+description: Cria um produto SeedGrid novo na pasta corrente - entrevista fixa (matriz determinística), script que gera backend, frontend, admin, dev.env, docker-compose, Dockerfile e workflow, e depois plano, ADRs e documentos em docs/ai/. Use SEMPRE, como primeira ação, quando pedirem produto novo, projeto novo, sistema novo ou "começar um produto" SeedGrid, antes de acionar o arquiteto, de explorar outras pastas ou de escrever código.
 metadata:
   toolkit: seedgrid-ai
 ---
@@ -73,6 +73,8 @@ Depois acione o `arquiteto` com o plano do produto para a primeira feature de ne
 
 ## Limites
 
+- **Fique na pasta do produto.** Não leia outros projetos nem as fontes das extensions (a KB em `.ai/brain/` é a fonte), e não crie arquivos auxiliares ou scripts temporários fora da pasta do produto: escreva os documentos direto com a ferramenta de escrita.
+- **Termine afirmando, não perguntando.** Depois dos documentos, relate o que foi feito e as pendências e diga o próximo passo em uma frase afirmativa ("o próximo passo é acionar o `arquiteto`..."); perguntas de negócio ficam para o `arquiteto`.
 - Não suba a infraestrutura nem publique nada sem o usuário pedir. `git push` e deploy são decisão dele.
 - Não edite `backend/dev.env` nem `.env` à mão para "consertar" um valor gerado sem explicar; para trocar uma resposta, rode a skill de novo numa pasta limpa.
 - Modelo "outro" não tem boilerplate: o script gera os arquivos de configuração e deixa `backend/`, `frontend/` e `admin/` sem esqueleto; isso aparece como `PENDENTE`.

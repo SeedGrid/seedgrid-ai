@@ -7,7 +7,7 @@
 //        [--sem-build] [--sem-fronts] [--so-conferir] [--vigiar <repo> ...]
 import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
@@ -28,6 +28,7 @@ const vigiar = todos('vigiar').map((r) => resolve(r));
 mkdirSync(saida, { recursive: true });
 
 const sh = (cmd, args, opt = {}) => spawnSync(cmd, args, { encoding: 'utf8', shell: win && cmd !== process.execPath, maxBuffer: 256 * 1024 * 1024, ...opt });
+const saidaDe = (r) => String(r.stdout ?? '') + String(r.stderr ?? '') + (r.error ? String(r.error.message) : '');
 const aspas = (a) => (win ? `"${String(a).replace(/"/g, '\\"')}"` : a);
 const estadoGit = (repo) => (existsSync(join(repo, '.git')) ? sh('git', ['-C', repo, 'status', '--porcelain']).stdout : null);
 // Pastas gerenciadas pelo toolkit (instaladas pelo init, nao escritas pelo fluxo do produto): fora das checagens de conteudo do produto.
@@ -108,16 +109,51 @@ function arquivos(raiz, dir = raiz, saidaArr = []) {
 }
 const md = (d) => (existsSync(join(destino, d)) ? readdirSync(join(destino, d)).filter((f) => f.endsWith('.md')) : []);
 
+// Le os jsonl das sessoes do claude desta pasta: a skill foi invocada? algum acesso a caminho fora da pasta do produto?
+function analisarSessoes() {
+  const pasta = join(homedir(), '.claude', 'projects', destino.replace(/[^A-Za-z0-9]/g, '-'));
+  const r = { skillInvocada: false, fora: [], ferramentas: {}, existe: existsSync(pasta) };
+  if (!r.existe) return r;
+  const raiz = destino.toLowerCase().split(sep).join('/');
+  const barra = String.fromCharCode(92);
+  const absolutos = (texto) => [...texto.split(barra + barra).join('/').split(barra).join('/').matchAll(/(?:[A-Za-z]:\/|\/[a-z]\/|~\/)[^\s"'`;|)<>]*/g)].map((m) => m[0]);
+  for (const f of readdirSync(pasta).filter((x) => x.endsWith('.jsonl'))) {
+    for (const linha of readFileSync(join(pasta, f), 'utf8').split('\n').filter(Boolean)) {
+      let o; try { o = JSON.parse(linha); } catch { continue; }
+      for (const c of o.message?.content ?? []) {
+        if (c.type !== 'tool_use') continue;
+        r.ferramentas[c.name] = (r.ferramentas[c.name] ?? 0) + 1;
+        if (c.name === 'Skill' && /sg-new-product/.test(JSON.stringify(c.input))) r.skillInvocada = true;
+        // so os campos que apontam para o disco (nunca o conteudo de um Write/Edit)
+        const alvos = [c.input?.file_path, c.input?.path, c.input?.notebook_path, ['Bash', 'PowerShell'].includes(c.name) ? c.input?.command : null].filter(Boolean);
+        for (const alvo of alvos) for (const p of absolutos(String(alvo))) {
+          const norm = p.toLowerCase().replace(/^\/([a-z])\//, '$1:/');
+          if (norm.startsWith(raiz) || norm.startsWith('/dev/null') || norm.includes('/.claude/projects/')) continue;
+          r.fora.push(`${c.name}: ${p.slice(0, 140)}`);
+        }
+      }
+    }
+  }
+  r.fora = [...new Set(r.fora)];
+  return r;
+}
+
 function conferir(antes) {
   const c = [];
   const ok = (nome, passou, detalhe = '') => c.push({ nome, passou: !!passou, detalhe });
   const lista = arquivos(destino);
+  const sessoes = analisarSessoes();
+  if (sessoes.existe) {
+    ok('a skill sg-new-product foi invocada', sessoes.skillInvocada, JSON.stringify(sessoes.ferramentas));
+    ok('so o toolkit instalado e a pasta do produto (nenhum caminho fora dela)', sessoes.fora.length === 0, sessoes.fora.slice(0, 5).join(' | '));
+  }
   ok('produto gerado (produto.json, backend, frontend, admin)', ['produto.json', 'backend/pom.xml', 'frontend/package.json', 'admin/package.json', 'docker-compose.yml', 'backend/dev.env', 'backend/dev.env.example'].every((f) => lista.includes(f)));
   ok('plano em docs/ai/plans/', md('docs/ai/plans').length >= 1, md('docs/ai/plans').join(', '));
   ok('ADRs em docs/ai/decisions/', md('docs/ai/decisions').length >= 1, `${md('docs/ai/decisions').length} arquivo(s)`);
   ok('handoff em docs/ai/handoffs/', md('docs/ai/handoffs').length >= 1, md('docs/ai/handoffs').join(', '));
   // nada fora da pasta do produto: os repositorios vigiados nao podem ter mudado
-  const slugProduto = JSON.parse(readFileSync(join(destino, 'produto.json'), 'utf8')).slug;
+  let slugProduto = '';
+  try { slugProduto = JSON.parse(readFileSync(join(destino, 'produto.json'), 'utf8')).slug; } catch { /* produto nao gerado: ja reprovado acima */ }
   for (const repo of vigiar) { const citam = citaProduto(repo, antes.get(repo), slugProduto); ok(`nada do produto escrito em ${repo}`, citam.length === 0, citam.join(', ')); }
   const texto = lista.filter((f) => !GERENCIADO(f) && /\.(md|json|ya?ml|properties|xml|java|ts|tsx|mjs|js|txt|example|sh|html)$/i.test(f) && !['backend/dev.env', '.env'].includes(f) && !f.endsWith('.pem'));
   const citam = texto.filter((f) => /seedgrid-platform-work|seedgrid-ia-dev|seedgridKB-dev|D:\\empreendedorismo|\/d\/empreendedorismo/i.test(readFileSync(join(destino, f), 'utf8')));
@@ -133,18 +169,18 @@ function conferir(antes) {
   for (const f of ls.filter((x) => !GERENCIADO(x))) { mkdirSync(dirname(join(limpo, f)), { recursive: true }); cpSync(join(destino, f), join(limpo, f)); }
   const cs = sh(process.execPath, [join(RAIZ, 'scripts', 'check-secrets.mjs'), '--dir', limpo]);
   rmSync(limpo, { recursive: true, force: true });
-  ok('check-secrets limpo no que seria versionado', cs.status === 0, (cs.stdout + cs.stderr).slice(0, 400));
+  ok('check-secrets limpo no que seria versionado', cs.status === 0, saidaDe(cs).slice(0, 400));
   ok('segredos fora do git (dev.env, .env, *.pem ignorados)', ['backend/dev.env', '.env'].every((f) => !ls.includes(f)) && !ls.some((f) => f.endsWith('.pem')));
   // compilacao
   const mvn = sh('mvn', ['-q', '-DskipTests', 'test-compile'], { cwd: join(destino, 'backend'), timeout: 20 * 60 * 1000 });
-  ok('backend compila (mvn test-compile)', mvn.status === 0, (mvn.stdout + mvn.stderr).slice(-600));
+  ok('backend compila (mvn test-compile)', mvn.status === 0, saidaDe(mvn).slice(-600));
   if (!flag('sem-fronts')) {
     for (const app of ['frontend', 'admin']) {
       const dir = join(destino, app);
       const inst = sh('pnpm', ['install', '--frozen-lockfile'], { cwd: dir, timeout: 20 * 60 * 1000 });
-      if (inst.status !== 0) { ok(`${app} compila (pnpm build)`, false, `pnpm install falhou: ${(inst.stdout + inst.stderr).slice(-400)}`); continue; }
+      if (inst.status !== 0) { ok(`${app} compila (pnpm build)`, false, `pnpm install falhou: ${saidaDe(inst).slice(-400)}`); continue; }
       const b = sh('pnpm', ['build'], { cwd: dir, timeout: 20 * 60 * 1000 });
-      ok(`${app} compila (pnpm build)`, b.status === 0, (b.stdout + b.stderr).slice(-600));
+      ok(`${app} compila (pnpm build)`, b.status === 0, saidaDe(b).slice(-600));
     }
   }
   return c;

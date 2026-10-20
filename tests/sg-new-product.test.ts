@@ -58,7 +58,7 @@ describe('skill sg-new-product (T2.3)', () => {
     await initCommand({ project });
     assert.match(await readText(project, '.ai/rules/coordenacao.md'), /sg-new-product.*antes.*arquiteto/s);
     assert.match(await readText(project, '.ai/agents/arquiteto.md'), /sg-new-product/);
-    assert.match(await readText(project, 'AGENTS.md'), /produto novo aciona a skill `sg-new-product` antes do `arquiteto`/);
+    assert.match(await readText(project, 'AGENTS.md'), /PRIMEIRA ação é invocar a skill `sg-new-product`/);
   });
 
   test('fluxo completo no produto instalado: init, script da skill e pasta pronta', async () => {

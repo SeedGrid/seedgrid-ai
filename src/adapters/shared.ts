@@ -158,7 +158,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',
     '- **Documentos que você gerar** (planos, handoff, decisões, especificações, relatórios) são salvos em `docs/ai/<tipo>/` (planos em `docs/ai/plans/`, decisões/ADR em `docs/ai/decisions/`), nunca em outro lugar do projeto; veja `.ai/rules/documentos.md`.',
     ...standardsLines(bundle),
-    '- **Coordenação:** a sessão principal é o coordenador: siga `.ai/rules/coordenacao.md` (aciona o `arquiteto` primeiro e delega aos papéis em `.ai/agents/`). Pedido de produto novo aciona a skill `sg-new-product` antes do `arquiteto`. Host nunca altera extension da plataforma; veja `.ai/rules/limites-do-host.md`.',
+    '- **Coordenação:** a sessão principal é o coordenador: siga `.ai/rules/coordenacao.md` (aciona o `arquiteto` primeiro e delega aos papéis em `.ai/agents/`). **Pedido de produto, projeto ou sistema SeedGrid novo: sua PRIMEIRA ação é invocar a skill `sg-new-product`** (antes do `arquiteto` e antes de explorar outras pastas ou escrever código); nunca monte o projeto à mão nem copie outro produto. Host nunca altera extension da plataforma; veja `.ai/rules/limites-do-host.md`.',
     '- Papéis: `.ai/agents/`.',
     `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,
     '- Templates: `.ai/templates/`. Referências: `.ai/references/`.',
