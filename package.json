@@ -32,7 +32,9 @@
     "check-secrets": "node scripts/check-secrets.mjs --dir seedgridKB/SeedGrid/Toolkit/boilerplates --kb-dir seedgridKB",
     "test": "npm run check-secrets && npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
     "validate-content": "npm run build && node dist/cli.js validate",
-    "prepack": "npm run check-secrets && npm run clean && npm run build",
+    "sync-boilerplates": "node scripts/sync-boilerplates.mjs",
+    "check-boilerplates": "node scripts/sync-boilerplates.mjs --check --fetch --soft",
+    "prepack": "npm run check-boilerplates && npm run check-secrets && npm run clean && npm run build",
     "clean": "node -e \"for (const d of ['dist','build-test']) require('node:fs').rmSync(d,{recursive:true,force:true})\""
   },
   "dependencies": {
