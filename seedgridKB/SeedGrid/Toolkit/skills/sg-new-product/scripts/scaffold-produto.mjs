@@ -4,7 +4,7 @@
 // Valida as respostas contra a matriz (recusa o que nao estiver nela), copia o boilerplate do modelo, ajusta o pom,
 // gera dev.env (segredos novos por produto), .example, docker-compose.yml, workflow e docs/ai/. Sem dependencias.
 // Determinismo: o que vai para o git (tudo menos dev.env, .env e keys/*.pem) e identico para as mesmas respostas.
-import { generateKeyPairSync, randomBytes } from 'node:crypto';
+import { createHash, generateKeyPairSync, randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -34,8 +34,9 @@ function senhaPolitica() {
     if (/[A-Z]/.test(s) && /[a-z]/.test(s) && !/(.)\1/.test(s)) return s;
   }
 }
-export function criarGerador() {
-  const cache = new Map();
+export function criarGerador(sementes = {}) {
+  // sementes: segredos que o produto ja tem (reconfiguracao); o que nao estiver aqui e gerado novo.
+  const cache = new Map(Object.entries(sementes));
   let par = null;
   const rsa = () => (par ??= generateKeyPairSync('rsa', { modulusLength: 2048, publicKeyEncoding: { type: 'spki', format: 'der' }, privateKeyEncoding: { type: 'pkcs8', format: 'der' } }));
   const gerar = (tipo) => {
@@ -54,7 +55,7 @@ export function criarGerador() {
   return {
     valor: (nome, tipo) => { if (!cache.has(nome)) cache.set(nome, gerar(tipo)); return cache.get(nome); },
     pem: () => {
-      const k = rsa();
+      const k = sementes.JWT_PRIVATE && sementes.JWT_PUBLIC ? { privateKey: Buffer.from(sementes.JWT_PRIVATE, 'base64'), publicKey: Buffer.from(sementes.JWT_PUBLIC, 'base64') } : rsa();
       const quebra = (b) => b.toString('base64').match(/.{1,64}/g).join('\n');
       // Cabecalho montado em tempo de execucao: o texto do marcador no fonte seria lido como chave colada pela trava.
       const pem = (tipo, der) => `${'-'.repeat(5)}BEGIN ${tipo}${'-'.repeat(5)}\n${quebra(der)}\n${'-'.repeat(5)}END ${tipo}${'-'.repeat(5)}\n`;
@@ -262,7 +263,11 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
 }
 
 // ---------- principal ----------
-export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
+// O que fica so na maquina do dev (o .gitignore do produto ignora): fora do manifesto.
+export const SEGREDO_LOCAL = (rel) => rel === 'backend/dev.env' || rel === '.env' || /\.env\.local$/.test(rel) || rel.endsWith('.pem');
+export const hashArquivo = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
+
+export async function scaffold({ respostas, destino, boilerplates, dataDir, sementes = {} }) {
   const { matriz, catalogo, modulosFront } = carregar(dataDir);
   const res = resolver(matriz, catalogo, respostas);
   if (res.erros.length) return { ok: false, erros: res.erros };
@@ -288,7 +293,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
     portaPostgres: r.portas.postgres,
     portaSmtp: r.portas.smtp,
   };
-  const gerador = criarGerador();
+  const gerador = criarGerador(sementes);
   const criados = [];
   const notas = [];
   const exts = new Set(res.extensoes);
@@ -388,6 +393,11 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir }) {
   // 8. docs/ai
   for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
 
+  // 9. manifesto: as respostas e o hash de cada arquivo versionado gerado; e a base da reconfiguracao (nao tem segredo)
+  const arquivos = {};
+  for (const rel of [...new Set(criados)].sort()) if (!SEGREDO_LOCAL(rel) && existsSync(join(destino, rel))) arquivos[rel] = hashArquivo(join(destino, rel));
+  gravar(destino, '.seedgrid/manifesto.json', JSON.stringify({ schema: 1, respostas, arquivos }, null, 2) + '\n', criados);
+
   const unicos = [...new Set(criados)].sort();
   return { ok: true, criados: unicos, notas, pendencias: produto.pendencias, adicionadas: res.adicionadas, extensoes: res.extensoes, segredosGerados: Object.keys(matriz.segredos).filter((n) => [...r.env.values()].some((v) => String(v).includes(`\${segredo:${n}}`)) || nomes.includes(n)) };
 }
@@ -398,9 +408,14 @@ function arg(nome) {
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  if (process.argv.includes('--reconfigurar')) {
+    const { reconfigurarCli } = await import('./reconfigurar.mjs');
+    process.exit(await reconfigurarCli({ arg, aplicar: process.argv.includes('--aplicar'), json: process.argv.includes('--json') }));
+  }
   const arqResp = arg('respostas');
   if (!arqResp) {
     console.error('uso: node scaffold-produto.mjs --respostas <respostas.json> [--destino <pasta>] [--boilerplates <pasta>] [--json]');
+    console.error('     node scaffold-produto.mjs --reconfigurar --respostas <novas.json> [--aplicar]   (mostra a diferenca; so grava com --aplicar)');
     process.exit(2);
   }
   const destino = resolve(arg('destino') ?? process.cwd());

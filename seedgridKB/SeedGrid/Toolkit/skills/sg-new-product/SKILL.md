@@ -12,7 +12,7 @@ Esta skill transforma um pedido de produto novo em uma pasta pronta para subir. 
 ## Pré-condições
 
 - A pasta corrente é a do produto e o `seedgrid-ai init` já rodou nela (existem `.ai/` e `.ai/boilerplates/`). Sem isso, peça ao usuário para rodar `seedgrid-ai init` e pare.
-- Não existe `produto.json` nem `backend/` na pasta. Se existir, o produto já foi criado: **não rode o script de novo**; trate o pedido como mudança (`arquiteto`).
+- Não existe `produto.json` nem `backend/` na pasta. Se existir, o produto já foi criado: **não rode a geração de novo**. Pedido para adicionar ou remover um módulo ou trocar uma escolha segue a seção 4 (`--reconfigurar`); pedido de funcionalidade de negócio é do `arquiteto`.
 - Tudo o que esta skill escreve fica **dentro da pasta do produto**. Produto novo nunca escreve nem lê fora dela, e nunca altera extension da plataforma (veja `.ai/rules/limites-do-host.md`).
 
 ## Arquivos da skill
@@ -72,11 +72,31 @@ Depois do script, siga `sg-plan-goal` para o plano do produto e escreva **apenas
 
 Depois acione o `arquiteto` com o plano do produto para a primeira feature de negócio; o resto do fluxo segue `.ai/rules/coordenacao.md`.
 
+## 4. Mudar depois: adicionar ou remover um módulo, trocar uma escolha
+
+A qualquer momento o usuário pode pedir para **adicionar ou remover um módulo opcional**, em **qual escopo ele vale** (backend, front, admin) ou **trocar uma escolha** (armazenamento, auditoria, self-enter...). Isso é a mesma matriz com respostas novas, não uma edição à mão.
+
+1. Leia as respostas atuais em `.seedgrid/manifesto.json` (campo `respostas`). Mude **só** o que o usuário pediu, com a mesma entrevista da seção 1 para a pergunta afetada (inclusive o escopo, quando houver), e grave o JSON inteiro em `docs/ai/plans/respostas-produto.json`.
+2. Veja a diferença **sem gravar**:
+   ```
+   node .ai/skills/sg-new-product/scripts/scaffold-produto.mjs --reconfigurar --respostas docs/ai/plans/respostas-produto.json
+   ```
+   A saída lista os arquivos que seriam criados, atualizados ou removidos, as variáveis do `dev.env` (só os nomes, nunca os valores) e os **conflitos**.
+3. Mostre ao usuário o que vai mudar e **peça confirmação**; depois rode o mesmo comando com `--aplicar`.
+
+Como funciona e o que esperar:
+- Os **segredos não mudam**: a nova geração reusa os do `dev.env`, do `.env` e das chaves do JWT.
+- Só a diferença é aplicada. O que o usuário editou **não é sobrescrito**: arquivo ou variável alterados por ele e que a matriz também muda aparecem como **conflito** e ficam como estão. Relate cada conflito e diga o que ele precisa ajustar à mão.
+- É **reversível**: voltar a resposta anterior e aplicar restaura o estado de quem nunca mudou.
+- Remover um módulo apaga as telas do front ou do admin e as linhas do menu (receita provada em `data/modulos-front.json`); dependências entre extensions seguem a seção 1 (remover `security` exige remover o que depende dele). Módulo sem receita provada **não** é removido do front: a saída avisa, e o pedido vira demanda em `docs/ai/demands/`.
+- Sem `.seedgrid/manifesto.json` (produto criado antes desta função), não há reconfiguração: trate como mudança pelo `arquiteto`.
+- Depois de aplicar, atualize o plano e os ADRs afetados em `docs/ai/` (seção 3) e rode `pnpm install` onde o `package.json` mudou.
+
 ## Limites
 
 - **Fique na pasta do produto.** Não leia outros projetos nem as fontes das extensions (a KB em `.ai/brain/` é a fonte), e não crie arquivos auxiliares ou scripts temporários fora da pasta do produto: escreva os documentos direto com a ferramenta de escrita.
 - **Termine afirmando, não perguntando.** Depois dos documentos, relate o que foi feito e as pendências e diga o próximo passo em uma frase afirmativa ("o próximo passo é acionar o `arquiteto`..."); perguntas de negócio ficam para o `arquiteto`.
 - Não suba a infraestrutura nem publique nada sem o usuário pedir. `git push` e deploy são decisão dele.
-- Não edite `backend/dev.env` nem `.env` à mão para "consertar" um valor gerado sem explicar; para trocar uma resposta, rode a skill de novo numa pasta limpa.
+- Não edite `backend/dev.env` nem `.env` à mão para "consertar" um valor gerado sem explicar; para trocar uma resposta use a reconfiguração (seção 4).
 - Modelo "outro" não tem boilerplate: o script gera os arquivos de configuração e deixa `backend/`, `frontend/` e `admin/` sem esqueleto; isso aparece como `PENDENTE`.
-- Remover um módulo do front (por exemplo `self-enter` ou `api-keys`) ainda é manual: veja a nota de composição do admin na KB (`SeedGrid/SeedGrid-components/modulos/Composicao-do-admin`). Os flags do `.env` já ligam e desligam o comportamento.
+- Remover um módulo do front só é automático para os módulos de `data/modulos-front.json` (hoje `self-enter`). Para os demais, os flags do `.env` ligam e desligam o comportamento no backend, e a remoção das telas vira demanda.
