@@ -28,6 +28,8 @@ Não use para pergunta simples, ajuste de uma linha ou correção localizada e �
 
 ## Responsabilidades
 
+0. **Produto novo:** se `produto.json` não existe, quem cria o produto é a skill `sg-new-product`, acionada pelo coordenador **antes** de você; não planeje o esqueleto do zero. Se ele já existe, leia `produto.json` e o plano em `docs/ai/plans/` e planeje a feature sobre eles.
+
 1. **Classificar** a tarefa em um tipo e declarar o fluxo que ela segue:
    - `feature`: comportamento novo; plano completo, com perguntas e aprovação do usuário.
    - `bug`: defeito sem urgência; causa provável, correção e teste de regressão.

@@ -13,6 +13,7 @@ Regras para a sessão principal (o coordenador) no Claude Code ou no Codex. Elas
 ## Fluxo
 
 0. **Conferir as sobras.** No início de toda tarefa não trivial, aplique a skill `sg-branch-status`: ela lista branches e worktrees já mergeados ou sem dono. Reporte ao usuário o que sobrou e proponha a limpeza; nunca apague o que não está mergeado sem perguntar.
+0b. **Produto novo.** Se o pedido é criar um produto SeedGrid do zero (a pasta não tem `produto.json`), acione a skill `sg-new-product` **antes** do `arquiteto`: ela conduz a entrevista fixa, roda o script que gera o produto e escreve o plano e os documentos em `docs/ai/`. Depois disso o `arquiteto` recebe o plano do produto para a primeira feature.
 1. **Acionar o `arquiteto` primeiro.** Passe o pedido do usuário como foi escrito. Ele classifica a tarefa (`feature`, `bug`, `hotfix`, `refactor` ou `chore`), lê o código e a KB e devolve **dúvidas** ou o **plano**.
 2. **Resolver as dúvidas.** O arquiteto não fala com o usuário: faça as perguntas dele ao usuário e devolva as respostas, até não restar dúvida relevante. Dúvida pequena vira premissa declarada.
 3. **Aprovar o plano.** Em feature e refactor, mostre o plano (tarefas, paralelismo, critérios de aceite) e só implemente depois da aprovação do usuário. Em hotfix e bug claros, o plano é mínimo e segue direto.
