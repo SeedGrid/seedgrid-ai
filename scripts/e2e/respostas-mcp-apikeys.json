@@ -11,7 +11,7 @@
     { "espera": "chaves|apikeys|api keys", "resposta": "O portal permite que desenvolvedores criem, listem e revoguem chaves de API; o servidor MCP do SeedGrid valida essas chaves para autorizar as chamadas dos agentes." },
     { "espera": "billing|provider|trial", "resposta": "Provider Stripe, sem trial (0 dias) e um único plano chamado Padrão." },
     { "espera": "dom[ií]nio|dados", "resposta": "Domínio do front: mcp-keys.seedgrid.com.br. Domínio do admin: admin.mcp-keys.seedgrid.com.br. E-mail remetente: noreply@seedgrid.com.br. E-mail do primeiro administrador: admin@seedgrid.com.br. Nome e código da aplicação: use o padrão. Registry: ghcr.io/seedgrid." },
-    { "espera": "confirm", "resposta": "Confirmo, pode gerar." }
+    { "espera": "confirm|posso gerar|pode gerar|gerar", "resposta": "Confirmo, pode gerar." }
   ],
   "respostaPadrao": "Siga com o que for necessário e finalize.",
   "maxTurnosExtras": 3

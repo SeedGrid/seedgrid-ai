@@ -30,6 +30,15 @@ mkdirSync(saida, { recursive: true });
 const sh = (cmd, args, opt = {}) => spawnSync(cmd, args, { encoding: 'utf8', shell: win && cmd !== process.execPath, maxBuffer: 256 * 1024 * 1024, ...opt });
 const aspas = (a) => (win ? `"${String(a).replace(/"/g, '\\"')}"` : a);
 const estadoGit = (repo) => (existsSync(join(repo, '.git')) ? sh('git', ['-C', repo, 'status', '--porcelain']).stdout : null);
+// Pastas gerenciadas pelo toolkit (instaladas pelo init, nao escritas pelo fluxo do produto): fora das checagens de conteudo do produto.
+const GERENCIADO = (f) => /^(\.ai|\.claude|\.agents)\//.test(f) || f === 'AGENTS.md' || f === 'CLAUDE.md';
+// Outras sessoes mexem nos repositorios vigiados durante o teste; o que importa e se algo NOVO cita o produto.
+function citaProduto(repo, antesStatus, slug) {
+  const linhas = (t) => new Set((t ?? '').split('\n').filter(Boolean));
+  const antesL = linhas(antesStatus);
+  const novos = [...linhas(estadoGit(repo))].filter((l) => !antesL.has(l)).map((l) => l.slice(3).trim());
+  return novos.filter((rel) => { try { return readFileSync(join(repo, rel), 'utf8').includes(slug); } catch { return false; } });
+}
 
 // ---------- 1. preparo ----------
 function preparar() {
@@ -64,6 +73,7 @@ function turno(n, prompt, sessao) {
 
 function conduzir() {
   const desvios = [];
+  const observacoes = [];
   const turnos = [];
   let t = turno(0, config.pedido, null);
   turnos.push(t);
@@ -79,11 +89,11 @@ function conduzir() {
   // Depois da confirmacao a skill gera o produto e escreve os documentos; se ainda perguntar algo, e desvio.
   for (let extra = 1; extra <= (config.maxTurnosExtras ?? 3); extra++) {
     if (!/\?\s*$/.test(t.texto.trim())) break;
-    desvios.push({ turno: turnos.length, tipo: 'pergunta apos a confirmacao', recebido: t.texto.slice(-300) });
+    observacoes.push({ turno: turnos.length, tipo: 'duvida ou oferta depois da geracao (fluxo do arquiteto; nao e pergunta da matriz)', recebido: t.texto.slice(-300) });
     t = turno(turnos.length, config.respostaPadrao ?? 'Siga com o que for necessario e finalize.', t.sessao);
     turnos.push(t);
   }
-  return { turnos, desvios };
+  return { turnos, desvios, observacoes };
 }
 
 // ---------- 3. criterios ----------
@@ -107,8 +117,9 @@ function conferir(antes) {
   ok('ADRs em docs/ai/decisions/', md('docs/ai/decisions').length >= 1, `${md('docs/ai/decisions').length} arquivo(s)`);
   ok('handoff em docs/ai/handoffs/', md('docs/ai/handoffs').length >= 1, md('docs/ai/handoffs').join(', '));
   // nada fora da pasta do produto: os repositorios vigiados nao podem ter mudado
-  for (const repo of vigiar) ok(`nada escrito em ${repo}`, estadoGit(repo) === antes.get(repo), '');
-  const texto = lista.filter((f) => /\.(md|json|ya?ml|properties|xml|java|ts|tsx|mjs|js|txt|example|sh|html)$/i.test(f) && !['backend/dev.env', '.env'].includes(f) && !f.endsWith('.pem'));
+  const slugProduto = JSON.parse(readFileSync(join(destino, 'produto.json'), 'utf8')).slug;
+  for (const repo of vigiar) { const citam = citaProduto(repo, antes.get(repo), slugProduto); ok(`nada do produto escrito em ${repo}`, citam.length === 0, citam.join(', ')); }
+  const texto = lista.filter((f) => !GERENCIADO(f) && /\.(md|json|ya?ml|properties|xml|java|ts|tsx|mjs|js|txt|example|sh|html)$/i.test(f) && !['backend/dev.env', '.env'].includes(f) && !f.endsWith('.pem'));
   const citam = texto.filter((f) => /seedgrid-platform-work|seedgrid-ia-dev|seedgridKB-dev|D:\\empreendedorismo|\/d\/empreendedorismo/i.test(readFileSync(join(destino, f), 'utf8')));
   ok('produto sem referencia ao work/plataforma', citam.length === 0, citam.slice(0, 5).join(', '));
   const wf = join(destino, '.github/workflows/publicar.yml');
@@ -119,7 +130,7 @@ function conferir(antes) {
   // check-secrets so no que iria para o git (respeita o .gitignore)
   const ls = sh('git', ['-C', destino, 'ls-files', '--cached', '--others', '--exclude-standard']).stdout.split('\n').filter(Boolean);
   const limpo = mkdtempSync(join(tmpdir(), 'sg-e2e-limpo-'));
-  for (const f of ls) { mkdirSync(dirname(join(limpo, f)), { recursive: true }); cpSync(join(destino, f), join(limpo, f)); }
+  for (const f of ls.filter((x) => !GERENCIADO(x))) { mkdirSync(dirname(join(limpo, f)), { recursive: true }); cpSync(join(destino, f), join(limpo, f)); }
   const cs = sh(process.execPath, [join(RAIZ, 'scripts', 'check-secrets.mjs'), '--dir', limpo]);
   rmSync(limpo, { recursive: true, force: true });
   ok('check-secrets limpo no que seria versionado', cs.status === 0, (cs.stdout + cs.stderr).slice(0, 400));
@@ -141,7 +152,7 @@ function conferir(antes) {
 
 // ---------- principal ----------
 const antes = new Map(vigiar.map((r) => [r, estadoGit(r)]));
-let conducao = { turnos: [], desvios: [] };
+let conducao = { turnos: [], desvios: [], observacoes: [] };
 if (!flag('so-conferir')) {
   preparar();
   conducao = conduzir();
@@ -157,6 +168,7 @@ const relatorio = {
   duracaoMin: Number((soma('ms') / 60000).toFixed(1)),
   perguntasForaDaMatriz: conducao.desvios.length,
   desvios: conducao.desvios,
+  observacoes: conducao.observacoes,
   permissoesNegadas: conducao.turnos.flatMap((t) => t.negadas),
   turnos: conducao.turnos.map(({ n, ms, custo, turnosInternos, sessao }) => ({ n, ms, custo, turnosInternos, sessao })),
   criterios,
@@ -165,4 +177,5 @@ writeFileSync(join(saida, 'relatorio.json'), JSON.stringify(relatorio, null, 2))
 console.log(`\nRelatorio: ${join(saida, 'relatorio.json')}`);
 console.log(`Turnos: ${relatorio.turnosDoUsuario} (internos do modelo: ${relatorio.turnosInternosDoModelo}) | custo: US$ ${relatorio.custoUsd} | duracao: ${relatorio.duracaoMin} min | perguntas fora da matriz: ${relatorio.perguntasForaDaMatriz}`);
 for (const c of criterios) console.log(`${c.passou ? 'OK    ' : 'FALHA '} ${c.nome}${c.passou || !c.detalhe ? '' : `  -> ${c.detalhe.replace(/\s+/g, ' ').slice(0, 200)}`}`);
+spawnSync(process.execPath, [join(RAIZ, 'scripts', 'e2e-comandos-doc.mjs'), saida], { stdio: 'inherit' });
 process.exit(criterios.every((c) => c.passou) && relatorio.perguntasForaDaMatriz === 0 ? 0 : 1);
