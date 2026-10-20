@@ -16,7 +16,7 @@ const { matriz, catalogo } = lib.carregar();
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal' };
 const DADOS = { dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const B2B = { ...BASE, ...DADOS, modelo: 'login-tenancy-b2b', extensoes: [], selfEnter: 'nao', auditoria: 'postgres', armazenamento: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
+const B2B = { ...BASE, ...DADOS, modelo: 'login-tenancy-b2b', extensoes: [], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 
 test('a matriz e o catalogo sao consistentes (sem problemas)', () => {
   assert.deepEqual(lib.validarMatriz(matriz, catalogo), []);
@@ -26,7 +26,7 @@ test('ordem estavel: ordens crescentes, numeros e ids unicos, mesma ordem em dua
   const ordens = matriz.perguntas.map((p) => p.ordem);
   assert.deepEqual(ordens, [...ordens].sort((a, b) => a - b));
   assert.equal(new Set(matriz.perguntas.map((p) => p.numero)).size, matriz.perguntas.length);
-  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '5b', '6', '7', '8', '9', '10']);
+  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '5b', '6', '7', '7a', '8', '9', '10']);
   const h = (m: Matriz) => createHash('sha256').update(JSON.stringify(m)).digest('hex');
   assert.equal(h(lib.carregar().matriz), h(matriz));
 });
@@ -74,7 +74,7 @@ test('resposta a pergunta que nao se aplica e recusada (nada fora da matriz)', (
 });
 
 test('apikeys no modelo outro traz o security junto; security sozinho e valido', () => {
-  const outro = { ...BASE, ...DADOS, modelo: 'outro', selfEnter: 'nao' };
+  const outro = { ...BASE, ...DADOS, modelo: 'outro', selfEnter: 'nao', armazenamentoAvatar: 'filesystem' };
   const a = lib.resolver(matriz, catalogo, { ...outro, extensoes: ['apikeys'], apikeysUso: 'x' });
   assert.deepEqual(a.erros, []);
   assert.ok(a.extensoes.includes('security'));

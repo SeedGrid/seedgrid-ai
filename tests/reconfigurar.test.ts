@@ -15,7 +15,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 const { reconfigurar } = (await import(pathToFileURL(join(SKILL, 'scripts/reconfigurar.mjs')).href)) as { reconfigurar: (o: { respostas: Record<string, unknown>; destino: string; boilerplates: string; aplicar?: boolean }) => Promise<Plano> };
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamento: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
+const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const COM_SELF_ENTER = { ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite' };
 
 const dirs: string[] = [];
@@ -121,4 +121,25 @@ test('o manifesto nao tem segredo e a saida da reconfiguracao nunca traz valor d
   const r = await reconfigurar({ respostas: COM_SELF_ENTER, destino: produto, boilerplates: BOILERPLATES });
   const saida = JSON.stringify(r);
   for (const s of segredos) assert.ok(!saida.includes(s), 'segredo na saida');
+});
+
+test('trocar o armazenamento do avatar depois (filesystem -> S3 -> MinIO): igual a criar ja assim; segredos intactos', async () => {
+  const fsfs = { ...B2B, armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem' };
+  const produto = await criar(fsfs);
+  const antes = env(produto);
+  const s3 = { ...fsfs, armazenamentoAvatar: 's3' };
+  const r1 = await reconfigurar({ respostas: s3, destino: produto, boilerplates: BOILERPLATES, aplicar: true });
+  assert.ok(r1.ok && r1.conflitos === 0);
+  assert.equal(hashArvore(produto), hashArvore(await criar(s3)));
+  assert.equal(env(produto).SEEDGRID_SECURITY_AVATAR_STORAGE, 's3');
+  assert.equal(env(produto).SEEDGRID_SECURITY_AVATAR_S3_BUCKET, 'portal-chaves-avatars');
+  const minio = { ...fsfs, armazenamentoAvatar: 'minio' };
+  const r2 = await reconfigurar({ respostas: minio, destino: produto, boilerplates: BOILERPLATES, aplicar: true });
+  assert.ok(r2.ok && r2.conflitos === 0);
+  assert.equal(hashArvore(produto), hashArvore(await criar(minio)));
+  assert.ok(!('SEEDGRID_SECURITY_AVATAR_S3_BUCKET' in env(produto)), 'variaveis do S3 saem');
+  assert.match(readFileSync(join(produto, 'docker-compose.yml'), 'utf8'), /minio:/);
+  assert.equal(env(produto).SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64 ?? '', antes.SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64 ?? '');
+  // o .env da raiz ganha a senha do MinIO sem mudar as outras
+  assert.ok(readFileSync(join(produto, '.env'), 'utf8').includes('MINIO_ROOT_PASSWORD='));
 });

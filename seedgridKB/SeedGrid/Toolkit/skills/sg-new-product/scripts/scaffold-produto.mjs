@@ -67,7 +67,7 @@ export function criarGerador(sementes = {}) {
 // ---------- efeitos ----------
 // Reune os efeitos das respostas, na ordem das perguntas; env de uma resposta mais tarde vence a anterior.
 function juntar(efeitos, matriz) {
-  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pendencias: [], produto: {}, docs: [] };
+  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pendencias: [], produto: {}, docs: [] };
   for (const { efeito } of efeitos) {
     for (const b of efeito.blocos_env ?? []) for (const [k, v] of Object.entries(matriz.blocos_env[b])) r.env.set(k, v);
     for (const [k, v] of Object.entries(efeito.env && !Array.isArray(efeito.env) ? efeito.env : {})) r.env.set(k, v);
@@ -80,10 +80,12 @@ function juntar(efeitos, matriz) {
     r.extRemover.push(...(efeito.extensions_remover ?? []));
     r.frontRemover.push(...(efeito.modulos_front_remover ?? []));
     r.pomRemover.push(...(efeito.pom_remover ?? []));
+    r.pomManter.push(...(efeito.pom_manter ?? []));
     r.pendencias.push(...(efeito.pendencias ?? []));
     r.docs.push(...(efeito.docs ?? []));
     if (efeito.produto && !Array.isArray(efeito.produto)) Object.assign(r.produto, efeito.produto);
   }
+  r.pomRemover = r.pomRemover.filter((x) => !r.pomManter.includes(x)); // quem precisa da dependencia vence quem a dispensa
   for (const k of r.remover) if (!efeitos.some(({ efeito }) => efeito.env && efeito.env[k] !== undefined && !Array.isArray(efeito.env))) r.env.delete(k);
   return r;
 }

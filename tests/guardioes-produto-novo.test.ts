@@ -20,7 +20,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 };
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const COMPLETA = { ...BASE, extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamento: 'filesystem', apikeysUso: 'x', billingProvider: 'stripe', trialDias: 14, planos: 'Basico' };
+const COMPLETA = { ...BASE, extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'x', billingProvider: 'stripe', trialDias: 14, planos: 'Basico' };
 
 function arquivos(raiz: string, dir = raiz): string[] {
   return readdirSync(dir).sort().flatMap((n) => {
@@ -29,20 +29,22 @@ function arquivos(raiz: string, dir = raiz): string[] {
   });
 }
 
+const PROVIDERS = ['filesystem', 'minio', 's3', 'azure-blob', 'gcs', 'google-drive', 'onedrive'];
+
 test('GUARDIAO determinismo da matriz: toda combinacao valida resolve sem erro e igual em duas execucoes', () => {
   const { matriz, catalogo } = lib.carregar();
   const modelos = matriz.perguntas.find((p) => p.id === 'modelo')!.opcoes!.filter((o) => o.disponivel !== false).map((o) => o.id);
   let combinacoes = 0;
-  for (const modelo of modelos) for (const selfEnter of ['nao', 'sim']) for (const auditoria of ['postgres', 'mongodb']) for (const armazenamento of ['filesystem', 'minio']) {
+  for (const modelo of modelos) for (const selfEnter of ['nao', 'sim']) for (const auditoria of ['postgres', 'mongodb']) for (const armazenamento of PROVIDERS) {
     const extras = modelo === 'outro' ? ['security', 'audit', 'backup', 'apikeys', 'billing'] : ['exchange', 'cache'];
-    const r = { ...COMPLETA, modelo, extensoes: extras, selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamento };
+    const r = { ...COMPLETA, modelo, extensoes: extras, selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
     const a = lib.resolver(matriz, catalogo, r);
     const b = lib.resolver(matriz, catalogo, JSON.parse(JSON.stringify(r)));
     assert.deepEqual(a.erros, [], `${modelo}/${selfEnter}/${auditoria}/${armazenamento}`);
     assert.deepEqual(a, b);
     combinacoes++;
   }
-  assert.equal(combinacoes, modelos.length * 8);
+  assert.equal(combinacoes, modelos.length * 4 * PROVIDERS.length);
 });
 
 test('GUARDIAO nenhum segredo no pacote: o que o npm empacota nao tem arquivo de ambiente, chave ou backup', () => {

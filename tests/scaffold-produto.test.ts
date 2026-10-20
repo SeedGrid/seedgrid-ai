@@ -17,9 +17,9 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 };
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamento: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
+const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const SUB = { ...B2B, modelo: 'subdomain-tenancy' };
-const OUTRO = { ...BASE, modelo: 'outro', extensoes: ['apikeys'], selfEnter: 'nao', apikeysUso: 'x' };
+const OUTRO = { ...BASE, modelo: 'outro', extensoes: ['apikeys'], selfEnter: 'nao', armazenamentoAvatar: 'filesystem', apikeysUso: 'x' };
 
 const dirs: string[] = [];
 const novaPasta = () => { const d = mkdtempSync(join(tmpdir(), 'sg-scaffold-')); dirs.push(d); return d; };
@@ -48,7 +48,7 @@ const hashArvore = (raiz: string) => {
 };
 
 test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter por convite', async () => {
-  const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
+  const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
   for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/decisions/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep', 'docs/ai/demands/.gitkeep']) assert.ok(existsSync(join(destino, f)), f);
   const e = env(ler(destino, 'backend/dev.env'));
@@ -137,7 +137,7 @@ test('nao sobrescreve um produto existente', async () => {
 });
 
 test('determinismo: mesmas respostas, arvore versionada identica; segredos diferentes a cada produto', async () => {
-  const r = { ...B2B, extensoes: ['exchange', 'business-days'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'ambos', auditoria: 'mongodb', armazenamento: 'minio' };
+  const r = { ...B2B, extensoes: ['exchange', 'business-days'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'ambos', auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' };
   const a = await gerar(r);
   const b = await gerar(r);
   assert.equal(hashArvore(a.destino), hashArvore(b.destino));
@@ -147,7 +147,7 @@ test('determinismo: mesmas respostas, arvore versionada identica; segredos difer
 });
 
 test('segredos: o par do JWT em arquivo bate com o do dev.env e nada de segredo vai para o que e versionado', async () => {
-  const { destino } = await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamento: 'minio' });
+  const { destino } = await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' });
   const e = env(ler(destino, 'backend/dev.env'));
   const pem = ler(destino, 'backend/src/main/resources/keys/public.pem').replace(/-----[A-Z ]+-----|\s/g, '');
   assert.equal(pem, e.SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64);
@@ -210,7 +210,7 @@ test('arquivos binarios e modelos de ponto: PNG decodificado, sem .b64 e sem .te
 });
 
 test('compose e workflow validos: variaveis do compose definidas no .env; docker compose config se houver Docker', async () => {
-  const { destino } = await gerar({ ...B2B, auditoria: 'mongodb', armazenamento: 'minio' });
+  const { destino } = await gerar({ ...B2B, auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' });
   const texto = ler(destino, 'docker-compose.yml');
   const usadas = [...texto.matchAll(/\$\{([A-Z_]+)\}/g)].map((m) => m[1]!);
   const definidas = env(ler(destino, '.env'));
@@ -280,4 +280,41 @@ test('receitas de remocao: toda receita aponta para caminhos que existem nos boi
       }
     }
   }
+});
+
+test('armazenamento por finalidade: avatar e backup escolhem destinos diferentes, cada um com as suas variaveis', async () => {
+  const todas = (e: Record<string, string>, pref: string) => Object.keys(e).filter((k) => k.startsWith(pref));
+  // avatar em S3 (credencial externa), backup no sistema de arquivos
+  const a = await gerar({ ...B2B, armazenamentoAvatar: 's3', armazenamentoBackup: 'filesystem' });
+  const e = env(ler(a.destino, 'backend/dev.env'));
+  assert.equal(e.SEEDGRID_SECURITY_AVATAR_STORAGE, 's3');
+  assert.equal(e.SEEDGRID_SECURITY_AVATAR_S3_BUCKET, 'portal-chaves-avatars');
+  assert.equal(e.SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY, 'change-me');
+  assert.equal(e.SEEDGRID_BACKUP_STORAGE, 'filesystem');
+  assert.equal(e.SEEDGRID_BACKUP_FILESYSTEM_BASE, './data/arquivos');
+  assert.deepEqual(todas(e, 'SEEDGRID_BACKUP_MINIO_'), [], 'sem variaveis de MinIO quando ninguem usa');
+  assert.ok(!/minio/.test(ler(a.destino, 'docker-compose.yml')), 'sem servico MinIO no compose');
+  assert.ok(!ler(a.destino, 'backend/pom.xml').includes('io.minio'), 'sem a dependencia do MinIO');
+  assert.ok(a.saida.pendencias.some((p) => /Avatar em Amazon S3/.test(p) && /guia-credenciais\.md#s3/.test(p)));
+  assert.ok(!a.saida.pendencias.some((p) => /^Backup/.test(p)));
+  // so o backup em MinIO: o compose sobe o MinIO e a dependencia fica
+  const b = await gerar({ ...B2B, armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'minio' });
+  assert.match(ler(b.destino, 'docker-compose.yml'), /minio:/);
+  assert.ok(ler(b.destino, 'backend/pom.xml').includes('io.minio'));
+  assert.equal(env(ler(b.destino, 'backend/dev.env')).SEEDGRID_BACKUP_STORAGE, 'minio');
+  assert.equal(env(ler(b.destino, 'backend/dev.env')).SEEDGRID_SECURITY_AVATAR_STORAGE, 'filesystem');
+  // os sete providers resolvem para as suas chaves
+  for (const [prov, chave] of [['azure-blob', 'AZURE_BLOB_CONNECTION_STRING'], ['gcs', 'GCS_PROJECT_ID'], ['google-drive', 'GOOGLE_DRIVE_ROOT_FOLDER_ID'], ['onedrive', 'ONEDRIVE_CLIENT_ID']] as const) {
+    const x = await gerar({ ...B2B, armazenamentoAvatar: prov, armazenamentoBackup: prov });
+    const ex = env(ler(x.destino, 'backend/dev.env'));
+    assert.equal(ex.SEEDGRID_SECURITY_AVATAR_STORAGE, prov);
+    assert.ok(`SEEDGRID_SECURITY_AVATAR_${chave}` in ex && `SEEDGRID_BACKUP_${chave}` in ex, prov);
+    assert.ok(x.saida.pendencias.length >= 2, `${prov}: pendencia de avatar e de backup`);
+  }
+});
+
+test('o guia de credenciais existe e cada pendencia de armazenamento aponta para uma secao dele', async () => {
+  const guia = readFileSync(join(SKILL, 'assets/guia-credenciais.md'), 'utf8');
+  for (const ancora of ['filesystem', 'minio', 's3', 'azure-blob', 'gcs', 'google-drive', 'onedrive']) assert.match(guia, new RegExp(`^## ${ancora}( |$)`, 'm'), ancora);
+  assert.match(guia, /Procedimento do fornecedor, n.o da KB/);
 });

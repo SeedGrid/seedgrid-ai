@@ -192,6 +192,7 @@
         "assets/render.mjs",
         "assets/workflow.yml.tpl",
         "assets/workflow-job.yml.tpl",
+        "assets/guia-credenciais.md",
         "assets/exemplo/produto.json"
       ]
     },

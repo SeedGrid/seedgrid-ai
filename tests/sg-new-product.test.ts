@@ -12,7 +12,7 @@ after(cleanupAll);
 
 const RESPOSTAS = {
   nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', modelo: 'login-tenancy-b2b', extensoes: [],
-  selfEnter: 'nao', auditoria: 'postgres', armazenamento: 'filesystem', apikeysUso: 'Integracoes', billingProvider: 'stripe', trialDias: 14,
+  selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes', billingProvider: 'stripe', trialDias: 14,
   planos: 'Basico,Pro', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br',
 };
 

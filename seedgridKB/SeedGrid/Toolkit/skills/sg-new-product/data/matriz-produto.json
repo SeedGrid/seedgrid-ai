@@ -791,31 +791,29 @@
       ]
     },
     {
-      "id": "armazenamento",
+      "id": "armazenamento-avatar",
       "numero": "7",
       "ordem": 9,
       "tipo": "escolha",
-      "chave": "armazenamento",
+      "chave": "armazenamentoAvatar",
       "se": {
         "extensao": [
-          "filemanagement",
-          "backup"
+          "security"
         ]
       },
-      "pergunta": "Qual o armazenamento de arquivos (avatar e backup)?",
-      "recomendacao": "Sistema de arquivos em desenvolvimento; MinIO se o produto vai publicar com armazenamento de objetos.",
+      "pergunta": "Onde guardar as fotos de avatar dos usuarios?",
+      "recomendacao": "Sistema de arquivos em desenvolvimento; MinIO ou S3 se o produto vai publicar com armazenamento de objetos. Google Drive e OneDrive exigem credencial que voce mesmo cria (veja o guia). O Drive torna o arquivo publico ao gerar o link.",
       "opcoes": [
         {
           "id": "filesystem",
-          "rotulo": "Sistema de arquivos",
+          "rotulo": "Sistema de arquivos (pasta local)",
           "efeito": {
             "produto": {
-              "armazenamento": "filesystem"
+              "armazenamentoAvatar": "filesystem"
             },
             "env": {
               "SEEDGRID_SECURITY_AVATAR_STORAGE": "filesystem",
-              "SEEDGRID_BACKUP_STORAGE": "filesystem",
-              "SEEDGRID_BACKUP_FILESYSTEM_BASE": "./data/arquivos"
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH": "./data/avatars"
             },
             "env_remover": [
               "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
@@ -823,11 +821,20 @@
               "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
               "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
               "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
-              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
-              "SEEDGRID_BACKUP_MINIO_BUCKET",
-              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
-              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
-              "SEEDGRID_BACKUP_MINIO_REGION"
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
             ],
             "pom_remover": [
               "io.minio:minio"
@@ -836,27 +843,534 @@
         },
         {
           "id": "minio",
-          "rotulo": "MinIO",
+          "rotulo": "MinIO (sobe no docker-compose)",
           "efeito": {
             "produto": {
-              "armazenamento": "minio"
+              "armazenamentoAvatar": "minio"
             },
             "env": {
               "SEEDGRID_SECURITY_AVATAR_STORAGE": "minio",
-              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT": "http://localhost:9000/",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT": "http://localhost:9000",
               "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET": "{{slug}}-avatars",
               "SEEDGRID_SECURITY_AVATAR_MINIO_REGION": "us-east-1",
               "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY": "admin",
-              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
+            ],
+            "compose": [
+              "minio"
+            ],
+            "pom_manter": [
+              "io.minio:minio"
+            ]
+          }
+        },
+        {
+          "id": "s3",
+          "rotulo": "Amazon S3 (ou compativel)",
+          "efeito": {
+            "produto": {
+              "armazenamentoAvatar": "s3"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "s3",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET": "{{slug}}-avatars",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION": "us-east-1",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY": "${externo}",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Avatar em Amazon S3 (ou compativel): preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY, SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#s3"
+            ]
+          }
+        },
+        {
+          "id": "azure-blob",
+          "rotulo": "Azure Blob Storage",
+          "efeito": {
+            "produto": {
+              "armazenamentoAvatar": "azure-blob"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "azure-blob",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER": "{{slug}}-avatars",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Avatar em Azure Blob Storage: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#azure-blob"
+            ]
+          }
+        },
+        {
+          "id": "gcs",
+          "rotulo": "Google Cloud Storage",
+          "efeito": {
+            "produto": {
+              "armazenamentoAvatar": "gcs"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "gcs",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET": "{{slug}}-avatars",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID": "${externo}",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Avatar em Google Cloud Storage: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID, SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#gcs-google-cloud-storage"
+            ]
+          }
+        },
+        {
+          "id": "google-drive",
+          "rotulo": "Google Drive (conta de servico)",
+          "efeito": {
+            "produto": {
+              "armazenamentoAvatar": "google-drive"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "google-drive",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID": "${externo}",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Avatar em Google Drive (conta de servico): preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID, SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#google-drive"
+            ]
+          }
+        },
+        {
+          "id": "onedrive",
+          "rotulo": "OneDrive",
+          "efeito": {
+            "produto": {
+              "armazenamentoAvatar": "onedrive"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "onedrive",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID": "${externo}",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET": "${externo}",
+              "SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_FILESYSTEM_BASE_PATH",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_S3_REGION",
+              "SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_SECURITY_AVATAR_GCS_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID",
+              "SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Avatar em OneDrive: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID, SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET, SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#onedrive"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "armazenamento-backup",
+      "numero": "7a",
+      "ordem": 10,
+      "tipo": "escolha",
+      "chave": "armazenamentoBackup",
+      "se": {
+        "extensao": [
+          "backup"
+        ]
+      },
+      "pergunta": "Onde guardar os arquivos de backup (exportacao de dados)?",
+      "recomendacao": "Sistema de arquivos em desenvolvimento; MinIO ou S3 em producao. Backup pode ser grande: evite o Drive/OneDrive se nao for necessario.",
+      "opcoes": [
+        {
+          "id": "filesystem",
+          "rotulo": "Sistema de arquivos (pasta local)",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "filesystem"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "filesystem",
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE": "./data/arquivos"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ]
+          }
+        },
+        {
+          "id": "minio",
+          "rotulo": "MinIO (sobe no docker-compose)",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "minio"
+            },
+            "env": {
               "SEEDGRID_BACKUP_STORAGE": "minio",
               "SEEDGRID_BACKUP_MINIO_ENDPOINT": "http://localhost:9000",
               "SEEDGRID_BACKUP_MINIO_BUCKET": "{{slug}}-backups",
+              "SEEDGRID_BACKUP_MINIO_REGION": "us-east-1",
               "SEEDGRID_BACKUP_MINIO_ACCESS_KEY": "admin",
-              "SEEDGRID_BACKUP_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}",
-              "SEEDGRID_BACKUP_MINIO_REGION": "us-east-1"
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY": "${segredo:MINIO_ROOT_PASSWORD}"
             },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
             "compose": [
               "minio"
+            ],
+            "pom_manter": [
+              "io.minio:minio"
+            ]
+          }
+        },
+        {
+          "id": "s3",
+          "rotulo": "Amazon S3 (ou compativel)",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "s3"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "s3",
+              "SEEDGRID_BACKUP_S3_BUCKET": "{{slug}}-backups",
+              "SEEDGRID_BACKUP_S3_REGION": "us-east-1",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY": "${externo}",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Backup em Amazon S3 (ou compativel): preencha em backend/dev.env SEEDGRID_BACKUP_S3_ACCESS_KEY, SEEDGRID_BACKUP_S3_SECRET_KEY (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#s3"
+            ]
+          }
+        },
+        {
+          "id": "azure-blob",
+          "rotulo": "Azure Blob Storage",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "azure-blob"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "azure-blob",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER": "{{slug}}-backups",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Backup em Azure Blob Storage: preencha em backend/dev.env SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#azure-blob"
+            ]
+          }
+        },
+        {
+          "id": "gcs",
+          "rotulo": "Google Cloud Storage",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "gcs"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "gcs",
+              "SEEDGRID_BACKUP_GCS_BUCKET": "{{slug}}-backups",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID": "${externo}",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Backup em Google Cloud Storage: preencha em backend/dev.env SEEDGRID_BACKUP_GCS_PROJECT_ID, SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#gcs-google-cloud-storage"
+            ]
+          }
+        },
+        {
+          "id": "google-drive",
+          "rotulo": "Google Drive (conta de servico)",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "google-drive"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "google-drive",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID": "${externo}",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Backup em Google Drive (conta de servico): preencha em backend/dev.env SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID, SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#google-drive"
+            ]
+          }
+        },
+        {
+          "id": "onedrive",
+          "rotulo": "OneDrive",
+          "efeito": {
+            "produto": {
+              "armazenamentoBackup": "onedrive"
+            },
+            "env": {
+              "SEEDGRID_BACKUP_STORAGE": "onedrive",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID": "${externo}",
+              "SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET": "${externo}",
+              "SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_REGION",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_S3_BUCKET",
+              "SEEDGRID_BACKUP_S3_REGION",
+              "SEEDGRID_BACKUP_S3_ACCESS_KEY",
+              "SEEDGRID_BACKUP_S3_SECRET_KEY",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONTAINER",
+              "SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING",
+              "SEEDGRID_BACKUP_GCS_BUCKET",
+              "SEEDGRID_BACKUP_GCS_PROJECT_ID",
+              "SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID",
+              "SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ],
+            "pendencias": [
+              "Backup em OneDrive: preencha em backend/dev.env SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID, SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET, SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#onedrive"
             ]
           }
         }
@@ -865,7 +1379,7 @@
     {
       "id": "apikeys-uso",
       "numero": "8",
-      "ordem": 10,
+      "ordem": 11,
       "tipo": "texto",
       "chave": "apikeysUso",
       "se": {
@@ -887,7 +1401,7 @@
     {
       "id": "billing",
       "numero": "9",
-      "ordem": 11,
+      "ordem": 12,
       "tipo": "campos",
       "se": {
         "extensao": [
@@ -952,7 +1466,7 @@
     {
       "id": "dados-para-rodar",
       "numero": "10",
-      "ordem": 12,
+      "ordem": 13,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
       "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
