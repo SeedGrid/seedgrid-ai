@@ -9,7 +9,7 @@ const SKILL = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-new-
 type Matriz = { perguntas: { id: string; numero: string; ordem: number; tipo: string; opcoes?: { id: string; disponivel?: boolean; efeito: object }[]; campos?: { id: string; efeito: object }[]; efeito?: object }[] };
 const lib = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)) as {
   carregar: () => { matriz: Matriz; catalogo: { extensions: Record<string, unknown> } };
-  validarMatriz: (m: Matriz, c: unknown) => string[];
+  validarMatriz: (m: Matriz, c: unknown, f?: unknown) => string[];
   resolver: (m: Matriz, c: unknown, r: Record<string, unknown>) => { erros: string[]; extensoes: string[]; adicionadas: string[]; efeitos: { origem: string }[] };
 };
 const { matriz, catalogo } = lib.carregar();
@@ -26,7 +26,7 @@ test('ordem estavel: ordens crescentes, numeros e ids unicos, mesma ordem em dua
   const ordens = matriz.perguntas.map((p) => p.ordem);
   assert.deepEqual(ordens, [...ordens].sort((a, b) => a - b));
   assert.equal(new Set(matriz.perguntas.map((p) => p.numero)).size, matriz.perguntas.length);
-  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '5b', '6', '7', '7a', '8', '9', '9b', '10']);
+  assert.deepEqual(matriz.perguntas.map((p) => p.numero), ['1', '2', '3', '3b', '4', '5', '5b', '6', '7', '7a', '8', '9', '9b', '9c', '10']);
   const h = (m: Matriz) => createHash('sha256').update(JSON.stringify(m)).digest('hex');
   assert.equal(h(lib.carregar().matriz), h(matriz));
 });
@@ -93,4 +93,9 @@ test('determinismo da resolucao: mesmas respostas, mesmos efeitos e extensions',
   const b = lib.resolver(matriz, catalogo, { ...B2B, extensoes: ['ai-pricing', 'exchange'] });
   assert.deepEqual(a, b);
   assert.ok(readFileSync(join(SKILL, 'data/matriz-produto.json'), 'utf8').length > 0);
+});
+
+test('toda receita citada pela matriz existe em data/modulos-front.json (validacao completa com o catalogo de receitas)', () => {
+  const { modulosFront } = lib.carregar() as unknown as { modulosFront: unknown };
+  assert.deepEqual(lib.validarMatriz(matriz, catalogo, modulosFront), []);
 });

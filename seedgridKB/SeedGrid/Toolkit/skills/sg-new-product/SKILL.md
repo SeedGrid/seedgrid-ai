@@ -99,4 +99,5 @@ Como funciona e o que esperar:
 - Não suba a infraestrutura nem publique nada sem o usuário pedir. `git push` e deploy são decisão dele.
 - Não edite `backend/dev.env` nem `.env` à mão para "consertar" um valor gerado sem explicar; para trocar uma resposta use a reconfiguração (seção 4).
 - Modelo "outro" não tem boilerplate: o script gera os arquivos de configuração e deixa `backend/`, `frontend/` e `admin/` sem esqueleto; isso aparece como `PENDENTE`.
-- Remover um módulo do front só é automático para os módulos de `data/modulos-front.json` (hoje `self-enter`). Para os demais, os flags do `.env` ligam e desligam o comportamento no backend, e a remoção das telas vira demanda.
+- Remover as telas de um módulo do front ou do admin só é automático para as receitas de `data/modulos-front.json`, todas provadas com `pnpm build` (hoje: `self-enter`, `api-keys`, `audit`, `backup`, `ai-pricing` e `exchange`, cada uma nos escopos em que tem tela). Billing, realtime e whatsapp não têm receita (estão entrelaçados em código das telas): para eles os flags do `.env` ligam e desligam o comportamento no backend, e a remoção das telas vira demanda em `docs/ai/demands/`.
+- Remover as telas **não** desliga o backend do módulo, e o painel inicial do admin pode mostrar a seção vazia (auditoria) ou "cotação indisponível" (exchange) sem o módulo: avise o usuário.

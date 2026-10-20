@@ -319,6 +319,9 @@
             "env_remover": [
               "SEEDGRID_AI_PRICING_SOURCE_URL",
               "SEEDGRID_AI_PRICING_TIMEZONE"
+            ],
+            "modulos_front_remover": [
+              "ai-pricing@admin"
             ]
           }
         },
@@ -333,6 +336,9 @@
           "efeito_ausente": {
             "extensions_remover": [
               "exchange"
+            ],
+            "modulos_front_remover": [
+              "exchange@admin"
             ]
           }
         },
@@ -1492,9 +1498,72 @@
       ]
     },
     {
+      "id": "telas-dispensadas",
+      "numero": "9c",
+      "ordem": 14,
+      "tipo": "multi",
+      "chave": "telasDispensadas",
+      "se": {
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
+        ]
+      },
+      "pergunta": "Alguma destas telas nao faz sentido para o produto? (opcional)",
+      "recomendacao": "Deixe vazio para manter todas. Marcar uma remove so as TELAS (e as linhas do menu) do front ou do admin; o backend do modulo continua. Voce pode pedir de novo depois, para tirar ou devolver qualquer uma.",
+      "opcoes": [
+        {
+          "id": "api-keys@frontend",
+          "rotulo": "Chaves de API no front do cliente",
+          "efeito": {
+            "modulos_front_remover": [
+              "api-keys@frontend"
+            ]
+          }
+        },
+        {
+          "id": "api-keys@admin",
+          "rotulo": "Chaves de API no admin",
+          "efeito": {
+            "modulos_front_remover": [
+              "api-keys@admin"
+            ]
+          }
+        },
+        {
+          "id": "audit@frontend",
+          "rotulo": "Auditoria no front do cliente",
+          "efeito": {
+            "modulos_front_remover": [
+              "audit@frontend"
+            ]
+          }
+        },
+        {
+          "id": "audit@admin",
+          "rotulo": "Auditoria no admin",
+          "efeito": {
+            "modulos_front_remover": [
+              "audit@admin"
+            ]
+          }
+        },
+        {
+          "id": "backup@admin",
+          "rotulo": "Backup / exportacao no admin",
+          "efeito": {
+            "modulos_front_remover": [
+              "backup@admin"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "dados-para-rodar",
       "numero": "10",
-      "ordem": 14,
+      "ordem": 15,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
       "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",

@@ -206,7 +206,7 @@ export function resolver(matriz, catalogo, entrada) {
       const fechadas = p.id === 'extensoes-modelo-outro' ? fecharDependencias(catalogo, escolhidas) : new Set(escolhidas);
       adicionadas = p.id === 'extensoes-modelo-outro' ? [...fechadas].filter((x) => !escolhidas.includes(x)).sort() : [];
       for (const o of p.opcoes) {
-        if (fechadas.has(o.id)) { efeitos.push({ origem: `${p.id}.${o.id}`, efeito: o.efeito }); ctx.extensoes.add(o.id); }
+        if (fechadas.has(o.id)) { efeitos.push({ origem: `${p.id}.${o.id}`, efeito: o.efeito }); if (catalogo.extensions[o.id]) ctx.extensoes.add(o.id); }
         else if (o.efeito_ausente) efeitos.push({ origem: `${p.id}.${o.id}.ausente`, efeito: o.efeito_ausente });
       }
       respostas[p.chave] = [...fechadas];

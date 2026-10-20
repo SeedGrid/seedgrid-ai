@@ -14,8 +14,14 @@
             "app/api/self-enter"
           ],
           "linhas": [
-            { "arquivo": "app/data.ts", "contem": "href: \"/security/self-enter\"" },
-            { "arquivo": "app/components/Shell.tsx", "contem": "\"/security/self-enter\":" }
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/security/self-enter\""
+            },
+            {
+              "arquivo": "app/components/Shell.tsx",
+              "contem": "\"/security/self-enter\":"
+            }
           ]
         },
         "admin": {
@@ -27,8 +33,126 @@
             "app/api/self-enter"
           ],
           "linhas": [
-            { "arquivo": "app/data.ts", "contem": "href: \"/security/self-enter\"" },
-            { "arquivo": "app/components/Shell.tsx", "contem": "\"/security/self-enter\":" }
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/security/self-enter\""
+            },
+            {
+              "arquivo": "app/components/Shell.tsx",
+              "contem": "\"/security/self-enter\":"
+            }
+          ]
+        }
+      }
+    },
+    "api-keys": {
+      "descricao": "Chaves de API (maquina a maquina): telas de listagem e edicao e os proxies da API.",
+      "escopos": {
+        "frontend": {
+          "apagar": [
+            "app/security/apikeys",
+            "app/api/security/apikeys"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/security/apikeys/apikey_list\""
+            }
+          ]
+        },
+        "admin": {
+          "apagar": [
+            "app/apikeys",
+            "app/api/admin/apikeys"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/apikeys/apikey_list\""
+            }
+          ]
+        }
+      }
+    },
+    "audit": {
+      "descricao": "Consulta da trilha de auditoria (telas e proxies da API). O painel inicial do admin mostra a secao de auditoria vazia sem o modulo.",
+      "escopos": {
+        "frontend": {
+          "apagar": [
+            "app/security/audit",
+            "app/api/security/audit-logs"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/security/audit\""
+            }
+          ]
+        },
+        "admin": {
+          "apagar": [
+            "app/security/audit",
+            "app/api/admin/audit-logs"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/security/audit\""
+            }
+          ]
+        }
+      }
+    },
+    "backup": {
+      "descricao": "Backup e exportacao de dados (telas e proxies da API) no admin.",
+      "escopos": {
+        "admin": {
+          "apagar": [
+            "app/exports",
+            "app/api/admin/exports"
+          ],
+          "blocos": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/plataforma\""
+            }
+          ]
+        }
+      }
+    },
+    "ai-pricing": {
+      "descricao": "Catalogo de modelos de IA, aprovacao de precos e robo de precos no admin.",
+      "escopos": {
+        "admin": {
+          "apagar": [
+            "app/ai",
+            "app/settings",
+            "app/api/admin/ai"
+          ],
+          "blocos": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/configuracao/precos\""
+            }
+          ]
+        }
+      }
+    },
+    "exchange": {
+      "descricao": "Moedas e cotacoes no admin. O painel inicial mostra a cotacao como indisponivel sem o modulo.",
+      "escopos": {
+        "admin": {
+          "apagar": [
+            "app/configuracao/cambio",
+            "app/configuracao/moedas",
+            "app/api/admin/currency-exchange-rates",
+            "app/api/exchange"
+          ],
+          "blocos": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/configuracao/cambio-grupo\""
+            }
           ]
         }
       }

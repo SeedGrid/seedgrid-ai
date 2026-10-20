@@ -266,14 +266,14 @@ test('escopo do self-enter: desligado tira as telas do front e do admin; so no f
 });
 
 test('receitas de remocao: toda receita aponta para caminhos que existem nos boilerplates', async () => {
-  const { carregar } = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)) as { carregar: () => { modulosFront: { modulos: Record<string, { escopos: Record<string, { apagar: string[]; linhas: { arquivo: string; contem: string }[] }> }> } } };
+  const { carregar } = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)) as { carregar: () => { modulosFront: { modulos: Record<string, { escopos: Record<string, { apagar: string[]; linhas?: { arquivo: string; contem: string }[]; blocos?: { arquivo: string; contem: string }[] }> }> } } };
   const { modulosFront } = carregar();
   for (const bp of ['login-tenancy', 'subdomain-tenancy']) {
     for (const [mod, def] of Object.entries(modulosFront.modulos)) {
       for (const [escopo, rec] of Object.entries(def.escopos)) {
         const raiz = join(BOILERPLATES, bp, escopo);
         for (const rel of rec.apagar) assert.ok(existsSync(join(raiz, rel)), `${bp}/${escopo}/${rel} (${mod}) nao existe`);
-        for (const { arquivo, contem } of rec.linhas) {
+        for (const { arquivo, contem } of [...(rec.linhas ?? []), ...(rec.blocos ?? [])]) {
           const f = join(raiz, arquivo);
           assert.ok(existsSync(f) && readFileSync(f, 'utf8').includes(contem), `${bp}/${escopo}/${arquivo}: trecho nao encontrado (${contem})`);
         }
@@ -336,4 +336,36 @@ test('subdomain-tenancy: tenants de exemplo viram arquivo hosts, produto.json e 
   assert.ok(!existsSync(join(login.destino, 'tenants-exemplo.hosts')));
   const naoPergunta = await scaffold({ respostas: { ...B2B, tenantsExemplo: 'acme' }, destino: novaPasta(), boilerplates: BOILERPLATES });
   assert.equal(naoPergunta.ok, false, 'login-tenancy nao aceita tenantsExemplo');
+});
+
+test('telas dispensadas e extension ausente: so as telas saem; ai-pricing e exchange ausentes tiram as telas do admin, presentes as mantem', async () => {
+  const tem = (d: string, rel: string) => existsSync(join(d, rel));
+  // padrao: ai-pricing e exchange nao vem no modelo, entao o admin nao carrega as telas deles
+  const padrao = await gerar(B2B);
+  for (const rel of ['admin/app/ai', 'admin/app/settings', 'admin/app/api/admin/ai', 'admin/app/configuracao/cambio', 'admin/app/configuracao/moedas', 'admin/app/api/exchange']) assert.ok(!tem(padrao.destino, rel), `${rel} devia ter saido`);
+  assert.ok(!ler(padrao.destino, 'admin/app/data.ts').includes('/ai/price-approvals'));
+  assert.ok(!ler(padrao.destino, 'admin/app/data.ts').includes('/configuracao/cambio'));
+  assert.ok(tem(padrao.destino, 'admin/app/apikeys') && tem(padrao.destino, 'admin/app/security/audit'), 'o que nao foi dispensado fica');
+  // escolhendo as extensions, as telas ficam
+  const com = await gerar({ ...B2B, extensoes: ['ai-pricing', 'exchange'] });
+  assert.ok(tem(com.destino, 'admin/app/ai') && tem(com.destino, 'admin/app/configuracao/cambio'));
+  assert.ok(ler(com.destino, 'admin/app/data.ts').includes('/ai/price-approvals'));
+  // telas dispensadas
+  const sem = await gerar({ ...B2B, telasDispensadas: ['api-keys@admin', 'audit@frontend', 'backup@admin'] });
+  assert.ok(!tem(sem.destino, 'admin/app/apikeys') && !tem(sem.destino, 'frontend/app/security/audit') && !tem(sem.destino, 'admin/app/exports'));
+  assert.ok(tem(sem.destino, 'frontend/app/security/apikeys') && tem(sem.destino, 'admin/app/security/audit'), 'os outros escopos ficam');
+  assert.ok(!ler(sem.destino, 'admin/app/data.ts').includes('Backup / Export'), 'grupo do menu inteiro sai');
+  assert.ok(ler(sem.destino, 'admin/app/data.ts').includes('"/security"'), 'o menu de seguranca continua');
+  const ruim = await scaffold({ respostas: { ...B2B, telasDispensadas: ['billing@admin'] }, destino: novaPasta(), boilerplates: BOILERPLATES });
+  assert.equal(ruim.ok, false);
+});
+
+test('o data.ts do admin continua sintaticamente balanceado depois de remover blocos de menu', async () => {
+  const x = await gerar({ ...B2B, telasDispensadas: ['api-keys@admin', 'audit@admin', 'backup@admin'], extensoes: [] });
+  for (const rel of ['admin/app/data.ts', 'frontend/app/data.ts']) {
+    const t = ler(x.destino, rel);
+    const conta = (c: string) => t.split(c).length - 1;
+    assert.equal(conta('{'), conta('}'), `${rel}: chaves`);
+    assert.equal(conta('['), conta(']'), `${rel}: colchetes`);
+  }
 });
