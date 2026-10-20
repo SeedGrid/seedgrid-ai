@@ -47,8 +47,8 @@ Para o JWT há duas formas: variáveis `*_BASE64` (vencem a outra) ou arquivos `
 | `SEEDGRID_PRIVACY_ENCRYPTION_ENABLED` | fixo | não | com `true`, exige as duas chaves abaixo |
 | `SEEDGRID_PRIVACY_CRYPTO_KEY` | gerado | **sim** | Base64 de 32 bytes |
 | `SEEDGRID_PRIVACY_SEARCH_KEY` | gerado | **sim** | 32 bytes ou mais (`openssl rand -hex 32`) |
-| `SECURITY_MAILER_FROM`, `_HOST`, `_PORT`, `_START_TLS` | resposta / fixo | não | em dev: MailHog (`localhost`, porta do compose, `DISABLED`) |
-| `SECURITY_MAILER_USERNAME`, `SECURITY_MAILER_PASSWORD` | externo | **sim** | vazios em dev com MailHog |
+| `SECURITY_MAILER_FROM`, `_HOST`, `_PORT`, `_START_TLS` | resposta / fixo | não | em dev: Mailpit local (`localhost`, porta do compose, `DISABLED`); o remetente em dev é um por extension (`security@`, `backup@`, `subdomain.tenancy@` em `eu-dev.com.br`) |
+| `SECURITY_MAILER_USERNAME`, `SECURITY_MAILER_PASSWORD` | externo | **sim** | em dev o `sg-new-product` grava usuário igual ao remetente e senha de preenchimento (`12345678`) só no `backend/dev.env`: o Mailpit aceita qualquer credencial; em produção são externos |
 | `SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL`, `_NAME` | resposta | não | sem e-mail o primeiro admin não é criado |
 | `SEEDGRID_SECURITY_FIRST_ADMIN_USER_INITIAL_PASSWORD` | gerado | **sim** | exigida pela política de senha; troca no primeiro acesso |
 | `SEEDGRID_SECURITY_DEFAULT_COMPANY_CNPJ`, `_CORPORATE_NAME`, `_TRADE_NAME` | resposta | não | empresa-plataforma |
@@ -67,7 +67,7 @@ Para o JWT há duas formas: variáveis `*_BASE64` (vencem a outra) ou arquivos `
 | `SEEDGRID_SECURITY_ENCRYPTION_KEY` | gerado | **sim** | `openssl rand -base64 32` |
 | `SECURITY_JWT_ISSUER`, `SECURITY_JWT_KID`, `SEEDGRID_SECURITY_FRONTEND_BASE_URL` | resposta / fixo | não | |
 | `SECURITY_PRIVATE_KEY_LOCATION`, `SECURITY_PUBLIC_KEY_LOCATION` | gerado | privada: **sim** | caminhos dos `.pem` (padrão `src/main/resources/keys/...`) ou as variáveis `*_BASE64` |
-| `SECURITY_MAILER_*` e `SEEDGRID_SUBDOMAIN_TENANCY_MAILER_*` | fixo (dev) | não | MailHog |
+| `SECURITY_MAILER_*` e `SEEDGRID_SUBDOMAIN_TENANCY_MAILER_*` | fixo (dev) | não | Mailpit |
 | `SEEDGRID_AUDIT_PERSISTENCE_STRATEGY` | resposta (pergunta 6) | não | `jpa` ou `mongodb` |
 
 ## Depende das respostas da matriz

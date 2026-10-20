@@ -1,13 +1,20 @@
 ---
 description: "Como o admin e o front de um produto SeedGrid são montados por módulos: o que já vem padrão (shell, menu, temas, login) e, por módulo fe-*, o pacote, as rotas, o menu, as variáveis e o que acrescentar ou remover quando o módulo for usado ou dispensado. Leia antes de ligar ou desligar um módulo no front."
 tags: [seedgrid, front, modulo, admin, produto-novo]
-analisado-em: 2026-10-19
+analisado-em: 2026-10-20
 ---
 
 # Composição do front e do admin (adicionar e remover módulos)
 
 Os módulos `@seedgrid/fe-*` são copiados para o app pela CLI SeedGrid ("scaffold", modelo shadcn): a lógica fica no pacote npm e as telas, menus e route handlers viram arquivos do app. Detalhes do contrato: [[SeedGrid/SeedGrid-components/modulos/Visao-geral|Módulos front]].
 
+## Estado real dos boilerplates (confirmado em 2026-10-20)
+
+Os front e admin dos boilerplates `login-tenancy` e `subdomain-tenancy` **não dependem dos pacotes `@seedgrid/fe-*` por módulo**: no `package.json` há só `@seedgrid/fe-components`, `fe-core` e `fe-theme`. Os módulos do quadro abaixo estão como **código copiado** na pasta `app/` de cada app (por exemplo `app/security/self-enter`, `app/apikeys`, `app/ai`, `app/configuracao/cambio`), com o menu em `app/data.ts` (`navItems`) e os ícones em `app/components/Shell.tsx`. Onde o quadro cita o pacote, leia "a pasta do módulo no app"; a coluna "Para remover" vale como está (apagar pastas e linhas do menu).
+
+O `sg-new-product` remove as telas de um módulo com **receitas provadas** (cada uma com `pnpm build` verde nos dois boilerplates, front e admin): `self-enter` (front e admin), `api-keys` (front e admin), `audit` (front e admin), `backup` (admin), `ai-pricing` (admin) e `exchange` (admin). A receita apaga as pastas da rota e dos proxies da API e as linhas do menu em `app/data.ts`; o que fica (lib, permissões, traduções, ícones) é inofensivo. O painel inicial do admin continua consultando auditoria e cotação e mostra a seção vazia ou "indisponível" sem o módulo. **Sem receita:** `billing-user`, `billing-platform`, `realtime` e `whatsapp` (entrelaçados em contas, painel inicial, menu do usuário, provider global e telas de 2FA): para esses, só o backend se liga e desliga; remover a tela é trabalho de código. Remover a tela **não** desliga o backend do módulo.
+
+Lacuna para a plataforma: a CLI SeedGrid não tem comando de "remover módulo", e os pacotes `fe-*` por módulo não são usados pelos boilerplates (a decisão de modularizar fica registrada como ideia no work da plataforma).
 ## O que já vem padrão (não é módulo opcional)
 
 O módulo **`fe-security`** é a base e vem sempre: shell do app, menu lateral por seções, login e recuperação de senha (`/auth/login`), dashboard (`/`), gestão de usuários, empresas e roles, tema e mensagens (i18n). Todos os outros módulos **exigem** `security`. Um dos módulos de `tenancy` (login-tenancy ou subdomain-tenancy) é escolhido pelo modelo de projeto e nunca os dois (`variantGroup: tenancy`). Ver [[SeedGrid/SeedGrid-components/modulos/fe-security|fe-security]].

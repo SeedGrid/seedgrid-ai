@@ -1,5 +1,5 @@
 ---
-description: "Serviços de apoio do docker-compose de um produto SeedGrid (PostgreSQL, MailHog, MinIO, MongoDB, pgAdmin, cache, Pulse): imagem, portas locais, variáveis, healthcheck e qual extension exige cada um. Leia ao montar ou alterar o compose de um produto."
+description: "Serviços de apoio do docker-compose de um produto SeedGrid (PostgreSQL, Mailpit, MinIO, MongoDB, pgAdmin, cache, Pulse): imagem, portas locais, variáveis, healthcheck e qual extension exige cada um. Leia ao montar ou alterar o compose de um produto."
 tags: [seedgrid, host, docker-compose, produto-novo]
 analisado-em: 2026-10-19
 ---
@@ -13,7 +13,7 @@ Todas as portas escutam em `127.0.0.1` (nunca expor o banco na rede). Cada servi
 | Serviço | Imagem | Porta local (host:container) | Variáveis | Healthcheck | Quem exige |
 |---|---|---|---|---|---|
 | `postgres` | `postgres:16` | login-tenancy `5440:5432`; subdomain-tenancy `5441:5432` | `POSTGRES_DB` (`<slug>_app` ou `<slug>_master`), `POSTGRES_USER=postgres`, `POSTGRES_PASSWORD` | `pg_isready -U postgres -d <db>` a cada 5 s, 10 tentativas | **Sempre** (security e demais com migrations) |
-| `mailhog` | `mailhog/mailhog:v1.0.1` | SMTP `1025:1025` (login-tenancy) ou `1026:1025` (subdomain-tenancy); UI `8025` / `8026` | nenhuma | — | `security` e `notification`: e-mail de dev (`SECURITY_MAILER_HOST=localhost`, porta SMTP, `START_TLS=DISABLED`) |
+| `mailpit` | `axllent/mailpit:v1.31.6` | SMTP `1025:1025` (login-tenancy) ou `1026:1025` (subdomain-tenancy); UI e API `8025` / `8026` (só em `127.0.0.1`) | `MP_SMTP_AUTH_ACCEPT_ANY=1` e `MP_SMTP_AUTH_ALLOW_INSECURE=1` (aceita qualquer usuário e senha, inclusive nenhum) | — | `security`, `backup` e `subdomain-tenancy`: e-mail de dev (`*_MAILER_HOST=localhost`, porta SMTP, `START_TLS=DISABLED`). A caixa é única: todo e-mail enviado aparece na UI, qualquer que seja o destinatário (a API `/api/v1/messages` serve para testes). Substitui o MailHog (sem manutenção) nos produtos gerados pelo `sg-new-product`; o servidor e a imagem foram exercitados com envio por SMTP, com e sem credencial. |
 | `minio` | `soldevelo/minio:2026.7.17` | `9000:9000` (API), `9001:9001` (console) | `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `MINIO_DEFAULT_BUCKETS`; comando `server /data --console-address ":9001"` | — | storage `minio` de `security` (avatar), `backup` e `filemanagement`. Buckets padrão: avatar e backup (ex.: `<slug>-avatars`, `<slug>-backups`) |
 | `mongodb` | `mongo:7.0` | `27017:27017` | `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD` | `mongosh --quiet --eval "db.adminCommand('ping')"` a cada 5 s | `audit` com estratégia `MONGODB` (URI `mongodb://<user>:<senha>@localhost:27017/?authSource=admin`) |
 | `mongo-express` | `mongo-express:1.0.2` | `8081:8081` | `ME_CONFIG_MONGODB_URL`, `ME_CONFIG_BASICAUTH_USERNAME`, `ME_CONFIG_BASICAUTH_PASSWORD` | — | opcional: visualizar a auditoria Mongo |
@@ -27,7 +27,7 @@ Um volume nomeado por serviço com dados: `postgres_data`, `minio_data`, `mongo_
 
 ## Regras de montagem
 
-- Subir só o que as respostas pedem: `postgres` e `mailhog` sempre; `minio` se alguma storage for MinIO; `mongodb` se a auditoria for Mongo; cache e `pulse` só com as extensions correspondentes. `pgadmin` e `mongo-express` são opcionais e entram só se o dono pedir.
+- Subir só o que as respostas pedem: `postgres` e `mailpit` sempre; `minio` se alguma storage for MinIO; `mongodb` se a auditoria for Mongo; cache e `pulse` só com as extensions correspondentes. `pgadmin` e `mongo-express` são opcionais e entram só se o dono pedir.
 - O nome do banco e a porta do `postgres` têm de coincidir com `SEEDGRID_DB_URL` (login-tenancy) ou `SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL` e `TENANT_DB_URL` (subdomain-tenancy). No subdomain-tenancy o `postgres` precisa permitir `CREATE DATABASE` (provisionamento de tenant): usar o usuário `postgres`.
 - Escolher portas livres na máquina; as do boilerplate (5440, 5441, 1025, 1026, 9000) podem colidir com outro produto em desenvolvimento. O scaffold ajusta a porta e reflete no `dev.env`.
 - Depois de `docker compose up`, o backend só sobe depois de o `postgres` estar saudável.

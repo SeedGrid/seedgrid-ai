@@ -72,6 +72,13 @@ function turno(n, prompt, sessao) {
   return { n, ms, texto: j.result ?? '', sessao: j.session_id, custo: j.total_cost_usd ?? 0, turnosInternos: j.num_turns ?? 0, erro: !!j.is_error, negadas: j.permission_denials ?? [], uso: j.usage ?? {} };
 }
 
+let envAntes = null;
+function lerEnvArquivo(rel) {
+  const m = {};
+  try { for (const l of readFileSync(join(destino, rel), 'utf8').split(/\r?\n/)) { const x = /^([A-Z][A-Z0-9_]*)=(.*)$/.exec(l); if (x) m[x[1]] = x[2]; } } catch { /* sem arquivo */ }
+  return m;
+}
+
 function conduzir() {
   const desvios = [];
   const observacoes = [];
@@ -93,6 +100,18 @@ function conduzir() {
     observacoes.push({ turno: turnos.length, tipo: 'duvida ou oferta depois da geracao (fluxo do arquiteto; nao e pergunta da matriz)', recebido: t.texto.slice(-300) });
     t = turno(turnos.length, config.respostaPadrao ?? 'Siga com o que for necessario e finalize.', t.sessao);
     turnos.push(t);
+  }
+  // Mudanca depois de pronto (reconfiguracao): o pedido leva todas as respostas; perguntas seguintes recebem a confirmacao.
+  if (config.depois) {
+    envAntes = lerEnvArquivo('backend/dev.env');
+    t = turno(turnos.length, config.depois.pedido, t.sessao);
+    turnos.push(t);
+    for (let extra = 1; extra <= (config.depois.maxTurnosExtras ?? 4); extra++) {
+      if (!/\?\s*$/.test(t.texto.trim())) break;
+      observacoes.push({ turno: turnos.length, tipo: 'pergunta durante a mudanca (reconfiguracao)', recebido: t.texto.slice(-300) });
+      t = turno(turnos.length, config.depois.confirmacao ?? 'Confirmo, pode aplicar.', t.sessao);
+      turnos.push(t);
+    }
   }
   return { turnos, desvios, observacoes };
 }
@@ -163,6 +182,33 @@ function conferir(antes) {
   try { wfOk = !!parse(readFileSync(wf, 'utf8')).jobs; } catch { /* invalido */ }
   ok('workflow do EasyPanel valido', wfOk);
   ok('Dockerfile em backend, frontend e admin', ['backend', 'frontend', 'admin'].every((s) => lista.includes(`${s}/Dockerfile`)));
+  // manifesto, idempotencia da reconfiguracao, Mailpit, tenants de exemplo e expectativas da variante
+  let manifesto = null;
+  try { manifesto = JSON.parse(readFileSync(join(destino, '.seedgrid/manifesto.json'), 'utf8')); } catch { /* sem manifesto */ }
+  ok('manifesto da reconfiguracao (.seedgrid/manifesto.json) com respostas e hashes', !!manifesto?.respostas && Object.keys(manifesto?.arquivos ?? {}).length > 50, manifesto ? `${Object.keys(manifesto.arquivos).length} arquivos` : 'ausente');
+  if (manifesto) {
+    const arqResp = join(saida, 'respostas-do-manifesto.json');
+    writeFileSync(arqResp, JSON.stringify(manifesto.respostas));
+    const rc = sh(process.execPath, [join(destino, '.ai', 'skills', 'sg-new-product', 'scripts', 'scaffold-produto.mjs'), '--reconfigurar', '--respostas', arqResp, '--json'], { cwd: destino });
+    let j = null;
+    try { j = JSON.parse(rc.stdout); } catch { /* saida invalida */ }
+    ok('reconfigurar com as mesmas respostas nao acha diferenca (idempotente)', !!j?.ok && j.arquivos.length === 0 && j.env.length === 0, j ? JSON.stringify({ arquivos: j.arquivos?.slice(0, 5), env: j.env?.slice(0, 5), erros: j.erros }) : saidaDe(rc).slice(0, 300));
+  }
+  const compose = existsSync(join(destino, 'docker-compose.yml')) ? readFileSync(join(destino, 'docker-compose.yml'), 'utf8') : '';
+  ok('compose com Mailpit local e sem Mailhog', /axllent\/mailpit/.test(compose) && !/mailhog/i.test(compose));
+  let produtoJson = {};
+  try { produtoJson = JSON.parse(readFileSync(join(destino, 'produto.json'), 'utf8')); } catch { /* ja reprovado */ }
+  if (produtoJson.modelo === 'subdomain-tenancy') ok('tenants de exemplo: tenants-exemplo.hosts e produto.json', lista.includes('tenants-exemplo.hosts') && (produtoJson.tenantsExemplo ?? []).length > 0, JSON.stringify(produtoJson.tenantsExemplo));
+  for (const rel of config.esperaArquivos?.existe ?? []) ok(`existe ${rel}`, existsSync(join(destino, rel)));
+  for (const rel of config.esperaArquivos?.naoExiste ?? []) ok(`nao existe ${rel}`, !existsSync(join(destino, rel)));
+  for (const [k, v] of Object.entries(config.esperaManifesto ?? {})) ok(`manifesto: ${k} = ${v}`, manifesto?.respostas?.[k] === v, String(manifesto?.respostas?.[k]));
+  const envAgora = lerEnvArquivo('backend/dev.env');
+  for (const [k, v] of Object.entries(config.esperaEnv ?? {})) ok(`dev.env: ${k} = ${v}`, envAgora[k] === v, envAgora[k] === undefined ? 'ausente' : 'valor diferente');
+  if (config.segredosIguais && envAntes) {
+    const chaves = Object.keys(envAntes).filter((k) => /PASSWORD|PRIVATE_KEY|PUBLIC_KEY|SECRET_KEY|ENCRYPTION_KEY|CRYPTO_KEY|SEARCH_KEY/.test(k) && envAgora[k] !== undefined);
+    const trocados = chaves.filter((k) => envAntes[k] !== envAgora[k]);
+    ok('a mudanca nao trocou nenhum segredo do dev.env', chaves.length > 3 && trocados.length === 0, trocados.join(', '));
+  }
   // check-secrets so no que iria para o git (respeita o .gitignore)
   const ls = sh('git', ['-C', destino, 'ls-files', '--cached', '--others', '--exclude-standard']).stdout.split('\n').filter(Boolean);
   const limpo = mkdtempSync(join(tmpdir(), 'sg-e2e-limpo-'));
