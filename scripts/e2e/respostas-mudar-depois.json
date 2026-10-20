@@ -1,0 +1,32 @@
+{
+  "descricao": "Variante C do E2E: login-tenancy B2B com avatar em S3 e backup em arquivos; depois de pronto o usuario muda de ideia e liga o self-enter por convite so no admin. Confere que a reconfiguracao aplica a diferenca sem trocar nenhum segredo. Dominios e e-mails sao ficticios.",
+  "pedido": "Quero criar um produto SeedGrid novo nesta pasta: um portal de cadastro de clientes com login por empresa. O projeto se chama seedgrid-demo-mudanca.",
+  "respostas": [
+    { "espera": "slug|pacote", "resposta": "Nome: SeedGrid Demo Mudanca. Slug: seedgrid-demo-mudanca. Pacote Java: br.com.seedgrid.demo.mudanca" },
+    { "espera": "modelo", "resposta": "Login-tenancy B2B (opção 1)." },
+    { "espera": "opcionais|extensions", "resposta": "Nenhuma extension opcional." },
+    { "espera": "self-enter", "resposta": "Não, o self-enter fica desligado." },
+    { "espera": "auditoria", "resposta": "PostgreSQL." },
+    { "espera": "avatar", "resposta": "Amazon S3." },
+    { "espera": "backup", "resposta": "Sistema de arquivos." },
+    { "espera": "chaves|apikeys|api keys", "resposta": "O portal emite chaves de API para integrações dos clientes." },
+    { "espera": "billing|provider|trial", "resposta": "Provider Stripe, sem trial (0 dias) e um único plano chamado Padrão." },
+    { "espera": "telas|dispens", "resposta": "Nenhuma, manter todas." },
+    { "espera": "dom[ií]nio|dados", "resposta": "Domínio do front: demo-mudanca.seedgrid.com.br. Domínio do admin: admin.demo-mudanca.seedgrid.com.br. E-mail remetente: noreply@seedgrid.com.br. E-mail do primeiro administrador: admin@eu-dev.com.br. Nome e código da aplicação: use o padrão. Registry: ghcr.io/seedgrid." },
+    { "espera": "confirm|posso (gerar|rodar)|pode gerar|gera[çc]", "resposta": "Confirmo, pode gerar." }
+  ],
+  "respostaPadrao": "Siga com o que for necessário e finalize.",
+  "maxTurnosExtras": 3,
+  "depois": {
+    "pedido": "Mudei de ideia: quero ligar o self-enter por convite, só no admin. Mostre a diferença e, se não houver conflito, pode aplicar.",
+    "confirmacao": "Confirmo, pode aplicar.",
+    "maxTurnosExtras": 4
+  },
+  "segredosIguais": true,
+  "esperaManifesto": { "selfEnter": "sim", "selfEnterModo": "convite", "selfEnterEscopo": "admin", "armazenamentoAvatar": "s3", "armazenamentoBackup": "filesystem" },
+  "esperaEnv": { "SEEDGRID_SECURITY_AVATAR_STORAGE": "s3", "SEEDGRID_SECURITY_SELF_ENTER_ENABLED": "true", "SEEDGRID_BACKUP_STORAGE": "filesystem" },
+  "esperaArquivos": {
+    "existe": [".seedgrid/manifesto.json", "admin/app/security/self-enter"],
+    "naoExiste": ["frontend/app/security/self-enter", "frontend/app/auth/self-enter", "admin/app/ai"]
+  }
+}

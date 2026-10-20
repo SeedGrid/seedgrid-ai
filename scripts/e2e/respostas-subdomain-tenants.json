@@ -1,0 +1,28 @@
+{
+  "descricao": "Variante B do E2E: subdomain-tenancy com self-enter por convite nos dois lados, avatar em MinIO, backup em arquivos e tenants de exemplo. Dominios e e-mails sao ficticios.",
+  "pedido": "Quero criar um produto SeedGrid novo nesta pasta: um painel de cobrança por empresa, em que cada cliente tem o seu subdomínio. O projeto se chama seedgrid-demo-tenants.",
+  "respostas": [
+    { "espera": "slug|pacote", "resposta": "Nome: SeedGrid Demo Tenants. Slug: seedgrid-demo-tenants. Pacote Java: br.com.seedgrid.demo.tenants" },
+    { "espera": "modelo", "resposta": "Subdomain-tenancy (opção 3)." },
+    { "espera": "opcionais|extensions", "resposta": "Nenhuma extension opcional." },
+    { "espera": "self-enter", "resposta": "Sim, o self-enter fica ligado." },
+    { "espera": "como as pessoas entram|convite|cadastro p", "resposta": "Por convite." },
+    { "espera": "telas|escopo|front e admin|onde", "resposta": "Nos dois: front e admin." },
+    { "espera": "auditoria", "resposta": "PostgreSQL." },
+    { "espera": "avatar", "resposta": "MinIO." },
+    { "espera": "backup", "resposta": "Sistema de arquivos." },
+    { "espera": "chaves|apikeys|api keys", "resposta": "O painel emite chaves de API para integrações dos clientes." },
+    { "espera": "billing|provider|trial", "resposta": "Provider Stripe, sem trial (0 dias) e um único plano chamado Padrão." },
+    { "espera": "tenant", "resposta": "acme e beta." },
+    { "espera": "telas|dispens", "resposta": "Nenhuma, manter todas." },
+    { "espera": "dom[ií]nio|dados", "resposta": "Domínio do front: demo-tenants.seedgrid.com.br. Domínio do admin: admin.demo-tenants.seedgrid.com.br. E-mail remetente: noreply@seedgrid.com.br. E-mail do primeiro administrador: admin@eu-dev.com.br. Nome e código da aplicação: use o padrão. Registry: ghcr.io/seedgrid." },
+    { "espera": "confirm|posso (gerar|rodar)|pode gerar|gera[çc]", "resposta": "Confirmo, pode gerar." }
+  ],
+  "respostaPadrao": "Siga com o que for necessário e finalize.",
+  "maxTurnosExtras": 3,
+  "esperaArquivos": {
+    "existe": [".seedgrid/manifesto.json", "tenants-exemplo.hosts", "frontend/app/security/self-enter", "admin/app/security/self-enter"],
+    "naoExiste": ["admin/app/ai", "admin/app/configuracao/cambio"]
+  },
+  "esperaManifesto": { "modelo": "subdomain-tenancy", "selfEnter": "sim", "selfEnterEscopo": "ambos", "armazenamentoAvatar": "minio", "armazenamentoBackup": "filesystem" }
+}
