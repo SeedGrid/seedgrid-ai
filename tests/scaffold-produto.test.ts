@@ -231,7 +231,11 @@ test('e-mail de desenvolvimento: Mailpit local no compose, sem autenticacao, rem
   assert.equal(e.SECURITY_MAILER_HOST, 'localhost');
   assert.match(e.SECURITY_MAILER_FROM!, /<security@eu-dev\.com\.br>$/);
   assert.match(e.SEEDGRID_BACKUP_MAILER_FROM!, /<backup@eu-dev\.com\.br>$/);
-  assert.ok(!e.SECURITY_MAILER_PASSWORD);
+  assert.equal(e.SECURITY_MAILER_USERNAME, 'security@eu-dev.com.br');
+  assert.equal(e.SECURITY_MAILER_PASSWORD, '12345678');
+  assert.equal(e.SEEDGRID_BACKUP_MAILER_PASSWORD, '12345678');
+  assert.match(compose, /MP_SMTP_AUTH_ACCEPT_ANY: "1"/);
+  assert.equal(env(ler(b2b.destino, 'backend/dev.env.example')).SECURITY_MAILER_PASSWORD, 'change-me');
   const sub = await gerar(SUB);
   assert.match(env(ler(sub.destino, 'backend/dev.env')).SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM!, /<subdomain\.tenancy@eu-dev\.com\.br>$/);
   assert.match(ler(sub.destino, 'docker-compose.yml'), /:8026:8025"/);

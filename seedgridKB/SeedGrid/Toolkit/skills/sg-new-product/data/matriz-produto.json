@@ -19,7 +19,8 @@
     "ENCRYPTION_KEY": "base64-32",
     "PRIVACY_CRYPTO_KEY": "base64-32",
     "PRIVACY_SEARCH_KEY": "hex-32",
-    "ADMIN_BOOTSTRAP": "politica-admin"
+    "ADMIN_BOOTSTRAP": "politica-admin",
+    "SMTP_DEV": "smtp-dev"
   },
   "blocos_env": {
     "banco-login-tenancy": {
@@ -38,7 +39,9 @@
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME": "Administrador",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL": "{{emailAdmin}}",
       "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD": "${segredo:ADMIN_BOOTSTRAP}",
-      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{nome}} <subdomain.tenancy@eu-dev.com.br>"
+      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{nome}} <subdomain.tenancy@eu-dev.com.br>",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_USERNAME": "subdomain.tenancy@eu-dev.com.br",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_PASSWORD": "${segredo:SMTP_DEV}"
     },
     "aplicacao": {
       "APP_NAME": "{{slug}}-api"
@@ -54,7 +57,9 @@
       "SEEDGRID_SECURITY_2F_TOTP_ISSUER": "{{appName}}",
       "SECURITY_MAILER_HOST": "localhost",
       "SECURITY_MAILER_PORT": "{{portaSmtp}}",
-      "SECURITY_MAILER_START_TLS": "DISABLED"
+      "SECURITY_MAILER_START_TLS": "DISABLED",
+      "SECURITY_MAILER_USERNAME": "security@eu-dev.com.br",
+      "SECURITY_MAILER_PASSWORD": "${segredo:SMTP_DEV}"
     },
     "privacy": {
       "SEEDGRID_PRIVACY_ENCRYPTION_ENABLED": "true",
@@ -76,8 +81,8 @@
       "SEEDGRID_BACKUP_MAILER_HOST": "localhost",
       "SEEDGRID_BACKUP_MAILER_PORT": "{{portaSmtp}}",
       "SEEDGRID_BACKUP_MAILER_START_TLS": "DISABLED",
-      "SEEDGRID_BACKUP_MAILER_USERNAME": "",
-      "SEEDGRID_BACKUP_MAILER_PASSWORD": ""
+      "SEEDGRID_BACKUP_MAILER_USERNAME": "backup@eu-dev.com.br",
+      "SEEDGRID_BACKUP_MAILER_PASSWORD": "${segredo:SMTP_DEV}"
     }
   },
   "perguntas": [
@@ -894,7 +899,7 @@
       "ordem": 11,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
-      "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost.",
+      "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
       "campos": [
         {
           "id": "dominioFront",

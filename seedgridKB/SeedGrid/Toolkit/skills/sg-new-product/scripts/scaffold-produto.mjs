@@ -41,6 +41,8 @@ export function criarGerador() {
     switch (tipo) {
       case 'senha': return alnum(32);
       case 'politica-admin': return senhaPolitica();
+      // Valor de preenchimento: o Mailpit local aceita qualquer usuario e senha (smtp-auth-accept-any); so existe no dev.env, que o git ignora.
+      case 'smtp-dev': return '12345678';
       case 'base64-32': return randomBytes(32).toString('base64');
       case 'hex-32': return randomBytes(32).toString('hex');
       case 'rsa-privada-b64': return rsa().privateKey.toString('base64');
@@ -214,6 +216,9 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
     mailpit: `  mailpit:
     image: axllent/mailpit:v1.31.6
     restart: unless-stopped
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
     ports:
       - "127.0.0.1:${portas.smtp}:1025"
       - "127.0.0.1:${portas['mailpit-ui']}:8025"
