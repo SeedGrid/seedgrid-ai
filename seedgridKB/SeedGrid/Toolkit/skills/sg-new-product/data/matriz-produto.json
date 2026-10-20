@@ -1,0 +1,962 @@
+{
+  "schemaVersion": 1,
+  "descricao": "Matriz deterministica do sg-new-product: perguntas em ordem fixa, opcoes e o efeito de cada resposta. A skill nao pergunta nada fora dela. Revisada pelo dono em 2026-10-19.",
+  "fixo": {
+    "banco": "postgres",
+    "publicacao": "easypanel",
+    "monorepo": [
+      "backend",
+      "frontend",
+      "admin"
+    ]
+  },
+  "segredos": {
+    "POSTGRES_PASSWORD": "senha",
+    "MINIO_ROOT_PASSWORD": "senha",
+    "MONGO_ROOT_PASSWORD": "senha",
+    "JWT_PRIVATE": "rsa-privada-b64",
+    "JWT_PUBLIC": "rsa-publica-b64",
+    "ENCRYPTION_KEY": "base64-32",
+    "PRIVACY_CRYPTO_KEY": "base64-32",
+    "PRIVACY_SEARCH_KEY": "hex-32",
+    "ADMIN_INITIAL_PASSWORD": "senha-politica"
+  },
+  "blocos_env": {
+    "banco-login-tenancy": {
+      "SEEDGRID_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}/{{slugSnake}}_app",
+      "SEEDGRID_DB_USERNAME": "postgres",
+      "SEEDGRID_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD"
+    },
+    "banco-subdomain-tenancy": {
+      "PRODUCT_PREFIX": "{{slugSnake}}",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}/{{slugSnake}}_master",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_USERNAME": "postgres",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_URL": "jdbc:postgresql://localhost:{{portaPostgres}}",
+      "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_USERNAME": "postgres",
+      "SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_PASSWORD": "@segredo:POSTGRES_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME": "Administrador",
+      "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL": "{{emailAdmin}}",
+      "SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD": "@segredo:ADMIN_INITIAL_PASSWORD",
+      "SEEDGRID_SUBDOMAIN_TENANCY_MAILER_FROM": "{{emailRemetente}}"
+    },
+    "aplicacao": {
+      "APP_NAME": "{{slug}}-api"
+    },
+    "security": {
+      "SECURITY_JWT_ISSUER": "https://{{dominioFront}}",
+      "SECURITY_JWT_KID": "{{slug}}-local",
+      "SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64": "@segredo:JWT_PRIVATE",
+      "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64": "@segredo:JWT_PUBLIC",
+      "MP_JWT_VERIFY_PUBLICKEY": "@segredo:JWT_PUBLIC",
+      "SEEDGRID_SECURITY_ENCRYPTION_KEY": "@segredo:ENCRYPTION_KEY",
+      "SECURITY_MAILER_FROM": "{{nome}} <{{emailRemetente}}>",
+      "SEEDGRID_SECURITY_2F_TOTP_ISSUER": "{{appName}}"
+    },
+    "privacy": {
+      "SEEDGRID_PRIVACY_ENCRYPTION_ENABLED": "true",
+      "SEEDGRID_PRIVACY_CRYPTO_KEY": "@segredo:PRIVACY_CRYPTO_KEY",
+      "SEEDGRID_PRIVACY_SEARCH_KEY": "@segredo:PRIVACY_SEARCH_KEY"
+    },
+    "primeiro-admin": {
+      "SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL": "{{emailAdmin}}",
+      "SEEDGRID_SECURITY_FIRST_ADMIN_USER_NAME": "Administrador",
+      "SEEDGRID_SECURITY_FIRST_ADMIN_USER_INITIAL_PASSWORD": "@segredo:ADMIN_INITIAL_PASSWORD",
+      "SEEDGRID_SECURITY_DEFAULT_COMPANY_CORPORATE_NAME": "{{nome}}",
+      "SEEDGRID_SECURITY_DEFAULT_COMPANY_TRADE_NAME": "{{nome}}"
+    }
+  },
+  "perguntas": [
+    {
+      "id": "identidade",
+      "numero": "1",
+      "ordem": 1,
+      "tipo": "campos",
+      "pergunta": "Qual o nome do produto, o slug e o pacote Java base?",
+      "recomendacao": "Slug em minusculas com hifen (ex.: portal-chaves); pacote no formato br.com.empresa.produto.",
+      "campos": [
+        {
+          "id": "nome",
+          "rotulo": "Nome do produto",
+          "validacao": "nao-vazio",
+          "efeito": {
+            "usado_em": [
+              "produto.json:nome",
+              "env:nome em e-mails, empresa-plataforma e Stripe"
+            ]
+          }
+        },
+        {
+          "id": "slug",
+          "rotulo": "Slug",
+          "validacao": "slug",
+          "efeito": {
+            "usado_em": [
+              "produto.json:slug",
+              "env:prefixo de tabelas, nome do banco, buckets, cookies"
+            ]
+          }
+        },
+        {
+          "id": "pacote",
+          "rotulo": "Pacote Java base",
+          "validacao": "pacote-java",
+          "efeito": {
+            "usado_em": [
+              "produto.json:pacote",
+              "renomeia:groupId",
+              "renomeia:pacote-base"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "modelo",
+      "numero": "2",
+      "ordem": 2,
+      "tipo": "escolha",
+      "chave": "modelo",
+      "pergunta": "Qual o modelo do projeto?",
+      "recomendacao": "1 (login-tenancy B2B) para sistemas com varias empresas no mesmo banco; 3 se cada cliente precisa de banco e subdominio proprios.",
+      "opcoes": [
+        {
+          "id": "login-tenancy-b2b",
+          "rotulo": "Login-tenancy B2B (banco unico, varias empresas)",
+          "efeito": {
+            "produto": {
+              "modelo": "login-tenancy",
+              "publico": "b2b"
+            },
+            "boilerplate": "login-tenancy",
+            "extensions": [
+              "security",
+              "audit",
+              "backup",
+              "billing",
+              "apikeys",
+              "notification",
+              "filemanagement",
+              "privacy",
+              "resilience"
+            ],
+            "blocos_env": [
+              "aplicacao",
+              "banco-login-tenancy",
+              "security",
+              "privacy",
+              "primeiro-admin"
+            ],
+            "compose": [
+              "postgres",
+              "mailhog"
+            ],
+            "portas": {
+              "postgres": 5440,
+              "smtp": 1025,
+              "mailhog-ui": 8025
+            },
+            "servicos": {
+              "backend": 8080,
+              "frontend": 3000,
+              "admin": 3001
+            },
+            "env_front": {
+              "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
+              "OTEL_SDK_DISABLED": "true"
+            }
+          }
+        },
+        {
+          "id": "login-tenancy-b2c",
+          "rotulo": "Login-tenancy B2C",
+          "disponivel": false,
+          "motivo": "indisponivel ate o business-day entregar o boilerplate login-tenancy-b2c",
+          "efeito": {
+            "produto": {
+              "modelo": "login-tenancy",
+              "publico": "b2c"
+            },
+            "boilerplate": "login-tenancy-b2c"
+          }
+        },
+        {
+          "id": "subdomain-tenancy",
+          "rotulo": "Subdomain-tenancy (banco e subdominio por cliente; so B2B)",
+          "efeito": {
+            "produto": {
+              "modelo": "subdomain-tenancy",
+              "publico": "b2b"
+            },
+            "boilerplate": "subdomain-tenancy",
+            "extensions": [
+              "security",
+              "audit",
+              "backup",
+              "billing",
+              "apikeys",
+              "notification",
+              "privacy",
+              "resilience"
+            ],
+            "blocos_env": [
+              "aplicacao",
+              "banco-subdomain-tenancy",
+              "security",
+              "privacy"
+            ],
+            "compose": [
+              "postgres",
+              "mailhog"
+            ],
+            "portas": {
+              "postgres": 5441,
+              "smtp": 1026,
+              "mailhog-ui": 8026
+            },
+            "servicos": {
+              "backend": 8085,
+              "frontend": 3000,
+              "admin": 3001
+            },
+            "env_front": {
+              "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8085",
+              "SEEDGRID_TENANCY_DOMAIN": "localhost",
+              "OTEL_SDK_DISABLED": "true",
+              "SEEDGRID_CITIES_API_USERNAME": "@externo",
+              "SEEDGRID_CITIES_API_KEY": "@externo"
+            }
+          }
+        },
+        {
+          "id": "outro",
+          "rotulo": "Outro (escolher as extensions uma a uma)",
+          "efeito": {
+            "produto": {
+              "modelo": "outro"
+            },
+            "compose": [
+              "postgres",
+              "mailhog"
+            ],
+            "portas": {
+              "postgres": 5440,
+              "smtp": 1025,
+              "mailhog-ui": 8025
+            },
+            "servicos": {
+              "backend": 8080,
+              "frontend": 3000,
+              "admin": 3001
+            },
+            "blocos_env": [
+              "aplicacao"
+            ],
+            "env_front": {
+              "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
+              "OTEL_SDK_DISABLED": "true"
+            },
+            "pendencias": [
+              "Modelo outro nao tem boilerplate: backend/, frontend/ e admin/ ficam sem esqueleto e precisam ser criados pelo time."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "extensoes-opcionais",
+      "numero": "3",
+      "ordem": 3,
+      "tipo": "multi",
+      "chave": "extensoes",
+      "se": {
+        "modelo": [
+          "login-tenancy-b2b",
+          "subdomain-tenancy"
+        ]
+      },
+      "origem_opcoes": "catalogo.modelos.<modelo>.nao_traz",
+      "pergunta": "Quais extensions opcionais o produto usa? (so as que o modelo nao traz)",
+      "recomendacao": "Marque apenas o que o produto realmente usa; cada uma acrescenta dependencia, configuracao e, se preciso, servico no compose.",
+      "opcoes": [
+        {
+          "id": "ai-pricing",
+          "rotulo": "ai-pricing (catalogo de precos de modelos de IA)",
+          "efeito": {
+            "extensions": [
+              "ai-pricing"
+            ],
+            "env": {
+              "SEEDGRID_AI_PRICING_TIMEZONE": "America/Sao_Paulo"
+            }
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "ai-pricing"
+            ],
+            "env_remover": [
+              "SEEDGRID_AI_PRICING_SOURCE_URL",
+              "SEEDGRID_AI_PRICING_TIMEZONE"
+            ]
+          }
+        },
+        {
+          "id": "exchange",
+          "rotulo": "exchange (moedas e cotacoes)",
+          "efeito": {
+            "extensions": [
+              "exchange"
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "exchange"
+            ]
+          }
+        },
+        {
+          "id": "business-days",
+          "rotulo": "business-days (dias uteis e feriados)",
+          "efeito": {
+            "extensions": [
+              "business-days"
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "business-days"
+            ]
+          }
+        },
+        {
+          "id": "whatsapp",
+          "rotulo": "whatsapp (envio via Evolution API)",
+          "efeito": {
+            "extensions": [
+              "whatsapp"
+            ],
+            "env": {
+              "SEEDGRID_WHATSAPP_API": "evolution",
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "@externo"
+            }
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "whatsapp"
+            ],
+            "env": {
+              "SEEDGRID_SECURITY_2F_ALLOWED_METHODS": "EMAIL,TOTP"
+            },
+            "env_remover": [
+              "SEEDGRID_WHATSAPP_API",
+              "SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL",
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY",
+              "SEEDGRID_SECURITY_2F_WHATSAPP_CHANNEL_ID",
+              "SEEDGRID_SECURITY_FIRST_ADMIN_USER_WHATSAPP"
+            ]
+          }
+        },
+        {
+          "id": "realtime",
+          "rotulo": "realtime (avisos em tempo real via SeedGrid Pulse)",
+          "efeito": {
+            "extensions": [
+              "realtime"
+            ],
+            "pendencias": [
+              "realtime: a chave do projeto no Pulse e o servico Pulse sao fornecidos pelo dono; no dev.env ficam como change-me e o recurso fica desligado."
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "realtime"
+            ],
+            "env_remover": [
+              "SEEDGRID_REALTIME_ENABLED",
+              "SEEDGRID_REALTIME_PULSE_BASE_URL",
+              "SEEDGRID_REALTIME_PULSE_PROJECT_KEY",
+              "SEEDGRID_REALTIME_TOKEN_TTL"
+            ]
+          }
+        },
+        {
+          "id": "cache",
+          "rotulo": "cache (Redis, Valkey ou Dragonfly)",
+          "efeito": {
+            "extensions": [
+              "cache"
+            ],
+            "pendencias": [
+              "cache: o provider (redis, valkey ou dragonfly) e o servico do compose sao fornecidos pelo dono; a KB nao traz imagem nem healthcheck."
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "cache"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "extensoes-modelo-outro",
+      "numero": "3b",
+      "ordem": 4,
+      "tipo": "multi",
+      "chave": "extensoes",
+      "se": {
+        "modelo": [
+          "outro"
+        ]
+      },
+      "origem_opcoes": "catalogo.extensions (todas, exceto login-tenancy e subdomain-tenancy); a selecao fecha as dependencias (depende_de)",
+      "pergunta": "Quais extensions o produto usa? (as dependencias entram juntas)",
+      "recomendacao": "Escolher apikeys traz o security junto. Security sozinho e valido.",
+      "opcoes": [
+        {
+          "id": "security",
+          "rotulo": "security (JWT, usuarios, perfis, empresas)",
+          "efeito": {
+            "extensions": [
+              "security"
+            ],
+            "blocos_env": [
+              "security",
+              "primeiro-admin"
+            ]
+          }
+        },
+        {
+          "id": "audit",
+          "rotulo": "audit (trilha de auditoria)",
+          "efeito": {
+            "extensions": [
+              "audit"
+            ]
+          }
+        },
+        {
+          "id": "apikeys",
+          "rotulo": "apikeys (chaves de API maquina-a-maquina)",
+          "efeito": {
+            "extensions": [
+              "apikeys"
+            ]
+          }
+        },
+        {
+          "id": "backup",
+          "rotulo": "backup (exportacao de dados por tenant e usuario)",
+          "efeito": {
+            "extensions": [
+              "backup"
+            ]
+          }
+        },
+        {
+          "id": "billing",
+          "rotulo": "billing (assinaturas e planos)",
+          "efeito": {
+            "extensions": [
+              "billing"
+            ]
+          }
+        },
+        {
+          "id": "notification",
+          "rotulo": "notification (notificacoes por e-mail e WhatsApp)",
+          "efeito": {
+            "extensions": [
+              "notification"
+            ]
+          }
+        },
+        {
+          "id": "filemanagement",
+          "rotulo": "filemanagement (armazenamento de arquivos)",
+          "efeito": {
+            "extensions": [
+              "filemanagement"
+            ]
+          }
+        },
+        {
+          "id": "privacy",
+          "rotulo": "privacy (criptografia de campo)",
+          "efeito": {
+            "extensions": [
+              "privacy"
+            ],
+            "blocos_env": [
+              "privacy"
+            ]
+          }
+        },
+        {
+          "id": "resilience",
+          "rotulo": "resilience (limite de taxa e circuit breaker)",
+          "efeito": {
+            "extensions": [
+              "resilience"
+            ]
+          }
+        },
+        {
+          "id": "ai-pricing",
+          "rotulo": "ai-pricing",
+          "efeito": {
+            "extensions": [
+              "ai-pricing"
+            ],
+            "env": {
+              "SEEDGRID_AI_PRICING_TIMEZONE": "America/Sao_Paulo"
+            }
+          }
+        },
+        {
+          "id": "exchange",
+          "rotulo": "exchange",
+          "efeito": {
+            "extensions": [
+              "exchange"
+            ]
+          }
+        },
+        {
+          "id": "business-days",
+          "rotulo": "business-days",
+          "efeito": {
+            "extensions": [
+              "business-days"
+            ]
+          }
+        },
+        {
+          "id": "whatsapp",
+          "rotulo": "whatsapp",
+          "efeito": {
+            "extensions": [
+              "whatsapp"
+            ],
+            "env": {
+              "SEEDGRID_WHATSAPP_API": "evolution",
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "@externo"
+            }
+          }
+        },
+        {
+          "id": "realtime",
+          "rotulo": "realtime",
+          "efeito": {
+            "extensions": [
+              "realtime"
+            ],
+            "pendencias": [
+              "realtime: a chave do projeto no Pulse e o servico Pulse sao fornecidos pelo dono."
+            ]
+          }
+        },
+        {
+          "id": "cache",
+          "rotulo": "cache",
+          "efeito": {
+            "extensions": [
+              "cache"
+            ],
+            "pendencias": [
+              "cache: o provider e o servico do compose sao fornecidos pelo dono."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "self-enter",
+      "numero": "4",
+      "ordem": 5,
+      "tipo": "escolha",
+      "chave": "selfEnter",
+      "se": {
+        "extensao": [
+          "security"
+        ]
+      },
+      "pergunta": "O self-enter (entrada de novos usuarios sem cadastro manual) fica ligado?",
+      "recomendacao": "Nao, a menos que o produto precise de convites ou de cadastro publico.",
+      "opcoes": [
+        {
+          "id": "nao",
+          "rotulo": "Nao",
+          "efeito": {
+            "produto": {
+              "selfEnter": false
+            },
+            "env": {
+              "SEEDGRID_SECURITY_SELF_ENTER_ENABLED": "false",
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED": "false",
+              "SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED": "false"
+            }
+          }
+        },
+        {
+          "id": "sim",
+          "rotulo": "Sim",
+          "efeito": {
+            "produto": {
+              "selfEnter": true
+            },
+            "env": {
+              "SEEDGRID_SECURITY_SELF_ENTER_ENABLED": "true",
+              "SEEDGRID_SECURITY_FRONTEND_SELF_ENTER_PATH": "/auth/self-enter"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "self-enter-modo",
+      "numero": "5",
+      "ordem": 6,
+      "tipo": "escolha",
+      "chave": "selfEnterModo",
+      "se": {
+        "resposta": {
+          "selfEnter": "sim"
+        }
+      },
+      "pergunta": "Como as pessoas entram?",
+      "recomendacao": "Por convite e o mais simples de operar; cadastro publico exige uma fila de aprovacao interna.",
+      "opcoes": [
+        {
+          "id": "convite",
+          "rotulo": "Por convite",
+          "efeito": {
+            "env": {
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED": "true",
+              "SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED": "false",
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_NEEDS_APPROVAL": "false"
+            }
+          }
+        },
+        {
+          "id": "cadastro-publico",
+          "rotulo": "Por cadastro em front publico, com aprovacao interna",
+          "efeito": {
+            "env": {
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED": "false",
+              "SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED": "true",
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_NEEDS_APPROVAL": "false"
+            }
+          }
+        },
+        {
+          "id": "ambos",
+          "rotulo": "Os dois",
+          "efeito": {
+            "env": {
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED": "true",
+              "SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED": "true",
+              "SEEDGRID_SECURITY_SELF_ENTER_INVITE_NEEDS_APPROVAL": "false"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "auditoria",
+      "numero": "6",
+      "ordem": 7,
+      "tipo": "escolha",
+      "chave": "auditoria",
+      "se": {
+        "extensao": [
+          "audit"
+        ]
+      },
+      "pergunta": "Onde gravar a auditoria?",
+      "recomendacao": "PostgreSQL, para nao subir outro banco; MongoDB so se o volume de auditoria justificar.",
+      "opcoes": [
+        {
+          "id": "postgres",
+          "rotulo": "PostgreSQL",
+          "efeito": {
+            "produto": {
+              "auditoria": "postgres"
+            },
+            "env": {
+              "SEEDGRID_AUDIT_PERSISTENCE_STRATEGY": "jpa"
+            },
+            "env_remover": [
+              "SEEDGRID_AUDIT_MONGODB_URI"
+            ]
+          }
+        },
+        {
+          "id": "mongodb",
+          "rotulo": "MongoDB",
+          "efeito": {
+            "produto": {
+              "auditoria": "mongodb"
+            },
+            "env": {
+              "SEEDGRID_AUDIT_PERSISTENCE_STRATEGY": "MONGODB",
+              "SEEDGRID_AUDIT_MONGODB_URI": "mongodb://admin:@segredo:MONGO_ROOT_PASSWORD@localhost:27017/?tls=false&authSource=admin"
+            },
+            "compose": [
+              "mongodb"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "armazenamento",
+      "numero": "7",
+      "ordem": 8,
+      "tipo": "escolha",
+      "chave": "armazenamento",
+      "se": {
+        "extensao": [
+          "filemanagement",
+          "backup"
+        ]
+      },
+      "pergunta": "Qual o armazenamento de arquivos (avatar e backup)?",
+      "recomendacao": "Sistema de arquivos em desenvolvimento; MinIO se o produto vai publicar com armazenamento de objetos.",
+      "opcoes": [
+        {
+          "id": "filesystem",
+          "rotulo": "Sistema de arquivos",
+          "efeito": {
+            "produto": {
+              "armazenamento": "filesystem"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "filesystem",
+              "SEEDGRID_BACKUP_STORAGE": "filesystem",
+              "SEEDGRID_BACKUP_FILESYSTEM_BASE": "./data/arquivos"
+            },
+            "env_remover": [
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT",
+              "SEEDGRID_BACKUP_MINIO_BUCKET",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY",
+              "SEEDGRID_BACKUP_MINIO_REGION"
+            ],
+            "pom_remover": [
+              "io.minio:minio"
+            ]
+          }
+        },
+        {
+          "id": "minio",
+          "rotulo": "MinIO",
+          "efeito": {
+            "produto": {
+              "armazenamento": "minio"
+            },
+            "env": {
+              "SEEDGRID_SECURITY_AVATAR_STORAGE": "minio",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ENDPOINT": "http://localhost:9000/",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_BUCKET": "{{slug}}-avatars",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_REGION": "us-east-1",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_ACCESS_KEY": "admin",
+              "SEEDGRID_SECURITY_AVATAR_MINIO_SECRET_KEY": "@segredo:MINIO_ROOT_PASSWORD",
+              "SEEDGRID_BACKUP_STORAGE": "minio",
+              "SEEDGRID_BACKUP_MINIO_ENDPOINT": "http://localhost:9000",
+              "SEEDGRID_BACKUP_MINIO_BUCKET": "{{slug}}-backups",
+              "SEEDGRID_BACKUP_MINIO_ACCESS_KEY": "admin",
+              "SEEDGRID_BACKUP_MINIO_SECRET_KEY": "@segredo:MINIO_ROOT_PASSWORD",
+              "SEEDGRID_BACKUP_MINIO_REGION": "us-east-1"
+            },
+            "compose": [
+              "minio"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "apikeys-uso",
+      "numero": "8",
+      "ordem": 9,
+      "tipo": "texto",
+      "chave": "apikeysUso",
+      "se": {
+        "extensao": [
+          "apikeys"
+        ]
+      },
+      "pergunta": "Descreva como as chaves de API serao usadas (quem consome, o que pode fazer).",
+      "recomendacao": "Uma ou duas frases; a resposta vai para o plano do produto e nao muda a geracao.",
+      "efeito": {
+        "produto": {
+          "apikeysUso": "texto da resposta"
+        },
+        "docs": [
+          "entra no plano do produto em docs/ai/plans/"
+        ]
+      }
+    },
+    {
+      "id": "billing",
+      "numero": "9",
+      "ordem": 10,
+      "tipo": "campos",
+      "se": {
+        "extensao": [
+          "billing"
+        ]
+      },
+      "pergunta": "Qual o provider de billing, ha trial (quantos dias) e quais os planos?",
+      "recomendacao": "Stripe e o unico provider hoje. Trial de 14 dias e comum; informe 0 para nao ter trial.",
+      "campos": [
+        {
+          "id": "billingProvider",
+          "rotulo": "Provider",
+          "validacao": "opcao:stripe",
+          "efeito": {
+            "env": {
+              "SEEDGRID_BILLING_PROVIDER": "stripe",
+              "SEEDGRID_BILLING_STRIPE_APIKEY": "@externo",
+              "SEEDGRID_BILLING_STRIPE_WEBHOOKSECRET": "@externo",
+              "SEEDGRID_BILLING_STRIPE_PRODUCT": "{{slug}}",
+              "SEEDGRID_BILLING_STRIPE_PRODUCT_NAME": "{{nome}}",
+              "SEEDGRID_BILLING_STRIPE_DEFAULTSUCCESSURL": "http://localhost:3001/assinatura/sucesso",
+              "SEEDGRID_BILLING_STRIPE_DEFAULTCANCELURL": "http://localhost:3001/assinatura/cancelada",
+              "SEEDGRID_BILLING_PORTAL_RETURN_URL": "http://localhost:3001/assinatura",
+              "SEEDGRID_BILLING_OVERAGE_METER_NAME": "Excedente de requisicoes {{slug}}"
+            },
+            "usado_em": [
+              "produto.json:billing.provider"
+            ]
+          }
+        },
+        {
+          "id": "trialDias",
+          "rotulo": "Dias de trial (0 = sem trial)",
+          "validacao": "inteiro:0-365",
+          "efeito": {
+            "env": {
+              "SEEDGRID_BILLING_TRIAL_ENABLED": "{{trialAtivo}}"
+            },
+            "pendencias": [
+              "Prazo e cota do trial sao dados do plano (migration do host), nao propriedade: o orquestrador cria a migration a partir de produto.json."
+            ],
+            "usado_em": [
+              "produto.json:billing.trialDias"
+            ]
+          }
+        },
+        {
+          "id": "planos",
+          "rotulo": "Planos (nomes separados por virgula)",
+          "validacao": "lista",
+          "efeito": {
+            "docs": [
+              "seed de planos e telas entram no plano do produto"
+            ],
+            "usado_em": [
+              "produto.json:billing.planos"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "dados-para-rodar",
+      "numero": "10",
+      "ordem": 11,
+      "tipo": "campos",
+      "pergunta": "Quais os dados para rodar o produto?",
+      "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost.",
+      "campos": [
+        {
+          "id": "dominioFront",
+          "rotulo": "Dominio do front",
+          "validacao": "dominio",
+          "efeito": {
+            "usado_em": [
+              "produto.json:dominioFront",
+              "env:SECURITY_JWT_ISSUER",
+              "publicacao:workflow do EasyPanel"
+            ]
+          }
+        },
+        {
+          "id": "dominioAdmin",
+          "rotulo": "Dominio do admin",
+          "validacao": "dominio",
+          "efeito": {
+            "usado_em": [
+              "produto.json:dominioAdmin",
+              "publicacao:workflow do EasyPanel"
+            ]
+          }
+        },
+        {
+          "id": "emailRemetente",
+          "rotulo": "E-mail remetente",
+          "validacao": "email",
+          "efeito": {
+            "usado_em": [
+              "produto.json:emailRemetente",
+              "env:SECURITY_MAILER_FROM"
+            ]
+          }
+        },
+        {
+          "id": "emailAdmin",
+          "rotulo": "E-mail do primeiro administrador",
+          "validacao": "email",
+          "efeito": {
+            "usado_em": [
+              "produto.json:emailAdmin",
+              "env:SEEDGRID_SECURITY_FIRST_ADMIN_USER_EMAIL"
+            ]
+          }
+        },
+        {
+          "id": "appName",
+          "rotulo": "Nome da aplicacao (app.name)",
+          "validacao": "nao-vazio",
+          "padrao": "{{nome}}",
+          "efeito": {
+            "usado_em": [
+              "produto.json:appName",
+              "env:SEEDGRID_SECURITY_2F_TOTP_ISSUER"
+            ]
+          }
+        },
+        {
+          "id": "appCode",
+          "rotulo": "Codigo da aplicacao (app.code)",
+          "validacao": "slug",
+          "padrao": "{{slug}}",
+          "efeito": {
+            "usado_em": [
+              "produto.json:appCode"
+            ]
+          }
+        },
+        {
+          "id": "registry",
+          "rotulo": "Registry das imagens (ex.: ghcr.io/empresa)",
+          "validacao": "registry",
+          "padrao": "ghcr.io/change-me",
+          "efeito": {
+            "usado_em": [
+              "produto.json:registry",
+              "publicacao:imagens do workflow"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

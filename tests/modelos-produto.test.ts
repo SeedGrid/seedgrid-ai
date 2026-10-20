@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { test } from 'node:test';
 import { parse } from 'yaml';
 
-const DIR = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/modelos-produto');
+const DIR = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-new-product/assets');
 const render = (await import(pathToFileURL(join(DIR, 'render.mjs')).href)) as {
   renderProduto: (p: unknown) => Record<string, string>;
   renderTemplate: (t: string, v: Record<string, unknown>) => string;

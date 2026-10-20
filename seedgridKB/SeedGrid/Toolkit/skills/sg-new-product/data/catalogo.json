@@ -1,0 +1,368 @@
+{
+  "_regra": "Cada campo tem a fonte na KB (caminho a partir de SeedGrid/). Informacao que so existe no codigo da extension vira lacuna, nunca e inferida.",
+  "modelos": {
+    "login-tenancy": {
+      "descricao": "Banco unico, multi-empresa (pooled). B2B hoje; B2C depende do boilerplate login-tenancy-b2c (a criar pelo business-day, Fase 1b na nota Escopo-e-acesso).",
+      "fonte": "Extensions/login-tenancy/Visao-geral.md",
+      "traz": [
+        "security",
+        "audit",
+        "backup",
+        "billing",
+        "apikeys",
+        "notification",
+        "filemanagement",
+        "privacy",
+        "resilience"
+      ],
+      "nao_traz": [
+        "ai-pricing",
+        "exchange",
+        "business-days",
+        "whatsapp",
+        "realtime",
+        "cache"
+      ],
+      "chaves_do_modelo": [
+        "seedgrid.login-tenancy.app.code",
+        "seedgrid.login-tenancy.app.name",
+        "seedgrid.login-tenancy.modules.<x>.enabled"
+      ],
+      "exclusivo_com": [
+        "subdomain-tenancy"
+      ],
+      "boilerplate": "login-tenancy",
+      "bom_pom": "seedgrid-login-tenancy-parent"
+    },
+    "subdomain-tenancy": {
+      "descricao": "Banco por tenant, resolucao por subdominio. Somente B2B; unico que cadastra empresas.",
+      "fonte": "Extensions/subdomain-tenancy/Visao-geral.md",
+      "traz": [
+        "security",
+        "audit",
+        "backup",
+        "billing",
+        "apikeys",
+        "notification",
+        "privacy",
+        "resilience"
+      ],
+      "nao_traz": [
+        "ai-pricing",
+        "exchange",
+        "business-days",
+        "whatsapp",
+        "realtime",
+        "cache"
+      ],
+      "chaves_do_modelo": [
+        "seedgrid.subdomain-tenancy.domain-suffix (sem ela todo request cai no tenant master)"
+      ],
+      "exclusivo_com": [
+        "login-tenancy"
+      ],
+      "fora_da_matriz": {
+        "filemanagement": "L6: a KB nao confirma como filemanagement entra no subdomain-tenancy; nao e oferecido"
+      },
+      "boilerplate": "subdomain-tenancy"
+    }
+  },
+  "extensions": {
+    "security": {
+      "papel": "JWT RS256, RBAC, 2FA, self-enter, usuarios/roles/empresas. Base das demais.",
+      "fonte": "Extensions/security/Visao-geral.md, Configuracao.md, Escopo-e-acesso.md",
+      "migrations": "V200-V235 (V238/V239/V245-V255 no ciclo escopo/acesso, nao publicadas)",
+      "obrigatorias_para_subir": [
+        "chave privada/publica JWT: seedgrid.security.jwt.private-key-location/public-key-location (padrao keys/private.pem e keys/public.pem) ou *-base64",
+        "seedgrid.security.frontend.base-url (padrao http://localhost:3000; trocar em producao)",
+        "seedgrid.security.first-admin-user.email e .name (sem email o primeiro admin nao e criado)",
+        "quarkus.mailer.security.* em producao (mock=false, host, port, from)"
+      ],
+      "decisoes_do_produto": [
+        "seedgrid.security.self-enter.enabled / public-enabled / invite-enabled / invite-needs-approval"
+      ],
+      "telas_admin": [
+        "@seedgrid/fe-security",
+        "@seedgrid/fe-self-enter (se self-enter)"
+      ],
+      "servicos_compose": [
+        "postgres"
+      ],
+      "depende_de": [],
+      "front": [
+        "@seedgrid/fe-security"
+      ]
+    },
+    "audit": {
+      "papel": "Trilha before/after com @Audit.",
+      "fonte": "Extensions/audit/Visao-geral.md, Configuracao.md",
+      "migrations": "V300-V303 (so strategy=JPA)",
+      "decisoes_do_produto": [
+        "seedgrid.audit.persistence.strategy: JPA (PostgreSQL) ou Mongodb"
+      ],
+      "obrigatorias_para_subir": [
+        "Mongodb: seedgrid.audit.mongodb.connection-string e database (padrao <app.code>_audit_db)",
+        "JPA: nada alem do datasource"
+      ],
+      "telas_admin": [
+        "@seedgrid/fe-audit"
+      ],
+      "servicos_compose": [
+        "postgres (JPA)",
+        "mongodb (Mongodb)"
+      ],
+      "depende_de": [
+        "security"
+      ],
+      "verificado": false
+    },
+    "apikeys": {
+      "papel": "API keys sgkey_ com permissoes da role (maquina-a-maquina).",
+      "fonte": "Extensions/apikeys/Visao-geral.md, Configuracao.md",
+      "migrations": "V600-V607 (V255 do security no ciclo)",
+      "obrigatorias_para_subir": [],
+      "depende_de": [
+        "security"
+      ],
+      "observacao": "Nos modelos login-tenancy e subdomain-tenancy ja vem como dependencia; modules.apikeys.enabled=false so desliga as migrations e o status, nao remove beans/endpoints. So e opcional de verdade no modelo 'outro'.",
+      "decisoes_do_produto": [
+        "uso descrito pela pessoa (sem pergunta fixa)",
+        "permissoes liberadas a integracao por migration do host (for_integration)"
+      ],
+      "telas_admin": [
+        "@seedgrid/fe-apikeys"
+      ],
+      "front": [
+        "@seedgrid/fe-apikeys"
+      ]
+    },
+    "backup": {
+      "papel": "Export de dados por tenant/usuario (ZIP), jobs assincronos, storage plugavel, aviso por e-mail.",
+      "fonte": "Extensions/backup/Visao-geral.md, Configuracao.md",
+      "migrations": "faixa nao localizada na KB (ver lacunas); historico flyway_schema_history_backup",
+      "decisoes_do_produto": [
+        "seedgrid.backup.storage: filesystem (padrao), s3, minio, azure-blob, google-drive, onedrive, gcs"
+      ],
+      "obrigatorias_para_subir": [
+        "storage=minio/s3: endpoint, bucket, access-key, secret-key, region",
+        "mailer proprio (seedgrid.backup.mailer.*)"
+      ],
+      "telas_admin": [
+        "@seedgrid/fe-backup"
+      ],
+      "servicos_compose": [
+        "minio (se storage=minio)"
+      ],
+      "depende_de": [
+        "security"
+      ],
+      "verificado": false,
+      "front": [
+        "@seedgrid/fe-backup"
+      ]
+    },
+    "billing": {
+      "papel": "Assinaturas: planos, uso, checkout, portal, webhooks; provider Stripe.",
+      "fonte": "Extensions/billing/Visao-geral.md, Configuracao.md",
+      "migrations": "V500-V513",
+      "providers": [
+        "stripe"
+      ],
+      "observacao": "billing-core vem com os dois modelos; o provider concreto (billing-stripe) NAO vem e o host o define (pergunta 9; hoje so stripe). Nos modelos de tenancy, modules.billing.enabled liga o provisionamento de conta com trial.",
+      "obrigatorias_para_subir": [
+        "provider (seedgrid-billing-stripe) e suas chaves",
+        "seedgrid.billing.checkout.success-url"
+      ],
+      "decisoes_do_produto": [
+        "trial (dias)",
+        "planos"
+      ],
+      "telas_admin": [
+        "@seedgrid/fe-billing-platform",
+        "@seedgrid/fe-billing-user"
+      ],
+      "depende_de": [
+        "security"
+      ],
+      "verificado": false,
+      "front": [
+        "@seedgrid/fe-billing-platform",
+        "@seedgrid/fe-billing-user"
+      ]
+    },
+    "notification": {
+      "papel": "Notificacoes administrativas por e-mail/WhatsApp com outbox e retry.",
+      "fonte": "Extensions/notification/Visao-geral.md, Configuracao.md",
+      "migrations": "V1000-V1099 (reservada)",
+      "obrigatorias_para_subir": [
+        "transporte: quarkus.mailer.security.* (nada em seedgrid.notification.* e obrigatorio)"
+      ],
+      "observacao": "Vem transitivamente nos dois modelos; o host nao precisa declarar.",
+      "depende_de": []
+    },
+    "ai-pricing": {
+      "papel": "Catalogo de modelos LLM e historico de precos por 1M tokens; robo agendado com aprovacao humana.",
+      "fonte": "Extensions/ai-pricing/Visao-geral.md, Configuracao.md",
+      "migrations": "V900-V903",
+      "obrigatorias_para_subir": [],
+      "telas_admin": "nao documentadas na KB (ver lacunas)",
+      "observacao": "Opcional nos modelos de tenancy (modules.ai-pricing.enabled, padrao true no subdomain).",
+      "depende_de": [],
+      "pom": [
+        {
+          "artifactId": "seedgrid-ai-pricing",
+          "versao": "2026.10.13"
+        }
+      ],
+      "remover_se_ausente_arquivos": [
+        "src/test/java/**/audit/AuditDatabaseResource.java",
+        "src/test/java/**/audit/DomainAuditTest.java"
+      ]
+    },
+    "exchange": {
+      "papel": "Moedas e cotacoes diarias; fontes configuraveis por cadastro.",
+      "fonte": "Extensions/exchange/Visao-geral.md, Configuracao.md",
+      "migrations": "V800-V804",
+      "obrigatorias_para_subir": [],
+      "telas_admin": "nao documentadas na KB (ver lacunas)",
+      "depende_de": [],
+      "pom": [
+        {
+          "artifactId": "seedgrid-exchange",
+          "versao": "2026.10.13"
+        }
+      ],
+      "remover_se_ausente_arquivos": [
+        "src/test/java/**/audit/AuditDatabaseResource.java",
+        "src/test/java/**/audit/DomainAuditTest.java"
+      ]
+    },
+    "business-days": {
+      "papel": "Calendario de dias uteis: feriados, semana de trabalho e calculo.",
+      "fonte": "Extensions/business-days/Visao-geral.md, Configuracao.md",
+      "migrations": "V1100-V1199",
+      "obrigatorias_para_subir": [],
+      "telas_admin": "nao documentadas na KB (ver lacunas)",
+      "depende_de": [],
+      "pom": [
+        {
+          "artifactId": "seedgrid-business-days",
+          "versao": "2026.10.15"
+        }
+      ]
+    },
+    "whatsapp": {
+      "papel": "Envio de WhatsApp via Evolution API ou Meta Cloud API.",
+      "fonte": "Extensions/whatsapp/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma documentada",
+      "decisoes_do_produto": [
+        "seedgrid.whatsapp.api: evolution ou whatsapp-cloud"
+      ],
+      "obrigatorias_para_subir": [
+        "evolution: seedgrid.whatsapp.evolution.api-key e seedgrid.whatsapp.rest-client.evolution.url",
+        "whatsapp-cloud: seedgrid.whatsapp.cloud.access-token (demais chaves na Configuracao.md)"
+      ],
+      "depende_de": [],
+      "pom": [
+        {
+          "artifactId": "seedgrid-whatsapp-evolution",
+          "versao": "${seedgrid.whatsapp.version}"
+        }
+      ]
+    },
+    "realtime": {
+      "papel": "Avisos em tempo real ao usuario logado via SeedGrid Pulse.",
+      "fonte": "Extensions/realtime/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma documentada",
+      "obrigatorias_para_subir": [
+        "seedgrid.realtime.enabled=true (padrao false)",
+        "seedgrid.realtime.pulse.base-url e a chave do projeto no Pulse (seedgrid.realtime.pulse.project-key)"
+      ],
+      "servicos_compose": [
+        "pulse (servico externo; imagem a confirmar)"
+      ],
+      "depende_de": [
+        "security"
+      ],
+      "verificado": false,
+      "pom": [
+        {
+          "artifactId": "seedgrid-realtime",
+          "versao": "${seedgrid.realtime.version}"
+        }
+      ]
+    },
+    "resilience": {
+      "papel": "Rate limit e circuit breaker declarativos, cache-backed.",
+      "fonte": "Extensions/resilience/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma",
+      "obrigatorias_para_subir": [],
+      "observacao": "Vem com os dois modelos. Para estado compartilhado entre instancias, precisa de provider de cache distribuido.",
+      "depende_de": []
+    },
+    "cache": {
+      "papel": "API unica sobre Redis/Valkey/Dragonfly (library).",
+      "fonte": "Extensions/cache/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma",
+      "decisoes_do_produto": [
+        "provider: redis, valkey ou dragonfly",
+        "seedgrid.cache.failover.enabled"
+      ],
+      "servicos_compose": [
+        "redis ou valkey ou dragonfly"
+      ],
+      "depende_de": [],
+      "pom": [
+        {
+          "artifactId": "seedgrid-cache-core",
+          "versao": "2026.10.13"
+        }
+      ],
+      "pendencia": "provider (redis, valkey ou dragonfly) e servico do compose: o dono fornece; a KB nao traz imagem"
+    },
+    "filemanagement": {
+      "papel": "Storage de arquivos: filesystem, S3, MinIO, Azure Blob, GCS, Google Drive, OneDrive (library; configuracao por mapa do chamador).",
+      "fonte": "Extensions/filemanagement/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma",
+      "decisoes_do_produto": [
+        "backend de storage"
+      ],
+      "servicos_compose": [
+        "minio (se MinIO)"
+      ],
+      "depende_de": []
+    },
+    "privacy": {
+      "papel": "Criptografia de campo AES-256-GCM e hash de busca HMAC-SHA256 (library).",
+      "fonte": "Extensions/privacy/Visao-geral.md, Configuracao.md",
+      "migrations": "nenhuma",
+      "decisoes_do_produto": [
+        "seedgrid.privacy.encryption.enabled (padrao false)"
+      ],
+      "obrigatorias_para_subir": [
+        "com encryption.enabled=true: seedgrid.privacy.crypto.key (Base64, 32 bytes) e seedgrid.privacy.search.key (Base64, >= 32 bytes)"
+      ],
+      "depende_de": []
+    }
+  },
+  "sempre_no_produto": {
+    "banco": "postgres",
+    "publicacao": "easypanel",
+    "monorepo": [
+      "backend (Java)",
+      "frontend",
+      "admin"
+    ],
+    "arquivos_de_saida": [
+      "dev.env preenchido",
+      "docker-compose.yml com as dependencias escolhidas",
+      "Dockerfile por servico",
+      "workflow GitHub Actions para o EasyPanel"
+    ]
+  },
+  "_origem": "Lido apenas da KB de host (SeedGrid/Extensions). Informacao que so existe no codigo da extension nao e inferida: vira lacuna na KB.",
+  "sempre": {
+    "commons": "sempre presente"
+  },
+  "fora_do_escopo": "broker e runtime sao so Rust; ai-pricing/exchange/business-days/notification sao so Java."
+}

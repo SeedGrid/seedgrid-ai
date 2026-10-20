@@ -173,6 +173,25 @@
       ]
     },
     {
+      "id": "skill:sg-new-product",
+      "type": "skill",
+      "name": "sg-new-product",
+      "files": [
+        "SKILL.md",
+        "data/catalogo.json",
+        "data/matriz-produto.json",
+        "data/matriz-produto.schema.json",
+        "scripts/matriz.mjs",
+        "assets/admin.Dockerfile.tpl",
+        "assets/backend.Dockerfile.tpl",
+        "assets/frontend.Dockerfile.tpl",
+        "assets/render.mjs",
+        "assets/workflow.yml.tpl",
+        "assets/workflow-job.yml.tpl",
+        "assets/exemplo/produto.json"
+      ]
+    },
+    {
       "id": "boilerplates",
       "type": "boilerplates",
       "names": [
