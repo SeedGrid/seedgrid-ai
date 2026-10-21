@@ -924,6 +924,9 @@
             ],
             "pendencias": [
               "Avatar em Amazon S3 (ou compativel): preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_S3_ACCESS_KEY, SEEDGRID_SECURITY_AVATAR_S3_SECRET_KEY (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#s3"
+            ],
+            "pom_adicionar": [
+              "software.amazon.awssdk:s3:2.21.42"
             ]
           }
         },
@@ -964,6 +967,9 @@
             ],
             "pendencias": [
               "Avatar em Azure Blob Storage: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_AZURE_BLOB_CONNECTION_STRING (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#azure-blob"
+            ],
+            "pom_adicionar": [
+              "com.azure:azure-storage-blob:12.25.1"
             ]
           }
         },
@@ -1004,6 +1010,9 @@
             ],
             "pendencias": [
               "Avatar em Google Cloud Storage: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_GCS_PROJECT_ID, SEEDGRID_SECURITY_AVATAR_GCS_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#gcs-google-cloud-storage"
+            ],
+            "pom_adicionar": [
+              "com.google.cloud:google-cloud-storage:2.29.1"
             ]
           }
         },
@@ -1044,6 +1053,11 @@
             ],
             "pendencias": [
               "Avatar em Google Drive (conta de servico): preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_ROOT_FOLDER_ID, SEEDGRID_SECURITY_AVATAR_GOOGLE_DRIVE_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#google-drive"
+            ],
+            "pom_adicionar": [
+              "com.google.api-client:google-api-client:2.2.0",
+              "com.google.apis:google-api-services-drive:v3-rev197-1.25.0",
+              "com.google.auth:google-auth-library-oauth2-http:1.20.0"
             ]
           }
         },
@@ -1084,6 +1098,10 @@
             ],
             "pendencias": [
               "Avatar em OneDrive: preencha em backend/dev.env SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_ID, SEEDGRID_SECURITY_AVATAR_ONEDRIVE_CLIENT_SECRET, SEEDGRID_SECURITY_AVATAR_ONEDRIVE_TENANT_ID (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#onedrive"
+            ],
+            "pom_adicionar": [
+              "com.microsoft.graph:microsoft-graph:5.80.0",
+              "com.azure:azure-identity:1.11.1"
             ]
           }
         }
@@ -1217,6 +1235,9 @@
             ],
             "pendencias": [
               "Backup em Amazon S3 (ou compativel): preencha em backend/dev.env SEEDGRID_BACKUP_S3_ACCESS_KEY, SEEDGRID_BACKUP_S3_SECRET_KEY (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#s3"
+            ],
+            "pom_adicionar": [
+              "software.amazon.awssdk:s3:2.21.42"
             ]
           }
         },
@@ -1257,6 +1278,9 @@
             ],
             "pendencias": [
               "Backup em Azure Blob Storage: preencha em backend/dev.env SEEDGRID_BACKUP_AZURE_BLOB_CONNECTION_STRING (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#azure-blob"
+            ],
+            "pom_adicionar": [
+              "com.azure:azure-storage-blob:12.25.1"
             ]
           }
         },
@@ -1297,6 +1321,9 @@
             ],
             "pendencias": [
               "Backup em Google Cloud Storage: preencha em backend/dev.env SEEDGRID_BACKUP_GCS_PROJECT_ID, SEEDGRID_BACKUP_GCS_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#gcs-google-cloud-storage"
+            ],
+            "pom_adicionar": [
+              "com.google.cloud:google-cloud-storage:2.29.1"
             ]
           }
         },
@@ -1337,6 +1364,11 @@
             ],
             "pendencias": [
               "Backup em Google Drive (conta de servico): preencha em backend/dev.env SEEDGRID_BACKUP_GOOGLE_DRIVE_ROOT_FOLDER_ID, SEEDGRID_BACKUP_GOOGLE_DRIVE_CREDENTIALS_FILE (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#google-drive"
+            ],
+            "pom_adicionar": [
+              "com.google.api-client:google-api-client:2.2.0",
+              "com.google.apis:google-api-services-drive:v3-rev197-1.25.0",
+              "com.google.auth:google-auth-library-oauth2-http:1.20.0"
             ]
           }
         },
@@ -1377,6 +1409,10 @@
             ],
             "pendencias": [
               "Backup em OneDrive: preencha em backend/dev.env SEEDGRID_BACKUP_ONEDRIVE_CLIENT_ID, SEEDGRID_BACKUP_ONEDRIVE_CLIENT_SECRET, SEEDGRID_BACKUP_ONEDRIVE_TENANT_ID (credencial externa; nunca no chat, plano ou commit). Como obter: .ai/skills/sg-new-product/assets/guia-credenciais.md#onedrive"
+            ],
+            "pom_adicionar": [
+              "com.microsoft.graph:microsoft-graph:5.80.0",
+              "com.azure:azure-identity:1.11.1"
             ]
           }
         }

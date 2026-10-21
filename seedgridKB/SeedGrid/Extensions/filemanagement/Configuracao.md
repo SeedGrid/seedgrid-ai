@@ -153,5 +153,5 @@ Map.of("client-id", "<client-id>", "client-secret", "<SEGREDO:onedrive-client-se
 
 ## 9. Dúvidas e lacunas
 
-- Para usar um backend de nuvem o host precisa declarar o SDK (dependências `optional` no pom) — **Inferência**; sem ele, `create` deve falhar com `NoClassDefFoundError` (não testado).
+- Para usar um backend de nuvem o host precisa declarar o SDK (dependências `optional` no pom). **Confirmado** (2026-10-21): `mvn dependency:tree` de um produto com `seedgrid-filemanagement` não traz nenhum SDK de nuvem; o `quarkus:build` passou a incluir o SDK declarado sem conflito. Sem o SDK, `create` deve falhar com `NoClassDefFoundError` (**Inferência**, não executado).
 - Equivalência com a config do crate Rust: [[SeedGrid/Extensions/filemanagement/Configuracao-Rust|Configuração Rust do filemanagement]].

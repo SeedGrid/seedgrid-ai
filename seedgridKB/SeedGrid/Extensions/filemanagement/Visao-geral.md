@@ -28,7 +28,7 @@ Uma API única de armazenamento de arquivos (`FileStorage`) com backends plugáv
 | **Optional** (o host precisa declarar para usar o backend) | AWS `s3` 2.21.42; `azure-storage-blob` 12.25.1; `google-api-client` 2.2.0, `google-api-services-drive` v3-rev197-1.25.0, `google-auth-library-oauth2-http` 1.20.0; `google-cloud-storage` 2.29.1; `minio` 8.5.9; `microsoft-graph` 5.80.0 + `azure-identity` 1.11.1; também `quarkus-hibernate-orm`, `quarkus-jdbc-postgresql`, `quarkus-flyway` |
 | Dependências SeedGrid | nenhuma (desde 2026.07.08 não depende mais de `seedgrid-commons`, segundo comentário do exemplo) |
 
-Fonte: `java/seedgrid-quarkus-lib-filemanagement/pom.xml`. **Confirmado.** Que o host precise declarar o SDK do backend escolhido é **Inferência** (escopo `optional` não é transitivo).
+Fonte: `java/seedgrid-quarkus-lib-filemanagement/pom.xml`. **Confirmado.** Que o host precise declarar o SDK do backend escolhido está **Confirmado** (`mvn dependency:tree` de um produto, 2026-10-21: escopo `optional` não é transitivo; a skill `sg-new-product` declara o SDK do provider escolhido).
 
 ## Arquitetura
 

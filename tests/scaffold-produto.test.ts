@@ -369,3 +369,28 @@ test('o data.ts do admin continua sintaticamente balanceado depois de remover bl
     assert.equal(conta('['), conta(']'), `${rel}: colchetes`);
   }
 });
+
+test('o pom declara o SDK do provider de nuvem escolhido (optional na filemanagement), e so dele', async () => {
+  const SDK: Record<string, string[]> = {
+    s3: ['software.amazon.awssdk'],
+    'azure-blob': ['azure-storage-blob'],
+    gcs: ['google-cloud-storage'],
+    'google-drive': ['google-api-services-drive', 'google-api-client', 'google-auth-library-oauth2-http'],
+    onedrive: ['microsoft-graph', 'azure-identity'],
+  };
+  const todos = [...new Set(Object.values(SDK).flat())];
+  for (const [prov, esperados] of Object.entries(SDK)) {
+    for (const modelo of ['login-tenancy-b2b', 'subdomain-tenancy']) {
+      const { destino } = await gerar({ ...B2B, modelo, armazenamentoAvatar: prov, armazenamentoBackup: prov });
+      const pom = readFileSync(join(destino, 'backend/pom.xml'), 'utf8');
+      for (const e of esperados) assert.ok(pom.includes(e), `${modelo}/${prov}: falta ${e}`);
+      // como avatar e backup usam o mesmo provider, o SDK entra uma vez so
+      for (const e of esperados) assert.equal(pom.split(`<artifactId>${e}</artifactId>`).length - 1 <= 1, true, `${prov}: ${e} duplicado`);
+      for (const e of todos.filter((x) => !esperados.includes(x))) assert.ok(!pom.includes(e), `${modelo}/${prov}: ${e} nao devia entrar`);
+    }
+  }
+  // filesystem e minio nao precisam de SDK extra alem do que o boilerplate ja traz
+  const fs = await gerar({ ...B2B, armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem' });
+  const pomFs = readFileSync(join(fs.destino, 'backend/pom.xml'), 'utf8');
+  for (const e of todos) assert.ok(!pomFs.includes(e), `filesystem: ${e} nao devia entrar`);
+});

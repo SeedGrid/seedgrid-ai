@@ -67,7 +67,7 @@ export function criarGerador(sementes = {}) {
 // ---------- efeitos ----------
 // Reune os efeitos das respostas, na ordem das perguntas; env de uma resposta mais tarde vence a anterior.
 function juntar(efeitos, matriz) {
-  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pendencias: [], produto: {}, docs: [] };
+  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pomAdicionar: [], pendencias: [], produto: {}, docs: [] };
   for (const { efeito } of efeitos) {
     for (const b of efeito.blocos_env ?? []) for (const [k, v] of Object.entries(matriz.blocos_env[b])) r.env.set(k, v);
     for (const [k, v] of Object.entries(efeito.env && !Array.isArray(efeito.env) ? efeito.env : {})) r.env.set(k, v);
@@ -81,6 +81,7 @@ function juntar(efeitos, matriz) {
     r.frontRemover.push(...(efeito.modulos_front_remover ?? []));
     r.pomRemover.push(...(efeito.pom_remover ?? []));
     r.pomManter.push(...(efeito.pom_manter ?? []));
+    for (const d of efeito.pom_adicionar ?? []) if (!r.pomAdicionar.includes(d)) r.pomAdicionar.push(d);
     r.pendencias.push(...(efeito.pendencias ?? []));
     r.docs.push(...(efeito.docs ?? []));
     if (efeito.produto && !Array.isArray(efeito.produto)) Object.assign(r.produto, efeito.produto);
@@ -153,6 +154,15 @@ function ajustarPom(destino, { artefatoApi, nome, r, catalogo, removerPom, adici
   };
   for (const id of r.extRemover) for (const p of catalogo.extensions[id].pom ?? []) remover(p.artifactId);
   for (const x of removerPom) remover(x);
+  // SDKs que a lib deixa como optional (ex.: filemanagement): o host precisa declarar o do provider escolhido
+  for (const d of r.pomAdicionar) {
+    const [g, a, v] = d.split(':');
+    if (pom.includes(`<artifactId>${a}</artifactId>`)) continue;
+    const bloco = `\n        <dependency>\n            <groupId>${g}</groupId>\n            <artifactId>${a}</artifactId>\n            <version>${v}</version>\n        </dependency>`;
+    const fim = pom.indexOf('</dependencies>', pom.indexOf('</dependencyManagement>'));
+    pom = pom.slice(0, fim).replace(/\s*$/, '') + bloco + '\n    ' + pom.slice(fim);
+    feito.push(`pom: adicionada ${g}:${a} ${v}`);
+  }
   for (const id of adicionar) {
     for (const p of catalogo.extensions[id].pom ?? []) {
       if (pom.includes(`<artifactId>${p.artifactId}</artifactId>`)) continue;
