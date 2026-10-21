@@ -39,3 +39,7 @@ Implementar mudanças de interface em React consistentes com o design system, o 
 ## Formato da entrega
 
 Siga `.ai/rules/formato-entrega.md`. Indique como verificar visualmente a mudança, se aplicável.
+
+## Siga o combinado; não invente
+
+Entregue o que foi combinado, nem a mais nem a menos. Onde o combinado é omisso, copie o padrão equivalente do próprio projeto e diga qual; sem padrão, devolva a **pergunta** ao coordenador em vez de decidir. Divergência do plano ou do comportamento combinado: pare e devolva como pendência (`.ai/rules/coordenacao.md`).

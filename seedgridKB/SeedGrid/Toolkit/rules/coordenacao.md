@@ -15,13 +15,23 @@ Regras para a sessão principal (o coordenador) no Claude Code ou no Codex. Elas
 0. **Conferir as sobras.** No início de toda tarefa não trivial, aplique a skill `sg-branch-status`: ela lista branches e worktrees já mergeados ou sem dono. Reporte ao usuário o que sobrou e proponha a limpeza; nunca apague o que não está mergeado sem perguntar.
 0b. **Produto novo.** Se o pedido é criar um produto SeedGrid do zero (a pasta não tem `produto.json`), acione a skill `sg-new-product` **antes** do `arquiteto`: ela conduz a entrevista fixa, roda o script que gera o produto e escreve o plano e os documentos em `docs/ai/`. Depois disso o `arquiteto` recebe o plano do produto para a primeira feature.
 1. **Acionar o `arquiteto` primeiro.** Passe o pedido do usuário como foi escrito. Ele classifica a tarefa (`feature`, `bug`, `hotfix`, `refactor` ou `chore`), lê o código e a KB e devolve **dúvidas** ou o **plano**.
-2. **Resolver as dúvidas.** O arquiteto não fala com o usuário: faça as perguntas dele ao usuário e devolva as respostas, até não restar dúvida relevante. Dúvida pequena vira premissa declarada.
+2. **Resolver as dúvidas.** O arquiteto não fala com o usuário: faça as perguntas dele ao usuário e devolva as respostas, até não restar dúvida relevante. Dúvida pequena, **que um padrão já existente no projeto resolve**, vira premissa declarada com o padrão citado; dúvida sem padrão, ou que mude comportamento combinado, vai ao usuário.
 3. **Aprovar o plano.** Em feature e refactor, mostre o plano (tarefas, paralelismo, critérios de aceite) e só implemente depois da aprovação do usuário. Em hotfix e bug claros, o plano é mínimo e segue direto.
 4. **Delegar com contexto completo.** Para cada tarefa do plano, acione o papel indicado (`backend-java`, `backend-rust`, `frontend-react`) com: objetivo, contexto, arquivos envolvidos, limites, critérios de aceite e resultado esperado. Use o [template de especificação de tarefa](../templates/especificacao-tarefa.md) quando ajudar. Consulte o [índice de papéis](../agents/index.md) e leia a definição completa apenas dos papéis acionados.
 5. **Paralelizar com cuidado.** Rode em paralelo somente o que o plano marcou como independente. Nunca atribua escrita nos mesmos arquivos a dois papéis ao mesmo tempo; contrato de API antes da tela que o consome.
 6. **Receber e encaminhar.** Confira cada entrega (ver [formato de entrega](formato-entrega.md)), verifique pendências e repasse o contexto necessário ao próximo papel.
 7. **Revisar e testar.** Depois da implementação, o `revisor` examina o diff e o `qa` cria e executa os testes e valida os critérios de aceite. Achados e falhas voltam ao implementador responsável. O rigor cresce com o risco: dados, segurança, contratos públicos e migrações exigem mais.
 8. **Consolidar.** Responda ao usuário com o que foi feito, as verificações executadas e as pendências. Publicar, fazer deploy ou dar push continua sendo decisão do usuário.
+
+### Siga o combinado; não invente
+
+Vale para a sessão principal e para todos os papéis, em qualquer tarefa (incluindo a criação de um produto novo).
+
+1. **O combinado manda.** Pedido do usuário, plano aprovado, decisão registrada, regra do toolkit e matriz do `sg-new-product` são o combinado. Entregue exatamente isso: nem a mais (módulo, dependência, tela, propriedade, configuração, camada de segurança), nem a menos.
+2. **Onde o combinado é omisso, copie o padrão do projeto.** Procure primeiro uma implementação equivalente no próprio código (outra tela, outro CRUD, outro módulo, o boilerplate) e siga-a. Cite no relato qual padrão seguiu.
+3. **Sem padrão, pergunte.** Uma pergunta por vez, com a sua recomendação e o que fará se não houver resposta. Não escreva solução própria no lugar da pergunta.
+4. **Divergência não é sua para decidir.** Tirar algo previsto, mudar um comportamento combinado, trocar um formato ou acrescentar uma dependência fora do plano: pare aquela tarefa, registre a pergunta (o que foi combinado, o que o código pede, opções e recomendação) e siga com as independentes. Registrar depois de ter feito não basta.
+5. **O host não reinventa a plataforma.** Autenticação, permissões e auditoria vêm da `seedgrid-security` e das extensions já no projeto; não crie outra. O host não altera extension (`limites-do-host.md`).
 
 ### Hotfix
 

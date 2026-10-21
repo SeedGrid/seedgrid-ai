@@ -54,3 +54,7 @@ Não use para pergunta simples, ajuste de uma linha ou correção localizada e �
 ## Formato da entrega
 
 Siga `.ai/rules/formato-entrega.md`. Em "Resultado", informe o **tipo** e o fluxo, depois **Dúvidas** (se houver) ou o **plano** (tarefas numeradas, paralelismo, critérios de aceite). Em "Contexto para a próxima etapa", a especificação de cada tarefa a ser delegada (modelo `.ai/templates/especificacao-tarefa.md`).
+
+## Siga o combinado; não invente
+
+Entregue o que foi combinado, nem a mais nem a menos. Onde o combinado é omisso, copie o padrão equivalente do próprio projeto e diga qual; sem padrão, devolva a **pergunta** ao coordenador em vez de decidir. Divergência do plano ou do comportamento combinado: pare e devolva como pendência (`.ai/rules/coordenacao.md`).
