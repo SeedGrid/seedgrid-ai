@@ -417,7 +417,9 @@ function arg(nome) {
   const i = process.argv.indexOf(`--${nome}`);
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
-if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+// A CLI roda numa funcao async (sem top-level await): reconfigurar.mjs importa este modulo de volta, e um
+// top-level await aqui deixaria o import circular pendurado.
+async function main() {
   if (process.argv.includes('--reconfigurar')) {
     const { reconfigurarCli } = await import('./reconfigurar.mjs');
     process.exit(await reconfigurarCli({ arg, aplicar: process.argv.includes('--aplicar'), json: process.argv.includes('--json') }));
@@ -443,4 +445,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
     console.log('Segredos gerados por produto (nao versionados): backend/dev.env, .env, backend/src/main/resources/keys/*.pem');
   }
   process.exit(out.ok ? 0 : 1);
+}
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  main().catch((e) => { console.error(e?.stack ?? String(e)); process.exit(1); });
 }

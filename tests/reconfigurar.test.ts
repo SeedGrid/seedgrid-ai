@@ -143,3 +143,15 @@ test('trocar o armazenamento do avatar depois (filesystem -> S3 -> MinIO): igual
   // o .env da raiz ganha a senha do MinIO sem mudar as outras
   assert.ok(readFileSync(join(produto, '.env'), 'utf8').includes('MINIO_ROOT_PASSWORD='));
 });
+
+test('a CLI --reconfigurar roda como processo (sem travar no import circular) e e idempotente', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const produto = await criar(COM_SELF_ENTER);
+  const resp = join(nova(), 'respostas.json');
+  writeFileSync(resp, JSON.stringify(COM_SELF_ENTER));
+  const p = spawnSync(process.execPath, [join(SKILL, 'scripts/scaffold-produto.mjs'), '--reconfigurar', '--respostas', resp, '--boilerplates', BOILERPLATES, '--json'], { cwd: produto, encoding: 'utf8', timeout: 60000 });
+  assert.equal(p.status, 0, p.stderr);
+  assert.doesNotMatch(p.stderr, /unsettled top-level await/);
+  const j = JSON.parse(p.stdout) as Plano;
+  assert.ok(j.ok && j.arquivos.length === 0 && j.env.length === 0 && j.conflitos === 0);
+});
