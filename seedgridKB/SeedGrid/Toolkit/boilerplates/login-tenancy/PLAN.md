@@ -10,7 +10,7 @@ senha exercitados de ponta a ponta contra a API. Decisões D1–D5 fechadas (§1
 
 ---
 
-> Atualizacao 2026-09-28: auditoria administrativa migrada para `@Audit` e `/audit-logs`
+> Atualizacao 2026-09-28: auditoria administrativa migrada para `@SgAudit` e `/audit-logs`
 > da extensao nos dois boilerplates. `admin_audit_entries` permanece somente como arquivo
 > historico, preservando migrations e dados existentes. A adocao de `seedgrid-ai-pricing`
 > foi concluida nos dois backends com o artefato local `2026.09.12-SNAPSHOT`; veja
@@ -82,8 +82,8 @@ Adicionar **uma** dependência já traz, transitivamente, o baseline v1 inteiro:
 | `seedgrid-backup` | export/backup com storage plugável (filesystem/s3/minio/azure/gcs/drive/onedrive) + notificação por e-mail |
 | `seedgrid-apikeys` | API keys por instalação, com permissões e revogação |
 | `seedgrid-filemanagement` | abstração de storage usada por avatar/backup/imagens |
-| `seedgrid-privacy` | criptografia at-rest de PII (`@EncryptedField`) + busca por hash |
-| `seedgrid-resilience` | `@SeedGridRateLimit` (in-memory, sem Redis) |
+| `seedgrid-privacy` | criptografia at-rest de PII (`@SgEncryptedField`) + busca por hash |
+| `seedgrid-resilience` | `@SgRateLimit` (in-memory, sem Redis) |
 
 E, da própria extension:
 

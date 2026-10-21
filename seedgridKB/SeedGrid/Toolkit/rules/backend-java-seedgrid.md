@@ -58,9 +58,9 @@ public record ClienteDTORes(
 
 ## LGPD e auditoria em Java
 
-- **BE-61.** Dado pessoal usa o `seedgrid-privacy`: campo `String` com `@Convert(converter = EncryptedFieldAttributeConverter.class)` e `@EncryptedField`, coluna `length = 512`; se a busca por igualdade for necessária, `@EncryptedField(searchField = "<campo>Hash", normalize = ...)` com a coluna irmã `<campo>_hash` (`length = 64`) e a consulta feita pelo hash (`EncryptedFieldSearch#hashForSearch`, com a **mesma** normalização da anotação). Entidade com campo cifrado leva `@EntityListeners(EncryptedFieldListener.class)`.
+- **BE-61.** Dado pessoal usa o `seedgrid-privacy`: campo `String` com `@Convert(converter = EncryptedFieldAttributeConverter.class)` e `@SgEncryptedField`, coluna `length = 512`; se a busca por igualdade for necessária, `@SgEncryptedField(searchField = "<campo>Hash", normalize = ...)` com a coluna irmã `<campo>_hash` (`length = 64`) e a consulta feita pelo hash (`EncryptedFieldSearch#hashForSearch`, com a **mesma** normalização da anotação). Entidade com campo cifrado leva `@EntityListeners(EncryptedFieldListener.class)`.
 - **BE-62.** O host liga `seedgrid.privacy.encryption.enabled=true` e fornece `seedgrid.privacy.crypto.key` e `seedgrid.privacy.search.key` (Base64, 32 bytes) por segredo/variável de ambiente, nunca em arquivo versionado.
-- **BE-63.** Use `@PersonalData`/`@MaskRule` para mascarar dado pessoal em auditoria, log, exportação e resposta de erro (e `remove = true` para senha e segredos).
-- **BE-64.** Criação, alteração e exclusão de entidades de negócio usam `@Audit` (`entityFqcn`, `operation`, `description`) no método de serviço, dentro de `@Transactional`.
+- **BE-63.** Use `@SgPersonalData`/`@SgMaskRule` para mascarar dado pessoal em auditoria, log, exportação e resposta de erro (e `remove = true` para senha e segredos).
+- **BE-64.** Criação, alteração e exclusão de entidades de negócio usam `@SgAudit` (`entityFqcn`, `operation`, `description`) no método de serviço, dentro de `@Transactional`.
 - **BE-65.** Endpoints protegidos com as anotações de segurança do Quarkus (`@Authenticated`, `@RolesAllowed`, `@PermissionsAllowed`) e permissões registradas conforme a extension `security`.
 - **BE-66.** Cadastros novos seguem a skill `sg-crud-back`.

@@ -8,7 +8,7 @@ analisado-em: 2026-10-14
 
 # SeedGrid Resilience (Quarkus) — Visão geral
 
-Extension Quarkus de **rate limiting** e **circuit breaker** declarativos. O desenvolvedor anota métodos/classes CDI com `@SeedGridRateLimit` ou `@SeedGridCircuitBreaker`; interceptors CDI aplicam a regra e guardam o estado no `SeedGridCacheProvider` (lib `seedgrid-cache`), de modo que, com um provider distribuído (Redis/Valkey/Dragonfly), o limite/circuito é compartilhado entre instâncias. A anotação define os valores padrão; com `configKey` (rate limit) ou `name` (circuit breaker) os valores podem ser sobrescritos por properties em runtime.
+Extension Quarkus de **rate limiting** e **circuit breaker** declarativos. O desenvolvedor anota métodos/classes CDI com `@SgRateLimit` ou `@SgCircuitBreaker`; interceptors CDI aplicam a regra e guardam o estado no `SeedGridCacheProvider` (lib `seedgrid-cache`), de modo que, com um provider distribuído (Redis/Valkey/Dragonfly), o limite/circuito é compartilhado entre instâncias. A anotação define os valores padrão; com `configKey` (rate limit) ou `name` (circuit breaker) os valores podem ser sobrescritos por properties em runtime.
 
 - Configuração completa: [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 - Enums (`RateLimitAlgorithm`, `KeyScope`, `SlidingWindowType`, `CircuitState`): [[SeedGrid/Extensions/resilience/Enums|Enums do resilience]]
@@ -58,7 +58,7 @@ flowchart LR
     CBI --> M["método de negócio / fallbackMethod"]
 ```
 
-### Rate limit (`@SeedGridRateLimit`)
+### Rate limit (`@SgRateLimit`)
 1. `RateLimitInterceptor` resolve a anotação: método → método na classe alvo → hierarquia de classes → interfaces.
 2. `RateLimitService#tryAcquire`: se `configKey` não vazio e `seedgrid.ratelimit.{configKey}.enabled=false`, permite sem contar. Senão resolve identidade, permits, janela, min-spacing, burst e algoritmo (config vence anotação quando há `configKey`), valida (`permits > 0`, `window > 0`, `burstCapacity >= 0`, `minSpacing >= 0`, senão `IllegalArgumentException`).
 3. Chave no cache: `rl:{tenant}:{operation}:{scope}:{identity}` (sem `operation` quando vazio). `tenant` vem do atributo `tenantId` do `SeedGridInvocationContext` (padrão `no-tenant`); `operation` do atributo `operation`. `scope`: `METHOD` → assinatura do método; `CLASS` → nome da classe alvo; `GROUP` → `group` (ou assinatura se vazio).
@@ -69,7 +69,7 @@ flowchart LR
 5. Negado → `RateLimitExceededException`; `RateLimitExceptionMapper` (JAX-RS) responde **429** com `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset` e `Retry-After` (segundos, arredondados para cima).
 6. Permitido e `emitHeaders=true` → `RateLimitHeaderCarrier` (ThreadLocal) e `RateLimitContainerResponseFilter` acrescentam `X-RateLimit-Limit/Remaining/Reset` à resposta.
 
-### Circuit breaker (`@SeedGridCircuitBreaker`)
+### Circuit breaker (`@SgCircuitBreaker`)
 1. `CircuitBreakerInterceptor` resolve a anotação (método → método na classe alvo → hierarquia).
 2. Kill switch: `seedgrid.circuitbreaker.{name}.enabled=false` → chama o método direto.
 3. Nome do circuito = `name` ou, se vazio, assinatura `Classe#metodo(tipos)`. Chave no cache: `cb:{nome}`.
@@ -82,8 +82,8 @@ flowchart LR
 
 | Tipo | Símbolo | Descrição |
 |---|---|---|
-| Anotação (InterceptorBinding) | `...ratelimiter.annotations.SeedGridRateLimit` | `permits`, `window`, `windowUnit`, `algorithm`, `burstCapacity`, `minSpacing`, `minSpacingUnit`, `identity`, `group`, `scope`, `emitHeaders`, `configKey` (detalhes em [[SeedGrid/Extensions/resilience/Configuracao\|Configuração]]) |
-| Anotação (InterceptorBinding) | `...circuitbreaker.annotations.SeedGridCircuitBreaker` | `name`, `slidingWindowSize`, `windowType`, `failureRateThreshold`, `slowCallDurationThresholdMs`, `slowCallRateThreshold`, `minimumNumberOfCalls`, `openStateDurationMs`, `permittedCallsInHalfOpen`, `recordExceptions`, `ignoreExceptions`, `fallbackMethod` |
+| Anotação (InterceptorBinding) | `...ratelimiter.annotations.SgRateLimit` | `permits`, `window`, `windowUnit`, `algorithm`, `burstCapacity`, `minSpacing`, `minSpacingUnit`, `identity`, `group`, `scope`, `emitHeaders`, `configKey` (detalhes em [[SeedGrid/Extensions/resilience/Configuracao\|Configuração]]) |
+| Anotação (InterceptorBinding) | `...circuitbreaker.annotations.SgCircuitBreaker` | `name`, `slidingWindowSize`, `windowType`, `failureRateThreshold`, `slowCallDurationThresholdMs`, `slowCallRateThreshold`, `minimumNumberOfCalls`, `openStateDurationMs`, `permittedCallsInHalfOpen`, `recordExceptions`, `ignoreExceptions`, `fallbackMethod` |
 | SPI | `...ratelimiter.spi.IdentityResolver` | `String resolve(SeedGridInvocationContext ctx)`; prontos: `IpIdentityResolver` (X-Forwarded-For → X-Real-IP → remote address → `anonymous`), `AnonymousIdentityResolver` |
 | SPI | `...circuitbreaker.spi.CircuitBreakerStore` | `allowCall`, `onSuccess`, `onError`; implementação `CacheBackedCircuitBreakerStore` (`@ApplicationScoped`, sem `@DefaultBean`) |
 | SPI | `...ratelimiter.algorithm.RateLimitAlgorithmStrategy` | `acquire(SeedGridCacheProvider, RateLimitRequest)` |

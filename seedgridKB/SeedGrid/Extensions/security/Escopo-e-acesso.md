@@ -27,7 +27,7 @@ Cobre `seedgrid-quarkus-ext-security`, `-login-tenancy`, `-subdomain-tenancy` e 
 |---|---|---|---|
 | `seedgrid.security.isolation` | `shared-database` \| `dedicated-database` | `shared-database` | Modelo de dados do host; só define os padrões das propriedades abaixo. `login-tenancy` declara `shared-database`, `subdomain-tenancy` declara `dedicated-database`. |
 | `seedgrid.security.account.enabled` | boolean | `true` em shared, `false` em dedicated | Liga/desliga `/me/security/*` (404 quando desligado). |
-| `seedgrid.security.platform-scope.exempt` | lista | vazio em shared; `companies, users, roles, permissions:GET` em dedicated | Recursos isentos do `@PlatformScope` (entrada `recurso` ou `recurso:METODO`). |
+| `seedgrid.security.platform-scope.exempt` | lista | vazio em shared; `companies, users, roles, permissions:GET` em dedicated | Recursos isentos do `@SgPlatformScope` (entrada `recurso` ou `recurso:METODO`). |
 | `seedgrid.security.admin-guard.scope` | `company` \| `database` | `company` em shared, `database` em dedicated | Escopo da invariante "mínimo 1 ADMIN ativo" (consumida na Fase 3 do ciclo). |
 
 ### Contratos e comportamento (quebras de compatibilidade)
@@ -257,7 +257,7 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 ### Estado da empresa (security)
 
 - `companies.access_mode`: `ACTIVE` (padrão), `READ_ONLY` ou `DISABLED`, com data e motivo da última mudança. Quem muda é o billing ou o host, por `CompanyAccessService.setMode(companyPublicId, mode, reason)` ou `PUT /companies/{publicId}/access-mode`; o security só aplica.
-- `READ_ONLY`: o login funciona; `GET`, `HEAD`, `OPTIONS` e `QUERY` passam; qualquer outro método dá **403 `COMPANY_READ_ONLY`**, salvo caminho da lista de exceções ou método com `@ReadOnlySafe`. Vale para JWT e API key. Job interno não passa pelo filtro: use `CompanyAccessService.isWritable(companyId)`.
+- `READ_ONLY`: o login funciona; `GET`, `HEAD`, `OPTIONS` e `QUERY` passam; qualquer outro método dá **403 `COMPANY_READ_ONLY`**, salvo caminho da lista de exceções ou método com `@SgReadOnlySafe`. Vale para JWT e API key. Job interno não passa pelo filtro: use `CompanyAccessService.isWritable(companyId)`.
 - `DISABLED`: login, `select-company` e `refresh` nessa empresa dão **403 `COMPANY_DISABLED`**; as sessões existentes caem (401 `SESSION_REVOKED`). Voltar a `ACTIVE` exige novo login.
 - Toda mudança real revoga as sessões da empresa, audita e dispara `CompanyAccessChangedEvent` (síncrono, na transação; para e-mail use `@Observes(during = TransactionPhase.AFTER_SUCCESS)`).
 - Proteções: a empresa da plataforma nunca muda (409 `COMPANY_ACCESS_PLATFORM_PROTECTED`); a conta nunca fica com todas as empresas `DISABLED` (409 `COMPANY_ACCESS_ALL_DISABLED`); em `dedicated-database`, desligar a empresa do único ADMIN dá 409 `LAST_ADMIN_PROTECTED`.

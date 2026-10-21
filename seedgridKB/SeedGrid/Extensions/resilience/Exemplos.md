@@ -36,14 +36,14 @@ Fonte: `README.md`.
 
 ```java
 import java.time.temporal.ChronoUnit;
-import br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations.SeedGridRateLimit;
+import br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations.SgRateLimit;
 
 @Path("/auth")
 public class SignupResource {
 
     @POST
     @Path("/signup")
-    @SeedGridRateLimit(permits = 5, window = 1, windowUnit = ChronoUnit.MINUTES)
+    @SgRateLimit(permits = 5, window = 1, windowUnit = ChronoUnit.MINUTES)
     public Response signup(SignupRequest req) { ... }   // 5 req/min por IP
 }
 ```
@@ -55,10 +55,10 @@ Ao estourar: HTTP 429 com `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-Ra
 Fonte: `README.md`.
 
 ```java
-@SeedGridRateLimit(configKey = "login", permits = 100, window = 1, windowUnit = ChronoUnit.MINUTES)
+@SgRateLimit(configKey = "login", permits = 100, window = 1, windowUnit = ChronoUnit.MINUTES)
 public AuthResponseDTO login(LoginDTO dto) { ... }
 
-@SeedGridRateLimit(configKey = "export-create", permits = 10, window = 1, windowUnit = ChronoUnit.HOURS)
+@SgRateLimit(configKey = "export-create", permits = 10, window = 1, windowUnit = ChronoUnit.HOURS)
 public Response createExport(ExportRequest req) { ... }
 ```
 
@@ -76,7 +76,7 @@ Fonte: `README.adoc` § "Exemplo de Token Bucket".
 ```java
 import br.com.seedgrid.resilience.core.runtime.ratelimiter.enums.RateLimitAlgorithm;
 
-@SeedGridRateLimit(
+@SgRateLimit(
     permits = 10,
     window = 1,
     windowUnit = ChronoUnit.MINUTES,
@@ -96,23 +96,23 @@ Fonte: `README.adoc` § "Compartilhando cota com GROUP". Observe que `KeyScope` 
 ```java
 import br.com.seedgrid.resilience.core.runtime.circuitbreaker.enums.KeyScope;
 
-@SeedGridRateLimit(permits = 300, window = 1, windowUnit = ChronoUnit.MINUTES,
+@SgRateLimit(permits = 300, window = 1, windowUnit = ChronoUnit.MINUTES,
                    group = "email-provider", scope = KeyScope.GROUP)
 public void sendWelcomeEmail(...) { ... }
 
-@SeedGridRateLimit(permits = 300, window = 1, windowUnit = ChronoUnit.MINUTES,
+@SgRateLimit(permits = 300, window = 1, windowUnit = ChronoUnit.MINUTES,
                    group = "email-provider", scope = KeyScope.GROUP)
 public void sendResetEmail(...) { ... }
 ```
 
 ## 5. Contexto sem HTTP (jobs, consumers)
 
-Fonte: Javadoc de `SeedGridRateLimit#identity` e `README.adoc`.
+Fonte: Javadoc de `SgRateLimit#identity` e `README.adoc`.
 
 ```java
 import br.com.seedgrid.resilience.core.runtime.ratelimiter.spi.AnonymousIdentityResolver;
 
-@SeedGridRateLimit(permits = 10, window = 1, windowUnit = ChronoUnit.MINUTES,
+@SgRateLimit(permits = 10, window = 1, windowUnit = ChronoUnit.MINUTES,
                    identity = AnonymousIdentityResolver.class)
 public void consume(Message msg) { ... }
 ```
@@ -133,7 +133,7 @@ public class TenantIdentityResolver implements IdentityResolver {
     }
 }
 
-@SeedGridRateLimit(permits = 1000, window = 1, windowUnit = ChronoUnit.HOURS,
+@SgRateLimit(permits = 1000, window = 1, windowUnit = ChronoUnit.HOURS,
                    identity = TenantIdentityResolver.class)
 public Report generate(...) { ... }
 ```
@@ -170,12 +170,12 @@ ThreadLocalSeedGridInvocationContext.runWith(
 Fonte: `README.md`.
 
 ```java
-import br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations.SeedGridCircuitBreaker;
+import br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations.SgCircuitBreaker;
 
 @ApplicationScoped
 public class PaymentGateway {
 
-    @SeedGridCircuitBreaker(
+    @SgCircuitBreaker(
         name = "payments",
         failureRateThreshold = 50.0,
         minimumNumberOfCalls = 20,
@@ -210,7 +210,7 @@ public class CircuitOpenMapper implements ExceptionMapper<CircuitBreakerOpenExce
 ```java
 import br.com.seedgrid.resilience.core.runtime.circuitbreaker.enums.SlidingWindowType;
 
-@SeedGridCircuitBreaker(
+@SgCircuitBreaker(
     name = "erp",
     windowType = SlidingWindowType.TIME_BASED,
     slidingWindowSize = 60,                 // em TIME_BASED: 60 segundos (e até 60 registros)

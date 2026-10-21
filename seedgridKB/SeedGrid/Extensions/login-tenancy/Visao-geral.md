@@ -41,7 +41,7 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. Status `preview`.
 | `seedgrid-notification` (+ `-deployment`) | `2026.10.15` | catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral|notification]] |
 | `seedgrid-filemanagement` | `2026.07.08` | arquivos |
 | `seedgrid-privacy` | `2026.07.27` | mascaramento/criptografia de PII |
-| `seedgrid-resilience-core` | `2026.10.13` | `@SeedGridRateLimit` |
+| `seedgrid-resilience-core` | `2026.10.13` | `@SgRateLimit` |
 
 O **provider de billing** concreto (`BillingProvider`) não vem embarcado: o host precisa fornecer (ex.: `seedgrid-billing-stripe`) ou o boot falha (README; o teste usa `NoopBillingProvider`). Também empacota `quarkus-mongodb-client` como dependência opcional (README) para a auditoria MongoDB.
 

@@ -24,7 +24,7 @@ Fonte: `runtime/pom.xml` (coordenadas reais).
 </dependency>
 ```
 
-O host também precisa de: datasource PostgreSQL, um bean `CurrentUserProvider` (commons), um `UserContactProvider` (para o e-mail) e, para `@Audit` persistir, um provider de auditoria (ex. `seedgrid-audit-postgresql`) — ver [[SeedGrid/Extensions/audit/Visao-geral|audit]].
+O host também precisa de: datasource PostgreSQL, um bean `CurrentUserProvider` (commons), um `UserContactProvider` (para o e-mail) e, para `@SgAudit` persistir, um provider de auditoria (ex. `seedgrid-audit-postgresql`) — ver [[SeedGrid/Extensions/audit/Visao-geral|audit]].
 
 ## 2. Fluxo REST
 

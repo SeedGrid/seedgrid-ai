@@ -8,7 +8,7 @@ analisado-em: 2026-10-14
 
 # SeedGrid Audit (Quarkus) — Visão geral
 
-Trilha de auditoria declarativa: um método (ou classe) anotado com `@Audit` é interceptado; a extensão registra quem, o quê, quando, de onde (origin/IP/User-Agent) e o estado **antes/depois** da entidade, com mascaramento de dados pessoais delegado à lib `seedgrid-privacy`. Persistência plugável em PostgreSQL (JPA) ou MongoDB e API REST de leitura. **Confirmado** (`AuditInterceptor`, `README.md`).
+Trilha de auditoria declarativa: um método (ou classe) anotado com `@SgAudit` é interceptado; a extensão registra quem, o quê, quando, de onde (origin/IP/User-Agent) e o estado **antes/depois** da entidade, com mascaramento de dados pessoais delegado à lib `seedgrid-privacy`. Persistência plugável em PostgreSQL (JPA) ou MongoDB e API REST de leitura. **Confirmado** (`AuditInterceptor`, `README.md`).
 
 - Configuração: [[SeedGrid/Extensions/audit/Configuracao|Configuração do audit]]
 - Exemplos: [[SeedGrid/Extensions/audit/Exemplos|Exemplos do audit]]
@@ -41,7 +41,7 @@ O host adiciona **apenas** o módulo da strategy (`seedgrid-audit-postgresql` ou
 sequenceDiagram
     participant C as Chamador
     participant I as AuditInterceptor
-    participant M as Método @Audit
+    participant M as Método @SgAudit
     participant P as PersonalDataSanitizer (privacy)
     participant E as AuditEnricher
     participant S as AuditLogService (REQUIRES_NEW)
@@ -59,7 +59,7 @@ sequenceDiagram
     I->>S: persist(AuditLog)
 ```
 
-- Interceptor: `@Audit` é `@InterceptorBinding`; `AuditInterceptor` tem `@Priority(APPLICATION + 200)`. Lê a anotação no método ou, em fallback, na classe. **Confirmado**.
+- Interceptor: `@SgAudit` é `@InterceptorBinding`; `AuditInterceptor` tem `@Priority(APPLICATION + 200)`. Lê a anotação no método ou, em fallback, na classe. **Confirmado**.
 - Resolução do repositório: `entityFqcn` com pacote `.entities` → `.repositories` + sufixo `Repository`. Plano de lookup: `lookupMethod` → `lookups` → `publicId` (se herda `br.com.seedgrid.commons.persistence.BaseEntity`/`BaseEntityPanache`) → `@Id` compatível com o 1º argumento. Sem repository derivável, usa `EntityManager` (active-record). **Confirmado** (`AuditInterceptor#resolveLookupPlan`, `#findViaActiveRecord`).
 - Roteamento de persistência: `AuditPersistenceRouter` produz `AuditLogRepository`, `AuditLogUsersRepository`, `AuditLogEntitiesRepository` a partir do `AuditPersistenceProvider` cuja `strategy()` = `seedgrid.audit.persistence.strategy`. Sem provider → `IllegalStateException`. **Confirmado**.
 - `PostgreSqlAuditPersistenceProvider`: usa o `EntityManager` CDI do host se resolvível; senão cria um `EntityManagerFactory` standalone (`audit-pu`, `PGSimpleDataSource`, dialeto PostgreSQL) a partir de `seedgrid.audit.jpa.*`. **Confirmado**.
@@ -70,8 +70,8 @@ sequenceDiagram
 
 | Tipo | Símbolo | Descrição |
 |---|---|---|
-| Anotação | `br.com.seedgrid.audit.core.annotations.Audit` | `operation` (`AuditOperationEnum`, padrão `OTHER`), `description`, `entityFqcn` (obrigatório), `lookupMethod`, `lookups` (`AuditLookup[]`), `options` (`MaskRule[]` do privacy) |
-| Anotação | `AuditLookup` | `field()` |
+| Anotação | `br.com.seedgrid.audit.core.annotations.SgAudit` | `operation` (`AuditOperationEnum`, padrão `OTHER`), `description`, `entityFqcn` (obrigatório), `lookupMethod`, `lookups` (`SgAuditLookup[]`), `options` (`SgMaskRule[]` do privacy) |
+| Anotação | `SgAuditLookup` | `field()` |
 | Enum | `AuditOperationEnum` | `CREATE, UPDATE, DELETE, READ, OTHER` |
 | Enum | `AuditPersistenceStrategy` | `MONGODB, JPA` |
 | SPI | `core.spi.AuditPersistenceProvider` | liga strategy aos repositórios (fornecido pelos módulos de store) |

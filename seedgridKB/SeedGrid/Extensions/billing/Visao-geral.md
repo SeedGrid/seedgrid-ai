@@ -15,7 +15,7 @@ Assinaturas prontas para hosts Quarkus. Cobre planos, condições comerciais (te
 - Enums: [[SeedGrid/Extensions/billing/Enums|Enums do billing]]
 - Porte Rust: [[SeedGrid/Extensions/billing/Rust|Porte Rust]]
 
-> Segundo o README, "o host não conhece billing": ele adiciona a dependência e configura `seedgrid.billing.*`. Não escreve controller, entity, migration nem handler de webhook. Se cobra por uso, declara os contadores (`UsageMeterContributor`) e marca onde contar (`@ConsumesUsage`). **Confirmado** (README e `integration-tests`, que sobem um app sem nenhuma classe de billing própria).
+> Segundo o README, "o host não conhece billing": ele adiciona a dependência e configura `seedgrid.billing.*`. Não escreve controller, entity, migration nem handler de webhook. Se cobra por uso, declara os contadores (`UsageMeterContributor`) e marca onde contar (`@SgConsumesUsage`). **Confirmado** (README e `integration-tests`, que sobem um app sem nenhuma classe de billing própria).
 
 ## Módulos Maven e coordenadas
 
@@ -32,11 +32,11 @@ O groupId é sempre `br.com.seedgrid`. As features Quarkus são `seedgrid-billin
 
 | Artefato | Versão no pom | Para quê |
 |---|---|---|
-| `seedgrid-security` | 2026.10.08 | `Company`, `User`, `Permission`, `@PlatformScope`, `UserService.deactivateUserInCompany` |
+| `seedgrid-security` | 2026.10.08 | `Company`, `User`, `Permission`, `@SgPlatformScope`, `UserService.deactivateUserInCompany` |
 | `seedgrid-commons` | 2026.10.08 | `ApiExceptionExtension`, `ProblemType`, `BaseEntity` |
-| `seedgrid-audit-core` | 2026.09.25 | `@Audit` em serviços administrativos |
+| `seedgrid-audit-core` | 2026.09.25 | `@SgAudit` em serviços administrativos |
 | `seedgrid-privacy` | 2026.07.27 | dependência declarada (uso específico não investigado) |
-| `seedgrid-resilience-core` | 2026.07.08 | `@SeedGridRateLimit` no webhook, checkout e portal |
+| `seedgrid-resilience-core` | 2026.07.08 | `@SgRateLimit` no webhook, checkout e portal |
 | `seedgrid-notification-api` | 2026.10.08 (`seedgrid.notification.version`) | catálogo e publicação dos eventos `billing.*` |
 
 Também depende do Quarkus: `arc`, `hibernate-orm`, `jdbc-postgresql`, `flyway`, `rest-jackson`, `hibernate-validator` e `smallrye-openapi`.
@@ -63,7 +63,7 @@ Pacotes de `br.com.seedgrid.billing`:
 
 | Pacote | Conteúdo |
 |---|---|
-| `annotations` | `@ConsumesUsage`, `@RequiresPlanFeature` |
+| `annotations` | `@SgConsumesUsage`, `@SgRequiresPlanFeature` |
 | `configs` | `BillingConfig`, mais um `@ConfigMapping` por grupo e `BusinessTimeZone` |
 | `controllers` | `AdminPlan`, `AdminSubscription`, `AdminAccount`, `AdminBilling`, `Subscription`, `PlanCatalog`, `Usage`, `MeBilling`, `BillingWebhook`, `RestControllerPath` |
 | `filters` | `BillingApiToggleFilter` (api.enabled), `AccessGateFilter` (bloqueio geral), `BillingApiOpenApiFilter` |
@@ -73,15 +73,15 @@ Pacotes de `br.com.seedgrid.billing`:
 | `spis` (+`impl`) | pontos de extensão |
 | `notifications` | `BillingNotificationCatalog`, `BillingLifecycleNotificationObserver`, `UserAccessEmailObserver` |
 
-No **build**, o deployment coleta todo `@ConsumesUsage` e cria o bean sintético `ConsumesUsageSites`. No **startup**, `UsageMeterCatalog` recusa um contador não declarado e informa o método na mensagem. **Confirmado** (`SeedgridBillingProcessor#consumesUsageSites`).
+No **build**, o deployment coleta todo `@SgConsumesUsage` e cria o bean sintético `ConsumesUsageSites`. No **startup**, `UsageMeterCatalog` recusa um contador não declarado e informa o método na mensagem. **Confirmado** (`SeedgridBillingProcessor#consumesUsageSites`).
 
 Modelo: `Plan` 1:N `PlanTerm` 1:N `PlanTermMeter`. `Account` 1:N `Subscription` (N:1 `PlanTerm`) 1:N `BillingCycle` 1:N `BillingCycleMeter`. `Account` 1:N `Purchase`. **Confirmado** (`entities/`).
 
 ## APIs públicas e pontos de integração
 
 ### Anotações
-- `@ConsumesUsage(meter = "...", units = 1)`: checa antes da execução e contabiliza só se o método retornar normalmente. O `meter` é obrigatório.
-- `@RequiresPlanFeature(value = "PERMISSAO", message = "")`: responde 402 `FEATURE_NOT_IN_PLAN` (ou `TRIAL_EXPIRED`).
+- `@SgConsumesUsage(meter = "...", units = 1)`: checa antes da execução e contabiliza só se o método retornar normalmente. O `meter` é obrigatório.
+- `@SgRequiresPlanFeature(value = "PERMISSAO", message = "")`: responde 402 `FEATURE_NOT_IN_PLAN` (ou `TRIAL_EXPIRED`).
 
 ### SPIs (todas com default `@DefaultBean`, exceto o provider)
 | SPI | Default | Assinatura principal |
@@ -124,7 +124,7 @@ Modelo: `Plan` 1:N `PlanTerm` 1:N `PlanTermMeter`. `Account` 1:N `Subscription` 
 
 Os caminhos são **Confirmados** em `RestControllerPath`. As permissões vêm do README. Com `seedgrid.billing.api.enabled=false`, todos os prefixos exceto o webhook respondem 404 e somem do OpenAPI (`RestControllerPath.API_PREFIXES`).
 
-Rate limit via resilience (**Confirmado**, `@SeedGridRateLimit`):
+Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 
 | configKey | Endpoint | Limite |
 |---|---|---|

@@ -36,12 +36,12 @@ public class Customer {
 
     // cifrado, NÃO pesquisável (sem searchField)
     @Convert(converter = EncryptedFieldAttributeConverter.class)
-    @EncryptedField
+    @SgEncryptedField
     @Column(nullable = false, length = 512)
     private String name;
 
     @Convert(converter = EncryptedFieldAttributeConverter.class)
-    @EncryptedField(searchField = "emailHash", normalize = SearchNormalization.EMAIL)
+    @SgEncryptedField(searchField = "emailHash", normalize = SearchNormalization.EMAIL)
     @Column(nullable = false, length = 512)
     private String email;
 
@@ -49,7 +49,7 @@ public class Customer {
     private String emailHash;
 
     @Convert(converter = EncryptedFieldAttributeConverter.class)
-    @EncryptedField(searchField = "cpfHash", normalize = SearchNormalization.CANONICAL)
+    @SgEncryptedField(searchField = "cpfHash", normalize = SearchNormalization.CANONICAL)
     @Column(nullable = false, length = 512)
     private String cpf;
 
@@ -57,7 +57,7 @@ public class Customer {
     private String cpfHash;
 
     @Convert(converter = EncryptedFieldAttributeConverter.class)
-    @EncryptedField
+    @SgEncryptedField
     @Column(length = 512)
     private String phone;
 }
@@ -91,16 +91,16 @@ DTO de saída com regras de masking (fonte: `.../dto/CustomerResponse.java`):
 public class CustomerResponse {
     public Long id;
 
-    @PersonalData(type = MaskingStrategy.PARTIAL, maskWith = "4")
+    @SgPersonalData(type = MaskingStrategy.PARTIAL, maskWith = "4")
     public String name;
 
-    @PersonalData(type = MaskingStrategy.FULL)
+    @SgPersonalData(type = MaskingStrategy.FULL)
     public String email;
 
-    @PersonalData(type = MaskingStrategy.FORMAT, maskWith = "***.***.***-**")
+    @SgPersonalData(type = MaskingStrategy.FORMAT, maskWith = "***.***.***-**")
     public String cpf;
 
-    @PersonalData(type = MaskingStrategy.PARTIAL, maskWith = "4")
+    @SgPersonalData(type = MaskingStrategy.PARTIAL, maskWith = "4")
     public String phone;
 }
 ```
@@ -126,7 +126,7 @@ Fonte: `README.md` (comportamento confirmado em `EncryptedFieldListener#applyTo`
 ```java
 @Embeddable
 public class Contato {
-    @EncryptedField(searchField = "cpfHash", normalize = SearchNormalization.CANONICAL)
+    @SgEncryptedField(searchField = "cpfHash", normalize = SearchNormalization.CANONICAL)
     @Convert(converter = EncryptedFieldAttributeConverter.class)
     private String cpf;
 

@@ -26,14 +26,14 @@ Para MongoDB troque por `seedgrid-audit-mongodb`. Versão conforme pom no commit
 ## 2. Auditar CREATE/UPDATE (README)
 
 ```java
-import br.com.seedgrid.audit.core.annotations.Audit;
+import br.com.seedgrid.audit.core.annotations.SgAudit;
 import br.com.seedgrid.audit.core.enums.AuditOperationEnum;
 
 @ApplicationScoped
 public class UserService {
 
     @Transactional
-    @Audit(entityFqcn = "br.com.seuapp.entities.User",
+    @SgAudit(entityFqcn = "br.com.seuapp.entities.User",
            operation = AuditOperationEnum.CREATE,
            description = "Cria novo usuário")
     public User createUser(User user) {
@@ -41,7 +41,7 @@ public class UserService {
     }
 
     @Transactional
-    @Audit(entityFqcn = "br.com.seuapp.entities.User",
+    @SgAudit(entityFqcn = "br.com.seuapp.entities.User",
            operation = AuditOperationEnum.UPDATE,
            description = "Atualiza usuário")
     public User updateUser(Long id, User user) { // antes (lookup por @Id Long) + depois
@@ -55,15 +55,15 @@ O repository usado no lookup é derivado: `br.com.seuapp.entities.User` → `br.
 
 ```java
 // Por método do repository
-@Audit(entityFqcn = "br.com.seuapp.entities.LegacyPerson",
+@SgAudit(entityFqcn = "br.com.seuapp.entities.LegacyPerson",
        operation = AuditOperationEnum.READ,
        lookupMethod = "findByDocument")
 public LegacyPerson findByDocument(String document) { ... }
 
 // Por campos, na ordem dos argumentos: "tenantId = ?1 and publicId = ?2"
-@Audit(entityFqcn = "br.com.seuapp.entities.Customer",
+@SgAudit(entityFqcn = "br.com.seuapp.entities.Customer",
        operation = AuditOperationEnum.UPDATE,
-       lookups = { @AuditLookup(field = "tenantId"), @AuditLookup(field = "publicId") })
+       lookups = { @SgAuditLookup(field = "tenantId"), @SgAuditLookup(field = "publicId") })
 public Customer update(String tenantId, String publicId, Customer input) { ... }
 ```
 Usar `lookupMethod` e `lookups` juntos falha o build (`AuditProcessor`).
@@ -71,18 +71,18 @@ Usar `lookupMethod` e `lookups` juntos falha o build (`AuditProcessor`).
 ## 4. Mascaramento (delegado ao seedgrid-privacy)
 
 ```java
-import br.com.seedgrid.privacy.masking.MaskRule;
+import br.com.seedgrid.privacy.masking.SgMaskRule;
 import br.com.seedgrid.privacy.masking.MaskingStrategy;
-import br.com.seedgrid.privacy.masking.PersonalData;
+import br.com.seedgrid.privacy.masking.SgPersonalData;
 
 public class User {
-    @PersonalData(type = MaskingStrategy.PARTIAL, maskWith = "2")
+    @SgPersonalData(type = MaskingStrategy.PARTIAL, maskWith = "2")
     private String cpf;
 }
 
-@Audit(entityFqcn = "br.com.seuapp.entities.User",
+@SgAudit(entityFqcn = "br.com.seuapp.entities.User",
        operation = AuditOperationEnum.UPDATE,
-       options = { @MaskRule(field = "password", remove = true) })
+       options = { @SgMaskRule(field = "password", remove = true) })
 public User update(Long id, User u) { ... }
 ```
 Fonte: README e `AuditMaskingTest`. Detalhes das estratégias: [[SeedGrid/Extensions/privacy/Visao-geral|privacy]].

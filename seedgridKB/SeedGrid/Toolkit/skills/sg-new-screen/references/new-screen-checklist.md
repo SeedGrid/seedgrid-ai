@@ -6,7 +6,7 @@
       com ate 30 caracteres.
 - [ ] Permissoes vinculadas ao perfil `ADMIN`.
 - [ ] Endpoints com `@PermissionsAllowed` por acao.
-- [ ] Vendavel: `@RequiresPlanFeature` no endpoint + vinculo aos terms (trial e planos) na migration.
+- [ ] Vendavel: `@SgRequiresPlanFeature` no endpoint + vinculo aos terms (trial e planos) na migration.
 
 ## Front (`frontend/` ou `admin/`)
 

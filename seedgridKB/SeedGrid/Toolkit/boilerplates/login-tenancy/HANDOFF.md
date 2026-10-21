@@ -14,7 +14,7 @@ operacional** para retomar de onde parou).
 
 ## Atualizacao de 2026-09-28 — auditoria e adocao de AI pricing
 
-- A auditoria administrativa propria foi substituida por `@Audit` nos dois boilerplates.
+- A auditoria administrativa propria foi substituida por `@SgAudit` nos dois boilerplates.
   `AdminAuditEntryEntity`, `AdminAuditService` e `AdminAuditResource` foram removidos.
   O admin usa `/audit-logs` da extensao para consulta, eventos recentes e total do dashboard.
 - A tabela `admin_audit_entries` fica preservada como arquivo legado, sem novas escritas.
@@ -33,7 +33,7 @@ operacional** para retomar de onde parou).
 - `seedgrid-exchange:2026.09.12-SNAPSHOT` instalado e adotado nos dois backends.
   Foram removidos controllers, entidades, services, DTOs, scheduler e repositorios locais.
   A extension Exchange publica `exchange.rate-fetch-failed`; o subscriber instalado controla canal e destinatarios.
-  A extensao preserva `@Audit`, snapshots e remocao de URLs de origem das moedas;
+  A extensao preserva `@SgAudit`, snapshots e remocao de URLs de origem das moedas;
   pesquisa de cotacoes usa a PU da entidade (master no subdomain).
   Dados, migrations, rotas, permissoes e versoes da foundation preservados.
 - As secoes abaixo registram sessoes anteriores: referencias a entidades removidas, versoes

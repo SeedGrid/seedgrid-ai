@@ -1,6 +1,6 @@
 ---
 name: sg-new-screen
-description: Registrar uma tela, menu ou permissao nova no boilerplate SeedGrid (app do cliente `frontend/` ou admin da plataforma `admin/`) sem esquecer nenhum dos lugares que precisam ficar sincronizados - migration da permissao, item de menu, icone, item ativo, catalogo do editor de perfis e, se for vendavel por plano, o treeview de features do admin e o `@RequiresPlanFeature`. Use ao criar tela nova, acao nova numa tela existente, permissao nova, ou ao mover/renomear item de menu.
+description: Registrar uma tela, menu ou permissao nova no boilerplate SeedGrid (app do cliente `frontend/` ou admin da plataforma `admin/`) sem esquecer nenhum dos lugares que precisam ficar sincronizados - migration da permissao, item de menu, icone, item ativo, catalogo do editor de perfis e, se for vendavel por plano, o treeview de features do admin e o `@SgRequiresPlanFeature`. Use ao criar tela nova, acao nova numa tela existente, permissao nova, ou ao mover/renomear item de menu.
 ---
 
 # Tela nova no SeedGrid (menu + permissoes)
@@ -25,7 +25,7 @@ Detalhes e exemplos de codigo de cada passo em `references/new-screen-steps.md`.
    (`V3xxx__<assunto>.sql`, nunca editar uma ja aplicada): `insert into permissions` com o `audience` certo,
    vinculo ao perfil `ADMIN`, e - se vendavel - vinculo aos terms dos planos que a liberam.
 2. **Endpoint (backend)** - `@PermissionsAllowed("XXX_READ")` (e por acao). Se vendavel:
-   `@RequiresPlanFeature("XXX_READ")`.
+   `@SgRequiresPlanFeature("XXX_READ")`.
 3. **Menu** - item em `<app>/app/data.ts` (`navItems`) com `href`, `label` e `permission`.
 4. **Icone** - entrada no `iconByHref` de `<app>/app/components/Shell.tsx` (sem ela o item fica sem icone).
 5. **Item ativo** - se a tela tem sub-rotas (ex.: `_edit`), regra em `normalizeMenuPath` do mesmo `Shell.tsx`.

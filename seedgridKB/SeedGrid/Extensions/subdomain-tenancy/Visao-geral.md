@@ -49,7 +49,7 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 | `seedgrid-billing-core` | 2026.10.14-1 | Conta/trial por tenant, SPIs `CurrentAccountResolver`, `AccountMembersGateway` (`seedgrid-billing-stripe` só em `dependencyManagement`) |
 | `seedgrid-apikeys` | 2026.10.14 | Schema de API keys no master e nos tenants |
 | `seedgrid-notification` (+ `-deployment`) | 2026.10.15 | Catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
-| `seedgrid-resilience-core` | 2026.10.13 | `@SeedGridRateLimit` nos endpoints públicos |
+| `seedgrid-resilience-core` | 2026.10.13 | `@SgRateLimit` nos endpoints públicos |
 
 Quarkus no runtime: `arc`, `hibernate-orm(-panache)`, `jdbc-postgresql`, `agroal`, `flyway`, `rest-jackson`, `hibernate-validator`, `smallrye-openapi`, `opentelemetry`, `micrometer(-registry-prometheus)`, `smallrye-fault-tolerance`, `mailer`, `qute`, `quarkus-mongodb-client` (**optional**), além de `jbcrypt`. O deployment acrescenta `quarkus-scheduler-deployment`, `quarkus-virtual-threads-deployment` e `quarkus-grpc-common-deployment`.
 
@@ -96,7 +96,7 @@ flowchart LR
 Paths centralizados em `RestControllerPath`. Exceções mapeadas por `SubdomainTenancyExceptionExtension` (`ApiExceptionExtension` do commons): `TenantNotFoundException` → 404, `SubdomainAlreadyExistsException`/`CnpjAlreadyExistsException` → 409, `TenantAlreadyActiveException`/`ValidationCodeExpiredException` → 400.
 
 ### Anotações
-- `@MasterOnly` / `@TenantOnly` (`annotations/`): meta-anotações com `@Tag("master-only")`/`@Tag("tenant-only")` — **só documentação/OpenAPI**, não controlam acesso.
+- `@SgMasterOnly` / `@SgTenantOnly` (`annotations/`): meta-anotações com `@Tag("master-only")`/`@Tag("tenant-only")` — **só documentação/OpenAPI**, não controlam acesso.
 
 ### SPIs para o host
 

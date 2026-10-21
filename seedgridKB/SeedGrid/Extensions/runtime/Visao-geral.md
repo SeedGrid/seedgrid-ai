@@ -25,10 +25,10 @@ Ambas: versão do workspace `2026.10.14`, edição 2021, MSRV 1.82, sem features
 | gate `{config.key}` do `@Scheduled` | `#[scheduled(..., enabled_if = "ENV_VAR")]` | 1 |
 | `ConcurrentExecution.SKIP` / `PROCEED` | `concurrent = false` (padrão) / `true` | 1 |
 | `@DefaultBean` | `#[default_provider(spi, provider, priority)]` + `resolve_spi` (só metadados; maior prioridade vence) | 1 |
-| `@SeedGridRateLimit` | `#[rate_limit(...)]` → `seedgrid-resilience` | 2 |
-| `@SeedGridCircuitBreaker` | `#[circuit_breaker(...)]` → `seedgrid-resilience` | 2 |
-| `@Audit` | `#[audited(...)]` → `seedgrid-audit` | 3 |
-| `@PersonalData` / `@EncryptedField` | `#[derive(PersonalData)]` → `seedgrid-privacy` | — |
+| `@SgRateLimit` | `#[rate_limit(...)]` → `seedgrid-resilience` | 2 |
+| `@SgCircuitBreaker` | `#[circuit_breaker(...)]` → `seedgrid-resilience` | 2 |
+| `@SgAudit` | `#[audited(...)]` → `seedgrid-audit` | 3 |
+| `@SgPersonalData` / `@SgEncryptedField` | `#[derive(PersonalData)]` → `seedgrid-privacy` | — |
 | `Event<SgUserEvent>` + `@Observes(AFTER_SUCCESS)` | `events::UserEventSink` / `SgUserEvent` | — |
 | boot / shutdown do container | `bootstrap()`, `bootstrap_with(opts)` / `RuntimeHandles::shutdown()` | 1 |
 

@@ -47,7 +47,7 @@ Abreviações usadas na coluna Origem:
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.billing.api.enabled` | boolean | `true`/`false` | `true` | Não | Com `false`, os prefixos `/admin/plans`, `/admin/subscriptions`, `/admin/accounts`, `/admin/billing`, `/me/plans`, `/me/subscription`, `/me/usage` e `/me/billing` respondem 404 (pre-matching, antes da autenticação) e somem do OpenAPI. O webhook continua. | `BillingApiToggleFilter#filter` (lido por requisição) e `BillingApiOpenApiFilter` (no startup) | O login-tenancy liga este valor a `seedgrid.login-tenancy.modules.billing.enabled` (BILLING_INTEGRATION_GUIDE). O default fica no `@WithDefault` de propósito, para um tenancy poder definir o próprio default sem empatar em ordinal. | runtime | `core/configs/BillingApiConfig#enabled`; consumo `core/filters/BillingApiToggleFilter`, `core/filters/BillingApiOpenApiFilter#filterOpenAPI` |
-| `seedgrid.billing.access-gate.enabled` | boolean | `true`/`false` | `false` | Não | Liga o bloqueio **geral**: conta sem assinatura vigente recebe 402 em qualquer endpoint autenticado. Ficam liberados `OPTIONS`, anônimos, `/public`, `/q/`, `/me/plans`, `/me/subscription`, `/me/usage`, `/me/billing`, `allowed-paths`, `@PlatformScope` e usuário sem conta. | `AccessGateFilter#filter` (por requisição) | O bloqueio por funcionalidade (`@ConsumesUsage`/`@RequiresPlanFeature`) independe deste. | runtime | `core/configs/BillingAccessGateConfig#enabled`; consumo `core/filters/AccessGateFilter#filter` |
+| `seedgrid.billing.access-gate.enabled` | boolean | `true`/`false` | `false` | Não | Liga o bloqueio **geral**: conta sem assinatura vigente recebe 402 em qualquer endpoint autenticado. Ficam liberados `OPTIONS`, anônimos, `/public`, `/q/`, `/me/plans`, `/me/subscription`, `/me/usage`, `/me/billing`, `allowed-paths`, `@SgPlatformScope` e usuário sem conta. | `AccessGateFilter#filter` (por requisição) | O bloqueio por funcionalidade (`@SgConsumesUsage`/`@SgRequiresPlanFeature`) independe deste. | runtime | `core/configs/BillingAccessGateConfig#enabled`; consumo `core/filters/AccessGateFilter#filter` |
 | `seedgrid.billing.access-gate.block-past-due` | boolean | `true`/`false` | `true` | Não | Assinatura `PAST_DUE` também nega acesso no bloqueio geral (402 `PAYMENT_PAST_DUE`). | `SubscriptionAccessService#denialForAccess`, chamado só por `AccessGateFilter` | **Confirmado:** só tem efeito com `access-gate.enabled=true`. O **consumo** (`denialForConsumption`/`denialForAnyConsumption`) sempre bloqueia `PAST_DUE`, independentemente desta flag. | runtime | `core/configs/BillingAccessGateConfig#blockPastDue`; consumo `core/services/SubscriptionAccessService#denialForAccess` |
 | `seedgrid.billing.access-gate.allowed-paths` | Optional\<List\<String\>\> | prefixos separados por vírgula; casa por fronteira de segmento (`/me/plans` não casa `/me/plansx`); prefixo terminado em `/` casa qualquer coisa abaixo | — | Não | Prefixos extras sempre liberados pelo bloqueio geral. | `AccessGateFilter#allowedPaths`, `BillingPaths#startsWithAny` | Somados a `RestControllerPath.ACCESS_GATE_ALWAYS_ALLOWED`. | runtime | `core/configs/BillingAccessGateConfig#allowedPaths` |
 
@@ -66,7 +66,7 @@ Abreviações usadas na coluna Origem:
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.billing.trial.enabled` | boolean | `true`/`false` | `true` | Não | Conta nova sem nenhuma assinatura ganha uma assinatura `ACTIVE` no term do trial. | `TrialService#provisionTrial` | `core-mp`: `${SEEDGRID_BILLING_TRIAL_ENABLED:true}` | runtime | `core/configs/BillingTrialConfig#enabled`; consumo `core/services/TrialService#provisionTrial` |
 | `seedgrid.billing.trial.plan-term-public-id` | String | `publicId` de um term do plano TRIAL | `00000000-0000-0000-0000-0000000000a2` (semeado pela V505) | Não | Define o term usado no trial. Se não existir, `provisionTrial` só registra um WARN, enquanto `/admin/plans/trial` lança `TrialPlanNotFoundException`. Um term de outro plano também é recusado. | `TrialService#requireTrialTerm`, `#provisionTrial` | `core-mp`: `${SEEDGRID_BILLING_TRIAL_PLAN_TERM_PUBLIC_ID:...}` | runtime | `core/configs/BillingTrialConfig#planTermPublicId` |
-| `seedgrid.billing.feature-gate.exempt-company-ids` | Optional\<List\<Long\>\> | IDs internos de `Company`, separados por vírgula | — | Não | Companies nunca bloqueadas por `@RequiresPlanFeature`, por exemplo a empresa da plataforma. | `PlanFeatureGate#isExempt` | — | runtime | `core/configs/BillingFeatureGateConfig#exemptCompanyIds`; consumo `core/services/PlanFeatureGate` |
+| `seedgrid.billing.feature-gate.exempt-company-ids` | Optional\<List\<Long\>\> | IDs internos de `Company`, separados por vírgula | — | Não | Companies nunca bloqueadas por `@SgRequiresPlanFeature`, por exemplo a empresa da plataforma. | `PlanFeatureGate#isExempt` | — | runtime | `core/configs/BillingFeatureGateConfig#exemptCompanyIds`; consumo `core/services/PlanFeatureGate` |
 
 ### 2.5 Limites dos `additionalAttributes` e reconciliação
 
@@ -94,7 +94,7 @@ Abreviações usadas na coluna Origem:
 | Propriedade | Dona | Uso no billing | Origem |
 |---|---|---|---|
 | `seedgrid.show-dev-message` (default `false`) | commons/security (mesma chave em `ApiExceptionHandler` do commons) | `BillingApiExceptionExtension` inclui a mensagem de desenvolvedor no problem+json | `core/exceptions/BillingApiExceptionExtension.java` (construtor) |
-| `seedgrid.ratelimit.billing-webhook.{enabled,permits,window}` | resilience (`RateLimitService`) | ajusta o rate limit do webhook (default 300/min) | `core/controllers/BillingWebhookController` (`@SeedGridRateLimit(configKey="billing-webhook")`) |
+| `seedgrid.ratelimit.billing-webhook.{enabled,permits,window}` | resilience (`RateLimitService`) | ajusta o rate limit do webhook (default 300/min) | `core/controllers/BillingWebhookController` (`@SgRateLimit(configKey="billing-webhook")`) |
 | `seedgrid.ratelimit.billing-checkout.{enabled,permits,window}` | resilience | checkout (default 30/min) | `core/controllers/MeBillingController` |
 | `seedgrid.ratelimit.billing-portal.{enabled,permits,window}` | resilience | portal (default 30/min) | `core/controllers/MeBillingController` |
 | `seedgrid.security.encryption.key` 🔒, `seedgrid.security.default-company.*`, `seedgrid.security.jwt.*` | security | obrigatórias da security, que o billing passou a exigir transitivamente em 2026-09-10 | comentário em `seedgrid-billing-core/deployment/src/test/resources/application.properties` |
@@ -194,7 +194,7 @@ seedgrid.billing.trial.enabled=true
 #seedgrid.billing.trial.plan-term-public-id=<public-id-do-term-trial>
 
 # ---------- Feature gate ----------
-# IDs de Company nunca bloqueados por @RequiresPlanFeature (sem default).
+# IDs de Company nunca bloqueados por @SgRequiresPlanFeature (sem default).
 #seedgrid.billing.feature-gate.exempt-company-ids=<id-company-plataforma>
 
 # ---------- Limites de additionalAttributes (HTTP 400 ao exceder) ----------
@@ -229,7 +229,7 @@ seedgrid.billing.stripe.test-clock-enabled=true
 | Caso | Configuração |
 |---|---|
 | Bloquear tudo quando o trial acabar ou não houver pagamento | `seedgrid.billing.access-gate.enabled=true`. Para liberar telas extras, use `seedgrid.billing.access-gate.allowed-paths=/me/profile`. |
-| Bloquear só funcionalidades anotadas (padrão) | Não configure nada. Use `@ConsumesUsage`/`@RequiresPlanFeature`. |
+| Bloquear só funcionalidades anotadas (padrão) | Não configure nada. Use `@SgConsumesUsage`/`@SgRequiresPlanFeature`. |
 | Empresa da plataforma nunca bloqueada por plano | `seedgrid.billing.feature-gate.exempt-company-ids=<id>` |
 | Host com billing desligado (sem tabelas) | `seedgrid.billing.api.enabled=false`. No login-tenancy isso segue `seedgrid.login-tenancy.modules.billing.enabled`. |
 | subdomain-tenancy | `seedgrid.billing.persistence-unit=master` (já definido pela extension de tenancy) |

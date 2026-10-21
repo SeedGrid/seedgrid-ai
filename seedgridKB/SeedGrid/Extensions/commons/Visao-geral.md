@@ -62,7 +62,7 @@ Fonte: `java/seedgrid-quarkus-lib-commons/pom.xml`. **Confirmado.**
 | `BaseEntityPanache` | idem estendendo `PanacheEntityBase` (sem `active`) |
 | `BaseEntityAuditListener` / `BaseEntityPanacheAuditListener` | preenchem `create/updateUserPublicId` via `CurrentUserProvider`; em erro (sem contexto) gravam `null` |
 | `spi.CurrentUserProvider` + `spi.impl.DefaultCurrentUserProvider` (`@DefaultBean`) | default devolve publicId zero (`00000000-...`), e-mail/nome placeholders |
-| `embeddables.Address`, `embeddables.Contact` (`@Embeddable`) | campos com `@PersonalData` e, em `phone`/`cpf`/`whatsapp`/`email`, `@EncryptedField` + `@Convert(EncryptedFieldAttributeConverter)` com campo `*Hash` irmão (lib privacy) |
+| `embeddables.Address`, `embeddables.Contact` (`@Embeddable`) | campos com `@SgPersonalData` e, em `phone`/`cpf`/`whatsapp`/`email`, `@SgEncryptedField` + `@Convert(EncryptedFieldAttributeConverter)` com campo `*Hash` irmão (lib privacy) |
 | `SchemaUtils.schemaReady(EntityManager, historyTable)` | verifica se a última migração Flyway registrada teve sucesso (`to_regclass('public.<tabela>')`) |
 
 Colunas usadas por `BaseEntity`: `public_id`, `active`, `created_at`, `updated_at`, `create_user_public_id`, `update_user_public_id`. A lib **não** traz migrations; cada host/extension cria as colunas. **Confirmado.**

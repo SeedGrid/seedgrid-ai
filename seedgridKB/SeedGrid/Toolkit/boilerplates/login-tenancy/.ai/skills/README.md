@@ -12,7 +12,7 @@ This directory stores project-local skills for `seedgrid`.
   - use `SgInputTextSearch` for remote search when applicable
 - `seedgrid-new-screen`
   - checklist to add a screen, menu item or permission without forgetting a synced place
-  - covers migration (audience, ADMIN, plan terms), `@PermissionsAllowed`/`@RequiresPlanFeature`, `data.ts`,
+  - covers migration (audience, ADMIN, plan terms), `@PermissionsAllowed`/`@SgRequiresPlanFeature`, `data.ts`,
     `Shell` icon/active item, profile-editor catalogs and the sellable plan-feature tree
   - use whenever a screen, action or permission is created, moved or renamed
 - `stripe-best-practices`

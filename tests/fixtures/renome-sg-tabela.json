@@ -1,0 +1,35 @@
+{
+  "titulo": "Renome das annotations da plataforma para o prefixo Sg (Fase N, corte seco)",
+  "data": "2026-10-21",
+  "regras": [
+    "Corte seco: o nome antigo deixou de existir (sem @Deprecated nem alias).",
+    "Só annotations Java. Propriedades de configuração (seedgrid.*) NÃO mudam. O front não tem annotations (os SgXxx do TypeScript são componentes).",
+    "Ficam como estão: @Valid* (ValidEmail, ValidName, ValidPhone, ValidPassword, ValidBirthDate), @QUERY, @EvolutionProvider, @OfficialProvider, @Covers.",
+    "As annotations Sg novas do cache já nasceram com prefixo: @SgCacheResult, @SgCacheKey, @SgCacheInvalidate, @SgCacheInvalidateAll."
+  ],
+  "simbolos": [
+    {"antigo": "Audit", "novo": "SgAudit", "tipo": "annotation", "modulo": "audit-core", "pacote": "br.com.seedgrid.audit.core.annotations", "notas": "AMBIGUO: 'Audit' é palavra comum (ex.: 'Audit log', AuditService, AuditLog). Trocar só '@Audit' e o FQN '...annotations.Audit'."},
+    {"antigo": "AuditLookup", "novo": "SgAuditLookup", "tipo": "annotation", "modulo": "audit-core", "pacote": "br.com.seedgrid.audit.core.annotations", "notas": ""},
+    {"antigo": "ConsumesUsage", "novo": "SgConsumesUsage", "tipo": "annotation", "modulo": "billing-core", "pacote": "br.com.seedgrid.billing.annotations", "notas": ""},
+    {"antigo": "RequiresPlanFeature", "novo": "SgRequiresPlanFeature", "tipo": "annotation", "modulo": "billing-core", "pacote": "br.com.seedgrid.billing.annotations", "notas": ""},
+    {"antigo": "SeedGridRateLimit", "novo": "SgRateLimit", "tipo": "annotation", "modulo": "resilience", "pacote": "br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations", "notas": "O prefixo longo SeedGrid some. Classes como SeedGridRateLimitInterceptor, se existirem, não são annotation."},
+    {"antigo": "SeedGridCircuitBreaker", "novo": "SgCircuitBreaker", "tipo": "annotation", "modulo": "resilience", "pacote": "br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations", "notas": "Não confundir com io.smallrye.faulttolerance.CircuitBreaker."},
+    {"antigo": "MonoCompany", "novo": "SgMonoCompany", "tipo": "annotation", "modulo": "security", "pacote": "br.com.seedgrid.security.annotations", "notas": ""},
+    {"antigo": "PermitWithoutPasswordChange", "novo": "SgPermitWithoutPasswordChange", "tipo": "annotation", "modulo": "security", "pacote": "br.com.seedgrid.security.annotations", "notas": ""},
+    {"antigo": "PlatformScope", "novo": "SgPlatformScope", "tipo": "annotation", "modulo": "security", "pacote": "br.com.seedgrid.security.annotations", "notas": "Inclui a aninhada PlatformScope.Exempt -> SgPlatformScope.Exempt. AMBIGUO: a propriedade seedgrid.security.platform-scope.exempt e o texto 'escopo de plataforma' NÃO mudam."},
+    {"antigo": "ReadOnlySafe", "novo": "SgReadOnlySafe", "tipo": "annotation", "modulo": "security", "pacote": "br.com.seedgrid.security.annotations", "notas": "A expressão 'somente leitura' / READ_ONLY (modo de acesso da empresa) NÃO muda."},
+    {"antigo": "MasterOnly", "novo": "SgMasterOnly", "tipo": "annotation", "modulo": "subdomain-tenancy", "pacote": "br.com.seedgrid.subdomaintenancy.annotations", "notas": "A tag OpenAPI 'master-only' NÃO muda."},
+    {"antigo": "TenantOnly", "novo": "SgTenantOnly", "tipo": "annotation", "modulo": "subdomain-tenancy", "pacote": "br.com.seedgrid.subdomaintenancy.annotations", "notas": "A tag OpenAPI 'tenant-only' NÃO muda."},
+    {"antigo": "PersonalData", "novo": "SgPersonalData", "tipo": "annotation", "modulo": "lib-privacy", "pacote": "br.com.seedgrid.privacy.masking", "notas": "AMBIGUO: no Rust existe o derive PersonalData (e atributos snake_case) — NÃO trocar em texto de Rust; o Rust é tratado depois (Fase RP). PersonalDataResolver/PersonalDataSanitizer (classes) não mudam."},
+    {"antigo": "EncryptedField", "novo": "SgEncryptedField", "tipo": "annotation", "modulo": "lib-privacy", "pacote": "br.com.seedgrid.privacy", "notas": "EncryptedFieldListener/EncryptedFieldSearch (classes) não mudam."},
+    {"antigo": "MaskRule", "novo": "SgMaskRule", "tipo": "annotation", "modulo": "lib-privacy", "pacote": "br.com.seedgrid.privacy.masking", "notas": ""},
+    {"antigo": "ApiKeyAllowed", "novo": null, "tipo": "annotation", "modulo": "apikeys", "pacote": "br.com.seedgrid.apikeys.annotations", "notas": "REMOVIDA (código morto, nunca lida). Quem protege o endpoint é o @PermissionsAllowed nativo do Quarkus. Citações na KB (apikeys/Rust.md e afins) devem ser removidas, não renomeadas."}
+  ],
+  "ambiguos_para_excecao": [
+    "A palavra 'Audit' sozinha (Audit log, AuditService, AuditLog, 'auditoria').",
+    "O derive Rust PersonalData e atributos Rust (#[derive(PersonalData)], personal_data, encrypted).",
+    "Propriedade seedgrid.security.platform-scope.exempt e tags OpenAPI master-only / tenant-only.",
+    "CHANGELOG*: histórico e tabela antigo→novo citam os dois nomes de propósito."
+  ],
+  "guardiao_java": "seedgrid-quarkus-lib-cache/seedgrid-cache-core/src/test/java/br/com/seedgrid/cache/core/annotations/AnnotationSgPrefixGuardianTest.java (varre o monorepo Java, exemplos oficiais, boilerplate e o report; exceções: CHANGELOG*, .ai/.agents/.claude)"
+}

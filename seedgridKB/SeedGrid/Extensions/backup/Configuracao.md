@@ -140,7 +140,7 @@ Para chaves com hífen em grupo (`azure-blob.*`, `google-drive.*`) a forma env (
 | Propriedade | Motivo |
 |---|---|
 | `quarkus.datasource.*` (PostgreSQL) | entidades `ExportJob`/`ExportArtifact`, `information_schema`; obrigatória no host |
-| `seedgrid.ratelimit.export-create.enabled` / `.permits` / `.window` / `.min-spacing` (e demais chaves do rate limiter) | override do `@SeedGridRateLimit(configKey = "export-create", permits = 10, window = 1h)` do `POST /exports`; lidas por `RateLimitService` da extensão resilience — ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]] |
+| `seedgrid.ratelimit.export-create.enabled` / `.permits` / `.window` / `.min-spacing` (e demais chaves do rate limiter) | override do `@SgRateLimit(configKey = "export-create", permits = 10, window = 1h)` do `POST /exports`; lidas por `RateLimitService` da extensão resilience — ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]] |
 | `seedgrid.filemanagement.*` | config do storage subjacente (o teste define `seedgrid.filemanagement.filesystem.base-path`) — ver [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]] |
 
 ## 4. Propriedades usadas só em testes

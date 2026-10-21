@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Módulo front de **billing da plataforma** (backoffice de planos): CRUD de planos, faixas de preço (*terms*) com publicação/arquivamento e configuração do trial. É a visão de quem opera a plataforma; a visão do assinante é o [[SeedGrid/SeedGrid-components/modulos/fe-billing-user|fe-billing-user]]. Compõe sobre o motor de sessão do [[SeedGrid/SeedGrid-components/modulos/fe-security|fe-security]]. Parte dos [[SeedGrid/SeedGrid-components/modulos/Visao-geral|Módulos front]].
 
-Backend: [[SeedGrid/Extensions/billing/Visao-geral|extension billing]]. O README cita o `AdminPlanResource` do `seedgrid-report-api`; no monorepo, os mesmos paths `/admin/plans/**` estão em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src/main/java/br/com/seedgrid/billing/controllers/AdminPlanController.java` (`@MonoCompany`) (verbo e permissões em Limitações).
+Backend: [[SeedGrid/Extensions/billing/Visao-geral|extension billing]]. O README cita o `AdminPlanResource` do `seedgrid-report-api`; no monorepo, os mesmos paths `/admin/plans/**` estão em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src/main/java/br/com/seedgrid/billing/controllers/AdminPlanController.java` (`@SgMonoCompany`) (verbo e permissões em Limitações).
 
 ## Pacote
 

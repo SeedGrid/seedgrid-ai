@@ -49,7 +49,7 @@ end $$;
 @POST
 @Path("/reports")
 @PermissionsAllowed("REPORT_GENERATE")
-@RequiresPlanFeature("REPORT_READ")         // so' se vendavel: 402 FEATURE_NOT_IN_PLAN quando o plano nao libera
+@SgRequiresPlanFeature("REPORT_READ")         // so' se vendavel: 402 FEATURE_NOT_IN_PLAN quando o plano nao libera
 public Report generate(...) { ... }
 ```
 
@@ -111,4 +111,4 @@ Cliente - `frontend/lib/client-permission-tree.ts` (admin: `admin/lib/permission
 - O treeview "features liberadas neste plano" mostra todos os grupos do catalogo **menos** os de
   `NOT_SELLABLE_GROUPS` (`admin/app/plans/plan_terms/page.tsx`): hoje `seguranca`, `menu-usuario`.
   Grupo novo nao vendavel -> acrescentar o id ali.
-- Sem o `@RequiresPlanFeature` no endpoint, liberar ou nao no plano nao muda nada.
+- Sem o `@SgRequiresPlanFeature` no endpoint, liberar ou nao no plano nao muda nada.

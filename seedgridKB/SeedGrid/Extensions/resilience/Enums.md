@@ -14,9 +14,9 @@ Todos os enums ficam em `runtime/src/main/java/br/com/seedgrid/resilience/core/r
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| [[#RateLimitAlgorithm]] | `ratelimiter.enums` | `@SeedGridRateLimit#algorithm`, propriedade `seedgrid.ratelimit.{configKey}.algorithm` | Sim |
-| [[#KeyScope]] | `circuitbreaker.enums` (pacote do CB, mas só o rate limit usa) | `@SeedGridRateLimit#scope` | Sim |
-| [[#SlidingWindowType]] | `circuitbreaker.enums` | `@SeedGridCircuitBreaker#windowType`, `CircuitBreakerConfig`, propriedade `seedgrid.circuitbreaker.{name}.window-type` | Sim |
+| [[#RateLimitAlgorithm]] | `ratelimiter.enums` | `@SgRateLimit#algorithm`, propriedade `seedgrid.ratelimit.{configKey}.algorithm` | Sim |
+| [[#KeyScope]] | `circuitbreaker.enums` (pacote do CB, mas só o rate limit usa) | `@SgRateLimit#scope` | Sim |
+| [[#SlidingWindowType]] | `circuitbreaker.enums` | `@SgCircuitBreaker#windowType`, `CircuitBreakerConfig`, propriedade `seedgrid.circuitbreaker.{name}.window-type` | Sim |
 | [[#CircuitState]] | `circuitbreaker.enums` | `CircuitDecision#state()` (retorno do SPI `CircuitBreakerStore#allowCall`), estado persistido no cache | Sim |
 
 ## RateLimitAlgorithm
@@ -31,7 +31,7 @@ Arquivo: `ratelimiter/enums/RateLimitAlgorithm.java` — FQN `br.com.seedgrid.re
 
 - Campos/métodos: nenhum (enum puro). `switch` exaustivo sem `default` em `resolveStrategy`.
 - Serialização: não é persistido nem exposto em JSON. Na config é lido como `String` e convertido por `RateLimitAlgorithm.valueOf(v.trim().toUpperCase().replace('-', '_'))` — aceita `token-bucket`, `Token_Bucket` etc.; valor inválido lança `IllegalArgumentException` **na chamada** (não no boot). Só é lido quando a anotação tem `configKey`.
-- Usado em: [[SeedGrid/Extensions/resilience/Configuracao|`seedgrid.ratelimit.{configKey}.algorithm`]]; anotação `@SeedGridRateLimit`.
+- Usado em: [[SeedGrid/Extensions/resilience/Configuracao|`seedgrid.ratelimit.{configKey}.algorithm`]]; anotação `@SgRateLimit`.
 - Todas as constantes são tratadas.
 
 ## KeyScope
@@ -59,7 +59,7 @@ Arquivo: `circuitbreaker/enums/SlidingWindowType.java` — FQN `br.com.seedgrid.
 
 - Campos/métodos: nenhum. O código só compara com `TIME_BASED`; qualquer outro valor se comportaria como `COUNT_BASED`.
 - Serialização: não é persistido no estado do cache. Na config: `String` → `valueOf(v.trim().toUpperCase().replace('-', '_'))`; inválido → `IllegalArgumentException` na chamada. Só é lido quando a anotação tem `name` preenchido (`CircuitBreakerConfigResolver#resolve`).
-- Usado em: [[SeedGrid/Extensions/resilience/Configuracao|`seedgrid.circuitbreaker.{name}.window-type`]]; `@SeedGridCircuitBreaker#windowType`; `CircuitBreakerConfig`.
+- Usado em: [[SeedGrid/Extensions/resilience/Configuracao|`seedgrid.circuitbreaker.{name}.window-type`]]; `@SgCircuitBreaker#windowType`; `CircuitBreakerConfig`.
 
 ## CircuitState
 
@@ -88,7 +88,7 @@ A transição `CLOSED → OPEN` está em `CacheBackedCircuitBreakerStore` (`s.ci
 
 ## Internos
 
-Nenhum enum interno em `src/main`; os 4 acima são públicos. Enum do JDK no contrato: `java.time.temporal.ChronoUnit` em `@SeedGridRateLimit#windowUnit` (default `SECONDS`) e `#minSpacingUnit` (default `MILLIS`).
+Nenhum enum interno em `src/main`; os 4 acima são públicos. Enum do JDK no contrato: `java.time.temporal.ChronoUnit` em `@SgRateLimit#windowUnit` (default `SECONDS`) e `#minSpacingUnit` (default `MILLIS`).
 
 ## Notas Rust
 

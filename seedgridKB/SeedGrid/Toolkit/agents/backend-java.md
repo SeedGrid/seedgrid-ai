@@ -26,8 +26,8 @@ Implementar mudanças no backend Java com código coerente com o projeto, testes
 
 - Seguir `.ai/rules/backend-seedgrid.md` (comum: `publicId`, busca por prefixo, testes, guardiões, LGPD, auditoria) e `.ai/rules/backend-java-seedgrid.md` (estrutura, injeção por construtor, `BaseEntity`/Panache, Flyway, DTOs).
 - **Usar as extensions SeedGrid para acelerar**: antes de escrever autenticação, permissões, auditoria, notificação, billing, cache, storage ou criptografia, consulte o índice da KB (`.ai/brain/SeedGrid/Extensions/Indice.md`) e use a extension que já cobre a necessidade, configurada pelas propriedades documentadas. Só escreva código próprio quando nenhuma cobrir, e diga isso na entrega.
-- **LGPD**: dado pessoal (CPF, CNPJ de pessoa física, telefone, e-mail, endereço, data de nascimento) segue o `seedgrid-privacy`: `@EncryptedField` (com `searchField` quando precisar buscar) e mascaramento nas saídas de auditoria, log e API (`@PersonalData`/`@MaskRule`). Cadastro novo usa a skill `sg-crud-back`.
-- **Auditoria**: operações de criação, alteração e exclusão de entidades de negócio usam `@Audit` (extension `audit`).
+- **LGPD**: dado pessoal (CPF, CNPJ de pessoa física, telefone, e-mail, endereço, data de nascimento) segue o `seedgrid-privacy`: `@SgEncryptedField` (com `searchField` quando precisar buscar) e mascaramento nas saídas de auditoria, log e API (`@SgPersonalData`/`@SgMaskRule`). Cadastro novo usa a skill `sg-crud-back`.
+- **Auditoria**: operações de criação, alteração e exclusão de entidades de negócio usam `@SgAudit` (extension `audit`).
 - Seguir o framework, a estrutura de pacotes e as convenções já usadas no projeto; descobri-las lendo o código.
 - Manter compatibilidade de contratos públicos, salvo decisão explícita em contrário.
 - Validar entradas, tratar erros e evitar exposição de dados sensíveis em logs e respostas.

@@ -47,7 +47,7 @@ Dependências SeedGrid do runtime (versões do `runtime/pom.xml`):
 | `seedgrid-privacy` | 2026.07.27 | Mascaramento e criptografia opcional de PII — [[SeedGrid/Extensions/privacy/Visao-geral\|privacy]] |
 | `seedgrid-filemanagement` | 2026.07.08 | Storage de avatares — [[SeedGrid/Extensions/filemanagement/Visao-geral\|filemanagement]] |
 | `seedgrid-cache-core` | 2026.10.13 | Cache de permissões, sessões 2FA, códigos — [[SeedGrid/Extensions/cache/Visao-geral\|cache]] |
-| `seedgrid-resilience-core` | 2026.07.08 | `@SeedGridRateLimit` — [[SeedGrid/Extensions/resilience/Visao-geral\|resilience]] |
+| `seedgrid-resilience-core` | 2026.07.08 | `@SgRateLimit` — [[SeedGrid/Extensions/resilience/Visao-geral\|resilience]] |
 | `seedgrid-audit-core` / `seedgrid-audit-postgresql` | 2026.09.25 | Auditoria (o postgresql aparece com `scope test` no runtime) — [[SeedGrid/Extensions/audit/Visao-geral\|audit]] |
 | `seedgrid-notification-api` | 2026.10.09 | Evento `platform.email-delivery-failed` — [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
 | `seedgrid-whatsapp-core` (+ `-evolution`, `-whatsapp-cloud` como `optional`) | 2026.07.27 | `WhatsAppApi` para 2FA — [[SeedGrid/Extensions/whatsapp/Visao-geral\|whatsapp]] |
@@ -78,14 +78,14 @@ flowchart LR
   PRS --> DB[(PostgreSQL)]
 ```
 
-Filtros JAX-RS: `SelfEnterDisabledFilter` (`@PreMatching`, 404 quando self-enter desligado), `JwtAuthenticationFilter` (rota pública = path contém `/public/` ou `/q/`), `CompanyContextFilter`, `PasswordChangeRequiredFilter`, `PlatformScopeFilter` (anotação `@PlatformScope`).
+Filtros JAX-RS: `SelfEnterDisabledFilter` (`@PreMatching`, 404 quando self-enter desligado), `JwtAuthenticationFilter` (rota pública = path contém `/public/` ou `/q/`), `CompanyContextFilter`, `PasswordChangeRequiredFilter`, `PlatformScopeFilter` (anotação `@SgPlatformScope`).
 
 ## APIs públicas e pontos de integração
 
 ### Anotações
-- `@MonoCompany` — endpoint sem contexto de empresa (ignorado pelo `CompanyContextFilter`).
-- `@PermitWithoutPasswordChange` — liberado mesmo com troca de senha pendente.
-- `@PlatformScope(allowSelf=false)` + `@PlatformScope.Exempt` — restringe a usuários da empresa-plataforma.
+- `@SgMonoCompany` — endpoint sem contexto de empresa (ignorado pelo `CompanyContextFilter`).
+- `@SgPermitWithoutPasswordChange` — liberado mesmo com troca de senha pendente.
+- `@SgPlatformScope(allowSelf=false)` + `@SgPlatformScope.Exempt` — restringe a usuários da empresa-plataforma.
 - Usa as anotações Quarkus `@Authenticated`, `@RolesAllowed`, `@PermissionsAllowed`, `@PermitAll`.
 
 ### SPIs (`br.com.seedgrid.security.spi`, todas com implementação `@DefaultBean` em `spi/impl`)

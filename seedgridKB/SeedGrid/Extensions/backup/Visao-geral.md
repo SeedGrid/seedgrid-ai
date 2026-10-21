@@ -29,8 +29,8 @@ Extensão Quarkus para **exportação/backup de dados por tenant e por usuário*
 | Exporters embutidos `CSV_ZIP` e `SQL_DUMP_ZIP` (INSERTs por tabela) | `exporters/CsvZipExporter.java`, `exporters/SqlDumpZipExporter.java` |
 | Escopos `DOMAIN` (entidades JPA do metamodel) e `RAW` (tabelas do schema via `information_schema`) | `services/ExtractDataService.java`, `validate()` dos exporters |
 | Isolamento por dono: status/download/cancel/delete/listagem filtram por `createUserPublicId` → não-dono recebe 404 | `ExportService#findOwnedJob`, `ExportJobRepository#findByPublicIdAndUser` |
-| Rate limit no `POST /exports`: `@SeedGridRateLimit(configKey = "export-create", permits = 10, window = 1, windowUnit = HOURS)` | `ExportController#createExport` |
-| Auditoria `@Audit` em criar/cancelar/excluir/download | `ExportService` |
+| Rate limit no `POST /exports`: `@SgRateLimit(configKey = "export-create", permits = 10, window = 1, windowUnit = HOURS)` | `ExportController#createExport` |
+| Auditoria `@SgAudit` em criar/cancelar/excluir/download | `ExportService` |
 | Mapeamento de exceções: `ExportValidationException` → 422, `ExportException` → 500 (Problem Details) | `exceptions/BackupExceptionExtension.java` |
 
 ## Módulos Maven e coordenadas (Confirmado — `pom.xml`)
@@ -50,8 +50,8 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. O host depende só do runt
 | `seedgrid-commons` | 2026.10.08 | `CurrentUserProvider`, `UserContactProvider`, `BaseEntity`, `PageReq`, `SgUserEvent`, `ApiExceptionExtension` |
 | `seedgrid-privacy` | 2026.07.08 | fixa convergência de versão (comentário no pom) |
 | `seedgrid-filemanagement` | 2026.07.08 | `FileStorageRegistry`, `FileStorage`, `StorageKey`, `StorageOptions` |
-| `seedgrid-resilience-core` (+ `-deployment` no deployment) | 2026.07.08 | `@SeedGridRateLimit` |
-| `seedgrid-audit-core` | 2026.07.08 | `@Audit` (o provider de persistência de auditoria é escolha do host) |
+| `seedgrid-resilience-core` (+ `-deployment` no deployment) | 2026.07.08 | `@SgRateLimit` |
+| `seedgrid-audit-core` | 2026.07.08 | `@SgAudit` (o provider de persistência de auditoria é escolha do host) |
 | `seedgrid-audit-postgresql` | 2026.07.08 | **somente `test`** |
 
 Links: [[SeedGrid/Extensions/filemanagement/Visao-geral|filemanagement]], [[SeedGrid/Extensions/resilience/Visao-geral|resilience]], [[SeedGrid/Extensions/audit/Visao-geral|audit]], [[SeedGrid/Extensions/commons/Visao-geral|commons]].

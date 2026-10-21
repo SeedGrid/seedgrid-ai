@@ -76,7 +76,7 @@ public class ProductController {
     // 1 unidade de "requests"; só contabiliza se o método retornar
     @POST
     @Path("/work")
-    @ConsumesUsage(meter = ProductUsageMeters.REQUESTS)
+    @SgConsumesUsage(meter = ProductUsageMeters.REQUESTS)
     public Map<String, String> work() {
         return Map.of("status", "done");
     }
@@ -95,14 +95,14 @@ public class ProductController {
     // o plano vigente precisa liberar a permissão; senão 402 FEATURE_NOT_IN_PLAN
     @POST
     @Path("/premium")
-    @RequiresPlanFeature("IT_PREMIUM_REPORT")
+    @SgRequiresPlanFeature("IT_PREMIUM_REPORT")
     public Map<String, String> premium() {
         return Map.of("status", "premium");
     }
 }
 ```
 
-`@ConsumesUsage` também aceita `units` (padrão `1`). `@RequiresPlanFeature` aceita `message` para personalizar o `detail` do 402.
+`@SgConsumesUsage` também aceita `units` (padrão `1`). `@SgRequiresPlanFeature` aceita `message` para personalizar o `detail` do 402.
 
 ## 4. Validar `additionalAttributes` do term
 

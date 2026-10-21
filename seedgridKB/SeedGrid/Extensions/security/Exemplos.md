@@ -38,7 +38,7 @@ Configuração mínima: [[SeedGrid/Extensions/security/Configuracao|Configuraç�
 Anotações Quarkus + RBAC do security (README "Proteger endpoints"). As permissões vêm das roles do token via `RbacSecurityIdentityAugmentor`.
 
 ```java
-import br.com.seedgrid.security.annotations.MonoCompany;
+import br.com.seedgrid.security.annotations.SgMonoCompany;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.PermissionsAllowed;
 import jakarta.annotation.security.RolesAllowed;
@@ -57,7 +57,7 @@ public class RelatorioResource {   // ilustrativo
 
     @GET @Path("/sem-empresa")
     @Authenticated
-    @MonoCompany                              // CompanyContextFilter ignora
+    @SgMonoCompany                              // CompanyContextFilter ignora
     public String semEmpresa() { return "ok"; }
 }
 ```

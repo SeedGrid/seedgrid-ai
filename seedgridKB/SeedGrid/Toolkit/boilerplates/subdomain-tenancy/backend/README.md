@@ -76,7 +76,7 @@ JWT e segredos pelo ambiente; não copie `dev.env` ou chaves privadas para a ima
 ## Auditoria das operacoes administrativas
 
 Moedas (criar/editar/excluir), cotacoes (edicao/retry manual), lancamentos de precos de IA
-e aprovacoes/rejeicoes usam `@Audit` de `seedgrid-audit-core`. O host nao possui mais
+e aprovacoes/rejeicoes usam `@SgAudit` de `seedgrid-audit-core`. O host nao possui mais
 `AdminAuditEntryEntity`, `AdminAuditService` ou o endpoint `/admin/audit`.
 O admin consulta `/audit-logs` (incluindo o total paginado do dashboard), sempre com
 `LOG_READ` e com o escopo de leitura da extensao. URLs de origem sao removidas dos
@@ -130,7 +130,7 @@ Sem extrator concreto, vale o provider inerte da extensao.
 
 O host nao cria nem semeia tabelas ou dados de AI Pricing. Schema, migrations e catalogo
 padrao pertencem à extension; as entidades ficam na persistence unit `master`.
-Lancamento, aprovacao e rejeicao usam `@Audit` na extensao, com snapshots e remocao de
+Lancamento, aprovacao e rejeicao usam `@SgAudit` na extensao, com snapshots e remocao de
 `sourceUrl`; nao ha gravacao paralela pelo antigo sink administrativo.
 O teste `DomainAuditTest` cobre historico de precos, aprovacao, rejeicao, auditoria
 e recusa de revisao repetida, usando banco temporario.
@@ -156,7 +156,7 @@ somente na persistence unit `master`.
 A pesquisa paginada usa o EntityManager da PU configurada em `seedgrid.exchange.persistence-unit`.
 A extension de tenancy ja define `master` para as duas chaves.
 
-CRUD de moedas, edicao manual e retry manual usam `@Audit` dentro da extensao,
+CRUD de moedas, edicao manual e retry manual usam `@SgAudit` dentro da extensao,
 com repositorios para snapshots antes/depois; URLs de origem de moedas sao removidas.
 O antigo `ExchangeAuditSink` nao e chamado em paralelo. A edicao manual cancela
 retries pendentes. `DomainAuditTest` valida CRUD auditado, pesquisa na PU correta,

@@ -63,7 +63,7 @@ public class PaymentPlanRepository implements PanacheRepository<PaymentPlan> {
 
 O `PersonRepository` (entidade `entity/tenant/Person`) não usa `@PersistenceUnit` e, portanto, opera no banco do tenant corrente.
 
-## 4. Recurso visível só em tenants (`@TenantOnly`)
+## 4. Recurso visível só em tenants (`@SgTenantOnly`)
 
 Trecho real de `resource/PersonResource.java`:
 
@@ -74,7 +74,7 @@ Trecho real de `resource/PersonResource.java`:
 @Tag(name = "Persons", description = "Person management (TENANT)")
 @Tag(name = "tenant-only", description = "Endpoints disponíveis apenas no contexto de tenant")
 @SecurityRequirement(name = "bearerAuth")
-@TenantOnly
+@SgTenantOnly
 @Blocking
 public class PersonResource {
 
@@ -92,7 +92,7 @@ public class PersonResource {
 }
 ```
 
-`@TenantOnly`/`@MasterOnly` só afetam o spec servido em `GET /public/tenant-openapi`; não bloqueiam acesso. O exemplo repete `@Tag(name = "tenant-only")` nos métodos — o filtro (`TenantOpenApiController#copyIfAllowed`) trabalha por operação, então a repetição garante que a tag chegue em cada operação do spec (**Inferência**: não foi verificado se a meta-anotação na classe é propagada pelo SmallRye OpenAPI).
+`@SgTenantOnly`/`@SgMasterOnly` só afetam o spec servido em `GET /public/tenant-openapi`; não bloqueiam acesso. O exemplo repete `@Tag(name = "tenant-only")` nos métodos — o filtro (`TenantOpenApiController#copyIfAllowed`) trabalha por operação, então a repetição garante que a tag chegue em cada operação do spec (**Inferência**: não foi verificado se a meta-anotação na classe é propagada pelo SmallRye OpenAPI).
 
 ## 5. Sobrescrevendo uma SPI (PasswordEncoder)
 

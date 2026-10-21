@@ -7,7 +7,7 @@ Troque-os pelos do seu produto.
 | | O produto (este boilerplate) | O `seedgrid-billing` |
 |---|---|---|
 | Quais contadores existem | **declara** (`AppUsageMeters`) | junta e valida no startup |
-| O que é 1 unidade e quando contar | **conta** (`@ConsumesUsage` ou `UsageService.consume`) | — |
+| O que é 1 unidade e quando contar | **conta** (`@SgConsumesUsage` ou `UsageService.consume`) | — |
 | Franquia e preço do excedente de cada contador, por plano | — | guarda (`meters` do term) |
 | Saldo do ciclo, bloqueio 402, excedente no Stripe | — | faz tudo |
 
@@ -63,7 +63,7 @@ public class AppUsageMeters implements UsageMeterContributor {
 ```
 
 - **Código** (`[a-z0-9-]`, até 40 caracteres): é a identidade do contador **para sempre**. Vai para o banco
-  (`plan_term_meters`, `billing_cycle_meters`), para o `@ConsumesUsage` e para o nome do meter no Stripe
+  (`plan_term_meters`, `billing_cycle_meters`), para o `@SgConsumesUsage` e para o nome do meter no Stripe
   (`overage_<produto>_<código>`). Não reaproveite o código de um contador removido para outro significado,
   porque isso misturaria o histórico de cobrança dos dois.
 - **Label**: o nome nas telas e nas mensagens de erro ("Seu plano não inclui MB armazenados").
@@ -77,7 +77,7 @@ Quando **uma chamada vale uma quantidade fixa**, anote o método
 ```java
 @POST
 @Path("/requests")
-@ConsumesUsage(meter = AppUsageMeters.REQUESTS)   // units = 1 por padrão; units = 5 se valer 5
+@SgConsumesUsage(meter = AppUsageMeters.REQUESTS)   // units = 1 por padrão; units = 5 se valer 5
 public Map<String, Object> request() { ... }
 ```
 

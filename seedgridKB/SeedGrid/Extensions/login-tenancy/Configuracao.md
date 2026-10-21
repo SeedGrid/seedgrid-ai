@@ -17,7 +17,7 @@ Voltar: [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral do login-te
 | Prefixo próprio | `seedgrid.login-tenancy` (não existe `seedgrid.login-tenancy.enabled`) |
 | Classe de config | `java/seedgrid-quarkus-ext-login-tenancy/runtime/src/main/java/br/com/seedgrid/logintenancy/configs/LoginTenancyConfig.java` → `LoginTenancyConfig` (grupos `App`, `Database`, `Foundation.Status`, `Foundation.Health`, `Bootstrap`, `Bootstrap.Admin`, `Modules.Billing/Apikeys/Backup/Filemanagement`) |
 | Fachada | `LoginTenancyFoundationConfig` (bean CDI que os demais componentes consomem) |
-| Mecanismo | SmallRye `@ConfigMapping(prefix = "seedgrid.login-tenancy")` (registrado automaticamente; sem `ConfigMappingBuildItem`). Também: `@ConfigProperty` em `LoginTenancyMongoAuditDatabaseProducer`, `LoginTenancyMigrationService`, `LoginTenancyBootstrapService`, `LoginTenancySecurityBridge`, `LoginTenancyApiExceptionExtension`; `@SeedGridRateLimit(configKey=...)` no `LoginTenancySignupController`; defaults em `runtime/src/main/resources/META-INF/microprofile-config.properties` e `RunTimeConfigurationDefaultBuildItem` em `LoginTenancyProcessor`. |
+| Mecanismo | SmallRye `@ConfigMapping(prefix = "seedgrid.login-tenancy")` (registrado automaticamente; sem `ConfigMappingBuildItem`). Também: `@ConfigProperty` em `LoginTenancyMongoAuditDatabaseProducer`, `LoginTenancyMigrationService`, `LoginTenancyBootstrapService`, `LoginTenancySecurityBridge`, `LoginTenancyApiExceptionExtension`; `@SgRateLimit(configKey=...)` no `LoginTenancySignupController`; defaults em `runtime/src/main/resources/META-INF/microprofile-config.properties` e `RunTimeConfigurationDefaultBuildItem` em `LoginTenancyProcessor`. |
 | Fase | Runtime (todas as propriedades `seedgrid.login-tenancy.*`). Os defaults `quarkus.*` do `microprofile-config.properties` incluem chaves build-time do Quarkus. |
 
 Variáveis de ambiente: regra MicroProfile, ex.: `seedgrid.login-tenancy.app.code` → `SEEDGRID_LOGIN_TENANCY_APP_CODE` (o hífen vira `_`; o SmallRye resolve para a propriedade conhecida do mapping). O código não lê env diretamente.
@@ -80,7 +80,7 @@ A login-tenancy define os `configKey`; o mecanismo (`RateLimitService`) lê `ena
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
-| `seedgrid.ratelimit.signup.enabled` | `boolean` | `true`/`false` | `true` | Não | `false` desliga o limite do `POST /public/signup` | Anti-flood | — | Runtime | `@SeedGridRateLimit(configKey="signup")` em `LoginTenancySignupController#signup`; leitura em `RateLimitService#isEnabled` |
+| `seedgrid.ratelimit.signup.enabled` | `boolean` | `true`/`false` | `true` | Não | `false` desliga o limite do `POST /public/signup` | Anti-flood | — | Runtime | `@SgRateLimit(configKey="signup")` em `LoginTenancySignupController#signup`; leitura em `RateLimitService#isEnabled` |
 | `seedgrid.ratelimit.signup.permits` | `long` | ≥ 1 | `10` | Não | Pedidos por janela | Anti-flood | com `window` | Runtime | idem (`#resolvePermits`) |
 | `seedgrid.ratelimit.signup.window` | `Duration` | ISO-8601 | `PT1M` | Não | Janela | Anti-flood | com `permits` | Runtime | idem (`#resolveWindowMs`) |
 | `seedgrid.ratelimit.signup-email-exists.enabled` | `boolean` | `true`/`false` | `true` | Não | Limite de `GET /public/signup/email-exists` | Anti-enumeração | — | Runtime | `LoginTenancySignupController#emailExists` |

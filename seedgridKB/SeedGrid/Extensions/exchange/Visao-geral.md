@@ -72,10 +72,10 @@ Componente: `CurrencyRateFetchService`. Usa connect timeout de 10s e request de 
 ### SPI
 | SPI | Default | Assinatura |
 |---|---|---|
-| `ExchangeAuditSink` | `NoOpExchangeAuditSink` | `record(String actionType, String targetType, String targetId, String summary, Map<String,Object> details)`. O README o chama de legado: a auditoria é feita via `@Audit`. |
+| `ExchangeAuditSink` | `NoOpExchangeAuditSink` | `record(String actionType, String targetType, String targetId, String summary, Map<String,Object> details)`. O README o chama de legado: a auditoria é feita via `@SgAudit`. |
 
 ### Endpoints REST (`RestControllerPath`)
-Todos os resources são `@MonoCompany @Authenticated`.
+Todos os resources são `@SgMonoCompany @Authenticated`.
 
 | Método | Caminho | Permissão |
 |---|---|---|

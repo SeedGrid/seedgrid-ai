@@ -29,7 +29,7 @@ Legenda da coluna *Padrão*: "atributo X da anotação" significa que, sem a pro
 
 ### 2.1 Rate limit — `seedgrid.ratelimit.{configKey}.*`
 
-`{configKey}` = `SeedGridRateLimit#configKey()` (texto livre; cada valor é um limiter independente no que diz respeito à config — o contador no cache é definido pela chave `rl:...`, ver [[SeedGrid/Extensions/resilience/Visao-geral|Visão geral]]).
+`{configKey}` = `SgRateLimit#configKey()` (texto livre; cada valor é um limiter independente no que diz respeito à config — o contador no cache é definido pela chave `rl:...`, ver [[SeedGrid/Extensions/resilience/Visao-geral|Visão geral]]).
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,7 +44,7 @@ Atributos **somente na anotação** (sem property): `identity`, `group`, `scope`
 
 ### 2.2 Circuit breaker — `seedgrid.circuitbreaker.{name}.*`
 
-`{name}` = `SeedGridCircuitBreaker#name()`. Sem `name`, o circuito usa a assinatura do método como nome e **nenhuma** property é lida.
+`{name}` = `SgCircuitBreaker#name()`. Sem `name`, o circuito usa a assinatura do método como nome e **nenhuma** property é lida.
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
@@ -103,7 +103,7 @@ quarkus.redis.password=<SEGREDO:redis-password>
 ## 7. Configuração completa comentada
 
 ```properties
-# ===== Rate limit: um bloco por configKey usado em @SeedGridRateLimit(configKey = "...") =====
+# ===== Rate limit: um bloco por configKey usado em @SgRateLimit(configKey = "...") =====
 # liga/desliga o limiter (padrão true)
 seedgrid.ratelimit.<configKey>.enabled=true
 # requisições por janela (> 0)
@@ -117,7 +117,7 @@ seedgrid.ratelimit.<configKey>.burst-capacity=<n>
 # intervalo mínimo entre chamadas (ISO-8601) — ignorado em fixed-window
 seedgrid.ratelimit.<configKey>.min-spacing=<duration>
 
-# ===== Circuit breaker: um bloco por name usado em @SeedGridCircuitBreaker(name = "...") =====
+# ===== Circuit breaker: um bloco por name usado em @SgCircuitBreaker(name = "...") =====
 # liga/desliga o circuito (padrão true)
 seedgrid.circuitbreaker.<name>.enabled=true
 # tamanho da janela (nº de chamadas; em time-based também = segundos)

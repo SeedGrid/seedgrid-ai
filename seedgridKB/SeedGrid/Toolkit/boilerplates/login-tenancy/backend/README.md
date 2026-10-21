@@ -129,7 +129,7 @@ Para recomeçar do zero, dropar e recriar o banco é mais simples do que corrigi
 | | |
 |---|---|
 | Migrations do produto | `src/main/resources/db/migration/app/` (**não** em `db/migration/`) |
-| Cobrança por uso (contadores) | declarados em `billing/AppUsageMeters.java`, contados com `@ConsumesUsage(meter = ...)` ou `UsageService.consume(...)` — exemplo em `demo/UsageDemoResource.java`, planos em `V3001`; troque pelos do seu produto. Franquia e excedente são do plano, nas telas do admin. Guia: [`docs/contadores-de-uso.md`](../docs/contadores-de-uso.md) |
+| Cobrança por uso (contadores) | declarados em `billing/AppUsageMeters.java`, contados com `@SgConsumesUsage(meter = ...)` ou `UsageService.consume(...)` — exemplo em `demo/UsageDemoResource.java`, planos em `V3001`; troque pelos do seu produto. Franquia e excedente são do plano, nas telas do admin. Guia: [`docs/contadores-de-uso.md`](../docs/contadores-de-uso.md) |
 | Campos do produto no plano | `additionalAttributes` do term (exemplo: `supportLevel`), validado em `billing/AppPlanTermValidator.java` |
 | Plano, assinatura, checkout, contas e avisos de mudança de acesso | **não** implemente: endpoints e e-mails transacionais de `UserAccessEvent` são responsabilidade do `seedgrid-billing` |
 | Templates de e-mail | `src/main/resources/templates/` — inclui overrides em `templates/billing/{html,txt}/` para os avisos de acesso |
@@ -138,7 +138,7 @@ Para recomeçar do zero, dropar e recriar o banco é mais simples do que corrigi
 ## Auditoria das operacoes administrativas
 
 Moedas (criar/editar/excluir), cotacoes (edicao/retry manual), lancamentos de precos de IA
-e aprovacoes/rejeicoes usam `@Audit` de `seedgrid-audit-core`. O host nao possui mais
+e aprovacoes/rejeicoes usam `@SgAudit` de `seedgrid-audit-core`. O host nao possui mais
 `AdminAuditEntryEntity`, `AdminAuditService` ou o endpoint `/admin/audit`.
 O admin consulta `/audit-logs` (incluindo o total paginado do dashboard), sempre com
 `LOG_READ` e com o escopo de leitura da extensao. URLs de origem sao removidas dos
@@ -165,7 +165,7 @@ Nao usa `dev.env`, nao envia e-mails e nao modifica os bancos do produto.
 Valida registros CREATE/UPDATE/DELETE, snapshots antes/depois, autoria, remocao de
 credenciais e ausencia de evento de sucesso quando a operacao falha.
 
-A concessao de acesso a plataforma tambem usa `@Audit`, com lookup pelo e-mail do usuario.
+A concessao de acesso a plataforma tambem usa `@SgAudit`, com lookup pelo e-mail do usuario.
 O escopo de leitura/escrita por empresa continua fornecido pelo login-tenancy.
 
 
@@ -190,7 +190,7 @@ Sem extrator concreto, vale o provider inerte da extensao.
 O host nao cria nem semeia tabelas ou dados de AI Pricing e Exchange. Suas migrations,
 entidades e seeds padrao pertencem às extensions; no subdomain-tenancy, as entidades ficam na
 persistence unit `master`. O host mantém somente o seed de permissões usado pelas telas e endpoints.
-Lancamento, aprovacao e rejeicao usam `@Audit` na extensao, com snapshots e remocao de
+Lancamento, aprovacao e rejeicao usam `@SgAudit` na extensao, com snapshots e remocao de
 `sourceUrl`; nao ha gravacao paralela pelo antigo sink administrativo.
 O teste `DomainAuditTest` cobre historico de precos, aprovacao, rejeicao, auditoria
 e recusa de revisao repetida, usando banco temporario.
@@ -216,7 +216,7 @@ Schema e migrations de moedas e cotações pertencem à extension Exchange. No s
 A pesquisa paginada usa o EntityManager da PU configurada em `seedgrid.exchange.persistence-unit`.
 Vazia, vale a PU default (caso deste backend).
 
-CRUD de moedas, edicao manual e retry manual usam `@Audit` dentro da extensao,
+CRUD de moedas, edicao manual e retry manual usam `@SgAudit` dentro da extensao,
 com repositorios para snapshots antes/depois; URLs de origem de moedas sao removidas.
 O antigo `ExchangeAuditSink` nao e chamado em paralelo. A edicao manual cancela
 retries pendentes. `DomainAuditTest` valida CRUD auditado, pesquisa na PU correta,

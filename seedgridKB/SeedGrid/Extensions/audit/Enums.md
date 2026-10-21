@@ -14,7 +14,7 @@ Voltar: [[SeedGrid/Extensions/audit/Visao-geral|Visão geral do audit]] · [[See
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| [[#AuditOperationEnum]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/enums/AuditOperationEnum.java` | `@Audit(operation)`, `AuditLog.operation`, query param `operation` de `GET /audit-logs`, coluna `audit_log.operation`, campo Mongo `operation` | Sim |
+| [[#AuditOperationEnum]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/enums/AuditOperationEnum.java` | `@SgAudit(operation)`, `AuditLog.operation`, query param `operation` de `GET /audit-logs`, coluna `audit_log.operation`, campo Mongo `operation` | Sim |
 | [[#AuditPersistenceStrategy]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/configs/AuditPersistenceStrategy.java` | propriedade `seedgrid.audit.persistence.strategy`, SPI `AuditPersistenceProvider#strategy()` | Sim |
 
 ## AuditOperationEnum
@@ -27,9 +27,9 @@ FQN: `br.com.seedgrid.audit.core.enums.AuditOperationEnum`. Sem campos, construt
 | `UPDATE` | Alteração de entidade | Captura **antes** (lookup antes de `proceed()`) e **depois**. **Confirmado** | — |
 | `DELETE` | Exclusão de entidade | Captura só o estado **antes**. **Confirmado** | — |
 | `READ` | Leitura/consulta | Nenhum tratamento específico: registra o evento sem before/after. **Confirmado** | — |
-| `OTHER` | Operação genérica | Igual a `READ` (sem before/after). É o **padrão** de `@Audit(operation)`. **Confirmado** | — |
+| `OTHER` | Operação genérica | Igual a `READ` (sem before/after). É o **padrão** de `@SgAudit(operation)`. **Confirmado** | — |
 
-Comportamento comum: quando `@Audit(description)` está vazia, a descrição gravada é `operation.name()` (ex.: `UPDATE`). **Confirmado** (`AuditInterceptor#around`).
+Comportamento comum: quando `@SgAudit(description)` está vazia, a descrição gravada é `operation.name()` (ex.: `UPDATE`). **Confirmado** (`AuditInterceptor#around`).
 
 Serialização:
 - JSON (respostas de `/audit-logs`): nome da constante (Jackson padrão; sem `@JsonValue`). **Inferência** (nenhuma anotação Jackson no enum).
@@ -37,7 +37,7 @@ Serialização:
 - PostgreSQL: `@Enumerated(EnumType.STRING)` em `AuditLogEntity#operation`; coluna `operation VARCHAR(50)` (V300) **sem CHECK constraint** — o banco aceita qualquer texto, mas a aplicação só grava as 5 constantes. **Confirmado**.
 - MongoDB: campo `operation` do documento `MongoAuditLogDocument` (coleção `audit_logs`), gravado pelo codec POJO como o nome da constante. **Inferência** (sem codec próprio no módulo).
 
-Onde é usado: anotação `@Audit` ([[SeedGrid/Extensions/audit/Exemplos|Exemplos]]), filtro `AuditFilter#operation` (JPQL/Criteria em `JpaAuditRepositoryImpl`, filtro Mongo em `MongoAuditLogRepositoryImpl`), índice `idx_audit_log_operation_date`.
+Onde é usado: anotação `@SgAudit` ([[SeedGrid/Extensions/audit/Exemplos|Exemplos]]), filtro `AuditFilter#operation` (JPQL/Criteria em `JpaAuditRepositoryImpl`, filtro Mongo em `MongoAuditLogRepositoryImpl`), índice `idx_audit_log_operation_date`.
 
 ## AuditPersistenceStrategy
 

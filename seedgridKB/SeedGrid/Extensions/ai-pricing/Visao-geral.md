@@ -28,7 +28,7 @@ A feature Quarkus é `seedgrid-ai-pricing` (`SeedgridAiPricingProcessor`). O pro
 > Usa Java 21 e Quarkus **3.30.6**: o `pom.xml` do módulo sobrescreve `quarkus.platform.version` (o `seedgrid-parent` usa 3.30.8). O `runtime/src/main/resources/META-INF/quarkus-extension.properties` declara `deployment-artifact=...:1.0.0-SNAPSHOT`, valor fixo e não `${project.version}`. **Confirmado** nos arquivos; o impacto do valor fixo não foi verificado.
 
 ### Dependências
-- SeedGrid: `seedgrid-commons` 2026.10.08 (`BaseEntity`, `BusinessException`), `seedgrid-security` 2026.10.08 (`@PermissionsAllowed`, `@MonoCompany`), `seedgrid-audit-core` 2026.09.25 (`@Audit`) e `seedgrid-notification-api`.
+- SeedGrid: `seedgrid-commons` 2026.10.08 (`BaseEntity`, `BusinessException`), `seedgrid-security` 2026.10.08 (`@PermissionsAllowed`, `@SgMonoCompany`), `seedgrid-audit-core` 2026.09.25 (`@SgAudit`) e `seedgrid-notification-api`.
 - Quarkus: `arc`, `rest-jackson`, `hibernate-orm` (JPA puro, sem Panache), `scheduler`, `security` e `hibernate-validator`.
 - O motor `seedgrid-notification` é opcional no runtime e só entra como dependência de teste.
 
@@ -60,10 +60,10 @@ flowchart LR
 | SPI | Default | Assinatura |
 |---|---|---|
 | `AiPriceExtractor` | `NoOpAiPriceExtractor` (`@DefaultBean`, `isConfigured()=false`) | `String extract(String pricingPageContent) throws Exception`; `boolean isConfigured()` |
-| `AiPricingAuditSink` | `NoOpAiPricingAuditSink` | `record(String actionType, String targetType, String targetId, String summary, Map<String,Object> details)`. O README o chama de legado: a auditoria é feita via `@Audit`. |
+| `AiPricingAuditSink` | `NoOpAiPricingAuditSink` | `record(String actionType, String targetType, String targetId, String summary, Map<String,Object> details)`. O README o chama de legado: a auditoria é feita via `@SgAudit`. |
 
 ### Endpoints REST (`RestControllerPath`)
-Todos os resources são `@MonoCompany`.
+Todos os resources são `@SgMonoCompany`.
 
 | Método | Caminho | Permissão |
 |---|---|---|
