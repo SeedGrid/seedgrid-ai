@@ -58,6 +58,7 @@ Contagens de propriedades por extension e plataforma: [[SeedGrid/Extensions/Cata
 
 - [[SeedGrid/Extensions/Propriedades-para-subir|Propriedades para subir]]: o que o `dev.env` precisa e como gerar cada segredo.
 - [[SeedGrid/Extensions/Servicos-de-apoio|Serviços de apoio]]: imagem, porta e variáveis de cada serviço do `docker-compose.yml`.
+- [[SeedGrid/Extensions/Mailpit-uso|Usar o Mailpit]]: ver o e-mail do produto, apontar o SMTP, consultar a API em teste (Awaitility) e diagnosticar e-mail que não chega.
 
 ## Totais
 
