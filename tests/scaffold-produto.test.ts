@@ -394,3 +394,24 @@ test('o pom declara o SDK do provider de nuvem escolhido (optional na filemanage
   const pomFs = readFileSync(join(fs.destino, 'backend/pom.xml'), 'utf8');
   for (const e of todos) assert.ok(!pomFs.includes(e), `filesystem: ${e} nao devia entrar`);
 });
+
+test('o quadro de portas lista toda porta publicada do docker-compose gerado, com docs/COMO-RODAR.md e o campo portas', async () => {
+  const combinacoes = [
+    B2B,
+    { ...B2B, extensoes: ['exchange'], auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' },
+    SUB,
+  ];
+  for (const r of combinacoes) {
+    const { destino, saida } = await gerar(r);
+    assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
+    const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, { ports?: string[] }> };
+    const publicadas = Object.entries(compose.services).flatMap(([nome, s]) => (s.ports ?? []).map((p) => ({ nome, host: Number(String(p).split(':').slice(-2)[0]) })));
+    const portas = (saida as unknown as { portas: { servicos: { servico: string; portaHost: number }[]; apps: { porta: number }[] } }).portas;
+    assert.ok(publicadas.length > 0);
+    for (const p of publicadas) assert.ok(portas.servicos.some((s) => s.servico === p.nome && s.portaHost === p.host), `${r.modelo}: ${p.nome}:${p.host} fora do quadro`);
+    assert.equal(portas.servicos.length, publicadas.length);
+    assert.deepEqual(portas.apps.map((a) => a.porta), [8080, 3000, 3001]);
+    const md = ler(destino, 'docs/COMO-RODAR.md');
+    for (const p of publicadas) assert.ok(md.includes(`| ${p.nome} | ${p.host} |`), `${r.modelo}: COMO-RODAR sem ${p.nome}`);
+  }
+});

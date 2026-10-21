@@ -10,6 +10,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { carregar, resolver, SEGREDO } from './matriz.mjs';
 import { removerModulosFront, validarAlvos } from './modulos-front.mjs';
+import { comoRodarMd, lerPortas, quadro } from './portas.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ASSETS = join(AQUI, '..', 'assets');
@@ -413,13 +414,17 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   // 8. docs/ai
   for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
 
+  // 8b. quadro de portas e comandos, lido do docker-compose.yml gravado
+  const portas = lerPortas(destino);
+  gravar(destino, 'docs/COMO-RODAR.md', comoRodarMd(portas), criados);
+
   // 9. manifesto: as respostas e o hash de cada arquivo versionado gerado; e a base da reconfiguracao (nao tem segredo)
   const arquivos = {};
   for (const rel of [...new Set(criados)].sort()) if (!SEGREDO_LOCAL(rel) && existsSync(join(destino, rel))) arquivos[rel] = hashArquivo(join(destino, rel));
   gravar(destino, '.seedgrid/manifesto.json', JSON.stringify({ schema: 1, respostas, arquivos }, null, 2) + '\n', criados);
 
   const unicos = [...new Set(criados)].sort();
-  return { ok: true, criados: unicos, notas, pendencias: produto.pendencias, adicionadas: res.adicionadas, extensoes: res.extensoes, segredosGerados: Object.keys(matriz.segredos).filter((n) => [...r.env.values()].some((v) => String(v).includes(`\${segredo:${n}}`)) || nomes.includes(n)) };
+  return { ok: true, criados: unicos, portas, notas, pendencias: produto.pendencias, adicionadas: res.adicionadas, extensoes: res.extensoes, segredosGerados: Object.keys(matriz.segredos).filter((n) => [...r.env.values()].some((v) => String(v).includes(`\${segredo:${n}}`)) || nomes.includes(n)) };
 }
 
 // ---------- CLI ----------
@@ -453,6 +458,7 @@ async function main() {
     for (const n of out.notas) console.log(`  ${n}`);
     for (const p of out.pendencias) console.log(`  PENDENTE: ${p}`);
     console.log('Segredos gerados por produto (nao versionados): backend/dev.env, .env, backend/src/main/resources/keys/*.pem');
+    console.log('\n' + quadro(out.portas));
   }
   process.exit(out.ok ? 0 : 1);
 }
