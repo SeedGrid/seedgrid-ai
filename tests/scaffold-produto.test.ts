@@ -62,7 +62,7 @@ test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter 
   assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'true');
   assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED, 'false');
   const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, unknown> };
-  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit', 'minio', 'mongodb']);
+  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit', 'minio', 'mongodb', 'mockoon']);
   assert.ok(ler(destino, 'backend/pom.xml').includes('<artifactId>seedgrid-exchange</artifactId>'));
 });
 
@@ -70,7 +70,7 @@ test('auditoria Postgres + filesystem: sem mongodb e sem minio, pom sem o SDK do
   const { destino, saida } = await gerar(B2B);
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
   const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, unknown> };
-  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit']);
+  assert.deepEqual(Object.keys(compose.services), ['postgres', 'mailpit', 'mockoon']);
   const e = env(ler(destino, 'backend/dev.env'));
   assert.equal(e.SEEDGRID_AUDIT_PERSISTENCE_STRATEGY, 'jpa');
   assert.equal(e.SEEDGRID_AUDIT_MONGODB_URI, undefined);
@@ -413,5 +413,33 @@ test('o quadro de portas lista toda porta publicada do docker-compose gerado, co
     assert.deepEqual(portas.apps.map((a) => a.porta), [8080, 3000, 3001]);
     const md = ler(destino, 'docs/COMO-RODAR.md');
     for (const p of publicadas) assert.ok(md.includes(`| ${p.nome} | ${p.host} |`), `${r.modelo}: COMO-RODAR sem ${p.nome}`);
+  }
+});
+
+test('o produto traz o back falso (Mockoon): arquivo valido, servico no compose com perfil mock e dados ficticios', async () => {
+  for (const r of [B2B, SUB, OUTRO]) {
+    const { destino, saida } = await gerar(r);
+    assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
+    const arq = `mocks/${r.slug}.mockoon.json`;
+    assert.ok(saida.criados.includes(arq), `${r.modelo}: falta ${arq}`);
+    const env = JSON.parse(ler(destino, arq)) as { port: number; routes: { method: string; endpoint: string; uuid: string; responses: { body: string; statusCode: number }[] }[]; rootChildren: unknown[] };
+    assert.equal(env.port, 3100);
+    assert.equal(env.rootChildren.length, env.routes.length);
+    const chaves = env.routes.map((x) => `${x.method} ${x.endpoint}`);
+    assert.equal(new Set(chaves).size, chaves.length, 'rotas duplicadas');
+    assert.equal(new Set(env.routes.map((x) => x.uuid)).size, env.routes.length, 'uuid repetido');
+    assert.ok(chaves.includes('post public/auth/login') && chaves.includes('get me/permissions'));
+    for (const x of env.routes) for (const rs of x.responses) if (rs.body) JSON.parse(rs.body); // todo corpo e JSON valido
+    const login = JSON.parse(env.routes.find((x) => x.endpoint === 'public/auth/login')!.responses[0]!.body) as { status: string; token: string };
+    assert.equal(login.status, 'OK');
+    assert.equal(JSON.parse(Buffer.from(login.token.split('.')[1]!, 'base64url').toString('utf8')).audience, 'client');
+    assert.equal(chaves.includes('get me/security/users'), r.modelo !== 'outro');
+    const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, { image: string; profiles?: string[]; ports?: string[] }> };
+    const m = compose.services.mockoon!;
+    assert.ok(m.image.startsWith('mockoon/cli:9.'), 'imagem fixada');
+    assert.deepEqual(m.profiles, ['mock']);
+    assert.deepEqual(m.ports, ['127.0.0.1:3100:3100']);
+    const doProduto = ler(destino, arq);
+    assert.ok(!/@(gmail|hotmail)|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}/.test(doProduto), 'dado que parece real no mock');
   }
 });

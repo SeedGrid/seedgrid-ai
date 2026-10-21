@@ -11,6 +11,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { carregar, resolver, SEGREDO } from './matriz.mjs';
 import { removerModulosFront, validarAlvos } from './modulos-front.mjs';
 import { comoRodarMd, lerPortas, quadro } from './portas.mjs';
+import { composeMockoon, montarMockoon } from './mockoon.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ASSETS = join(AQUI, '..', 'assets');
@@ -272,7 +273,8 @@ function composeTexto({ slug, db, portas, servicos, buckets }) {
   };
   const volumes = { postgres: 'postgres_data', minio: 'minio_data', mongodb: 'mongo_data' };
   const ordem = ['postgres', 'mailpit', 'minio', 'mongodb'].filter((s) => servicos.includes(s));
-  return `name: ${slug}\n\n# Infraestrutura local. API, admin e frontend rodam no host. Senhas vem do .env desta pasta (nao versionado).\nservices:\n${ordem.map((s) => blocos[s]).join('\n')}\nvolumes:\n${ordem.filter((s) => volumes[s]).map((s) => `  ${volumes[s]}:`).join('\n')}\n`;
+  const mock = composeMockoon(slug);
+  return `name: ${slug}\n\n# Infraestrutura local. API, admin e frontend rodam no host. Senhas vem do .env desta pasta (nao versionado).\nservices:\n${[...ordem.map((s) => blocos[s]), mock].join('\n')}\nvolumes:\n${ordem.filter((s) => volumes[s]).map((s) => `  ${volumes[s]}:`).join('\n')}\n`;
 }
 
 // ---------- principal ----------
@@ -413,6 +415,10 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
 
   // 8. docs/ai
   for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
+
+  // 8a. back falso para o front (Mockoon): so autenticacao e perfil quando nao ha tenancy; com tenancy, usuarios e perfis tambem
+  const modulosMock = ['security', ...(R.modelo === 'outro' ? [] : ['usuarios-e-perfis'])];
+  gravar(destino, `mocks/${slug}.mockoon.json`, JSON.stringify(montarMockoon({ slug, nome: R.nome, modulos: modulosMock }), null, 2) + '\n', criados);
 
   // 8b. quadro de portas e comandos, lido do docker-compose.yml gravado
   const portas = lerPortas(destino);

@@ -71,7 +71,10 @@ export function lerPortas(destino) {
   ];
   if (existsSync(join(destino, 'admin', 'package.json'))) apps.push({ nome: 'admin (Next.js)', porta: 3001, url: 'http://localhost:3001', comando: 'cd admin && pnpm install && pnpm dev -p 3001' });
   const comandos = ['docker compose up -d   # sobe a infraestrutura abaixo (use "podman compose" se for o caso)'];
-  if (temPerfilMock) comandos.push('docker compose --profile mock up -d   # inclui o back falso para o front');
+  if (temPerfilMock) {
+    comandos.push('docker compose --profile mock up -d   # inclui o back falso (Mockoon, porta 3100) para o front');
+    comandos.push('SEEDGRID_APP_API_BASE_URL=http://127.0.0.1:3100 pnpm dev   # front contra o back falso (PowerShell: $env:SEEDGRID_APP_API_BASE_URL="http://127.0.0.1:3100"; pnpm dev)');
+  }
   return { servicos: linhasServico, apps, comandos };
 }
 

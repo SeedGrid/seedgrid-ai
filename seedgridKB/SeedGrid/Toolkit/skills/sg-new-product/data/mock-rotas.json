@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "descricao": "Rotas do back falso (Mockoon) por modulo. Os caminhos espelham o RestControllerPath das extensions (mesmo contrato do front: lib/security-paths.ts e lib/login-tenancy-paths.ts do boilerplate); os corpos seguem os tipos do front (lib/seedgrid-app-api.ts). Dados ficticios em pt-BR, ids fixos. Cobertura inicial: autenticacao, perfil, 2FA, usuarios e perfis (roles). Os demais modulos entram no retrofit (planos/transversal/2026-10-21-mockoon-nos-produtos-e-extensions.md, Fase 2).",
+  "tokens": { "audience": "client" },
+  "modulos": {
+    "security": [
+      { "metodo": "post", "caminho": "public/auth/login", "status": 200, "corpo": "$login", "doc": "Login: devolve token e refreshToken ficticios" },
+      { "metodo": "post", "caminho": "public/auth/refresh", "status": 200, "corpo": "$login", "doc": "Renova o par de tokens" },
+      { "metodo": "post", "caminho": "public/auth/forgot-password", "status": 200, "corpo": { "status": "OK" } },
+      { "metodo": "post", "caminho": "public/auth/reset-password", "status": 200, "corpo": { "status": "OK" } },
+      { "metodo": "post", "caminho": "public/auth/confirm-email", "status": 200, "corpo": { "status": "OK" } },
+      { "metodo": "get", "caminho": "2f/status", "status": 200, "corpo": { "enabled": false, "primaryMethod": null, "availableMethods": ["TOTP", "EMAIL"], "hasBackupCodes": false, "unusedBackupCodesCount": 0 } },
+      { "metodo": "get", "caminho": "me/permissions", "status": 200, "corpo": { "userPublicId": "11111111-1111-4111-8111-111111111111", "name": "Maria Exemplo", "isRoot": true, "hasAvatar": false, "roles": ["ADMIN"], "permissions": ["USER_READ", "USER_CREATE", "USER_UPDATE", "USER_DELETE", "ROLE_READ", "ROLE_CREATE", "ROLE_UPDATE", "ROLE_DELETE", "PERMISSION_READ"] } },
+      { "metodo": "get", "caminho": "me/profile", "status": 200, "corpo": { "publicId": "11111111-1111-4111-8111-111111111111", "name": "Maria Exemplo", "email": "maria@exemplo.com.br", "whatsApp": "+5511999990001", "avatarDataUrl": null } },
+      { "metodo": "put", "caminho": "me/profile", "status": 200, "corpo": { "publicId": "11111111-1111-4111-8111-111111111111", "name": "Maria Exemplo", "email": "maria@exemplo.com.br", "whatsApp": "+5511999990001", "avatarDataUrl": null } },
+      { "metodo": "put", "caminho": "me/profile/password", "status": 204, "corpo": "" },
+      { "metodo": "post", "caminho": "users/change-password", "status": 204, "corpo": "" }
+    ],
+    "usuarios-e-perfis": [
+      { "metodo": "get", "caminho": "me/security/users", "status": 200, "corpo": "$paginado:usuarios", "doc": "Lista de usuarios da conta" },
+      { "metodo": "get", "caminho": "me/security/roles", "status": 200, "corpo": "$paginado:perfis", "doc": "Lista de perfis (roles)" },
+      { "metodo": "get", "caminho": "me/security/roles/permissions", "status": 200, "corpo": "$permissoes", "doc": "Permissoes disponiveis para os perfis" }
+    ]
+  },
+  "dados": {
+    "usuarios": [
+      { "id": 1, "publicId": "11111111-1111-4111-8111-111111111111", "email": "maria@exemplo.com.br", "name": "Maria Exemplo", "whatsApp": "+5511999990001", "active": true, "root": true, "isRoot": true, "changePasswordRequired": false, "passwordExpiresAt": null, "twoFactorEnabled": false, "emailConfirmed": true, "companiesCount": 1, "createdAt": "2026-01-10T12:00:00Z", "updatedAt": "2026-01-10T12:00:00Z", "roles": [{ "publicId": "22222222-2222-4222-8222-222222222221", "name": "ADMIN", "description": "Acesso total" }] },
+      { "id": 2, "publicId": "11111111-1111-4111-8111-111111111112", "email": "joao@exemplo.com.br", "name": "Joao Exemplo", "whatsApp": "+5511999990002", "active": true, "root": false, "isRoot": false, "changePasswordRequired": false, "passwordExpiresAt": null, "twoFactorEnabled": false, "emailConfirmed": true, "companiesCount": 1, "createdAt": "2026-02-03T12:00:00Z", "updatedAt": "2026-02-03T12:00:00Z", "roles": [{ "publicId": "22222222-2222-4222-8222-222222222222", "name": "USER", "description": "Acesso padrao" }] },
+      { "id": 3, "publicId": "11111111-1111-4111-8111-111111111113", "email": "ana@exemplo.com.br", "name": "Ana Exemplo", "whatsApp": "+5511999990003", "active": false, "root": false, "isRoot": false, "changePasswordRequired": true, "passwordExpiresAt": null, "twoFactorEnabled": false, "emailConfirmed": false, "companiesCount": 1, "createdAt": "2026-03-15T12:00:00Z", "updatedAt": "2026-03-15T12:00:00Z", "roles": [] }
+    ],
+    "perfis": [
+      { "id": 1, "publicId": "22222222-2222-4222-8222-222222222221", "name": "ADMIN", "description": "Acesso total", "active": true, "forIntegration": false, "createdAt": "2026-01-01T12:00:00Z", "updatedAt": "2026-01-01T12:00:00Z", "permissionsCount": 2, "permissions": [{ "publicId": "33333333-3333-4333-8333-333333333331", "name": "USER_READ", "description": "Ver usuarios" }, { "publicId": "33333333-3333-4333-8333-333333333332", "name": "ROLE_READ", "description": "Ver perfis" }] },
+      { "id": 2, "publicId": "22222222-2222-4222-8222-222222222222", "name": "USER", "description": "Acesso padrao", "active": true, "forIntegration": false, "createdAt": "2026-01-01T12:00:00Z", "updatedAt": "2026-01-01T12:00:00Z", "permissionsCount": 1, "permissions": [{ "publicId": "33333333-3333-4333-8333-333333333331", "name": "USER_READ", "description": "Ver usuarios" }] }
+    ],
+    "permissoes": [
+      { "publicId": "33333333-3333-4333-8333-333333333331", "name": "USER_READ", "description": "Ver usuarios" },
+      { "publicId": "33333333-3333-4333-8333-333333333332", "name": "ROLE_READ", "description": "Ver perfis" }
+    ]
+  }
+}
