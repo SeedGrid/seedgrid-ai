@@ -79,7 +79,7 @@ Sem endpoints REST, eventos CDI ou migrations (as colunas cifradas/hash são do 
 
 ## Testes existentes (não executados)
 
-`src/test/java/br/com/seedgrid/privacy/`: `AesGcmCryptoServiceTest`, `HmacSha256SearchHashServiceTest`, `DefaultValueNormalizerTest`, `SearchNormalizationTest`, `EncryptedFieldAttributeConverterTest`, `EncryptedFieldListenerTest`, `EncryptionEnabledFlagTest`, `EncryptedFieldEmbeddableJpaTest` (JPA com `PrivacyTestPersistenceUnitInfo`, PostgreSQL/Testcontainers), `masking/{MaskingStrategy,PersonalDataMasker,PersonalDataResolver,PersonalDataSanitizer}Test`. ~57 anotações `@Test`/`@ParameterizedTest` por grep. Exemplo com testes de integração: `java/examples/seedgrid-privacy-example` (`CustomerEncryptionTest`, `PrivacySchemaBootstrapTest`). **Não executados.**
+`src/test/java/br/com/seedgrid/privacy/`: `AesGcmCryptoServiceTest`, `HmacSha256SearchHashServiceTest`, `DefaultValueNormalizerTest`, `SearchNormalizationTest`, `EncryptedFieldAttributeConverterTest`, `EncryptedFieldListenerTest`, `EncryptionEnabledFlagTest`, `EncryptedFieldEmbeddableJpaTest` (JPA com `PrivacyTestPersistenceUnitInfo`, PostgreSQL/Testcontainers), `masking/{MaskingStrategy,PersonalDataMasker,PersonalDataResolver,PersonalDataSanitizer}Test`. ~57 anotações `@Test`/`@ParameterizedTest` por grep. Exemplo com testes de integração: `platform-examples/examples/seedgrid-privacy-example` (`CustomerEncryptionTest`, `PrivacySchemaBootstrapTest`). **Não executados.**
 
 ## Limitações
 

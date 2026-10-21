@@ -27,7 +27,7 @@ Volta para: [[SeedGrid/Extensions/security/Rust|Porte Rust do security]] · Java
 O crate aceita **dois "dialetos"** de env, para que o mesmo `dev.env` funcione no Java e no Rust:
 
 - `SEEDGRID_SECURITY_*` — nomes usados no `META-INF/microprofile-config.properties` do módulo Java (`${SEEDGRID_SECURITY_...:default}`).
-- `SECURITY_*` — nomes usados nos `application.properties` dos **exemplos Java** (`java/examples/*/application.properties`, ex.: `seedgrid.security.jwt.issuer=${SECURITY_JWT_ISSUER:...}`) e nomes históricos do crate.
+- `SECURITY_*` — nomes usados nos `application.properties` dos **exemplos Java** (`platform-examples/examples/*/application.properties`, ex.: `seedgrid.security.jwt.issuer=${SECURITY_JWT_ISSUER:...}`) e nomes históricos do crate.
 
 Regra de precedência quando há os dois: **a primeira env listada que existir vence** (`env::var(a).or_else(|_| env::var(b))`). Na maioria dos grupos o nome `SEEDGRID_*` vem primeiro. Exceções importantes:
 

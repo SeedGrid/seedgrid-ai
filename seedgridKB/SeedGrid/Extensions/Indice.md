@@ -67,4 +67,4 @@ Contagens de propriedades por extension e plataforma: [[SeedGrid/Extensions/Cata
 
 ## Não documentados como extension
 
-`seedgrid-parent` (POM pai), `seedgrid-cli`, `seedgrid-components-mcp` e `java/examples/*`: ver [[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]].
+`seedgrid-parent` (POM pai), `seedgrid-cli`, `seedgrid-components-mcp` e `platform-examples/examples/*`: ver [[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]].

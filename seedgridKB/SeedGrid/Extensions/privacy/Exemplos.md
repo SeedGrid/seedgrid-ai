@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, library, privacy, exemplos]
-fonte: java/seedgrid-quarkus-lib-privacy, java/examples/seedgrid-privacy-example
+fonte: java/seedgrid-quarkus-lib-privacy, platform-examples/examples/seedgrid-privacy-example
 branch: main
 commit: 79f8b03eeb
 analisado-em: 2026-10-14
@@ -22,7 +22,7 @@ Voltar: [[SeedGrid/Extensions/privacy/Visao-geral|Visão geral do privacy]] · [
 
 ## Entidade com campos cifrados e pesquisáveis (exemplo real)
 
-Fonte: `java/examples/seedgrid-privacy-example/src/main/java/br/com/seedgrid/privacyexample/entity/Customer.java` (Lombok `@Getter/@Setter/@NoArgsConstructor` omitidos).
+Fonte: `platform-examples/examples/seedgrid-privacy-example/src/main/java/br/com/seedgrid/privacyexample/entity/Customer.java` (Lombok `@Getter/@Setter/@NoArgsConstructor` omitidos).
 
 ```java
 @Entity

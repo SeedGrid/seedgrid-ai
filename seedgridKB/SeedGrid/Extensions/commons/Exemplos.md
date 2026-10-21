@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Voltar: [[SeedGrid/Extensions/commons/Visao-geral|Visão geral do commons]] · [[SeedGrid/Extensions/commons/Configuracao|Configuração do commons]]
 
-Não há projeto em `java/examples` para o commons; os exemplos abaixo seguem o `README.md` e as assinaturas reais do código.
+Não há projeto em `platform-examples` para o commons; os exemplos abaixo seguem o `README.md` e as assinaturas reais do código.
 
 ## Dependência
 

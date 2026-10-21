@@ -184,6 +184,7 @@
         "data/matriz-produto.schema.json",
         "scripts/matriz.mjs",
         "scripts/modulos-front.mjs",
+        "scripts/portas.mjs",
         "scripts/reconfigurar.mjs",
         "scripts/scaffold-produto.mjs",
         "assets/admin.Dockerfile.tpl",

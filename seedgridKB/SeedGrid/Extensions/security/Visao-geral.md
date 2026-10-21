@@ -123,7 +123,7 @@ Filtros JAX-RS: `SelfEnterDisabledFilter` (`@PreMatching`, 404 quando self-enter
 
 ## Testes
 
-`runtime/src/test/java/br/com/seedgrid/security/` — ~50 classes: `@QuarkusTest` com Postgres via Testcontainers (`PostgreSqlTestResourceLifecycleManager`) cobrindo auth, refresh com janela de graça, 2FA, self-enter (vários profiles: desligado, só público, só convite, auto-aprovação, sem default-role, TTL curto), bootstrap (ligado/desligado), política de senha, audience de permissões, escopo de plataforma, memberships, atributos adicionais, PII cifrada; unitários de `JsonAttributeLimits/Merger`, `EmailDeliveryAlertService`, `DefaultEmailService`, resolvers. O exemplo `java/examples/seedgrid-security-example` tem `CompanyScopedTokenT1Test` e `SecuritySchemaBootstrapTest`. **Não executados.**
+`runtime/src/test/java/br/com/seedgrid/security/` — ~50 classes: `@QuarkusTest` com Postgres via Testcontainers (`PostgreSqlTestResourceLifecycleManager`) cobrindo auth, refresh com janela de graça, 2FA, self-enter (vários profiles: desligado, só público, só convite, auto-aprovação, sem default-role, TTL curto), bootstrap (ligado/desligado), política de senha, audience de permissões, escopo de plataforma, memberships, atributos adicionais, PII cifrada; unitários de `JsonAttributeLimits/Merger`, `EmailDeliveryAlertService`, `DefaultEmailService`, resolvers. O exemplo `platform-examples/examples/seedgrid-security-example` tem `CompanyScopedTokenT1Test` e `SecuritySchemaBootstrapTest`. **Não executados.**
 
 ## Limitações
 

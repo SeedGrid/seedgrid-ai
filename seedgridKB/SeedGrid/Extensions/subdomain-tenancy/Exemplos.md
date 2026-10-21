@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, subdomain-tenancy, exemplos]
-fonte: java/seedgrid-quarkus-ext-subdomain-tenancy, java/examples/seedgrid-subdomain-tenancy-example
+fonte: java/seedgrid-quarkus-ext-subdomain-tenancy, platform-examples/examples/seedgrid-subdomain-tenancy-example
 branch: main
 commit: fe62530a29
 analisado-em: 2026-10-14
@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Visão geral: [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|Visão geral do subdomain-tenancy]] · Catálogo de propriedades: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuração do subdomain-tenancy]] · [[SeedGrid/Extensions/subdomain-tenancy/Rust|Porte Rust]]
 
-Fontes: app de exemplo `java/examples/seedgrid-subdomain-tenancy-example` (repositório git próprio, commit `cd83edd` — fora da tabela de commits da análise), `README.md` da extension e o código do runtime (commit `fe62530a29`).
+Fontes: app de exemplo `platform-examples/examples/seedgrid-subdomain-tenancy-example` (repositório git próprio, commit `cd83edd` — fora da tabela de commits da análise), `README.md` da extension e o código do runtime (commit `fe62530a29`).
 
 ## 1. Dependência
 
@@ -26,7 +26,7 @@ O exemplo usa a propriedade `seedgrid.subdomain-tenancy.version` (`2026.10.13` n
 
 ## 2. Configuração do host (trecho real do exemplo)
 
-`java/examples/seedgrid-subdomain-tenancy-example/src/main/resources/application.properties` — segredos substituídos por placeholders e só com as chaves que têm efeito:
+`platform-examples/examples/seedgrid-subdomain-tenancy-example/src/main/resources/application.properties` — segredos substituídos por placeholders e só com as chaves que têm efeito:
 
 ```properties
 # Entidades do app somadas às da lib (reaproveita as chaves da extension)

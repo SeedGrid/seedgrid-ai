@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, library, filemanagement, exemplos]
-fonte: java/seedgrid-quarkus-lib-filemanagement, java/examples/seedgrid-filemanagement-example
+fonte: java/seedgrid-quarkus-lib-filemanagement, platform-examples/examples/seedgrid-filemanagement-example
 branch: main
 commit: 35c89c7cf7
 analisado-em: 2026-10-14
@@ -23,7 +23,7 @@ Voltar: [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral do fileman
 
 ## Fachada com backend configurável (exemplo real)
 
-Fonte: `java/examples/seedgrid-filemanagement-example/src/main/java/br/com/seedgrid/filemanagementexample/service/DocumentStorageService.java`.
+Fonte: `platform-examples/examples/seedgrid-filemanagement-example/src/main/java/br/com/seedgrid/filemanagementexample/service/DocumentStorageService.java`.
 
 ```java
 @ApplicationScoped

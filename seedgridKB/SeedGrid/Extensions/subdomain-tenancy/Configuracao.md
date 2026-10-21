@@ -207,7 +207,7 @@ As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."
 | `seedgrid.security.encryption.key` 🔒, `seedgrid.security.default-company.cnpj/corporate-name/trade-name` | valores de teste | Exigidos pelo security |
 | `seedgrid.privacy.encryption.enabled`, `seedgrid.privacy.crypto.key` 🔒, `seedgrid.privacy.search.key` 🔒 | perfil `EncryptionOnProfile` | — |
 
-O app de exemplo (`java/examples/seedgrid-subdomain-tenancy-example`) usa, além das acima, `product-prefix=${PRODUCT_PREFIX:kb}`, `tenant.datasource.jdbc.url/username/password` via `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_*` (env vars **criadas pelo exemplo**, não pela lib) e `seedgrid.security.bootstrap.enabled=false`.
+O app de exemplo (`platform-examples/examples/seedgrid-subdomain-tenancy-example`) usa, além das acima, `product-prefix=${PRODUCT_PREFIX:kb}`, `tenant.datasource.jdbc.url/username/password` via `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_*` (env vars **criadas pelo exemplo**, não pela lib) e `seedgrid.security.bootstrap.enabled=false`.
 
 ## 5. Aliases, obsoletas e renomeações
 

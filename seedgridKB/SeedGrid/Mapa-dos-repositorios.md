@@ -38,7 +38,7 @@ Estado na análise (2026-10-14): todos na branch `main` e **sem alterações loc
 | `seedgrid-quarkus-lib-privacy` | Library | 2026.07.27 | `79f8b03eeb` | 2026-09-25 | [[SeedGrid/Extensions/privacy/Visao-geral\|privacy]] |
 | `seedgrid-cli` | CLI em **Rust** (apesar de estar em `java/`) que gera apps Next.js com módulos `@seedgrid/fe-*` | — | `d3184afc84` | 2026-07-20 | não documentado em detalhe |
 | `seedgrid-components-mcp` | Servidor MCP (TypeScript) que expõe o catálogo de componentes | — | `69fe6a1cf8` | 2026-09-17 | não documentado em detalhe |
-| `examples/*` (12 apps) | Apps de exemplo, cada um com `.git` próprio | — | não registrados | — | usados como fonte de exemplos |
+| `seedgrid-platform-examples` (repositório próprio, `examples/*`, 12 apps) | Apps de exemplo públicos, um por extension, com `infra/compose.yml` | — | https://github.com/SeedGrid/platform-examples.git | — | única pasta de exemplos; fonte dos exemplos da KB |
 
 ### Rust (`rust/`) — workspace único
 

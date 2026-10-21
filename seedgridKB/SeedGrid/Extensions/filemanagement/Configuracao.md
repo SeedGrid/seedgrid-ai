@@ -89,14 +89,14 @@ Como os nomes abaixo são **chaves do mapa**, não propriedades MP, não existem
 
 ## 3. Propriedades de frameworks
 
-Nenhuma exigida. Não é necessário `quarkus.index-dependency.*`: o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `java/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
+Nenhuma exigida. Não é necessário `quarkus.index-dependency.*`: o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `platform-examples/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
 
 ## 4. Propriedades só de testes/exemplos
 
 | Propriedade | Onde | Observação |
 |---|---|---|
 | `quarkus.log.level`, `quarkus.log.category."br.com.seedgrid".level` | idem | logging de teste |
-| `app.storage.type` (default `filesystem` no `@ConfigProperty`), `app.storage.filesystem.base-path` | `java/examples/seedgrid-filemanagement-example` → `DocumentStorageService` | propriedades **do exemplo**, que montam o mapa `Map.of("base-path", basePath)` |
+| `app.storage.type` (default `filesystem` no `@ConfigProperty`), `app.storage.filesystem.base-path` | `platform-examples/examples/seedgrid-filemanagement-example` → `DocumentStorageService` | propriedades **do exemplo**, que montam o mapa `Map.of("base-path", basePath)` |
 
 ## 5. Aliases, obsoletas, renomeações
 

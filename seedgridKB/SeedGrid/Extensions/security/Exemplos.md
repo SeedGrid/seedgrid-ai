@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, security, exemplos]
-fonte: java/seedgrid-quarkus-ext-security; java/examples/seedgrid-security-example
+fonte: java/seedgrid-quarkus-ext-security; platform-examples/examples/seedgrid-security-example
 branch: main
 commit: 450735386e
 analisado-em: 2026-10-14
@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Ver também: [[SeedGrid/Extensions/security/Visao-geral|Visão geral do security]] · [[SeedGrid/Extensions/security/Configuracao|Configuração do security]] · [[SeedGrid/Extensions/security/Rust|Porte Rust]]
 
-Fontes: assinaturas lidas em `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/seedgrid/security/spi/*.java`; testes em `runtime/src/test/java/br/com/seedgrid/security/`; `README.md` da extension; exemplo `java/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`, depende de `seedgrid-security:2026.09.25`). Exemplos marcados *ilustrativo* combinam a API real com lógica de negócio fictícia.
+Fontes: assinaturas lidas em `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/seedgrid/security/spi/*.java`; testes em `runtime/src/test/java/br/com/seedgrid/security/`; `README.md` da extension; exemplo `platform-examples/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`, depende de `seedgrid-security:2026.09.25`). Exemplos marcados *ilustrativo* combinam a API real com lógica de negócio fictícia.
 
 ## 1. Dependência
 
@@ -197,7 +197,7 @@ Outros: `SelfEnterInviteAutoApproveProfile` (`invite-needs-approval=false`), `Se
 
 ## 6. Trecho de `application.properties` do exemplo
 
-De `java/examples/seedgrid-security-example/src/main/resources/application.properties` (segredos substituídos por placeholders):
+De `platform-examples/examples/seedgrid-security-example/src/main/resources/application.properties` (segredos substituídos por placeholders):
 
 ```properties
 seedgrid.security.2f.enabled=true

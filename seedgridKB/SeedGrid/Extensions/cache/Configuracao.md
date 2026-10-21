@@ -56,7 +56,7 @@ Variáveis de ambiente para o alias (ex.: `SEEDGRID_CACHE_HOSTS`): **Inferência
 | `quarkus.redis.*` | Continua aceita como fallback do alias (compatibilidade) | `SeedGridCacheConfigRelocateInterceptor` |
 | `quarkus.arc.selected-alternatives` | Usada nos testes para habilitar o provider (`...SeedGridCacheRedis` etc.). Em apps normais os providers já são alternativas habilitadas por `@Priority(1)` — **Inferência** | `seedgrid-cache-*/src/test/resources/application.properties` |
 | `quarkus.redis.devservices.enabled` | Desligada nos testes para provar o relocate. Também poderia ser escrita como `seedgrid.cache.devservices.enabled` pelo alias — **Inferência** (propriedade build-time; depende de o interceptor estar ativo no build, não testado) | idem |
-| `quarkus.index-dependency.*` | **Não** necessária: `seedgrid-cache-core` empacota `META-INF/jandex.idx` (`jandex-maven-plugin` nos poms) | `pom.xml`; comentário em `java/examples/seedgrid-cache-example/src/main/resources/application.properties` |
+| `quarkus.index-dependency.*` | **Não** necessária: `seedgrid-cache-core` empacota `META-INF/jandex.idx` (`jandex-maven-plugin` nos poms) | `pom.xml`; comentário em `platform-examples/examples/seedgrid-cache-example/src/main/resources/application.properties` |
 
 ## 4. Propriedades só de testes/exemplos
 
@@ -65,7 +65,7 @@ Variáveis de ambiente para o alias (ex.: `SEEDGRID_CACHE_HOSTS`): **Inferência
 | `quarkus.redis.devservices.enabled=false` | `seedgrid-cache-{redis,valkey,dragonfly}/src/test/resources/application.properties` | garante que só `seedgrid.cache.hosts` configure o client |
 | `quarkus.arc.selected-alternatives=<provider>` | idem | habilita o provider testado |
 | `seedgrid.cache.hosts` (dinâmica, URL do container) | `*AliasTestResource#start()` | injetada pelo test resource |
-| `seedgrid.cache.example.item-ttl` (`Duration`, default `PT30S` no `@ConfigProperty`) | `java/examples/seedgrid-cache-example` → `CatalogService` | **propriedade do exemplo, não da lib** (apesar do prefixo); não é relocada |
+| `seedgrid.cache.example.item-ttl` (`Duration`, default `PT30S` no `@ConfigProperty`) | `platform-examples/examples/seedgrid-cache-example` → `CatalogService` | **propriedade do exemplo, não da lib** (apesar do prefixo); não é relocada |
 
 ## 5. Aliases, obsoletas, renomeações
 

@@ -324,7 +324,7 @@ Recomendadas/exigidas para o host (README e `application.properties` de teste):
 | `seedgrid.security.self-enter.*`, `seedgrid.security.2f.*`, `seedgrid.security.bootstrap.enabled`, `seedgrid.security.first-admin-user.*`, `seedgrid.security.default-company.*` | Profiles `SelfEnter*Profile`, `BootstrapDisabledProfile`, `FirstAdminBootstrapProfile` | Variações por cenário |
 | `seedgrid.privacy.encryption.enabled`, `seedgrid.privacy.crypto.key`, `seedgrid.privacy.search.key` | `EncryptedFieldsSecurityTest` | Teste de PII cifrada |
 
-O exemplo `java/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`) usa nomes de env diferentes (`SECURITY_JWT_ISSUER`, `SECURITY_MAILER_FROM`…) via expressões no seu `application.properties` — são escolhas do exemplo, não aliases da extension.
+O exemplo `platform-examples/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`) usa nomes de env diferentes (`SECURITY_JWT_ISSUER`, `SECURITY_MAILER_FROM`…) via expressões no seu `application.properties` — são escolhas do exemplo, não aliases da extension.
 
 ---
 

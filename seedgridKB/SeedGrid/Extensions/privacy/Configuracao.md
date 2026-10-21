@@ -38,14 +38,14 @@ Variáveis de ambiente pela regra MP (**Inferência**, leitura por nome exato): 
 
 | Propriedade | Situação | Origem |
 |---|---|---|
-| `quarkus.hibernate-orm.packages` incluindo `br.com.seedgrid.privacy` | Usada no exemplo, com o comentário de que o pacote da lib contém o converter e o listener referenciados por `@Convert`/`@EntityListeners`. Necessidade só quando o host restringe `packages` — **Inferência** | `java/examples/seedgrid-privacy-example/src/main/resources/application.properties` |
+| `quarkus.hibernate-orm.packages` incluindo `br.com.seedgrid.privacy` | Usada no exemplo, com o comentário de que o pacote da lib contém o converter e o listener referenciados por `@Convert`/`@EntityListeners`. Necessidade só quando o host restringe `packages` — **Inferência** | `platform-examples/examples/seedgrid-privacy-example/src/main/resources/application.properties` |
 | `quarkus.datasource.*`, `quarkus.flyway.*` | Do host (a lib não traz migrations; colunas cifradas precisam comportar `v1:iv:ciphertext`, o exemplo usa `length = 512`; hash `length = 64`) | exemplo `Customer` + `V1000__create_customers.sql` |
 
 ## 4. Propriedades só de testes/exemplos
 
 | Propriedade | Onde | Observação |
 |---|---|---|
-| `seedgrid.privacy.encryption.enabled=true`, `seedgrid.privacy.crypto.key`, `seedgrid.privacy.search.key` | `java/examples/seedgrid-privacy-example/src/{main,test}/resources/application.properties` | O exemplo define as três propriedades (com valores default fictícios na expansão `${SEEDGRID_CRYPTO_KEY:...}`) |
+| `seedgrid.privacy.encryption.enabled=true`, `seedgrid.privacy.crypto.key`, `seedgrid.privacy.search.key` | `platform-examples/examples/seedgrid-privacy-example/src/{main,test}/resources/application.properties` | O exemplo define as três propriedades (com valores default fictícios na expansão `${SEEDGRID_CRYPTO_KEY:...}`) |
 | (nenhuma) | testes da própria lib | usam `CryptoProvider.setEncryptionEnabledForTests`/`resetForTests` e construtores package-private com serviços injetados |
 
 ## 5. Aliases, obsoletas, renomeações

@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, library, cache, exemplos]
-fonte: java/seedgrid-quarkus-lib-cache, java/examples/seedgrid-cache-example
+fonte: java/seedgrid-quarkus-lib-cache, platform-examples/examples/seedgrid-cache-example
 branch: main
 commit: 14bd916a09
 analisado-em: 2026-10-14
@@ -59,7 +59,7 @@ String result = cache.withLock("job:import", Duration.ofSeconds(30), () -> {
 
 ## Cache-aside (exemplo real)
 
-Fonte: `java/examples/seedgrid-cache-example/src/main/java/br/com/seedgrid/cacheexample/service/CatalogService.java` (trecho).
+Fonte: `platform-examples/examples/seedgrid-cache-example/src/main/java/br/com/seedgrid/cacheexample/service/CatalogService.java` (trecho).
 
 ```java
 @ApplicationScoped
