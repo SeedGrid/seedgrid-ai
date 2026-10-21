@@ -13,7 +13,7 @@ const FINALIDADE = [
   [/mongo-express/i, () => 'interface web do MongoDB'],
   [/mongo/i, () => 'banco MongoDB'],
   [/pgadmin/i, () => 'interface web do PostgreSQL (pgAdmin)'],
-  [/mockoon/i, (c) => (c === 3001 ? 'back falso (Mockoon) com dados ficticios' : 'back falso (Mockoon)')],
+  [/mockoon/i, () => 'back falso (Mockoon) com dados ficticios; sem UI web, edite o JSON no aplicativo desktop'],
 ];
 
 function finalidade(imagem, nome, portaContainer) {
