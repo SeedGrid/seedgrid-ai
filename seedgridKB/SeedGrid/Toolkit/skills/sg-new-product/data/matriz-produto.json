@@ -635,7 +635,8 @@
         "modelo": [
           "login-tenancy-b2b",
           "login-tenancy-b2c",
-          "subdomain-tenancy"
+          "subdomain-tenancy",
+          "modular"
         ]
       },
       "pergunta": "O self-enter (entrada de novos usuarios sem cadastro manual) fica ligado?",
@@ -732,7 +733,12 @@
       "se": {
         "resposta": {
           "selfEnter": "sim"
-        }
+        },
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
+        ]
       },
       "pergunta": "Em quais telas o self-enter fica disponivel?",
       "recomendacao": "Nos dois: o convite e o cadastro publico moram no front do cliente, e a gestao de convites e aprovacoes no admin. Se escolher so um, as telas do outro sao removidas do produto (e voltam depois se voce pedir).",

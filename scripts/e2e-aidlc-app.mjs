@@ -6,7 +6,7 @@
 // e registra o que a sessao perguntou, onde travou e o que entregou. Perguntas sem resposta no arquivo recebem a resposta padrao
 // e viram "lacunas" no relatorio (e o sinal de que o AIDLC deveria ter decidido sozinho ou que falta regra).
 // Uso: node scripts/e2e-aidlc-app.mjs --destino <pasta vazia> --pedido <arquivo.md> [--respostas <json>] [--saida <pasta>]
-//        [--max-turnos 30] [--modelo <modelo>] [--sem-build]
+//        [--max-turnos 30] [--modelo <modelo>] [--sem-build] [--retomar <session_id> --inicio <n> --mensagem <texto>]
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
@@ -74,9 +74,12 @@ function conduzir() {
   const turnos = [];
   const lacunas = [];
   const usadas = new Set();
-  let t = turno(0, pedido, null);
+  let t;
+  let primeiro = 1;
+  if (arg('retomar')) { primeiro = Number(arg('inicio', 1)); t = turno(primeiro, arg('mensagem', config.continuar ?? 'Continue.'), arg('retomar')); primeiro++; }
+  else t = turno(0, pedido, null);
   turnos.push(t);
-  for (let i = 1; i < maxTurnos && !t.erro; i++) {
+  for (let i = primeiro; i < maxTurnos && !t.erro; i++) {
     const texto = t.texto.trim();
     const pergunta = /\?\s*$/.test(texto) || /\b(posso|confirma|quer que|prefere|qual)\b[^.]*\?/i.test(texto.slice(-600));
     if (!pergunta) { if (config.fimQuando && new RegExp(config.fimQuando, 'i').test(texto)) break; if (!config.continuarSemPergunta) break; }
@@ -92,8 +95,10 @@ function conduzir() {
   return { turnos, lacunas };
 }
 
-preparar();
-const { turnos, lacunas } = conduzir();
+if (!arg('retomar')) preparar();
+let turnos = [];
+let lacunas = [];
+try { ({ turnos, lacunas } = conduzir()); } catch (e) { writeFileSync(join(saida, 'erro.txt'), String(e.stack ?? e)); console.error(e); }
 const lista = arquivos(destino).filter((f) => !/^(\.ai|\.claude|\.agents)\//.test(f));
 const relatorio = {
   destino, maxTurnos, turnos: turnos.map((t) => ({ n: t.n, minutos: +(t.ms / 60000).toFixed(1), custoUsd: +t.custo.toFixed(2), passosInternos: t.turnosInternos, erro: t.erro, motivo: t.motivo, negadas: t.negadas.map((p) => p.tool_name ?? p).slice(0, 10), fim: t.texto.slice(-300) })),

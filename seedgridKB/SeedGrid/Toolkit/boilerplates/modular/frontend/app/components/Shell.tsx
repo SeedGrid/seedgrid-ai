@@ -9,9 +9,14 @@ import {
   SgStack,
 } from "@seedgrid/fe-components";
 import {
+  KeyRound,
   LogOut,
   Palette,
+  ScrollText,
+  ShieldCheck,
   UserCog,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useState, type CSSProperties } from "react";
@@ -35,7 +40,14 @@ const SIDEBAR_MENU_EXPANDED_WIDTH = 280;
 const SIDEBAR_PANEL_PADDING = 20;
 
 // Icone de cada item do menu, pelo `href` (opcional). Acrescente aqui ao criar telas em `navItems`.
-const iconByHref: Record<string, ReactNode> = {};
+// So as folhas do menu deste produto (app/data.ts).
+const iconByHref: Record<string, ReactNode> = {
+  "/security/users/user_list": <Users size={16} />,
+  "/security/self-enter": <UserPlus size={16} />,
+  "/security/roles/role_list": <ShieldCheck size={16} />,
+  "/security/apikeys/apikey_list": <KeyRound size={16} />,
+  "/security/audit": <ScrollText size={16} />,
+};
 
 function normalizeMenuPath(pathname: string): string {
   // Telas de edicao ou detalhe que devem manter o item de LISTA ativo no menu entram aqui.

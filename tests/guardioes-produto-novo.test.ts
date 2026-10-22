@@ -40,7 +40,7 @@ test('GUARDIAO determinismo da matriz: toda combinacao valida resolve sem erro e
     if (modelo === 'modular' && !(selfEnter === 'nao' && auditoria === 'postgres' && armazenamento === 'filesystem')) { combinacoes++; continue; }
     const { dominioAdmin: _a, selfEnter: _s, auditoria: _u, armazenamentoAvatar: _v, armazenamentoBackup: _b, billingProvider: _p, trialDias: _t, planos: _l, ...enxuta } = COMPLETA as Record<string, unknown>;
     const r = modelo === 'modular'
-      ? { ...enxuta, modelo, extensoes: ['apikeys'] }
+      ? { ...enxuta, modelo, selfEnter: 'nao', extensoes: ['apikeys'] }
       : { ...COMPLETA, modelo, extensoes: ['exchange', 'cache'], selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
     const a = lib.resolver(matriz, catalogo, r);
     const b = lib.resolver(matriz, catalogo, JSON.parse(JSON.stringify(r)));

@@ -19,7 +19,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
 const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const SUB = { ...B2B, modelo: 'subdomain-tenancy' };
-const MODULAR = { ...BASE, modelo: 'modular', extensoes: ['apikeys'], apikeysUso: 'x' };
+const MODULAR = { ...BASE, modelo: 'modular', selfEnter: 'nao', extensoes: ['apikeys'], apikeysUso: 'x' };
 
 const dirs: string[] = [];
 const novaPasta = () => { const d = mkdtempSync(join(tmpdir(), 'sg-scaffold-')); dirs.push(d); return d; };
@@ -532,4 +532,18 @@ test('modelo modular: com apikeys vem o perfil de integracao de exemplo (sem ele
   const sem = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
   assert.ok(!existsSync(join(sem.destino, m, 'V3001__integration_role_example.sql')) && !existsSync(join(sem.destino, m, 'V3002__integration_permissions_release.sql')));
   assert.ok(existsSync(join(sem.destino, m, 'V3000__host_baseline.sql')));
+});
+
+test('modelo modular: self-enter e config do security; ligado traz as telas de convite e as flags, desligado remove tudo', async () => {
+  const sim = await gerar({ ...MODULAR, selfEnter: 'sim', selfEnterModo: 'convite' });
+  assert.equal(sim.saida.ok, true, (sim.saida.erros ?? []).join('\n'));
+  for (const rel of ['security/self-enter', 'auth/self-enter', 'api/security/self-enter']) assert.ok(existsSync(join(sim.destino, 'frontend/app', rel)), rel);
+  assert.ok(ler(sim.destino, 'frontend/app/data.ts').includes('/security/self-enter'));
+  const e = env(ler(sim.destino, 'backend/dev.env'));
+  assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'true');
+  assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'true');
+  const nao = await gerar({ ...MODULAR, selfEnter: 'nao' });
+  for (const rel of ['security/self-enter', 'auth/self-enter', 'api/security/self-enter']) assert.ok(!existsSync(join(nao.destino, 'frontend/app', rel)), rel);
+  assert.ok(!ler(nao.destino, 'frontend/app/data.ts').includes('/security/self-enter'));
+  assert.equal(env(ler(nao.destino, 'backend/dev.env')).SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');
 });

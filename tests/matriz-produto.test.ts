@@ -75,15 +75,17 @@ test('resposta a pergunta que nao se aplica e recusada (nada fora da matriz)', (
 
 test('modelo modular: security + audit sao a base; apikeys e opcional; sem opcionais e valido; perguntas de tenancy nao se aplicam', () => {
   const { dominioAdmin: _admin, ...dados } = DADOS as Record<string, unknown>;
-  const outro = { ...BASE, ...dados, modelo: 'modular' };
+  const outro = { ...BASE, ...dados, modelo: 'modular', selfEnter: 'nao' };
   const a = lib.resolver(matriz, catalogo, { ...outro, extensoes: ['apikeys'], apikeysUso: 'x' });
   assert.deepEqual(a.erros, []);
   assert.deepEqual([...a.extensoes].sort(), ['apikeys', 'audit', 'security']);
   const s = lib.resolver(matriz, catalogo, { ...outro, extensoes: [] });
   assert.deepEqual(s.erros, []);
   assert.deepEqual([...s.extensoes].sort(), ['audit', 'security']);
-  const ruim = lib.resolver(matriz, catalogo, { ...outro, extensoes: [], selfEnter: 'nao' });
-  assert.ok(ruim.erros.some((e) => /selfEnter/.test(e)), ruim.erros.join('\n'));
+  const ruim = lib.resolver(matriz, catalogo, { ...outro, extensoes: [], selfEnter: 'sim', selfEnterModo: 'convite', selfEnterEscopo: 'ambos' });
+  assert.ok(ruim.erros.some((e) => /selfEnterEscopo/.test(e)), ruim.erros.join('\n'));
+  const semSe = lib.resolver(matriz, catalogo, { ...BASE, ...dados, modelo: 'modular', extensoes: [] });
+  assert.ok(semSe.erros.some((e) => /selfEnter/.test(e)), 'o self-enter agora e perguntado no modular (config do security)');
 });
 
 test('validacoes de campo: slug, pacote, e-mail e dias de trial', () => {
