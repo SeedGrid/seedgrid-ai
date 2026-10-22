@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>Bem-vindo!</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; background-color: #f4f4f4; background-image: linear-gradient(#f4f4f4, #f4f4f4); margin: 0; padding: 24px;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; background-image: linear-gradient(#ffffff, #ffffff); color: #1a1a1a; padding: 24px; border-radius: 8px;">
+        <div style="text-align:center; padding:4px 0 20px;">
+            <img src="https://report-admin.seedgrid.com.br/logo-seedgrid-email.png" alt="SeedGrid Report" width="190" style="width:190px; max-width:62%; height:auto; display:inline-block;">
+        </div>
+        <h2 style="color: #C96A2D; margin-top: 0; text-align: center; border-bottom: 2px solid #C96A2D; padding-bottom: 16px;">Bem-vindo!</h2>
+
+        <p style="color: #777777;">Olá, <strong>{name}</strong>!</p>
+        <p style="color: #777777;">Sua conta foi criada com sucesso. Use os dados abaixo para acessar a plataforma:</p>
+
+        <div style="background-color: #f8f9fa; background-image: linear-gradient(#f8f9fa, #f8f9fa); border-left: 4px solid #C96A2D; padding: 12px 16px; margin: 16px 0; border-radius: 4px;">
+            <p style="margin: 0 0 10px 0; color: #777777;"><strong>E-mail:</strong> {email}</p>
+            <p style="margin: 0; color: #777777;"><strong>Senha temporária:</strong> <code style="background-color: #ffffff; background-image: linear-gradient(#ffffff, #ffffff); padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace;">{temporaryPassword}</code></p>
+        </div>
+
+        <div style="background-color: #fff3cd; background-image: linear-gradient(#fff3cd, #fff3cd); border-left: 4px solid #ffc107; padding: 12px 16px; margin: 16px 0; border-radius: 4px; color: #856404;">
+            <strong>Importante:</strong> por segurança, altere sua senha no primeiro acesso.
+        </div>
+
+        <p style="text-align: center; margin: 28px 0;">
+            <a href="{confirmationLink}"
+               style="display: inline-block; padding: 12px 24px; background-color: #F7EAE1; background-image: linear-gradient(#F7EAE1, #F7EAE1); color: #C96A2D !important; border: 1px solid #E4C4A6; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                <span style="color: #C96A2D;">Confirmar E-mail e Acessar</span>
+            </a>
+        </p>
+
+        <p style="color: #777777;">Após confirmar seu e-mail, você poderá fazer login com as credenciais acima.</p>
+        <p style="color: #777777;">Se você não solicitou essa conta, ignore este e-mail.</p>
+        <p style="color: #777777;">Este link expira em 24 horas.</p>
+
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eeeeee; color: #777777; font-size: 12px;">
+            Este é um e-mail automático, por favor não responda.
+        </div>
+    </div>
+</body>
+</html>

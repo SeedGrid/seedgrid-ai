@@ -331,7 +331,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   if (faltam.length) { gi = gi.replace(/\n*$/, '\n') + extraIgnore.filter((l) => l === '' || faltam.includes(l) || l.startsWith('#')).join('\n') + '\n'; writeFileSync(giPath, gi); if (!criados.includes('.gitignore')) criados.push('.gitignore'); }
 
   // 2. pom
-  const adicionar = [...exts].filter((id) => (catalogo.extensions[id].pom ?? []).length && !r.extRemover.includes(id) && ['business-days', 'cache'].includes(id));
+  const adicionar = [...exts].filter((id) => (catalogo.extensions[id].pom ?? []).length && !r.extRemover.includes(id) && ['business-days', 'cache', 'exchange', 'ai-pricing'].includes(id));
   const artefatoApi = `${slug}-api`;
   const feitoPom = origem ? ajustarPom(destino, { artefatoApi, nome: R.nome, r, catalogo, removerPom: r.pomRemover, adicionar }) : [];
   notas.push(...feitoPom);

@@ -147,7 +147,7 @@
               "modelo": "login-tenancy",
               "publico": "b2b"
             },
-            "boilerplate": "login-tenancy",
+            "boilerplate": "login-tenancy-b2b",
             "extensions": [
               "security",
               "audit",

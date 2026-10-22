@@ -66,7 +66,7 @@ describe('skill sg-new-product (T2.3)', () => {
     await initCommand({ project });
     const skillDir = path.join(project, '.ai/skills/sg-new-product');
     for (const f of ['SKILL.md', 'data/matriz-produto.json', 'scripts/scaffold-produto.mjs', 'assets/render.mjs']) assert.ok(existsSync(path.join(skillDir, f)), f);
-    assert.ok(existsSync(path.join(project, '.ai/boilerplates/login-tenancy/backend/pom.xml')));
+    assert.ok(existsSync(path.join(project, '.ai/boilerplates/login-tenancy-b2b/backend/pom.xml')));
     await mkdir(path.join(project, 'docs/ai/plans'), { recursive: true });
     const respostas = path.join(project, 'docs/ai/plans/respostas-produto.json');
     await writeFile(respostas, JSON.stringify(RESPOSTAS));

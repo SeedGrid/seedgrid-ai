@@ -1,0 +1,16 @@
+# Settings do pnpm. Desde a versao 10 elas NAO moram no campo "pnpm" do package.json — o pnpm 11
+# ignora aquele campo com um WARN. Ver https://pnpm.io/settings.
+#
+# Sem esta allowlist, `pnpm install` termina em ERR_PNPM_IGNORED_BUILDS e o `pnpm run dev` nem
+# comeca. Mesma solucao ja usada no seedgrid-report-client. Os tres precisam mesmo rodar script
+# de instalacao:
+#   sharp      -> otimizacao de imagem do Next; baixa o binario nativo no postinstall
+#   protobufjs -> exportadores OTLP/proto do OpenTelemetry (instrumentation.ts); gera codigo
+#   esbuild    -> carregado pelo vitest; o postinstall e' quem baixa/linka o binario da plataforma
+allowBuilds:
+  sharp: true
+  protobufjs: true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@seedgrid/fe-components@2026.10.0'
+  - '@seedgrid/pulse-subscriber-react@3.0.0'

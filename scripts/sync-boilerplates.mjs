@@ -3,7 +3,7 @@
 // nao entra no conteudo instalado nos hosts). Copia SO os arquivos versionados da ref (padrao origin/main), nunca a pasta de trabalho.
 // Uso:
 //   node scripts/sync-boilerplates.mjs [--repo <pasta>] [--ref origin/main] [--fetch] [--dry-run]
-//   node scripts/sync-boilerplates.mjs --modelos outro[,x]   (so esses modelos; os demais ficam como estao, sem comparar nem remover)
+//   node scripts/sync-boilerplates.mjs --modelos modular[,x]   (so esses modelos; os demais ficam como estao, sem comparar nem remover)
 //   node scripts/sync-boilerplates.mjs --check [--fetch] [--soft]   (nao altera nada; sai com 1 se a copia estiver desatualizada)
 // --soft: se o repositorio do boilerplate nao estiver acessivel, avisa e sai com 0 (usado no prepack).
 // Transformacoes (as mesmas que o init desfaz no produto): binario -> <arquivo>.b64; .gitignore/.gitattributes/.npmignore -> <arquivo>.template.

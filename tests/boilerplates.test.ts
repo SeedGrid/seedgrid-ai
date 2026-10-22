@@ -13,7 +13,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const MODELS = ['login-tenancy', 'modular', 'subdomain-tenancy'];
+const MODELS = ['login-tenancy-b2b', 'login-tenancy-b2c', 'modular', 'subdomain-tenancy'];
 const BP = TK + 'boilerplates/';
 
 async function expectInvalid(dir: string, pattern: RegExp) {
@@ -84,11 +84,11 @@ describe('componente boilerplates (conteúdo)', () => {
 
   test('a fonte é recusada se levar _dev.env, .bak, node_modules ou pasta fora de names', async () => {
     for (const [rel, re] of [
-      ['login-tenancy/backend/_dev.env', /_dev\.env não pode entrar/],
-      ['login-tenancy/backend/dev.env.bak', /dev\.env\.bak não pode entrar/],
-      ['login-tenancy/backend/chaves/private.pem', /private\.pem não pode entrar/],
-      ['login-tenancy/frontend/node_modules/x/index.js', /pasta proibida/],
-      ['login-tenancy/.gitignore', /\.gitignore não pode entrar/],
+      ['login-tenancy-b2b/backend/_dev.env', /_dev\.env não pode entrar/],
+      ['login-tenancy-b2b/backend/dev.env.bak', /dev\.env\.bak não pode entrar/],
+      ['login-tenancy-b2b/backend/chaves/private.pem', /private\.pem não pode entrar/],
+      ['login-tenancy-b2b/frontend/node_modules/x/index.js', /pasta proibida/],
+      ['login-tenancy-b2b/.gitignore', /\.gitignore não pode entrar/],
     ] as const) {
       const src = await copyContent();
       await writeText(src, BP + rel, 'X=1\n');
@@ -101,7 +101,7 @@ describe('componente boilerplates (conteúdo)', () => {
 
   test('a fonte é recusada se levar chave real (a cópia passa pelo detector de segredos)', async () => {
     const src = await copyContent();
-    await writeText(src, BP + 'login-tenancy/backend/notas.txt', `chave: ${'sk_live_'}${'abcdefghijklmnop1234'}\n`);
+    await writeText(src, BP + 'login-tenancy-b2b/backend/notas.txt', `chave: ${'sk_live_'}${'abcdefghijklmnop1234'}\n`);
     await expectInvalid(src, /parece conter chave Stripe/);
   });
 
@@ -113,7 +113,7 @@ describe('componente boilerplates (conteúdo)', () => {
     await expectInvalid(src, /names deve ser uma lista/);
     src = await copyContent();
     await editManifest(src, (m) => {
-      m.components.find((c: { type: string }) => c.type === 'boilerplates').names.push('login-tenancy');
+      m.components.find((c: { type: string }) => c.type === 'boilerplates').names.push('login-tenancy-b2b');
     });
     await expectInvalid(src, /sem repetição/);
     src = await copyContent();
@@ -123,7 +123,7 @@ describe('componente boilerplates (conteúdo)', () => {
     await expectInvalid(src, /boilerplate sem arquivos: boilerplates\/fantasma/);
     src = await copyContent();
     await editManifest(src, (m) => {
-      m.components.push({ id: 'boilerplates-2', type: 'boilerplates', names: ['login-tenancy'] });
+      m.components.push({ id: 'boilerplates-2', type: 'boilerplates', names: ['login-tenancy-b2b'] });
     });
     await expectInvalid(src, /só pode haver um componente boilerplates/);
   });
@@ -141,7 +141,7 @@ describe('boilerplates no init, update e remove', () => {
       assert.ok(files[`.ai/boilerplates/${m}/.gitignore.template`], m);
     }
     // A saída resume os modelos em uma linha, não uma linha por arquivo.
-    assert.ok(res.lines.some((l) => /\.ai\/boilerplates\/login-tenancy\/ \(\d+ arquivo/.test(l)));
+    assert.ok(res.lines.some((l) => /\.ai\/boilerplates\/login-tenancy-b2b\/ \(\d+ arquivo/.test(l)));
     assert.ok(!res.lines.some((l) => /\.ai\/boilerplates\/[^/]+\/\S+\/\S+/.test(l)), 'uma linha por arquivo do modelo');
     const lock = JSON.parse(await readText(project, '.ai/toolkit-lock.json'));
     assert.ok(lock.files.some((f: { component: string }) => f.component === 'boilerplates'));
@@ -174,17 +174,17 @@ describe('boilerplates no init, update e remove', () => {
     assert.equal((await initCommand({ project, source })).exitCode, EXIT_OK);
     await writeText(project, 'backend/pom.xml', '<project>do produto</project>\n');
     const productBefore = await readText(project, 'backend/pom.xml');
-    const model = BP + 'login-tenancy/backend/pom.xml';
+    const model = BP + 'login-tenancy-b2b/backend/pom.xml';
     await writeText(source, model, `${await readText(source, model)}<!-- v2 -->\n`);
-    await writeText(source, BP + 'login-tenancy/backend/NOVO.md', 'novo\n');
+    await writeText(source, BP + 'login-tenancy-b2b/backend/NOVO.md', 'novo\n');
     await rm(path.join(source, ...(BP + 'subdomain-tenancy/backend/run.sh').split('/')));
     await editManifest(source, (m) => {
       m.contentVersion = '0.5.1';
     });
     const res = await updateCommand({ project, source });
     assert.equal(res.exitCode, EXIT_OK, res.lines.join('\n'));
-    assert.ok((await readText(project, '.ai/boilerplates/login-tenancy/backend/pom.xml')).endsWith('<!-- v2 -->\n'));
-    assert.equal(await readText(project, '.ai/boilerplates/login-tenancy/backend/NOVO.md'), 'novo\n');
+    assert.ok((await readText(project, '.ai/boilerplates/login-tenancy-b2b/backend/pom.xml')).endsWith('<!-- v2 -->\n'));
+    assert.equal(await readText(project, '.ai/boilerplates/login-tenancy-b2b/backend/NOVO.md'), 'novo\n');
     const after = await snapshot(project);
     assert.ok(!('.ai/boilerplates/subdomain-tenancy/backend/run.sh' in after), 'arquivo removido do modelo some da cópia gerenciada');
     assert.equal(await readText(project, 'backend/pom.xml'), productBefore);
@@ -194,9 +194,9 @@ describe('boilerplates no init, update e remove', () => {
     const project = await tempProject();
     const source = await copyContent();
     await initCommand({ project, source });
-    const rel = '.ai/boilerplates/login-tenancy/backend/pom.xml';
+    const rel = '.ai/boilerplates/login-tenancy-b2b/backend/pom.xml';
     await writeFile(path.join(project, ...rel.split('/')), 'editado\n');
-    const model = BP + 'login-tenancy/backend/pom.xml';
+    const model = BP + 'login-tenancy-b2b/backend/pom.xml';
     await writeText(source, model, `${await readText(source, model)}<!-- v2 -->\n`);
     await editManifest(source, (m) => {
       m.contentVersion = '0.5.1';

@@ -287,7 +287,7 @@ test('escopo do self-enter: desligado tira as telas do front e do admin; so no f
 test('receitas de remocao: toda receita aponta para caminhos que existem nos boilerplates', async () => {
   const { carregar } = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)) as { carregar: () => { modulosFront: { modulos: Record<string, { escopos: Record<string, { apagar: string[]; linhas?: { arquivo: string; contem: string }[]; blocos?: { arquivo: string; contem: string }[] }> }> } } };
   const { modulosFront } = carregar();
-  for (const bp of ['login-tenancy', 'subdomain-tenancy']) {
+  for (const bp of ['login-tenancy-b2b', 'subdomain-tenancy']) {
     for (const [mod, def] of Object.entries(modulosFront.modulos)) {
       for (const [escopo, rec] of Object.entries(def.escopos)) {
         const raiz = join(BOILERPLATES, bp, escopo);

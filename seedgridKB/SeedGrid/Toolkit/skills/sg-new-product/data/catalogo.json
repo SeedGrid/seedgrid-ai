@@ -2,7 +2,7 @@
   "_regra": "Cada campo tem a fonte na KB (caminho a partir de SeedGrid/). Informacao que so existe no codigo da extension vira lacuna, nunca e inferida.",
   "modelos": {
     "login-tenancy": {
-      "descricao": "Banco unico, multi-empresa (pooled). B2B hoje; B2C depende do boilerplate login-tenancy-b2c (a criar pelo business-day, Fase 1b na nota Escopo-e-acesso).",
+      "descricao": "Banco unico, multi-empresa (pooled). Boilerplates login-tenancy-b2b e login-tenancy-b2c (o b2c ainda nao esta liberado na matriz: falta provar a subida).",
       "fonte": "Extensions/login-tenancy/Visao-geral.md",
       "traz": [
         "security",
@@ -31,7 +31,7 @@
       "exclusivo_com": [
         "subdomain-tenancy"
       ],
-      "boilerplate": "login-tenancy",
+      "boilerplate": "login-tenancy-b2b",
       "bom_pom": "seedgrid-login-tenancy-parent"
     },
     "subdomain-tenancy": {

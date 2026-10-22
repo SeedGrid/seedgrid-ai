@@ -57,7 +57,7 @@ test('GUARDIAO nenhum segredo no pacote: o que o npm empacota nao tem arquivo de
   assert.equal(r.status, 0, r.stderr);
   const json = JSON.parse(r.stdout.slice(r.stdout.indexOf('['))) as { files: { path: string }[] }[];
   const caminhos = json[0]!.files.map((f) => f.path);
-  assert.ok(caminhos.some((c) => c.includes('boilerplates/login-tenancy/backend/dev.env.example')), 'boilerplate deve estar no pacote');
+  assert.ok(caminhos.some((c) => c.includes('boilerplates/login-tenancy-b2b/backend/dev.env.example')), 'boilerplate deve estar no pacote');
   const proibido = /(^|\/)(dev\.env|dev_old\.env|\.env|\.env\.[^/]*|[^/]*\.pem|[^/]*\.bak|[^/]*\.key|[^/]*\.p12|[^/]*\.jks)$/i;
   const ruins = caminhos.filter((c) => proibido.test(c) && !/\.(example|sample|template)$/.test(c));
   assert.deepEqual(ruins, []);

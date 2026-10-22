@@ -205,7 +205,8 @@
       "id": "boilerplates",
       "type": "boilerplates",
       "names": [
-        "login-tenancy",
+        "login-tenancy-b2b",
+        "login-tenancy-b2c",
         "modular",
         "subdomain-tenancy"
       ]

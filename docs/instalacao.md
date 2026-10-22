@@ -33,7 +33,7 @@ Regras do conteúdo dos modelos, conferidas pelo `validate` e pelo `npm test`:
 - Nenhum arquivo de ambiente, chave ou backup (`dev.env`, `_dev.env`, `.env*`, `*.pem`, `*.bak`...). Só entram modelos `*.example`, `*.sample` e `*.template`. Também não entram `node_modules`, `target`, `.git`, `infra` nem `chave-mvn-central`.
 - `.gitignore`, `.gitattributes` e `.npmignore` entram como `<nome>.template` (o npm descarta `.gitignore` do pacote, e um `.gitignore` vivo dentro de `.ai/` afetaria o Git do projeto). Quem cria o produto a partir do modelo remove o sufixo.
 - Arquivos binários entram em base64, com o sufixo `.b64` (hoje só `public/logo-seedgrid-email.png.b64`, nos frontends). Quem cria o produto decodifica e remove o sufixo.
-- O `init` mostra os modelos em uma linha por modelo (`.ai/boilerplates/login-tenancy/ (N arquivo(s))`), não uma linha por arquivo.
+- O `init` mostra os modelos em uma linha por modelo (`.ai/boilerplates/login-tenancy-b2b/ (N arquivo(s))`), não uma linha por arquivo.
 
 ## Escolhendo target e modo
 

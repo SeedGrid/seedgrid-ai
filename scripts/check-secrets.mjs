@@ -94,7 +94,8 @@ function scanText(file, text, label = '', kb = false) {
       return;
     }
     const b = BLOB_LINE.exec(line);
-    if (b && !PLACEHOLDER.test(b[1]) && entropy(b[1]) >= 4.0 && !/sha\d*|integrity|checksum|hash|digest/i.test(line)) {
+    // "NOME_DA_VARIAVEL=valor" citado num comentario/exemplo (ex.: "... Para ligar: SEEDGRID_X=google") nao e chave.
+    if (b && !PLACEHOLDER.test(b[1]) && !/^[A-Z][A-Z0-9_]*=[A-Za-z0-9._-]{1,12}$/.test(b[1]) && entropy(b[1]) >= 4.0 &&!/sha\d*|integrity|checksum|hash|digest/i.test(line)) {
       problems.push(`${where}: valor aleatorio longo (possivel chave)`);
     }
   });

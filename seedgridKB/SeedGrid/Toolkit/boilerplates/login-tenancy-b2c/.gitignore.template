@@ -1,0 +1,69 @@
+# ============================================================================
+# SEGREDOS -- leia antes de mexer
+# ============================================================================
+# `dev.env` NAO e' versionado. Ate 2026-09-11 ele era, "porque so' tinha
+# placeholder" -- e nao tinha: a copia feita a partir do seedgrid-report trouxe
+# junto SETE segredos de PRODUCAO, incluindo a chave privada que assina os JWT
+# e a chave de criptografia at-rest. Quem clona copia o `dev.env.example`.
+#
+# Se algum dia isto for revertido, o acidente volta -- e desta vez publico.
+dev.env
+dev_old.env
+.env
+.env.*
+!.env.example
+*.env.local
+
+# Chaves JWT em disco: cada clone gera o seu par (ver dev.env.example).
+backend/src/main/resources/keys/*.pem
+*.p12
+*.jks
+
+# ============================================================================
+# BUILD
+# ============================================================================
+# Java / Maven / Quarkus
+target/
+.mvn/wrapper/maven-wrapper.jar
+dependency-reduced-pom.xml
+*.class
+.quarkus/
+
+# Node / Next / pnpm (front e admin)
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+.vercel/
+*.tsbuildinfo
+.pnpm-store/
+.pnpm-debug.log*
+
+# ============================================================================
+# DADOS E ARTEFATOS LOCAIS
+# ============================================================================
+backend/data/
+*.log
+npm-debug.log*
+yarn-error.log
+coverage/
+.nyc_output/
+
+# Testcontainers/Podman deixam volume local quando RYUK esta desligado
+.testcontainers/
+
+# ============================================================================
+# EDITOR E SO
+# ============================================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
