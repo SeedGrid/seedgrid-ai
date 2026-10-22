@@ -529,9 +529,6 @@
             ],
             "blocos_env": [
               "privacy"
-            ],
-            "hibernate_packages": [
-              "br.com.seedgrid.privacy"
             ]
           }
         },
