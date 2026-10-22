@@ -134,6 +134,10 @@
       ],
       "front": [
         "@seedgrid/fe-apikeys"
+      ],
+      "remover_se_ausente_arquivos": [
+        "src/main/resources/db/migration/app/**V3001__integration_role_example.sql",
+        "src/main/resources/db/migration/app/**V3002__integration_permissions_release.sql"
       ]
     },
     "backup": {

@@ -467,6 +467,9 @@
           "efeito_ausente": {
             "modulos_front_remover": [
               "api-keys@frontend"
+            ],
+            "extensions_remover": [
+              "apikeys"
             ]
           }
         },

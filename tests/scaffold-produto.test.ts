@@ -522,3 +522,12 @@ test('modelo modular: front com as telas da base e o menu do usuario (Meu perfil
   assert.ok(!ler(sem.destino, 'frontend/app/data.ts').includes('apikey_list'));
   assert.ok(existsSync(join(sem.destino, 'frontend/app/security/users/user_list/page.tsx')) && existsSync(join(sem.destino, 'frontend/app/perfil/page.tsx')));
 });
+
+test('modelo modular: com apikeys vem o perfil de integracao de exemplo (sem ele nao ha role para criar chave); sem apikeys sai', async () => {
+  const com = await gerar({ ...MODULAR, extensoes: ['apikeys'] });
+  const m = 'backend/src/main/resources/db/migration/app/';
+  assert.ok(existsSync(join(com.destino, m, 'V3001__integration_role_example.sql')) && existsSync(join(com.destino, m, 'V3002__integration_permissions_release.sql')));
+  const sem = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
+  assert.ok(!existsSync(join(sem.destino, m, 'V3001__integration_role_example.sql')) && !existsSync(join(sem.destino, m, 'V3002__integration_permissions_release.sql')));
+  assert.ok(existsSync(join(sem.destino, m, 'V3000__host_baseline.sql')));
+});
