@@ -519,9 +519,7 @@
             "blocos_env": [
               "privacy"
             ]
-          },
-          "disponivel": false,
-          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
+          }
         },
         {
           "id": "resilience",
@@ -530,9 +528,7 @@
             "extensions": [
               "resilience"
             ]
-          },
-          "disponivel": false,
-          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
+          }
         },
         {
           "id": "ai-pricing",

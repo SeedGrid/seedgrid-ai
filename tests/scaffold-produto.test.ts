@@ -490,3 +490,12 @@ test('o guardiao do README reprova README sem secao, sem diagrama ou com marcado
   assert.deepEqual(conferirReadme(completo), []);
   assert.deepEqual(conferirReadme(completo + '\n<!-- sg:preencher: algo -->'), ['marcador sem preencher: algo']);
 });
+
+test('modelo modular: privacy e resilience liberados (vem pela security); privacy traz as chaves no dev.env', async () => {
+  const { destino, saida } = await gerar({ ...MODULAR, extensoes: ['apikeys', 'privacy', 'resilience'] });
+  assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
+  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'privacy', 'resilience', 'security']);
+  const e = env(ler(destino, 'backend/dev.env'));
+  assert.equal(e.SEEDGRID_PRIVACY_ENCRYPTION_ENABLED, 'true');
+  assert.ok(e.SEEDGRID_PRIVACY_CRYPTO_KEY && !e.SEEDGRID_PRIVACY_CRYPTO_KEY.startsWith('GERE'));
+});
