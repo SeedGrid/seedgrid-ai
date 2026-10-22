@@ -19,7 +19,7 @@ export function readmeProduto(produto, portas = { servicos: [], apps: [] }) {
   const nome = limpa(produto.nome ?? produto.slug);
   const exts = produto.extensoes ?? [];
   const apps = (produto.servicos ?? []).map((s) => s.nome);
-  const apoio = (portas.servicos ?? []).filter((s) => !apps.includes(s.servico));
+  const apoio = (portas.servicos ?? []).filter((s) => !apps.includes(s.servico)).reduce((acc, s) => { const o = acc.find((x) => x.servico === s.servico); if (o) o.finalidade = o.finalidade === s.finalidade ? o.finalidade : `${o.finalidade}; ${s.finalidade}`; else acc.push({ ...s }); return acc; }, []); // um servico com varias portas (ex.: Mailpit SMTP e UI) vira um so contêiner
   const usuarios = produto.publico === 'b2c' ? 'Cliente final' : produto.modelo === 'modular' ? 'Usuário interno' : 'Usuário da empresa cliente';
   const l = [];
   l.push(`# ${nome}`, '');
