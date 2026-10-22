@@ -7,6 +7,7 @@
 // Para so o que ele mesmo subiu. Nao conserta nada e nao imprime segredo (a senha vem do backend/dev.env e fica so em memoria).
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, openSync, closeSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { createConnection } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -30,6 +31,8 @@ export function lerEnv(arquivo) {
 export function errosDoLog(texto, max = 8) {
   const linhas = String(texto).split(/\r?\n/);
   const erros = linhas.filter((l) => /\bERROR\b/.test(l) && !/^\[ERROR\]\s*$/.test(l) && !/Re-run Maven|For more information|Help 1|To see the full stack/.test(l));
+  // WARN que na pratica e defeito: entidade de extension fora de qualquer unidade de persistencia (a extension sobe, mas nao grava)
+  linhas.forEach((l, i) => { if (/Could not find a suitable persistence unit/.test(l)) erros.push(`${l.trim()} ${linhas.slice(i + 1, i + 4).map((x) => x.trim()).join(' ')}`); });
   const causas = linhas.filter((l) => /^\s*Caused by:/.test(l)).slice(0, 4);
   return [...erros.slice(0, max), ...causas].map((l) => l.slice(0, 300));
 }
@@ -92,6 +95,7 @@ export async function verificar({ destino, runtime, timeout = 240, front = true,
   const registra = (id, estado, detalhe = '', extra = {}) => { passos.push({ id, estado, detalhe, ...extra }); log(`${estado === 'ok' ? 'OK   ' : estado === 'pulado' ? 'PULOU' : 'FALHA'} ${id}${detalhe ? ' - ' + detalhe : ''}`); return estado !== 'falha'; };
   const filhos = [];
   const subiuServicos = [];
+  let composeProjeto = null;
   const tmp = mkdtempSync(join(tmpdir(), 'sg-subida-'));
   const rt = achaRuntime(runtime);
   const fim = () => { for (const f of filhos.reverse()) matar(f); limparRestos(destino); };
@@ -106,9 +110,15 @@ export async function verificar({ destino, runtime, timeout = 240, front = true,
     const deps = [...new Set(portas.servicos.filter((s) => !s.perfis.length).map((s) => s.servico))];
     if (deps.length) {
       if (!rt) return (registra('dependencias', 'falha', 'nem docker nem podman encontrados no PATH'), { ok: false, passos });
-      const antes = spawnSync(rt, ['compose', 'ps', '--services', '--filter', 'status=running'], { cwd: destino, encoding: 'utf8' });
+      // Projeto proprio da verificacao: nunca reaproveita nem derruba containers/volume de outro produto com o mesmo nome (ex.: o que o dono esta rodando).
+      const projeto = `sgv-${String(produto.slug ?? 'produto').replace(/[^a-z0-9]/g, '')}-${createHash('sha1').update(resolve(destino)).digest('hex').slice(0, 6)}`;
+      const ocupadas = [];
+      for (const p of portas.servicos.filter((s) => !s.perfis.length)) if (await portaAberta(p.portaHost)) ocupadas.push(p.portaHost);
+      if (ocupadas.length) return (registra('dependencias', 'falha', `porta(s) ${[...new Set(ocupadas)].join(', ')} ja em uso (outro compose ou processo, talvez o proprio produto rodando); pare-o e rode de novo. Nada foi tocado.`), { ok: false, passos });
+      composeProjeto = projeto;
+      const antes = spawnSync(rt, ['compose', '-p', projeto, 'ps', '--services', '--filter', 'status=running'], { cwd: destino, encoding: 'utf8' });
       const jaRodando = new Set(String(antes.stdout ?? '').split(/\r?\n/).filter(Boolean));
-      const up = spawnSync(rt, ['compose', 'up', '-d', ...deps], { cwd: destino, encoding: 'utf8' });
+      const up = spawnSync(rt, ['compose', '-p', projeto, 'up', '-d', ...deps], { cwd: destino, encoding: 'utf8' });
       if (up.status !== 0) return (registra('dependencias', 'falha', `${rt} compose up falhou: ${String(up.stderr).trim().split('\n').slice(-3).join(' | ').slice(0, 300)}`), { ok: false, passos });
       subiuServicos.push(...deps.filter((d) => !jaRodando.has(d)));
       const publicadas = portas.servicos.filter((s) => !s.perfis.length).map((s) => s.portaHost);
@@ -199,7 +209,8 @@ export async function verificar({ destino, runtime, timeout = 240, front = true,
     return { ok: passos.every((p) => p.estado !== 'falha'), passos };
   } finally {
     fim();
-    if (subiuServicos.length && rt) spawnSync(rt, ['compose', 'stop', ...subiuServicos], { cwd: destino, encoding: 'utf8' });
+    if (composeProjeto && rt) spawnSync(rt, ['compose', '-p', composeProjeto, 'down', '-v'], { cwd: destino, encoding: 'utf8' }); // projeto so da verificacao: sai com o volume, para o proximo teste nao herdar senha antiga
+    else if (subiuServicos.length && rt) spawnSync(rt, ['compose', 'stop', ...subiuServicos], { cwd: destino, encoding: 'utf8' });
     try { rmSync(tmp, { recursive: true, force: true }); } catch { /* o log pode estar aberto no Windows */ }
   }
 }

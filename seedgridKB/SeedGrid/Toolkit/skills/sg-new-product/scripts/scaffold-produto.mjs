@@ -70,7 +70,7 @@ export function criarGerador(sementes = {}) {
 // ---------- efeitos ----------
 // Reune os efeitos das respostas, na ordem das perguntas; env de uma resposta mais tarde vence a anterior.
 function juntar(efeitos, matriz) {
-  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pomAdicionar: [], flywayLocations: [], pendencias: [], produto: {}, docs: [] };
+  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pomAdicionar: [], flywayLocations: [], hibernatePackages: [], pendencias: [], produto: {}, docs: [] };
   for (const { efeito } of efeitos) {
     for (const b of efeito.blocos_env ?? []) for (const [k, v] of Object.entries(matriz.blocos_env[b])) r.env.set(k, v);
     for (const [k, v] of Object.entries(efeito.env && !Array.isArray(efeito.env) ? efeito.env : {})) r.env.set(k, v);
@@ -86,6 +86,7 @@ function juntar(efeitos, matriz) {
     r.pomManter.push(...(efeito.pom_manter ?? []));
     for (const d of efeito.pom_adicionar ?? []) if (!r.pomAdicionar.includes(d)) r.pomAdicionar.push(d);
     for (const l of efeito.flyway_locations ?? []) if (!r.flywayLocations.includes(l)) r.flywayLocations.push(l);
+    for (const l of efeito.hibernate_packages ?? []) if (!r.hibernatePackages.includes(l)) r.hibernatePackages.push(l);
     r.pendencias.push(...(efeito.pendencias ?? []));
     r.docs.push(...(efeito.docs ?? []));
     if (efeito.produto && !Array.isArray(efeito.produto)) Object.assign(r.produto, efeito.produto);
@@ -344,6 +345,16 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
       const novo = txt.replace(/^(quarkus\.flyway\.locations=.*?)(classpath:db\/migration\/app)/m, (_, ini, app) => ini + r.flywayLocations.map((l) => `classpath:db/migration/${l},`).join('') + app);
       if (novo !== txt) { writeFileSync(props, novo); notas.push(`application.properties: migrations de ${r.flywayLocations.join(', ')} na lista do Flyway`); }
       else notas.push('AVISO: nao achei quarkus.flyway.locations no application.properties; acrescente as locations das extensions escolhidas');
+    }
+  }
+  // Entidades das extensions opcionais do modelo "modular": entram em quarkus.hibernate-orm.packages (sem isso a entidade fica fora da unidade de persistencia).
+  if (origem && r.hibernatePackages.length) {
+    const props = join(destino, 'backend/src/main/resources/application.properties');
+    if (existsSync(props)) {
+      const txt = readFileSync(props, 'utf8');
+      const novo = txt.replace(/^(quarkus\.hibernate-orm\.packages=.*)$/m, (_, ini) => ini.trimEnd() + r.hibernatePackages.map((p) => `,${p}`).join(''));
+      if (novo !== txt) { writeFileSync(props, novo); notas.push(`application.properties: pacotes de entidade de ${r.hibernatePackages.join(', ')} no Hibernate`); }
+      else notas.push('AVISO: nao achei quarkus.hibernate-orm.packages no application.properties; acrescente os pacotes de entidade das extensions escolhidas');
     }
   }
   const apagar = [...new Set(r.extRemover.flatMap((id) => catalogo.extensions[id].remover_se_ausente_arquivos ?? []))];

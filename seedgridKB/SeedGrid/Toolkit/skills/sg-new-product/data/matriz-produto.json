@@ -459,6 +459,9 @@
             ],
             "flyway_locations": [
               "apikeys"
+            ],
+            "hibernate_packages": [
+              "br.com.seedgrid.apikeys.entities"
             ]
           }
         },
@@ -518,6 +521,9 @@
             ],
             "blocos_env": [
               "privacy"
+            ],
+            "hibernate_packages": [
+              "br.com.seedgrid.privacy"
             ]
           }
         },

@@ -499,3 +499,11 @@ test('modelo modular: privacy e resilience liberados (vem pela security); privac
   assert.equal(e.SEEDGRID_PRIVACY_ENCRYPTION_ENABLED, 'true');
   assert.ok(e.SEEDGRID_PRIVACY_CRYPTO_KEY && !e.SEEDGRID_PRIVACY_CRYPTO_KEY.startsWith('GERE'));
 });
+
+test('modelo modular: entidades de apikeys e privacy entram em quarkus.hibernate-orm.packages', async () => {
+  const { destino } = await gerar({ ...MODULAR, extensoes: ['apikeys', 'privacy'] });
+  const props = ler(destino, 'backend/src/main/resources/application.properties');
+  assert.match(props, /^quarkus\.hibernate-orm\.packages=.*br\.com\.seedgrid\.apikeys\.entities.*br\.com\.seedgrid\.privacy/m);
+  const { destino: d2 } = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
+  assert.ok(!ler(d2, 'backend/src/main/resources/application.properties').includes('apikeys.entities'));
+});
