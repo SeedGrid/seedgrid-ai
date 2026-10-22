@@ -22,7 +22,7 @@ Entrega **apenas** Circuit Breaker e Rate Limiter, ambos guardando estado num `S
 | Consumidores | security (`src/ratelimit.rs`), backup e billing (seams de rate limit), `seedgrid-runtime` (macros `#[rate_limit]`/`#[circuit_breaker]`) |
 
 ## Arquitetura
-No Java, CB e rate limit são interceptors CDI (`@SeedGridCircuitBreaker`, `@SeedGridRateLimit`). Em Rust:
+No Java, CB e rate limit são interceptors CDI (`@SgCircuitBreaker`, `@SgRateLimit`). Em Rust:
 - **Circuit Breaker**: `circuit_breaker(name, CircuitBreakerConfig, cache)` devolve uma guarda `CircuitBreaker` com `call(fut)` / `call_with_fallback(fut, fallback)`; estado em `CacheBackedCircuitBreakerStore` (chave `cb:<name>`). Config efetiva por `CircuitBreakerConfigResolver::resolve(&SeedGridCircuitBreaker, nome)`.
 - **Rate Limiter**: `RateLimitService::new(cache, Arc<dyn ConfigSource>)` + `try_acquire(&SeedGridRateLimit, &InvocationInfo, ctx)`; algoritmos `FIXED_WINDOW`, `SLIDING_WINDOW`, `TOKEN_BUCKET`; chave `rl:<tenant>[:<operação>]:<escopo>:<identidade>`. Para Axum: `ServiceRateLimiter` + `rate_limit_middleware` (429 + headers `X-RateLimit-*`).
 - Ordem: rate limit é a camada mais externa (prioridade Java 1000), circuit breaker por dentro (1010).

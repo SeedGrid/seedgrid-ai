@@ -23,9 +23,9 @@ Trilha de auditoria (snapshot *before/after*) com mascaramento de PII, backends 
 | Consumidores no workspace | security, backup, login-tenancy, subdomain-tenancy |
 
 ## Arquitetura (diferença em relação ao Java)
-No Java a captura vem do interceptor CDI `@Audit`. Em Rust **não há interceptor**: o consumidor monta um `AuditEvent` e chama `Auditor::record`. A crate então: (1) deriva `entity` = nome simples do FQCN; (2) mascara `before_state`/`after_state` com as `MaskRule`s do evento; (3) preenche usuário, timestamp, origin, IP, user-agent e metadata pelos SPIs; (4) faz *upsert* dos índices `entities`/`users`; (5) persiste. Escritas são best-effort: erros são logados e engolidos. **Confirmado** (`src/lib.rs`, `src/state.rs`).
+No Java a captura vem do interceptor CDI `@SgAudit`. Em Rust **não há interceptor**: o consumidor monta um `AuditEvent` e chama `Auditor::record`. A crate então: (1) deriva `entity` = nome simples do FQCN; (2) mascara `before_state`/`after_state` com as `MaskRule`s do evento; (3) preenche usuário, timestamp, origin, IP, user-agent e metadata pelos SPIs; (4) faz *upsert* dos índices `entities`/`users`; (5) persiste. Escritas são best-effort: erros são logados e engolidos. **Confirmado** (`src/lib.rs`, `src/state.rs`).
 
-As validações build-time do `AuditProcessor` do Quarkus (`@Audit(entityFqcn=...)`, `lookupMethod`/`lookups`) não existem em Rust; estão só como doc comments em `src/lib.rs`.
+As validações build-time do `AuditProcessor` do Quarkus (`@SgAudit(entityFqcn=...)`, `lookupMethod`/`lookups`) não existem em Rust; estão só como doc comments em `src/lib.rs`.
 
 ## API pública principal
 | Símbolo | Papel | Fonte |
