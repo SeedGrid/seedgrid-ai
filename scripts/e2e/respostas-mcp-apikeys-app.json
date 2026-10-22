@@ -1,0 +1,15 @@
+{
+  "descricao": "Respostas do dono para o E2E do AIDLC com a aplicacao mcp-apikeys completa. So respondem o que a sessao perguntar; o que nao casar vira lacuna no relatorio.",
+  "maxTurnos": 30,
+  "continuarSemPergunta": true,
+  "continuar": "Continue de onde parou ate a aplicacao estar pronta e provada (backend e front subindo, fluxo do pedido funcionando).",
+  "fimQuando": "aplica[cç][aã]o (est[aá] )?pronta|tudo pronto|entrega conclu[ií]da",
+  "respostaPadrao": "Decida pelo padrao do projeto, registre a decisao (ADR) e siga.",
+  "respostas": [
+    { "espera": "slug|pacote", "resposta": "Nome: SeedGrid MCP API Keys. Slug: seedgrid-mcp-apikeys. Pacote Java: br.com.seedgrid.mcp.apikeys" },
+    { "espera": "modelo|login-tenancy|subdomain", "resposta": "E um produto de uso interno: sem cadastro publico, sem cobranca, sem painel admin web e sem tenancy. Precisa de login (security), auditoria e as chaves de API (apikeys)." },
+    { "espera": "opcionais|extensions", "resposta": "So o apikeys alem da base." },
+    { "espera": "dom[ií]nio|dados|e-mail", "resposta": "Dominio do front: mcp-keys.seedgrid.com.br. E-mail remetente: noreply@seedgrid.com.br. E-mail do primeiro administrador: dono@seedgrid.com.br. Nome e codigo da aplicacao: use o padrao. Registry: padrao." },
+    { "espera": "confirm|posso (gerar|rodar)|pode gerar|gera[çc]", "resposta": "Confirmo, pode gerar." }
+  ]
+}
