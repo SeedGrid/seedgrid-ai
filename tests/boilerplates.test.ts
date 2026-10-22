@@ -13,7 +13,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const MODELS = ['login-tenancy', 'subdomain-tenancy'];
+const MODELS = ['login-tenancy', 'modular', 'subdomain-tenancy'];
 const BP = TK + 'boilerplates/';
 
 async function expectInvalid(dir: string, pattern: RegExp) {
@@ -45,7 +45,7 @@ describe('componente boilerplates (conteúdo)', () => {
     for (const m of MODELS) {
       assert.ok(bp.some((s) => s.path === `boilerplates/${m}/backend/pom.xml`), `${m}: backend/pom.xml`);
       assert.ok(bp.some((s) => s.path === `boilerplates/${m}/frontend/package.json`), `${m}: frontend/package.json`);
-      assert.ok(bp.some((s) => s.path === `boilerplates/${m}/admin/package.json`), `${m}: admin/package.json`);
+      if (m !== 'modular') assert.ok(bp.some((s) => s.path === `boilerplates/${m}/admin/package.json`), `${m}: admin/package.json`);
     }
   });
 

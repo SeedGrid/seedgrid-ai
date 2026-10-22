@@ -19,7 +19,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
 const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const SUB = { ...B2B, modelo: 'subdomain-tenancy' };
-const OUTRO = { ...BASE, modelo: 'outro', extensoes: ['apikeys'], selfEnter: 'nao', armazenamentoAvatar: 'filesystem', apikeysUso: 'x' };
+const MODULAR = { ...BASE, modelo: 'modular', extensoes: ['apikeys'], apikeysUso: 'x' };
 
 const dirs: string[] = [];
 const novaPasta = () => { const d = mkdtempSync(join(tmpdir(), 'sg-scaffold-')); dirs.push(d); return d; };
@@ -104,15 +104,34 @@ test('subdomain-tenancy: banco master, porta e artefato proprios', async () => {
   assert.ok(ler(destino, 'frontend/.env.example').includes('SEEDGRID_TENANCY_DOMAIN=localhost'));
 });
 
-test('modelo outro: security entra por dependencia do apikeys, sem esqueleto e com pendencia', async () => {
-  const { destino, saida } = await gerar(OUTRO);
+test('modelo modular: boilerplate proprio com security + audit de base, apikeys opcional, sem admin, sem tenancy', async () => {
+  const { destino, saida } = await gerar(MODULAR);
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  assert.deepEqual(saida.adicionadas, ['security']);
-  assert.ok(saida.extensoes.includes('security'));
-  assert.ok(!existsSync(join(destino, 'backend/pom.xml')));
-  assert.ok(existsSync(join(destino, 'backend/dev.env')));
-  assert.ok(env(ler(destino, 'backend/dev.env')).SEEDGRID_SECURITY_ENCRYPTION_KEY);
-  assert.ok(saida.pendencias.some((p) => /Modelo outro/.test(p)));
+  assert.deepEqual(saida.adicionadas, []);
+  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'security']);
+  const pom = ler(destino, 'backend/pom.xml');
+  assert.ok(pom.includes('<artifactId>portal-chaves-api</artifactId>'));
+  assert.ok(pom.includes('<artifactId>seedgrid-security</artifactId>') && pom.includes('<artifactId>seedgrid-apikeys</artifactId>'));
+  for (const x of ['login-tenancy', 'subdomain-tenancy', 'billing', 'backup', 'business-days']) assert.ok(!pom.includes(`<artifactId>seedgrid-${x}`), `modular nao traz ${x}`);
+  assert.match(ler(destino, 'backend/src/main/resources/application.properties'), /quarkus\.flyway\.locations=.*db\/migration\/apikeys,classpath:db\/migration\/app/);
+  assert.ok(existsSync(join(destino, 'frontend/package.json')));
+  assert.ok(!existsSync(join(destino, 'admin')), 'o modelo modular nao tem admin web');
+  const prod = JSON.parse(ler(destino, 'produto.json'));
+  assert.deepEqual(prod.servicos.map((s: { nome: string }) => s.nome), ['backend', 'frontend']);
+  assert.ok(!prod.dominioAdmin);
+  const e = env(ler(destino, 'backend/dev.env'));
+  assert.ok(e.SEEDGRID_SECURITY_ENCRYPTION_KEY);
+  assert.equal(e.SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');
+  assert.ok(!saida.pendencias.some((p) => /Modelo modular nao tem boilerplate/.test(p)));
+});
+
+test('modelo modular: sem opcionais fica so com security + audit; opcional nao verificado e recusado', async () => {
+  const { saida } = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
+  assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
+  assert.deepEqual([...saida.extensoes].sort(), ['audit', 'security']);
+  const { saida: s2 } = await gerar({ ...MODULAR, extensoes: ['billing'], apikeysUso: undefined });
+  assert.equal(s2.ok, false);
+  assert.ok((s2.erros ?? []).some((x) => /billing/.test(x)), (s2.erros ?? []).join('\n'));
 });
 
 test('B2C e recusado e nada e gravado', async () => {
@@ -417,7 +436,7 @@ test('o quadro de portas lista toda porta publicada do docker-compose gerado, co
 });
 
 test('o produto traz o back falso (Mockoon): arquivo valido, servico no compose com perfil mock e dados ficticios', async () => {
-  for (const r of [B2B, SUB, OUTRO]) {
+  for (const r of [B2B, SUB, MODULAR]) {
     const { destino, saida } = await gerar(r);
     assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
     const arq = `mocks/${r.slug}.mockoon.json`;
@@ -433,7 +452,7 @@ test('o produto traz o back falso (Mockoon): arquivo valido, servico no compose 
     const login = JSON.parse(env.routes.find((x) => x.endpoint === 'public/auth/login')!.responses[0]!.body) as { status: string; token: string };
     assert.equal(login.status, 'OK');
     assert.equal(JSON.parse(Buffer.from(login.token.split('.')[1]!, 'base64url').toString('utf8')).audience, 'client');
-    assert.equal(chaves.includes('get me/security/users'), r.modelo !== 'outro');
+    assert.equal(chaves.includes('get me/security/users'), r.modelo !== 'modular');
     const compose = parse(ler(destino, 'docker-compose.yml')) as { services: Record<string, { image: string; profiles?: string[]; ports?: string[] }> };
     const m = compose.services.mockoon!;
     assert.ok(m.image.startsWith('mockoon/cli:9.'), 'imagem fixada');
@@ -442,4 +461,32 @@ test('o produto traz o back falso (Mockoon): arquivo valido, servico no compose 
     const doProduto = ler(destino, arq);
     assert.ok(!/@(gmail|hotmail)|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}/.test(doProduto), 'dado que parece real no mock');
   }
+});
+
+const { conferirReadme, marcadoresPendentes } = (await import(pathToFileURL(join(SKILL, 'scripts/readme-produto.mjs')).href)) as {
+  conferirReadme: (t: string, o?: { permitirMarcadores?: boolean }) => string[];
+  marcadoresPendentes: (t: string) => string[];
+};
+
+test('todo produto nasce com README.md so do dominio do host: secoes, C4 ate C3 em Mermaid e marcadores para a skill preencher', async () => {
+  for (const r of [B2B, SUB, MODULAR]) {
+    const { destino, saida } = await gerar(r);
+    assert.equal(saida.ok, true, `${r.modelo}: ${saida.erros?.join('; ')}`);
+    assert.ok(saida.criados.includes('README.md'), `${r.modelo}: README.md nao foi gerado`);
+    const md = ler(destino, 'README.md');
+    assert.deepEqual(conferirReadme(md, { permitirMarcadores: true }), [], `${r.modelo}: README incompleto`);
+    for (const t of ['C4Context', 'C4Container', 'C4Component']) assert.ok(md.includes(t), `${r.modelo}: sem ${t}`);
+    assert.ok(marcadoresPendentes(md).length >= 3, `${r.modelo}: esperava marcadores para a skill preencher`);
+    assert.ok(md.includes('docs/COMO-RODAR.md'), `${r.modelo}: README nao aponta para o COMO-RODAR`);
+    for (const e of saida.extensoes) assert.ok(md.includes(`seedgrid-${e}`), `${r.modelo}: C3 sem a extension ${e}`);
+    // dominio do host: nao repete o que a extension faz (so o nome e o caminho da KB)
+    assert.ok(!/POST \/|GET \/|@Sg[A-Z]/.test(md), `${r.modelo}: README descreve internals de extension`);
+  }
+});
+
+test('o guardiao do README reprova README sem secao, sem diagrama ou com marcador sem preencher', () => {
+  assert.ok(conferirReadme('# x\n').length >= 3);
+  const completo = ['## Visão', '## Como funciona', '### Contexto (C1)', '```mermaid', '```', '### Contêineres (C2)', '### Componentes do backend (C3)', '## Fluxos principais', '## Como rodar'].join('\n');
+  assert.deepEqual(conferirReadme(completo), []);
+  assert.deepEqual(conferirReadme(completo + '\n<!-- sg:preencher: algo -->'), ['marcador sem preencher: algo']);
 });

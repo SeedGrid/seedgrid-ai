@@ -187,6 +187,8 @@
         "scripts/mockoon.mjs",
         "scripts/modulos-front.mjs",
         "scripts/portas.mjs",
+        "scripts/readme-produto.mjs",
+        "scripts/verificar-subida.mjs",
         "scripts/reconfigurar.mjs",
         "scripts/scaffold-produto.mjs",
         "assets/admin.Dockerfile.tpl",
@@ -204,6 +206,7 @@
       "type": "boilerplates",
       "names": [
         "login-tenancy",
+        "modular",
         "subdomain-tenancy"
       ]
     },

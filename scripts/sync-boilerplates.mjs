@@ -3,6 +3,7 @@
 // nao entra no conteudo instalado nos hosts). Copia SO os arquivos versionados da ref (padrao origin/main), nunca a pasta de trabalho.
 // Uso:
 //   node scripts/sync-boilerplates.mjs [--repo <pasta>] [--ref origin/main] [--fetch] [--dry-run]
+//   node scripts/sync-boilerplates.mjs --modelos outro[,x]   (so esses modelos; os demais ficam como estao, sem comparar nem remover)
 //   node scripts/sync-boilerplates.mjs --check [--fetch] [--soft]   (nao altera nada; sai com 1 se a copia estiver desatualizada)
 // --soft: se o repositorio do boilerplate nao estiver acessivel, avisa e sai com 0 (usado no prepack).
 // Transformacoes (as mesmas que o init desfaz no produto): binario -> <arquivo>.b64; .gitignore/.gitattributes/.npmignore -> <arquivo>.template.
@@ -84,7 +85,10 @@ async function main() {
   const commit = git(repo, ['rev-parse', '--verify', `${ref}^{commit}`]);
   if (!commit.ok) aviso(`ref ${ref} inexistente em ${repo}`);
 
-  const modelos = existsSync(DESTINO) ? readdirSync(DESTINO).filter((n) => statSync(join(DESTINO, n)).isDirectory()).sort() : [];
+  const todos = existsSync(DESTINO) ? readdirSync(DESTINO).filter((n) => statSync(join(DESTINO, n)).isDirectory()).sort() : [];
+  const so = arg('modelos') ? arg('modelos').split(',').map((x) => x.trim()).filter(Boolean) : null;
+  if (so) { const faltam = so.filter((m) => !todos.includes(m)); if (faltam.length) falhar(`modelo(s) sem pasta em seedgridKB/SeedGrid/Toolkit/boilerplates/: ${faltam.join(', ')} (crie a pasta vazia antes)`); }
+  const modelos = so ?? todos;
   if (modelos.length === 0) falhar('nenhum modelo em seedgridKB/SeedGrid/Toolkit/boilerplates/');
   const desejado = new Map(); // caminho relativo ao DESTINO (com /) -> Buffer
   for (const m of modelos) {
@@ -104,7 +108,7 @@ async function main() {
   }
 
   const atual = new Map();
-  for (const p of arquivos(DESTINO)) atual.set(relative(DESTINO, p).split(sep).join('/'), readFileSync(p));
+  for (const p of arquivos(DESTINO)) if (!so || so.includes(relative(DESTINO, p).split(sep)[0])) atual.set(relative(DESTINO, p).split(sep).join('/'), readFileSync(p));
   const novos = [], mudados = [], removidos = [];
   for (const [rel, dados] of desejado) {
     if (!atual.has(rel)) novos.push(rel);
@@ -134,7 +138,7 @@ async function main() {
     let d = dirname(join(DESTINO, rel));
     while (d !== DESTINO && existsSync(d) && readdirSync(d).length === 0) { rmSync(d, { recursive: true }); d = dirname(d); }
   }
-  writeFileSync(ORIGEM_JSON, JSON.stringify({ repositorio: git(repo, ['remote', 'get-url', 'origin']).out || repo, ref, commit: commit.out, modelos, arquivos: desejado.size }, null, 2) + '\n');
+  if (!so) writeFileSync(ORIGEM_JSON, JSON.stringify({ repositorio: git(repo, ['remote', 'get-url', 'origin']).out || repo, ref, commit: commit.out, modelos, arquivos: desejado.size }, null, 2) + '\n');
   const trava = spawnSync(process.execPath, [join(RAIZ, 'scripts', 'check-secrets.mjs'), '--dir', DESTINO], { stdio: 'inherit' });
   if (trava.status !== 0) falhar('check-secrets reprovou a copia: nada deve ser comitado. Corrija no repositorio do boilerplate e rode de novo.');
   console.log('[sync-boilerplates] pronto. Confira "git status" e "npm test" e comite.');

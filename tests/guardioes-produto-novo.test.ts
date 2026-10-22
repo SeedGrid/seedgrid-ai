@@ -36,8 +36,12 @@ test('GUARDIAO determinismo da matriz: toda combinacao valida resolve sem erro e
   const modelos = matriz.perguntas.find((p) => p.id === 'modelo')!.opcoes!.filter((o) => o.disponivel !== false).map((o) => o.id);
   let combinacoes = 0;
   for (const modelo of modelos) for (const selfEnter of ['nao', 'sim']) for (const auditoria of ['postgres', 'mongodb']) for (const armazenamento of PROVIDERS) {
-    const extras = modelo === 'outro' ? ['security', 'audit', 'backup', 'apikeys', 'billing'] : ['exchange', 'cache'];
-    const r = { ...COMPLETA, modelo, extensoes: extras, selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
+    // O modelo modular tem base fixa (security + audit, filesystem, sem self-enter, sem admin): so se pergunta os opcionais disponiveis.
+    if (modelo === 'modular' && !(selfEnter === 'nao' && auditoria === 'postgres' && armazenamento === 'filesystem')) { combinacoes++; continue; }
+    const { dominioAdmin: _a, selfEnter: _s, auditoria: _u, armazenamentoAvatar: _v, armazenamentoBackup: _b, billingProvider: _p, trialDias: _t, planos: _l, ...enxuta } = COMPLETA as Record<string, unknown>;
+    const r = modelo === 'modular'
+      ? { ...enxuta, modelo, extensoes: ['apikeys'] }
+      : { ...COMPLETA, modelo, extensoes: ['exchange', 'cache'], selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
     const a = lib.resolver(matriz, catalogo, r);
     const b = lib.resolver(matriz, catalogo, JSON.parse(JSON.stringify(r)));
     assert.deepEqual(a.erros, [], `${modelo}/${selfEnter}/${auditoria}/${armazenamento}`);

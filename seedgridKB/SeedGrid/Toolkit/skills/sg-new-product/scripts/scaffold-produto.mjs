@@ -12,6 +12,7 @@ import { carregar, resolver, SEGREDO } from './matriz.mjs';
 import { removerModulosFront, validarAlvos } from './modulos-front.mjs';
 import { comoRodarMd, lerPortas, quadro } from './portas.mjs';
 import { composeMockoon, montarMockoon } from './mockoon.mjs';
+import { readmeProduto } from './readme-produto.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ASSETS = join(AQUI, '..', 'assets');
@@ -69,7 +70,7 @@ export function criarGerador(sementes = {}) {
 // ---------- efeitos ----------
 // Reune os efeitos das respostas, na ordem das perguntas; env de uma resposta mais tarde vence a anterior.
 function juntar(efeitos, matriz) {
-  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pomAdicionar: [], pendencias: [], produto: {}, docs: [] };
+  const r = { env: new Map(), remover: new Set(), front: new Map(), compose: [], portas: {}, servicos: null, boilerplate: null, extRemover: [], frontRemover: [], pomRemover: [], pomManter: [], pomAdicionar: [], flywayLocations: [], pendencias: [], produto: {}, docs: [] };
   for (const { efeito } of efeitos) {
     for (const b of efeito.blocos_env ?? []) for (const [k, v] of Object.entries(matriz.blocos_env[b])) r.env.set(k, v);
     for (const [k, v] of Object.entries(efeito.env && !Array.isArray(efeito.env) ? efeito.env : {})) r.env.set(k, v);
@@ -84,6 +85,7 @@ function juntar(efeitos, matriz) {
     r.pomRemover.push(...(efeito.pom_remover ?? []));
     r.pomManter.push(...(efeito.pom_manter ?? []));
     for (const d of efeito.pom_adicionar ?? []) if (!r.pomAdicionar.includes(d)) r.pomAdicionar.push(d);
+    for (const l of efeito.flyway_locations ?? []) if (!r.flywayLocations.includes(l)) r.flywayLocations.push(l);
     r.pendencias.push(...(efeito.pendencias ?? []));
     r.docs.push(...(efeito.docs ?? []));
     if (efeito.produto && !Array.isArray(efeito.produto)) Object.assign(r.produto, efeito.produto);
@@ -334,6 +336,16 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   const feitoPom = origem ? ajustarPom(destino, { artefatoApi, nome: R.nome, r, catalogo, removerPom: r.pomRemover, adicionar }) : [];
   notas.push(...feitoPom);
   if (origem) notas.push(...removerModulosFront(destino, r.frontRemover, modulosFront));
+  // Migrations das extensions opcionais do modelo "modular": entram na lista de locations do Flyway, antes da do host (app).
+  if (origem && r.flywayLocations.length) {
+    const props = join(destino, 'backend/src/main/resources/application.properties');
+    if (existsSync(props)) {
+      let txt = readFileSync(props, 'utf8');
+      const novo = txt.replace(/^(quarkus\.flyway\.locations=.*?)(classpath:db\/migration\/app)/m, (_, ini, app) => ini + r.flywayLocations.map((l) => `classpath:db/migration/${l},`).join('') + app);
+      if (novo !== txt) { writeFileSync(props, novo); notas.push(`application.properties: migrations de ${r.flywayLocations.join(', ')} na lista do Flyway`); }
+      else notas.push('AVISO: nao achei quarkus.flyway.locations no application.properties; acrescente as locations das extensions escolhidas');
+    }
+  }
   const apagar = [...new Set(r.extRemover.flatMap((id) => catalogo.extensions[id].remover_se_ausente_arquivos ?? []))];
   if (origem) notas.push(...removerArquivos(destino, apagar));
 
@@ -392,7 +404,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
     slug,
     nome: R.nome,
     dominio: R.dominioFront,
-    dominioAdmin: R.dominioAdmin,
+    dominioAdmin: R.modelo === 'modular' ? undefined : R.dominioAdmin, // o modelo modular nao tem admin web
     registry: R.registry,
     pacote: R.pacote,
     ...r.produto,
@@ -417,12 +429,15 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
 
   // 8a. back falso para o front (Mockoon): so autenticacao e perfil quando nao ha tenancy; com tenancy, usuarios e perfis tambem
-  const modulosMock = ['security', ...(R.modelo === 'outro' ? [] : ['usuarios-e-perfis'])];
+  const modulosMock = ['security', ...(R.modelo === 'modular' ? [] : ['usuarios-e-perfis'])];
   gravar(destino, `mocks/${slug}.mockoon.json`, JSON.stringify(montarMockoon({ slug, nome: R.nome, modulos: modulosMock }), null, 2) + '\n', criados);
 
   // 8b. quadro de portas e comandos, lido do docker-compose.yml gravado
   const portas = lerPortas(destino);
   gravar(destino, 'docs/COMO-RODAR.md', comoRodarMd(portas), criados);
+
+  // 8c. README.md do produto (so dominio do host): esqueleto com C1/C2/C3 derivados e marcadores para a skill preencher
+  gravar(destino, 'README.md', readmeProduto(produto, portas), criados);
 
   // 9. manifesto: as respostas e o hash de cada arquivo versionado gerado; e a base da reconfiguracao (nao tem segredo)
   const arquivos = {};

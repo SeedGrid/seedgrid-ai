@@ -20,6 +20,8 @@ Esta skill transforma um pedido de produto novo em uma pasta pronta para subir. 
 - `data/matriz-produto.json`: as perguntas, na ordem, com opções, condições (`se`) e o efeito de cada resposta.
 - `data/catalogo.json`: extensions (dependências, o que cada modelo traz e o que não traz).
 - `scripts/scaffold-produto.mjs`: valida as respostas contra a matriz e gera o produto.
+- `scripts/readme-produto.mjs`: esqueleto do `README.md` (C4 até C3 em Mermaid) e guardião dos marcadores.
+- `scripts/verificar-subida.mjs`: sobe o produto e verifica (seção 3b).
 - `.ai/boilerplates/`: os modelos (`login-tenancy`, `subdomain-tenancy`) que o script copia.
 
 ## 1. Entrevista
@@ -29,7 +31,7 @@ Leia `data/matriz-produto.json` e percorra `perguntas` na ordem de `ordem`.
 1. **Uma pergunta por vez.** Mostre o texto de `pergunta`, as opções (`rotulo`) e a sua **recomendação** (`recomendacao`). Pergunta de `campos` pede os campos juntos; os que têm `padrao` podem ser aceitos com Enter.
 2. **Só pergunte o que se aplica.** Uma pergunta com `se` só aparece quando a condição vale: `modelo` (a resposta da pergunta 2 está na lista), `extensao` (alguma das extensions está presente: as que o modelo traz, as escolhidas e as trazidas por dependência) e `resposta` (uma resposta anterior tem o valor indicado). Para saber o que o modelo traz, use `efeito.extensions` da opção escolhida na pergunta 2.
 3. **Opção desligada** (`disponivel: false`, como o B2C) aparece na lista com o `motivo`; não pode ser escolhida.
-4. **Modelo "outro" (3b):** quem escolhe as extensions uma a uma recebe também as dependências (`depende_de` no catálogo). Diga isso: "escolher `apikeys` traz o `security` junto".
+4. **Modelo "modular" (3b):** quem escolhe as extensions uma a uma recebe também as dependências (`depende_de` no catálogo). Diga isso: "escolher `apikeys` traz o `security` junto".
 5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa) e siga; não prometa nem improvise.
 6. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
 
@@ -72,8 +74,22 @@ Depois do script, siga `sg-plan-goal` para o plano do produto e escreva **apenas
 2. **ADRs** em `docs/ai/decisions/` com `sg-adr`: modelo do projeto, onde gravar a auditoria, armazenamento, self-enter (e como se entra) e billing. Uma decisão por ADR, com a data e a alternativa descartada.
 3. **Handoff** em `docs/ai/handoffs/`: como subir (`docker compose up -d`, depois o backend com `backend/run.sh`, depois `frontend` e `admin` com `pnpm install && pnpm dev`), o que está pronto, o que falta e quem fornece cada pendência.
 4. **Demandas** em `docs/ai/demands/`: o que o produto precisa e a extension ou a KB não entrega (nunca alterar a extension).
+5. **README.md** na raiz do produto (o script já gera o esqueleto): preencha **todos** os marcadores `<!-- sg:preencher: ... -->` com o **domínio do host** (o que o produto faz, como funciona, nomes dos componentes do domínio em C3, sistemas externos do domínio em C1, e `sequenceDiagram` dos fluxos que valem a pena). Só o domínio do host: não repita o que cada extension faz (isso está na KB, `.ai/brain/`); cite a extension pelo nome. C1, C2 e C3 em Mermaid (`C4Context`, `C4Container`, `C4Component`). Ao terminar não pode sobrar marcador (`marcadoresPendentes` em `scripts/readme-produto.mjs`).
 
 Depois acione o `arquiteto` com o plano do produto para a primeira feature de negócio; o resto do fluxo segue `.ai/rules/coordenacao.md`.
+
+## 3b. Subir e verificar (obrigatório antes de dar o produto por entregue)
+
+Depois da configuração e dos documentos, **suba o produto de verdade**. A entrega só vale se subir:
+
+```bash
+node .ai/skills/sg-new-product/scripts/verificar-subida.mjs --destino . [--runtime docker|podman] [--sem-front] [--timeout 240]
+```
+
+Passos: (1) dependências do `docker-compose.yml` (banco, Mailpit...; o perfil `mock` fica de fora) e suas portas; (2) `backend/run.sh` responde o health do Quarkus (`q/health/ready`, HTTP 200) e o **log do boot não tem `ERROR`**; (3) login do primeiro administrador (do `dev.env`) e rota protegida (200 com token, 401 sem); (4) `frontend` e `admin`, quando existirem, respondem na porta (precisa de `pnpm`; sem ele o passo fica "não verificado"). Ele para só o que subiu e mostra o passo que falhou, com o trecho do log. Segredo nunca aparece no relato.
+
+- **Falhou:** relate o passo e o trecho do log ao usuário e **não conserte por conta própria** nem marque o produto como entregue; registre em `docs/ai/reports/` e siga `coordenacao.md` (o conserto é uma demanda, e a causa pode estar na matriz ou no boilerplate, não no produto).
+- **"Não verificado"** (sem docker/podman, sem pnpm) aparece como tal no relato final; não vira "ok".
 
 ## 4. Mudar depois: adicionar ou remover um módulo, trocar uma escolha
 
@@ -101,6 +117,6 @@ Como funciona e o que esperar:
 - **Termine afirmando, não perguntando.** Depois dos documentos, relate o que foi feito e as pendências e diga o próximo passo em uma frase afirmativa ("o próximo passo é acionar o `arquiteto`..."); perguntas de negócio ficam para o `arquiteto`.
 - Não suba a infraestrutura nem publique nada sem o usuário pedir. `git push` e deploy são decisão dele.
 - Não edite `backend/dev.env` nem `.env` à mão para "consertar" um valor gerado sem explicar; para trocar uma resposta use a reconfiguração (seção 4).
-- Modelo "outro" não tem boilerplate: o script gera os arquivos de configuração e deixa `backend/`, `frontend/` e `admin/` sem esqueleto; isso aparece como `PENDENTE`.
+- Modelo "modular" não tem boilerplate: o script gera os arquivos de configuração e deixa `backend/`, `frontend/` e `admin/` sem esqueleto; isso aparece como `PENDENTE`.
 - Remover as telas de um módulo do front ou do admin só é automático para as receitas de `data/modulos-front.json`, todas provadas com `pnpm build` (hoje: `self-enter`, `api-keys`, `audit`, `backup`, `ai-pricing` e `exchange`, cada uma nos escopos em que tem tela). Billing, realtime e whatsapp não têm receita (estão entrelaçados em código das telas): para eles os flags do `.env` ligam e desligam o comportamento no backend, e a remoção das telas vira demanda em `docs/ai/demands/`.
 - Remover as telas **não** desliga o backend do módulo, e o painel inicial do admin pode mostrar a seção vazia (auditoria) ou "cotação indisponível" (exchange) sem o módulo: avise o usuário.

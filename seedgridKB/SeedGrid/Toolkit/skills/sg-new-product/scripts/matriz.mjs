@@ -43,7 +43,7 @@ function validar(regra, valor) {
 export const SEGREDO = /\$\{segredo:([A-Z0-9_]+)\}/g;
 const vazio = (e) => !e || Object.keys(e).length === 0;
 const TENANCIES = ['login-tenancy', 'subdomain-tenancy'];
-const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'modulos_front_remover', 'portas', 'servicos', 'pom_remover', 'pom_manter', 'pom_adicionar', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
+const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'modulos_front_remover', 'portas', 'servicos', 'pom_remover', 'pom_manter', 'pom_adicionar', 'flyway_locations', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
 
 // Confere a matriz contra o catalogo. Retorna a lista de problemas (vazia = valida).
 export function validarMatriz(matriz, catalogo, modulosFront = null) {
@@ -106,7 +106,7 @@ export function validarMatriz(matriz, catalogo, modulosFront = null) {
   }
   // As opcoes da pergunta 3 sao exatamente o que cada modelo nao traz; a 3b cobre todas as extensions.
   const p3 = matriz.perguntas.find((q) => q.id === 'extensoes-opcionais');
-  const p3b = matriz.perguntas.find((q) => q.id === 'extensoes-modelo-outro');
+  const p3b = matriz.perguntas.find((q) => q.id === 'extensoes-modelo-modular');
   const ofertadas = new Set(p3?.opcoes.map((o) => o.id));
   for (const t of TENANCIES) {
     const mod = catalogo.modelos[t];
@@ -116,7 +116,8 @@ export function validarMatriz(matriz, catalogo, modulosFront = null) {
     for (const x of mod.traz) if (ofertadas.has(x)) e(`pergunta 3: ${x} ja vem em ${t} e nao pode ser opcional`);
   }
   const ofertadasB = new Set(p3b?.opcoes.map((o) => o.id));
-  for (const x of extensoesCatalogo) if (!ofertadasB.has(x)) e(`pergunta 3b: falta a extension ${x} do catalogo`);
+  const baseModular = new Set(matriz.perguntas.find((q) => q.id === 'modelo')?.opcoes.find((o) => o.id === 'modular')?.efeito?.extensions ?? []); // base do modelo modular: nao se pergunta
+  for (const x of extensoesCatalogo) if (!ofertadasB.has(x) && !baseModular.has(x)) e(`pergunta 3b: falta a extension ${x} do catalogo`);
   for (const t of TENANCIES) if (ofertadasB.has(t)) e(`pergunta 3b: ${t} nao pode ser oferecida`);
   return erros;
 }
@@ -174,6 +175,7 @@ export function resolver(matriz, catalogo, entrada) {
 
     if (p.tipo === 'campos') {
       for (const c of p.campos) {
+        if (c.se?.modelo && !c.se.modelo.includes(ctx.modelo)) { naoAplica.set(c.id, p.numero); continue; } // campo so de alguns modelos (ex.: dominioAdmin: o modelo modular nao tem admin)
         let v = respostas[c.id];
         if ((v === undefined || v === '') && c.padrao !== undefined) {
           v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => respostas[n] ?? '');
@@ -203,8 +205,8 @@ export function resolver(matriz, catalogo, entrada) {
       if (repetido) e(`pergunta ${p.numero}: opcao repetida ${repetido}`);
       for (const x of v) if (!validos.has(x)) e(`pergunta ${p.numero}: opcao desconhecida "${x}" (validas: ${[...validos].join(', ')})`);
       const escolhidas = [...validos].filter((x) => v.includes(x));
-      const fechadas = p.id === 'extensoes-modelo-outro' ? fecharDependencias(catalogo, escolhidas) : new Set(escolhidas);
-      adicionadas = p.id === 'extensoes-modelo-outro' ? [...fechadas].filter((x) => !escolhidas.includes(x)).sort() : [];
+      const fechadas = p.id === 'extensoes-modelo-modular' ? fecharDependencias(catalogo, escolhidas) : new Set(escolhidas);
+      adicionadas = p.id === 'extensoes-modelo-modular' ? [...fechadas].filter((x) => !escolhidas.includes(x) && !ctx.extensoes.has(x)).sort() : []; // o que a base do modelo ja traz nao conta como 'trazida por dependencia'
       for (const o of p.opcoes) {
         if (fechadas.has(o.id)) { efeitos.push({ origem: `${p.id}.${o.id}`, efeito: o.efeito }); if (catalogo.extensions[o.id]) ctx.extensoes.add(o.id); }
         else if (o.efeito_ausente) efeitos.push({ origem: `${p.id}.${o.id}.ausente`, efeito: o.efeito_ausente });
@@ -213,7 +215,7 @@ export function resolver(matriz, catalogo, entrada) {
     }
   }
   for (const k of Object.keys(entrada)) {
-    if (usadas.has(k)) continue;
+    if (usadas.has(k) || entrada[k] === undefined) continue; // chave sem valor e o mesmo que nao responder
     if (naoAplica.has(k)) e(`"${k}" nao se aplica as respostas anteriores (pergunta ${naoAplica.get(k)})`);
     else e(`resposta desconhecida ou fora da matriz: "${k}"`);
   }

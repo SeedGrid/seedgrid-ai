@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>br.com.seedgrid.app</groupId>
+    <artifactId>seedgrid-app-api</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>SeedGrid App API</name>
+    <description>Boilerplate de API Quarkus do modelo "modular": seedgrid-security e seedgrid-audit, sem tenancy</description>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.version>3.30.6</quarkus.platform.version>
+        <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
+        <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
+
+        <!-- Modelo "modular": sem tenancy, logo sem o BOM do login-tenancy. As versoes da foundation
+             ficam explicitas aqui, as mesmas do seedgrid-login-tenancy-parent 2026.10.16. Cada
+             extension opcional que o sg-new-product acrescentar traz a sua <version> junto da
+             dependencia; mantenha-as alinhadas com estas. -->
+        <seedgrid.security.version>2026.10.14</seedgrid.security.version>
+        <seedgrid.audit.version>2026.09.25</seedgrid.audit.version>
+        <seedgrid.privacy.version>2026.07.27</seedgrid.privacy.version>
+        <seedgrid.commons.version>2026.10.10</seedgrid.commons.version>
+        <seedgrid.resilience.version>2026.10.13</seedgrid.resilience.version>
+        <!-- No seedgrid-filemanagement o minio e <optional>: nao chega transitivo. -->
+        <minio.version>8.5.9</minio.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
+        <!-- /q/health (guardiao de subida, healthcheck do compose e do deploy). -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+
+        <!-- Autenticacao, usuarios, perfis e permissoes (RBAC). Traz commons, privacy, audit-core,
+             filemanagement, cache-core e resilience-core. -->
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-security</artifactId>
+            <version>${seedgrid.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-privacy</artifactId>
+            <version>${seedgrid.privacy.version}</version>
+        </dependency>
+
+        <!-- Provider de auditoria (PostgreSQL). A security traz so o audit-core; o host escolhe o provider. -->
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-audit-postgresql</artifactId>
+            <version>${seedgrid.audit.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- MinIO SDK: so quebra em runtime (NoClassDefFoundError) se o avatar for minio. -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-test-security</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

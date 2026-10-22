@@ -251,12 +251,25 @@
           }
         },
         {
-          "id": "outro",
-          "rotulo": "Outro (escolher as extensions uma a uma)",
+          "id": "modular",
+          "rotulo": "Modular (security + audit + pecas opcionais)",
           "efeito": {
             "produto": {
-              "modelo": "outro"
+              "modelo": "modular",
+              "auditoria": "postgres",
+              "armazenamentoAvatar": "filesystem"
             },
+            "boilerplate": "modular",
+            "extensions": [
+              "security",
+              "audit"
+            ],
+            "blocos_env": [
+              "aplicacao",
+              "banco-login-tenancy",
+              "security",
+              "primeiro-admin"
+            ],
             "compose": [
               "postgres",
               "mailpit"
@@ -268,19 +281,12 @@
             },
             "servicos": {
               "backend": 8080,
-              "frontend": 3000,
-              "admin": 3001
+              "frontend": 3000
             },
-            "blocos_env": [
-              "aplicacao"
-            ],
             "env_front": {
               "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
               "OTEL_SDK_DISABLED": "true"
-            },
-            "pendencias": [
-              "Modelo outro nao tem boilerplate: backend/, frontend/ e admin/ ficam sem esqueleto e precisam ser criados pelo time."
-            ]
+            }
           }
         }
       ]
@@ -427,47 +433,31 @@
       ]
     },
     {
-      "id": "extensoes-modelo-outro",
+      "id": "extensoes-modelo-modular",
       "numero": "3b",
       "ordem": 4,
       "tipo": "multi",
       "chave": "extensoes",
       "se": {
         "modelo": [
-          "outro"
+          "modular"
         ]
       },
       "origem_opcoes": "catalogo.extensions (todas, exceto login-tenancy e subdomain-tenancy); a selecao fecha as dependencias (depende_de)",
-      "pergunta": "Quais extensions o produto usa? (as dependencias entram juntas)",
-      "recomendacao": "Escolher apikeys traz o security junto. Security sozinho e valido.",
+      "pergunta": "Quais opcionais o produto usa alem da base (security e audit, que ja vem)? (as dependencias entram juntas)",
+      "recomendacao": "Nenhum opcional e valido: o produto fica so com security e audit. Escolher apikeys nao traz mais nada alem da base.",
       "opcoes": [
         {
-          "id": "security",
-          "rotulo": "security (JWT, usuarios, perfis, empresas)",
-          "efeito": {
-            "extensions": [
-              "security"
-            ],
-            "blocos_env": [
-              "security",
-              "primeiro-admin"
-            ]
-          }
-        },
-        {
-          "id": "audit",
-          "rotulo": "audit (trilha de auditoria)",
-          "efeito": {
-            "extensions": [
-              "audit"
-            ]
-          }
-        },
-        {
           "id": "apikeys",
-          "rotulo": "apikeys (chaves de API maquina-a-maquina)",
+          "rotulo": "apikeys (chaves de API por usuario)",
           "efeito": {
             "extensions": [
+              "apikeys"
+            ],
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-apikeys:2026.10.14"
+            ],
+            "flyway_locations": [
               "apikeys"
             ]
           }
@@ -482,7 +472,9 @@
             "blocos_env": [
               "backup-mailer"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "billing",
@@ -491,7 +483,9 @@
             "extensions": [
               "billing"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "notification",
@@ -500,7 +494,9 @@
             "extensions": [
               "notification"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "filemanagement",
@@ -509,7 +505,9 @@
             "extensions": [
               "filemanagement"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "privacy",
@@ -521,7 +519,9 @@
             "blocos_env": [
               "privacy"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "resilience",
@@ -530,7 +530,9 @@
             "extensions": [
               "resilience"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "ai-pricing",
@@ -542,7 +544,9 @@
             "env": {
               "SEEDGRID_AI_PRICING_TIMEZONE": "America/Sao_Paulo"
             }
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "exchange",
@@ -551,7 +555,9 @@
             "extensions": [
               "exchange"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "business-days",
@@ -560,7 +566,9 @@
             "extensions": [
               "business-days"
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "whatsapp",
@@ -573,7 +581,9 @@
               "SEEDGRID_WHATSAPP_API": "evolution",
               "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "${externo}"
             }
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "realtime",
@@ -585,7 +595,9 @@
             "pendencias": [
               "realtime: a chave do projeto no Pulse e o servico Pulse sao fornecidos pelo dono."
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         },
         {
           "id": "cache",
@@ -597,7 +609,9 @@
             "pendencias": [
               "cache: o provider e o servico do compose sao fornecidos pelo dono."
             ]
-          }
+          },
+          "disponivel": false,
+          "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
         }
       ]
     },
@@ -610,6 +624,11 @@
       "se": {
         "extensao": [
           "security"
+        ],
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
         ]
       },
       "pergunta": "O self-enter (entrada de novos usuarios sem cadastro manual) fica ligado?",
@@ -758,6 +777,11 @@
       "se": {
         "extensao": [
           "audit"
+        ],
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
         ]
       },
       "pergunta": "Onde gravar a auditoria?",
@@ -805,6 +829,11 @@
       "se": {
         "extensao": [
           "security"
+        ],
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
         ]
       },
       "pergunta": "Onde guardar as fotos de avatar dos usuarios?",
@@ -1624,6 +1653,13 @@
             "usado_em": [
               "produto.json:dominioAdmin",
               "publicacao:workflow do EasyPanel"
+            ]
+          },
+          "se": {
+            "modelo": [
+              "login-tenancy-b2b",
+              "login-tenancy-b2c",
+              "subdomain-tenancy"
             ]
           }
         },
