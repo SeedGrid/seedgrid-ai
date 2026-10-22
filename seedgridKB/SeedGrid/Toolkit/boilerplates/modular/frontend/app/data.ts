@@ -9,7 +9,14 @@ export type NavItem = {
   permission?: string;
 };
 
-// Menu lateral do produto (modelo "modular"). Comeca vazio: cada tela de negocio entra aqui com o
-// `href` e a permissao de READ que o backend cobra (`@PermissionsAllowed`). Rota de menu que nao
-// bate com uma pagina real e' 404 garantido: cada `href` tem um `app/<href>/page.tsx`.
-export const navItems: NavItem[] = [];
+// Menu lateral do produto (modelo "modular"). Traz as telas da base (security e audit): usuarios, perfis e
+// auditoria; as das extensions opcionais entram conforme a escolha (API Keys sai se apikeys nao foi escolhida).
+// Meu perfil, Temas e Sair vivem no menu do usuario (Shell.tsx). As permissoes sao as do catalogo das
+// extensions (as mesmas que os controllers cobram no @PermissionsAllowed). Rota de menu que nao bate com uma
+// pagina real e' 404 garantido: cada href tem um app/<href>/page.tsx.
+export const navItems: NavItem[] = [
+  { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
+  { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
+  { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
+  { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+];

@@ -10,6 +10,8 @@ import {
 } from "@seedgrid/fe-components";
 import {
   LogOut,
+  Palette,
+  UserCog,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useState, type CSSProperties } from "react";
@@ -214,9 +216,23 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
                 me?.userPublicId && me.hasAvatar
                   ? `/api/security/users/${me.userPublicId}/avatar`
                   : undefined,
+              onClick: () => router.push("/perfil"),
             }}
-            // Menu do usuario: so o Sair (telas de perfil, tema e assinatura nao existem neste modelo).
+            // Menu do usuario (obrigatorio em todo produto SeedGrid): Meu perfil · Temas · Sair.
             userMenu={[
+              {
+                id: "profile",
+                label: "Meu perfil",
+                icon: <UserCog size={16} />,
+                url: "/perfil",
+              },
+              {
+                id: "themes",
+                label: "Temas",
+                hint: "Escolha e personalize o tema visual",
+                icon: <Palette size={16} />,
+                url: "/temas",
+              },
               {
                 id: "logout",
                 label: "Sair",

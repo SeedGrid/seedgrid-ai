@@ -507,3 +507,18 @@ test('modelo modular: entidades de apikeys e privacy entram em quarkus.hibernate
   const { destino: d2 } = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
   assert.ok(!ler(d2, 'backend/src/main/resources/application.properties').includes('apikeys.entities'));
 });
+
+test('modelo modular: front com as telas da base e o menu do usuario (Meu perfil, Temas, Sair); API Keys so com apikeys', async () => {
+  const com = await gerar({ ...MODULAR, extensoes: ['apikeys'] });
+  for (const rel of ['perfil/page.tsx', 'temas/page.tsx', 'security/users/user_list/page.tsx', 'security/roles/role_list/page.tsx', 'security/audit/page.tsx', 'security/two-factor/page.tsx', 'security/apikeys/apikey_list/page.tsx', 'api/security/apikeys/route.ts']) {
+    assert.ok(existsSync(join(com.destino, 'frontend/app', rel)), `${rel} deve existir`);
+  }
+  const shell = ler(com.destino, 'frontend/app/components/Shell.tsx');
+  for (const item of ['Meu perfil', 'Temas', 'Sair']) assert.ok(shell.includes(`label: "${item}"`), item);
+  assert.ok(ler(com.destino, 'frontend/app/data.ts').includes('/security/apikeys/apikey_list'));
+  const sem = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
+  assert.ok(!existsSync(join(sem.destino, 'frontend/app/security/apikeys')));
+  assert.ok(!existsSync(join(sem.destino, 'frontend/app/api/security/apikeys')));
+  assert.ok(!ler(sem.destino, 'frontend/app/data.ts').includes('apikey_list'));
+  assert.ok(existsSync(join(sem.destino, 'frontend/app/security/users/user_list/page.tsx')) && existsSync(join(sem.destino, 'frontend/app/perfil/page.tsx')));
+});

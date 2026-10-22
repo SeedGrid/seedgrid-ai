@@ -463,6 +463,11 @@
             "hibernate_packages": [
               "br.com.seedgrid.apikeys.entities"
             ]
+          },
+          "efeito_ausente": {
+            "modulos_front_remover": [
+              "api-keys@frontend"
+            ]
           }
         },
         {
