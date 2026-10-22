@@ -5,6 +5,7 @@
 // Quem executa NAO conduz o fluxo e NAO escreve codigo do produto: so responde como o usuario, com as respostas do arquivo,
 // e registra o que a sessao perguntou, onde travou e o que entregou. Perguntas sem resposta no arquivo recebem a resposta padrao
 // e viram "lacunas" no relatorio (e o sinal de que o AIDLC deveria ter decidido sozinho ou que falta regra).
+// O custo de cada turno e ACUMULADO da sessao (o claude -p --resume reporta o total); o total do relatorio e o maior valor.
 // Uso: node scripts/e2e-aidlc-app.mjs --destino <pasta vazia> --pedido <arquivo.md> [--respostas <json>] [--saida <pasta>]
 //        [--max-turnos 30] [--modelo <modelo>] [--sem-build] [--retomar <session_id> --inicio <n> --mensagem <texto>]
 import { spawnSync } from 'node:child_process';
@@ -102,7 +103,7 @@ try { ({ turnos, lacunas } = conduzir()); } catch (e) { writeFileSync(join(saida
 const lista = arquivos(destino).filter((f) => !/^(\.ai|\.claude|\.agents)\//.test(f));
 const relatorio = {
   destino, maxTurnos, turnos: turnos.map((t) => ({ n: t.n, minutos: +(t.ms / 60000).toFixed(1), custoUsd: +t.custo.toFixed(2), passosInternos: t.turnosInternos, erro: t.erro, motivo: t.motivo, negadas: t.negadas.map((p) => p.tool_name ?? p).slice(0, 10), fim: t.texto.slice(-300) })),
-  lacunas, arquivosDoProduto: lista.length, custoTotalUsd: +turnos.reduce((s, t) => s + t.custo, 0).toFixed(2),
+  lacunas, arquivosDoProduto: lista.length, custoTotalUsd: +Math.max(0, ...turnos.map((t) => t.custo)).toFixed(2),
   produtoJson: existsSync(join(destino, 'produto.json')), backend: existsSync(join(destino, 'backend/pom.xml')), frontend: existsSync(join(destino, 'frontend/package.json')),
 };
 writeFileSync(join(saida, 'relatorio.json'), JSON.stringify(relatorio, null, 2));
