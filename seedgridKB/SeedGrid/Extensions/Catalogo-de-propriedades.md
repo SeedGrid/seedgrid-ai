@@ -34,7 +34,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
 | Quarkus | resilience | 15 |
-| Quarkus | security | 153 |
+| Quarkus | security | 154 |
 | Quarkus | subdomain-tenancy | 53 |
 | Quarkus | whatsapp | 5 |
 | Rust | apikeys | 2 |
@@ -59,7 +59,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **749** |
+| **Total** | | **750** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -485,6 +485,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.security.account.enabled` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `true` em shared, `false` em dedicated | Runtime | Liga ou desliga /me/security/* (404 quando desligado) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.platform-scope.exempt` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | vazio em shared; `companies, users, roles, permissions:GET` em dedicated | Runtime | Recursos isentos do @SgPlatformScope | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.admin-guard.scope` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | enum | `company` em shared, `database` em dedicated | Runtime | Escopo da invariante "mínimo 1 ADMIN ativo": por empresa, ou no banco todo (mais cada empresa com 1 usuário ativo) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.admin-guard.lock-timeout` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT5S` | Runtime | Tempo máximo para obter o lock da invariante "mínimo 1 ADMIN ativo" (vale entre servidores) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.terms.required` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `false` | Runtime | Exige aceite dos termos no cadastro e no login | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.terms.version` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | `1` | Runtime | Versão vigente dos termos; subir a versão exige novo aceite | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.terms.documents.<nome>` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Map&lt;String,String&gt; | vazio | Runtime | Documentos por nome (ex.: terms, privacy) com a URL pública de cada um | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
