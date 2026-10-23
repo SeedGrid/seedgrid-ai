@@ -72,6 +72,19 @@ Fora de `seedgrid-platform`; consomem as crates/extensions acima.
 |---|---|---|---|---|---|
 | `seedgrid-pulse` | Produto (servidor Rust + UI Next.js + SDKs) | 0.3.0 (servidor e UI) | `9dcbdad` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
 
+### Boilerplates (repositório `boilerplate`)
+
+Modelos de produto que o `sg-new-product` copia para o produto novo (cópia embutida em `.ai/boilerplates/`). Fora de `seedgrid-platform`; consomem as extensions Java acima. Estado verificado em 2026-10-23: branch `feature/escopo-acesso-2026-10`, commit `0295f52` (ainda não está no `main`).
+
+| Pasta | Público | Extensions de base | Observação |
+|---|---|---|---|
+| `login-tenancy-b2b` (antigo `login-tenancy`) | empresas, cadastro por CNPJ, equipe e convites | `login-tenancy` com `security`, `audit`, `backup`, `billing`, `apikeys`, `notification`, `filemanagement`, `privacy`, `resilience` | seletor de empresa, perfis, assinatura; sem login social |
+| `login-tenancy-b2c` | pessoa física, `POST /public/signup/personal` (CPF opcional) | as mesmas do b2b (a extension `login-tenancy` é a mesma), configurada com `customer-type=B2C` | uma conta é uma pessoa; login social por configuração (`seedgrid-security-social`); sem telas de usuários, convites e perfis |
+| `subdomain-tenancy` | empresas, um tenant por subdomínio | `subdomain-tenancy` com `security`, `audit`, `backup`, `billing`, `apikeys`, `notification`, `privacy`, `resilience` | nunca terá versão pessoa física (regra do dono) |
+| `modular` (antigo `outro`) | sem tenancy | `security` e `audit` (PostgreSQL); opcionais conforme a escolha | sem billing e sem admin web; criado pelo seedgrid-ai |
+
+A extension `login-tenancy` é uma só, compartilhada por B2B e B2C: a diferença está na configuração e nas telas. A escolha do modelo e os opcionais de cada um são conduzidos pela skill `sg-new-product` (`data/catalogo.json` e `data/matriz-produto.json`); o b2c segue indisponível na matriz até provar a subida.
+
 ## Dependências entre módulos Java
 
 Extraído dos `pom.xml` (excluindo `deployment` e `integration-tests`). Escopo `compile` salvo indicação.
