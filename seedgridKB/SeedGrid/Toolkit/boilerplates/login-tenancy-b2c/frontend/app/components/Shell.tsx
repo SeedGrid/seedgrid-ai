@@ -298,7 +298,7 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
 
           {!sidebarCollapsed && (
             <div className="sidebar-note">
-              Usuarios, perfis e auditoria da sua conta.
+              Sua conta, suas chaves e a auditoria.
             </div>
           )}
         </SgPanel>

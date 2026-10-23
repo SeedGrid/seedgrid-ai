@@ -21,13 +21,13 @@ export default function HomePage() {
     <Shell
       eyebrow="Inicio"
       title="Bem-vindo"
-      description="Sua conta, seus usuarios e sua assinatura em um lugar so."
+      description="Sua conta e sua assinatura em um lugar so."
     >
       <SgStack align="center" gap={20} style={{ padding: "48px 0", textAlign: "center" }}>
         <SeedGridLogoFull />
         <p style={{ maxWidth: 520, fontSize: 15, opacity: 0.75 }}>
-          Use o menu lateral para administrar os usuarios e os perfis de acesso da sua conta, e
-          conferir a auditoria do que foi feito nela.
+          Use o menu lateral para gerenciar suas chaves de API, seus dias uteis e
+          conferir a auditoria do que foi feito na sua conta.
         </p>
         <p style={{ maxWidth: 520, fontSize: 14, opacity: 0.6 }}>
           Seu plano, suas faturas e a forma de pagamento ficam em{" "}

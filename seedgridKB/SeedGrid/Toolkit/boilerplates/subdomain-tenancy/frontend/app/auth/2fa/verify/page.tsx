@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { resolvePostLoginPath } from "@/lib/company-selection";
 import {
   readPendingTwoFactor,
   clearPendingTwoFactor,
@@ -80,6 +81,7 @@ export default function TwoFactorVerifyPage() {
       });
       const payload = (await response.json().catch(() => null)) as {
         changePasswordRequired?: boolean;
+        companySelectionRequired?: boolean;
         error?: string;
         message?: string;
       } | null;
@@ -93,11 +95,7 @@ export default function TwoFactorVerifyPage() {
       }
 
       clearPendingTwoFactor();
-      if (payload?.changePasswordRequired === true) {
-        router.push("/change-password");
-      } else {
-        router.push("/");
-      }
+      router.push(resolvePostLoginPath(payload));
       router.refresh();
     } catch {
       lastSubmittedRef.current = null;

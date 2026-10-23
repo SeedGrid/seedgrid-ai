@@ -27,6 +27,12 @@ import {
   filterTree,
 } from "@/lib/permission-tree";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import {
+  notForIntegrationMessage,
+  notReleasedCount,
+  pruneToSelectable,
+  selectablePermissions,
+} from "@/lib/integration-roles";
 import type { PermissionOption, RoleEntry } from "@/lib/seedgrid-app-api";
 
 type RoleEditorState = {
@@ -110,6 +116,14 @@ function RoleEditPageContent() {
     [editor.permissionPublicIds],
   );
 
+  // Perfil de INTEGRACAO so aceita permissao liberada pela software house (permissions.for_integration):
+  // as demais nem aparecem na arvore e a selecao delas e' descartada ao marcar o perfil como integracao.
+  const selectableOptions = useMemo(
+    () => selectablePermissions(permissionOptions, editor.forIntegration),
+    [permissionOptions, editor.forIntegration],
+  );
+  const notReleased = editor.forIntegration ? notReleasedCount(permissionOptions) : 0;
+
   /**
    * Arvore completa, na hierarquia do menu (lib/permission-tree.ts). O rotulo da folha e o do
    * BOTAO seguido do nome tecnico entre parenteses: e o nome tecnico que voce precisa reconhecer
@@ -120,7 +134,7 @@ function RoleEditPageContent() {
    * sumir permissao da tela por esquecimento no mapa.
    */
   const fullTree = useMemo<SgTreeNode[]>(() => {
-    const byName = new Map(permissionOptions.map((option) => [option.name, option]));
+    const byName = new Map(selectableOptions.map((option) => [option.name, option]));
     const label = (text: string, checked: number, total: number) =>
       checked > 0 ? `${text} — ${checked} de ${total}` : text;
 
@@ -164,7 +178,7 @@ function RoleEditPageContent() {
       }
     }
 
-    const orphans = permissionOptions
+    const orphans = selectableOptions
       .filter((option) => !MAPPED_PERMISSION_NAMES.has(option.name))
       .map((option) => ({ id: option.publicId, label: `${option.description} (${option.name})` }));
     if (orphans.length) {
@@ -176,7 +190,7 @@ function RoleEditPageContent() {
       });
     }
     return nodes;
-  }, [permissionOptions, checkedSet]);
+  }, [selectableOptions, checkedSet]);
 
   const searching = permissionSearch.trim().length > 0;
   const visibleTree = useMemo(
@@ -193,7 +207,7 @@ function RoleEditPageContent() {
 
   /** So os ids que sao permissao de verdade: a arvore devolve os galhos marcados junto. */
   function applyCheckedIds(ids: string[]) {
-    const validIds = new Set(permissionOptions.map((option) => option.publicId));
+    const validIds = new Set(selectableOptions.map((option) => option.publicId));
     setEditor((current) => ({
       ...current,
       permissionPublicIds: ids.filter((id) => validIds.has(id)),
@@ -328,7 +342,11 @@ function RoleEditPageContent() {
       );
       router.refresh();
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Falha ao salvar perfil.");
+      toast.error(
+        notForIntegrationMessage(error) ??
+          extractApiErrorMessage(error) ??
+          "Falha ao salvar perfil.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -427,9 +445,22 @@ function RoleEditPageContent() {
                 checked={editor.forIntegration}
                 label="Uso para integracao"
                 onChange={(forIntegration) =>
-                  setEditor((current) => ({ ...current, forIntegration }))
+                  setEditor((current) => ({
+                    ...current,
+                    forIntegration,
+                    permissionPublicIds: pruneToSelectable(
+                      current.permissionPublicIds,
+                      selectablePermissions(permissionOptions, forIntegration),
+                    ),
+                  }))
                 }
               />
+              {editor.forIntegration ? (
+                <StatusBadge
+                  severity="info"
+                  value={`Perfil de integracao: so aparecem as ${selectableOptions.length} permissao(oes) liberadas pela software house; ${notReleased} nao liberada(s) ficam de fora.`}
+                />
+              ) : null}
               <SgInputTextSearch
                 id="role-permissions-search"
                 label="Buscar permissoes"

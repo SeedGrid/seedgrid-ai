@@ -36,7 +36,7 @@ import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 
 @QuarkusTest
-@QuarkusTestResource(AuditDatabaseResource.class)
+@QuarkusTestResource(value = AuditDatabaseResource.class, restrictToAnnotatedClass = true)
 @EnabledIfSystemProperty(named = "audit.integration", matches = "true")
 class DomainAuditTest {
     @Inject AdminCurrencyService currencies;

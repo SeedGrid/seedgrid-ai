@@ -44,6 +44,17 @@ const SELLABLE_PERMISSION_NAMES = new Set(
   ),
 );
 import { formatCurrency, formatDateTime, parseDecimalInput } from "@/lib/format";
+import {
+  COMPANY_LIMIT_HELP,
+  EMPTY_COMMERCIAL_FIELDS,
+  PAST_DUE_HELP,
+  formatCompaniesSummary,
+  formatPastDueSummary,
+  toCommercialFields,
+  toCommercialPayload,
+  type CommercialConditions,
+  type CommercialFields,
+} from "@/lib/plan-commercial";
 import { branchIds, filterTree } from "@/lib/permission-tree";
 import {
   type PaginatedResult,
@@ -56,7 +67,7 @@ import { formatTermMeters, toMeterPayload, toMeterRows, type MeterQuotaRow } fro
 
 const PAGE_SIZE = 8;
 
-type TermFormState = {
+type TermFormState = CommercialFields & {
   monthlyPrice: string;
   maxUsers: string;
   // Franquia e excedente de cada contador de uso declarado pelo produto (billing/AppUsageMeters.java).
@@ -70,6 +81,7 @@ type TermFormState = {
 };
 
 const EMPTY_FORM: TermFormState = {
+  ...EMPTY_COMMERCIAL_FIELDS,
   monthlyPrice: "",
   maxUsers: "",
   meterRows: [],
@@ -277,6 +289,7 @@ function PlanTermsPageContent() {
   function openEdit(term: PlanTermEntry) {
     setEditing(term);
     setForm({
+      ...toCommercialFields(term as CommercialConditions),
       monthlyPrice: String(term.monthlyPrice),
       maxUsers: term.maxUsers == null ? "" : String(term.maxUsers),
       meterRows: toMeterRows(declaredMeters, term.meters),
@@ -297,6 +310,7 @@ function PlanTermsPageContent() {
     const monthlyPrice = parseDecimalInput(form.monthlyPrice);
     const maxUsers = form.maxUsers.trim() ? Number.parseInt(form.maxUsers, 10) : null;
     const { meters, error: metersError } = toMeterPayload(form.meterRows, true);
+    const { payload: commercial, error: commercialError } = toCommercialPayload(form);
 
     if (monthlyPrice == null) {
       setStatusMessage("Informe um preco mensal valido.");
@@ -304,6 +318,10 @@ function PlanTermsPageContent() {
     }
     if (metersError) {
       setStatusMessage(metersError);
+      return;
+    }
+    if (commercialError) {
+      setStatusMessage(commercialError);
       return;
     }
     if (!form.effectiveFrom) {
@@ -317,6 +335,7 @@ function PlanTermsPageContent() {
       monthlyPrice,
       meters,
       maxUsers,
+      ...commercial,
       featuresJson: benefitsTextToFeaturesJson(form.benefits),
       // Meia-noite LOCAL da data escolhida, com o offset local — assim o backend
       // (.toLocalDateTime()) grava 00:00 do dia certo, sem deslocar para UTC (que
@@ -578,6 +597,16 @@ function PlanTermsPageContent() {
         body: (row) => (row.maxUsers == null ? "-" : String(row.maxUsers)),
       },
       {
+        columnId: "term-companies",
+        header: "Empresas",
+        body: (row) => formatCompaniesSummary(row as CommercialConditions),
+      },
+      {
+        columnId: "term-past-due",
+        header: "Inadimplência (dias de atraso)",
+        body: (row) => formatPastDueSummary(row as CommercialConditions),
+      },
+      {
         columnId: "term-stripe-price",
         header: "Stripe price ID",
         body: (row) => row.providerPriceId?.trim() || "(nao publicado)",
@@ -796,6 +825,58 @@ function PlanTermsPageContent() {
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * zero nao limita o numero de usuarios
+            </p>
+          </div>
+          <div>
+            <SgInputNumber
+              id="term-max-companies"
+              label="Empresas ativas"
+              decimals={0}
+              minValue={0}
+              inputProps={{ value: form.maxCompanies }}
+              onChange={(maxCompanies) => setForm((current) => ({ ...current, maxCompanies }))}
+            />
+            <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
+              * {COMPANY_LIMIT_HELP} Quantas empresas da conta operam normalmente.
+            </p>
+          </div>
+          <div>
+            <SgInputNumber
+              id="term-max-read-only-companies"
+              label="Empresas somente leitura"
+              decimals={0}
+              minValue={0}
+              inputProps={{ value: form.maxReadOnlyCompanies }}
+              onChange={(maxReadOnlyCompanies) => setForm((current) => ({ ...current, maxReadOnlyCompanies }))}
+            />
+            <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
+              * {COMPANY_LIMIT_HELP} Quantas empresas podem só consultar, sem gravar.
+            </p>
+          </div>
+          <div>
+            <SgInputNumber
+              id="term-past-due-read-only-days"
+              label="Dias de atraso para somente leitura"
+              decimals={0}
+              minValue={0}
+              inputProps={{ value: form.pastDueReadOnlyAfterDays }}
+              onChange={(pastDueReadOnlyAfterDays) => setForm((current) => ({ ...current, pastDueReadOnlyAfterDays }))}
+            />
+            <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
+              * {PAST_DUE_HELP} Dias após o vencimento em que as empresas passam a só consultar.
+            </p>
+          </div>
+          <div>
+            <SgInputNumber
+              id="term-past-due-disable-days"
+              label="Dias de atraso para desativar"
+              decimals={0}
+              minValue={0}
+              inputProps={{ value: form.pastDueDisableAfterDays }}
+              onChange={(pastDueDisableAfterDays) => setForm((current) => ({ ...current, pastDueDisableAfterDays }))}
+            />
+            <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
+              * {PAST_DUE_HELP} Dias após o vencimento em que as empresas são desativadas.
             </p>
           </div>
           <div>

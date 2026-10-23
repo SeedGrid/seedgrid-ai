@@ -14,6 +14,7 @@ type SecurityPermission = {
   name: string;
   description: string;
   audience?: string | null;
+  forIntegration?: boolean;
 };
 
 type SecurityRole = {
@@ -93,6 +94,7 @@ export function toPermissionOption(permission: SecurityPermission): PermissionOp
     publicId: permission.publicId,
     name: permission.name,
     description: permission.description,
+    forIntegration: permission.forIntegration ?? false,
   };
 }
 
@@ -100,9 +102,10 @@ export function toPermissionOption(permission: SecurityPermission): PermissionOp
 export const PROTECTED_ROLE_NAME = "ADMIN";
 
 /**
- * Usuario ESPECIAL da plataforma: o root (o admin criado no bootstrap). Nao pode ser excluido, desativado,
- * perder o acesso root nem o perfil ADMIN. Root NAO se atribui (o backend recusa com 422: so' nasce no
- * bootstrap e no cadastro da empresa), entao "root" identifica so' ele — a tela nem tem o toggle.
+ * Usuario ESPECIAL da plataforma: o root (o admin criado no bootstrap). Esta tela o trava (sem excluir, desativar,
+ * perder o acesso root nem o perfil ADMIN) por conservadorismo. A regra de NEGOCIO e' do backend: nenhuma empresa fica
+ * sem ADMIN ativo (409 LAST_ADMIN_PROTECTED, ver LastAdminGuard); o root nao e' mais protegido por ser root. Root NAO se
+ * atribui (o backend recusa com 422: so' nasce no bootstrap e no cadastro da empresa), entao "root" identifica so' ele.
  */
 export function isProtectedUser(user: Pick<UserEntry, "root">): boolean {
   return user.root === true;

@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+  ADMIN_COMPANY_SELECTION_PENDING_COOKIE,
   ADMIN_PASSWORD_CHANGE_REQUIRED_COOKIE,
   ADMIN_REFRESH_TOKEN_COOKIE,
   ADMIN_TOKEN_COOKIE,
 } from "./lib/admin-auth";
+import { QUERY_PROXY_PREFIX } from "./lib/query-paths";
+import { proxyQuery } from "./lib/query-proxy";
+import { COMPANY_SELECT_PATH } from "./lib/company-selection";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Consultas com corpo (metodo QUERY, ADR 28). TEM de vir antes de tudo: o caminho pode conter "."
+  // (cairia em `isStatic`), nao pode virar redirect para /login (e' um fetch; sem sessao, 401 JSON) nem
+  // para /auth/select-company, e o redirect de `host === domain` abaixo nao se aplica a ele.
+  if (pathname.startsWith(QUERY_PROXY_PREFIX)) {
+    return proxyQuery(request);
+  }
   const domain = process.env.SEEDGRID_TENANCY_DOMAIN?.trim().toLowerCase() || "localhost";
   const host = request.headers.get("host")?.toLowerCase().replace(/:\d+$/, "");
   if (host === domain && (pathname === "/login" || pathname === "/")) {
@@ -18,6 +29,11 @@ export function proxy(request: NextRequest) {
     Boolean(request.cookies.get(ADMIN_REFRESH_TOKEN_COOKIE)?.value);
   const mustChangePassword = Boolean(
     request.cookies.get(ADMIN_PASSWORD_CHANGE_REQUIRED_COOKIE)?.value,
+  );
+  // Login que pediu a escolha da empresa (T7.2): o token ainda nao esta escopado, entao nada do app
+  // abre ate o `select-company`. /auth/** (a propria tela) e /api/** passam antes deste ponto.
+  const mustSelectCompany = Boolean(
+    request.cookies.get(ADMIN_COMPANY_SELECTION_PENDING_COOKIE)?.value,
   );
   const isLoginPage = pathname === "/login";
   const isChangePasswordPage = pathname === "/change-password";
@@ -52,6 +68,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (hasSession && mustSelectCompany) {
+    return NextResponse.redirect(new URL(COMPANY_SELECT_PATH, request.url));
+  }
+
   if (!hasSession && !isLoginPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -77,6 +97,8 @@ export function proxy(request: NextRequest) {
 // refresh, em `lib/seedgrid-app-api-server.ts`); passar por aqui so' as faria virar redirect 307
 // para o /login no meio de um fetch, e o `.json()` do lado client estouraria SyntaxError.
 // No report-admin o negado era `api/admin`; aqui sao os dois prefixos autenticados deste app.
+// `/api/q/**` (consultas QUERY) NAO pode ser excluido aqui: o rewrite com o Authorization e o
+// X-Forwarded-Host (tenant) acontece neste proxy. Coberto por `proxy.test.ts`.
 export const config = {
   matcher: ["/((?!api/security|api/me).*)"],
 };

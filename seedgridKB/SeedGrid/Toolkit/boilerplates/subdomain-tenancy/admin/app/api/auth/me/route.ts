@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 
 import {
+  COMPANY_DISABLED_CODE,
+  SESSION_REVOKED_CODE,
+  isCompanyDisabledBody,
+  isSessionRevokedBody,
+} from "@/lib/api-error";
+
+import {
   ApiRequestError,
   apiFetchServer,
   isApiConnectionError,
@@ -27,7 +34,19 @@ export async function GET() {
       error instanceof ApiRequestError &&
       isInvalidAdminSessionResponse(error.status, error.body)
     ) {
-      return NextResponse.json({ message: "Sessao invalida" }, { status: 401 });
+      return NextResponse.json(
+        isSessionRevokedBody(error.body)
+          ? { message: "Sessao invalida", code: SESSION_REVOKED_CODE }
+          : { message: "Sessao invalida" },
+        { status: 401 },
+      );
+    }
+    // Empresa desligada (403 COMPANY_DISABLED): a sessao ja foi limpa; 401 com o codigo leva ao login.
+    if (error instanceof ApiRequestError && isCompanyDisabledBody(error.body)) {
+      return NextResponse.json(
+        { message: "Sessao invalida", code: COMPANY_DISABLED_CODE },
+        { status: 401 },
+      );
     }
     throw error;
   }

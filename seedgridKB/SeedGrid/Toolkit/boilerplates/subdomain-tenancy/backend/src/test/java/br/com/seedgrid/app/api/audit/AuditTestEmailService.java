@@ -2,7 +2,7 @@ package br.com.seedgrid.app.api.audit;
 
 import java.util.UUID;
 import br.com.seedgrid.security.entities.User;
-import br.com.seedgrid.security.spi.EmailServiceInterface;
+import br.com.seedgrid.security.spis.EmailServiceInterface;
 import io.quarkus.test.Mock;
 import jakarta.enterprise.context.ApplicationScoped;
 

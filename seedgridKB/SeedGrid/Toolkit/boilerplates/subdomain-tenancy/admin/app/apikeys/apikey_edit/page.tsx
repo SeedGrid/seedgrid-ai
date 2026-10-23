@@ -58,6 +58,9 @@ export default function ApiKeyEditPage() {
     label: role.description ? `${role.name} — ${role.description}` : role.name,
   }));
 
+  const selectedRole = roleOptions.find((role) => role.name === roleName) ?? null;
+  const rolePermissions = selectedRole?.permissions ?? [];
+
   async function handleCreate() {
     if (!name.trim()) {
       toast.error("Informe um nome para a chave.");
@@ -213,6 +216,22 @@ export default function ApiKeyEditPage() {
               value={roleName || null}
               onValueChange={(value) => setRoleName(value ? String(value) : "")}
             />
+            {selectedRole && rolePermissions.length > 0 ? (
+              <SgStack gap={8}>
+                <span className="text-sm font-medium">
+                  Permissoes liberadas neste perfil ({rolePermissions.length})
+                </span>
+                <SgStack direction="row" gap={8} wrap>
+                  {rolePermissions.map((permission) => (
+                    <StatusBadge
+                      key={permission.publicId}
+                      severity="neutral"
+                      value={permission.name}
+                    />
+                  ))}
+                </SgStack>
+              </SgStack>
+            ) : null}
             <SgStack direction="row" gap={12} wrap>
               <SgButton
                 appearance="outline"

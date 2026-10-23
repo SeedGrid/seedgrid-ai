@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   SESSION_EXPIRED_MESSAGE,
+  COMPANY_DISABLED_MESSAGE,
+  COMPANY_READ_ONLY_MESSAGE,
+  SESSION_REVOKED_MESSAGE,
   isSessionExpiredError,
   notifySessionExpired,
   onSessionExpired,
@@ -94,5 +97,54 @@ describe("onSessionExpired", () => {
 
     cancelarQuebrado();
     cancelarBom();
+  });
+});
+
+describe("SESSION_REVOKED", () => {
+  it("traduz o problem+json com code SESSION_REVOKED para a mensagem de sessao encerrada", () => {
+    expect(
+      readError({ status: 401, code: "SESSION_REVOKED", detail: "Session revoked by server" }),
+    ).toBe(SESSION_REVOKED_MESSAGE);
+    expect(readError(JSON.stringify({ status: 401, code: "SESSION_REVOKED" }))).toBe(
+      "Sua sessão foi encerrada. Entre novamente.",
+    );
+  });
+
+  it("trata a sessao revogada como sessao morta (leva ao login)", () => {
+    expect(isSessionExpiredError({ code: "SESSION_REVOKED" })).toBe(true);
+    expect(isSessionExpiredError("Sua sessão foi encerrada. Entre novamente.")).toBe(true);
+  });
+
+  it("nao confunde outros codes com sessao revogada", () => {
+    expect(readError({ code: "PASSWORD_CHANGE_REQUIRED", detail: "Troque a senha" })).toBe(
+      "Troque a senha",
+    );
+    expect(isSessionExpiredError({ code: "COMPANY_READ_ONLY", detail: "Somente leitura" })).toBe(
+      false,
+    );
+  });
+});
+
+describe("COMPANY_READ_ONLY / COMPANY_DISABLED", () => {
+  it("COMPANY_READ_ONLY vira a mensagem de upgrade e NAO derruba a sessao", () => {
+    const body = { status: 403, code: "COMPANY_READ_ONLY", companyPublicId: "c1" };
+    expect(readError(body)).toBe(COMPANY_READ_ONLY_MESSAGE);
+    expect(readError(JSON.stringify(body))).toBe(COMPANY_READ_ONLY_MESSAGE);
+    expect(isSessionExpiredError(body)).toBe(false);
+  });
+
+  it("COMPANY_DISABLED vira a mensagem de empresa desativada e leva ao login", () => {
+    const body = { status: 403, code: "COMPANY_DISABLED" };
+    expect(readError(body)).toBe(COMPANY_DISABLED_MESSAGE);
+    expect(readError(JSON.stringify(body))).toBe(COMPANY_DISABLED_MESSAGE);
+    expect(isSessionExpiredError(body)).toBe(true);
+    expect(isSessionExpiredError(COMPANY_DISABLED_MESSAGE)).toBe(true);
+  });
+});
+
+describe("readError: selecao de empresas (T5.13)", () => {
+  it("INVALID_COMPANY_SELECTION vira mensagem amigavel mesmo vindo como problem+json em texto", () => {
+    const body = JSON.stringify({ status: 400, code: "INVALID_COMPANY_SELECTION", detail: "contagem errada" });
+    expect(readError(body)).toMatch(/não confere/);
   });
 });

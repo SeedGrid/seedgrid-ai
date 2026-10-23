@@ -161,8 +161,8 @@ function LoginPageContent() {
           </div>
           <SgCard
             cardStyle="elevated"
-            description="Use uma conta com role ADMIN para acessar o backoffice."
-            title="Entrar no Admin Web"
+            description="Use o e-mail e a senha da sua conta."
+            title="Entrar"
           >
           <form onSubmit={onSubmit}>
             <SgStack gap={16}>

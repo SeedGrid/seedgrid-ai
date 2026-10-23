@@ -13,7 +13,7 @@ extensões ou criar uma migration por campo.
 | Entidade | Exemplo do produto | Contrato implementado pelo host |
 | --- | --- | --- |
 | `PlanTerm` | `supportLevel`: nível de suporte do plano (opcional) | `br.com.seedgrid.billing.spis.PlanTermAdditionalFieldsValidator` |
-| `User` | `cargo`: texto opcional de até 100 caracteres | `br.com.seedgrid.security.spi.UserAdditionalFieldsValidator` |
+| `User` | `cargo`: texto opcional de até 100 caracteres | `br.com.seedgrid.security.spis.UserAdditionalFieldsValidator` |
 
 ## Como registrar a regra do produto
 

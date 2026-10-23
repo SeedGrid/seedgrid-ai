@@ -8,6 +8,7 @@ import type {
   RoleSummary,
   UserEntry,
 } from "@/lib/seedgrid-app-api";
+import { parseMemberships, type MembershipDraft } from "@/lib/user-memberships";
 
 type SecurityPermission = {
   publicId: string;
@@ -46,6 +47,16 @@ type SecurityUser = {
   updatedAt: string;
   roles?: SecurityRole[] | null;
   emailConfirmedAt?: string | null;
+  // Vinculos (empresa + perfis do vinculo) por publicId, lidos do `UserDTORes.memberships` (T5.12).
+  // `undefined` = backend antigo (a tela edita sem enviar vinculos).
+  // Leitura (`UserDTORes.memberships`): `roles` (publicId + nome) e `companyName`; o formato de escrita
+  // (`rolePublicIds`) tambem e' aceito. O mapeamento fica em `parseMemberships` (lib/user-memberships).
+  memberships?: {
+    companyPublicId: string;
+    companyName?: string;
+    rolePublicIds?: string[];
+    roles?: { publicId: string; name?: string }[];
+  }[] | null;
 };
 
 export type SecurityPage<T> = {
@@ -67,7 +78,10 @@ type UserForm = {
   root?: boolean;
   changePasswordRequired?: boolean;
   password?: string;
+  /** Perfis GLOBAIS do usuario (valem em toda empresa), por publicId. */
   rolePublicIds?: string[];
+  /** Empresas e perfis do vinculo, por publicId (T5.7). Vazio = so' os perfis globais. */
+  memberships?: MembershipDraft[];
 };
 
 /** Corpo que as telas enviam para criar/editar perfil. */
@@ -114,6 +128,7 @@ export function toUserEntry(user: SecurityUser): UserEntry {
     updatedAt: user.updatedAt,
     // Perfis que valem NA PLATAFORMA (membership da plataforma com perfis proprios, senao globais).
     roles: (user.roles ?? []).map(toRoleSummary),
+    memberships: user.memberships ? parseMemberships(user.memberships) : undefined,
   };
 }
 
@@ -172,6 +187,8 @@ export function toSecurityUserCreate(form: UserForm) {
     active: form.active ?? true,
     changePasswordRequired: form.changePasswordRequired ?? true,
     rolePublicIds: form.rolePublicIds ?? [],
+    // Vinculos por publicId; as empresas do novo usuario ⊆ as do cadastrador (o backend valida).
+    memberships: form.memberships ?? [],
   };
 }
 
@@ -186,6 +203,8 @@ export function toSecurityUserPatch(form: UserForm) {
     changePasswordRequired: form.changePasswordRequired ?? false,
     rolePublicIds: form.rolePublicIds ?? [],
   };
+  // O PATCH aplica os vinculos informados (adiciona/atualiza); sem a chave, nada muda nos vinculos.
+  if (form.memberships !== undefined) patch.memberships = form.memberships;
   const password = form.password?.trim();
   if (password) patch.password = password;
   return patch;

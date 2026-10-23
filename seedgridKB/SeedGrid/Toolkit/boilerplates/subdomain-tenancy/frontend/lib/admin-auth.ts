@@ -13,6 +13,10 @@
 // localhost, existe sempre. Nome proprio resolve nos dois cenarios.
 export const ADMIN_TOKEN_COOKIE = "sg_subdomain_client_token";
 export const ADMIN_REFRESH_TOKEN_COOKIE = "sg_subdomain_client_refresh_token";
+// Login que exige escolher a empresa (`companySelectionRequired`): o token ainda nao esta escopado.
+// Enquanto o cookie existir, o proxy so' deixa o usuario na tela de selecao (T7.2).
+export const ADMIN_COMPANY_SELECTION_PENDING_COOKIE =
+  "sg_subdomain_client_company_selection_pending";
 export const ADMIN_PASSWORD_CHANGE_REQUIRED_COOKIE =
   "sg_subdomain_client_password_change_required";
 
@@ -40,6 +44,8 @@ export type AdminLoginResponse =
       publicId?: string;
       changePasswordRequired?: boolean;
       twoFactorEnabled?: boolean;
+      /** `AuthResponseDTO.companySelectionRequired`: ha mais de uma empresa e nenhuma foi escolhida. */
+      companySelectionRequired?: boolean;
     }
   | {
       status: "2F_REQUIRED";

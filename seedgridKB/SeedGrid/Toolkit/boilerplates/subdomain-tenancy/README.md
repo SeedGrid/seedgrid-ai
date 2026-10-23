@@ -112,6 +112,28 @@ Cambio centralizado em `seedgrid-exchange:2026.10.13`, instalado no `.m2`.
 As classes duplicadas foram removidas; o host mantem somente o provider de notificacao.
 Veja [instalacao e validacao](backend/README.md#exchange-pela-extensao).
 
+## Dias uteis
+
+Feriados da empresa, semana de trabalho e calendario vem da extension
+[`seedgrid-business-days:2026.10.15`](../../seedgrid-platform/java/seedgrid-quarkus-ext-business-days/README.md).
+Diferente do Exchange, o calendario e de **cada banco**: a tenancy migra o schema no master e em cada tenant
+(historico proprio `flyway_schema_history_business_days`; toggle `seedgrid.subdomain-tenancy.modules.business-days.enabled`,
+default `true`), entao o master e cada empresa tem o seu calendario. `br.com.seedgrid.businessdays.entities` entra em
+`quarkus.hibernate-orm.packages` (PU default, que no dominio do admin aponta para o master). Em tenants ja migrados,
+mude `seedgrid.subdomain-tenancy.migration.target-version` para o schema novo ser aplicado.
+No front: menu **Dias uteis** (`/dias-uteis/*`), proxy em `app/api/business-days/[...path]` e permissoes
+`BUSINESS_DAY_*`.
+
+
+## Empresas (CRU, nunca excluir)
+
+Tela `frontend/app/security/companies/{company_list,company_edit}` (menu **Empresas**, permissoes `COMPANY_READ`,
+`COMPANY_CREATE`, `COMPANY_UPDATE`; **nao existe** excluir, a empresa so e inativada e reativada: plano 4.18). Identificacao
+por `publicId`; BFF em `frontend/app/api/security/companies/**` (`GET` lista com filtros por `accessMode`
+`ACTIVE/READ_ONLY/DISABLED` e por ativo/inativo, `POST`, `PUT` edita dados, `PATCH {active}` inativa/reativa pelo `PATCH`
+do backend). Exibe `accessMode`, `personType`, `cpfCnpj` e UF/endereco; o estado de acesso e so exibido (quem muda e
+`PUT /companies/{publicId}/access-mode`). Os erros `LAST_ADMIN_PROTECTED` (409) e `COMPANY_QUOTA_EXCEEDED` (402) viram
+mensagem na tela (`frontend/lib/companies.ts`). Testes: `pnpm test` (vitest).
 
 ## Tela nova: menu e permissões
 
@@ -127,3 +149,34 @@ Veja o [guia de atributos adicionais](docs/extensibilidade.md) para contratos CD
 excedente por plano, um ou vários contadores), veja o [guia de contadores de uso](docs/contadores-de-uso.md).
 Para avisar o usuário na hora que um processo demorado terminou (o backup já faz isso; relatórios e
 importações podem fazer igual), veja o [guia de eventos em tempo real](docs/eventos-em-tempo-real.md).
+
+## Estado de acesso da empresa (somente leitura) e downgrade de empresas
+
+Plano 4.12 (Fase 5 T5.5/T5.6). A empresa da sessao tem `accessMode` `ACTIVE | READ_ONLY | DISABLED`
+(`AuthResponse.currentCompany`, guardado no cookie `<cookie-da-sessao>_company` pelo BFF e devolvido em `/api/auth/me`).
+
+- **Faixa e botoes:** em `READ_ONLY`, `app/components/CompanyAccessBar.tsx` mostra "Somente leitura - fazer upgrade" (leva a
+  `/assinatura`) e o `useAdminAccess()` passa a negar as permissoes de escrita (`*_CREATE`, `*_UPDATE`, `*_DELETE`, ...:
+  `lib/company-access.ts#isWritePermission`), entao os botoes de escrita das telas CRUD somem sem mudar cada tela. Telas novas
+  que gateiam por permissao ja herdam; as que nao gateiam usam `useAdminAccess().canWrite`.
+- **Seletor de empresa:** a mesma barra lista `GET /api/me/companies` (so com mais de uma empresa), marca o estado
+  ("(somente leitura)", "(desativada)") e troca por `POST /api/me/select-company` (regrava os cookies).
+- **Erros:** `lib/api-error.ts` (`extractProblemCode`, `isCompanyReadOnlyBody`, `isCompanyDisabledBody`) e a guarda de fetch
+  `lib/company-access-guard.ts` reconhecem 403 `COMPANY_READ_ONLY` (marca a empresa como somente leitura, sessao segue) e
+  `COMPANY_DISABLED` (o BFF limpa a sessao; o front vai a `/login?expired=disabled` com a mensagem). `lib/ported/clientError.ts`
+  traduz os dois codigos.
+- **Downgrade de empresas:** `app/assinatura/DowngradeCompanySelectionDialog.tsx` (manter ativa / somente leitura / desligar),
+  no molde do `DowngradeUserSelectionDialog`; empresas protegidas (plataforma e do responsavel) aparecem travadas e a escolha so
+  confirma com as contagens exatas (`lib/downgrade-company-selection.ts`). Le `GET /me/billing/downgrade-company-selection`
+  (BFF `app/api/me/billing/downgrade-company-selection`) e a escolha segue em `companySelection` no `POST /me/billing/change-plan`.
+  Os campos `requiresCompanySelection`/`companySelection` na previa da troca de plano sao PROVISORIOS (nome ainda nao fechado no
+  contrato do billing).
+- Testes: `pnpm test` (vitest) em `lib/*.test.ts`.
+
+## Usuario com empresas
+
+`app/security/users/user_edit` oferece as empresas do proprio cadastrador (`GET /api/me/companies`, menos as desativadas) e,
+por empresa marcada, os perfis do vinculo; perfis globais seguem em "Perfis". O corpo leva `rolePublicIds` (globais) e
+`memberships: [{ companyPublicId, rolePublicIds }]` (`lib/security-admin.ts`, `lib/user-memberships.ts`). O backend valida
+(empresas do novo usuario dentro das do cadastrador, permissao em cada empresa); a tela so oferece as do chamador. Na edicao o
+`PATCH` adiciona/atualiza os vinculos marcados; remover vinculo ainda nao tem tela (usar `DELETE /users/{id}/memberships/{company}`).

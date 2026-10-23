@@ -5,9 +5,17 @@ import {
   ADMIN_REFRESH_TOKEN_COOKIE,
   ADMIN_TOKEN_COOKIE,
 } from "./lib/admin-auth";
+import { QUERY_PROXY_PREFIX } from "./lib/query-paths";
+import { proxyQuery } from "./lib/query-proxy";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Consultas com corpo (metodo QUERY, ADR 28). TEM de vir antes de tudo: o caminho pode conter "."
+  // (cairia em `isStatic`), nao pode virar redirect para /login (e' um fetch; sem sessao, 401 JSON).
+  if (pathname.startsWith(QUERY_PROXY_PREFIX)) {
+    return proxyQuery(request);
+  }
   const hasSession =
     Boolean(request.cookies.get(ADMIN_TOKEN_COOKIE)?.value) ||
     Boolean(request.cookies.get(ADMIN_REFRESH_TOKEN_COOKIE)?.value);
@@ -57,6 +65,8 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
+// `/api/q/**` (consultas QUERY) NAO pode ser excluido aqui: o rewrite com o Authorization e o
+// X-Forwarded-Host (tenant) acontece neste proxy. Coberto por `proxy.test.ts`.
 export const config = {
   matcher: ["/((?!api/admin).*)"],
 };

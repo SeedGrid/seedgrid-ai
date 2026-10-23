@@ -263,8 +263,8 @@ echo "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64=$(openssl pkey -in private.pem -pu
 |---|---|
 | `SECURITY_MAILER_FROM` | Remetente. Em produção precisa ser a conta autenticada / domínio verificado, ou o provedor recusa. |
 | `SECURITY_MAILER_HOST` | Host do servidor SMTP. |
-| `SECURITY_MAILER_PORT` | Porta SMTP (587 com STARTTLS; 1025 num MailHog local). |
-| `SECURITY_MAILER_START_TLS` | `REQUIRED` em produção, `DISABLED` num MailHog local. |
+| `SECURITY_MAILER_PORT` | Porta SMTP (587 com STARTTLS; 1025 num Mailpit local). |
+| `SECURITY_MAILER_START_TLS` | `REQUIRED` em produção, `DISABLED` num Mailpit local. |
 | `SECURITY_MAILER_USERNAME` | Usuário SMTP. Em ZeptoMail/SendGrid costuma ser um literal (`emailapikey`). |
 | `SECURITY_MAILER_PASSWORD` | Senha ou API key do SMTP. **Segredo.** |
 

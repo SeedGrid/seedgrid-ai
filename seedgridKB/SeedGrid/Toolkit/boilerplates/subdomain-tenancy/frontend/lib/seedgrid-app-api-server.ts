@@ -6,11 +6,23 @@ import { SecurityPaths } from "@/lib/security-paths";
 import { ApiClientError } from "@/lib/core";
 import { isAdminLoginSuccess, type AdminLoginResponse } from "./admin-auth";
 import {
+  ADMIN_COMPANY_SELECTION_PENDING_COOKIE,
   ADMIN_PASSWORD_CHANGE_REQUIRED_COOKIE,
   ADMIN_REFRESH_TOKEN_COOKIE,
   ADMIN_TOKEN_COOKIE,
 } from "./admin-auth";
 import { applyAdminSessionCookies } from "./admin-session-cookies";
+import {
+  ADMIN_CURRENT_COMPANY_COOKIE,
+  parseCurrentCompany,
+  serializeCurrentCompany,
+} from "./company-access";
+import {
+  COMPANY_DISABLED_CODE,
+  COMPANY_READ_ONLY_CODE,
+  isSessionRevokedResponse,
+  readCompanyAccessCode,
+} from "./api-error";
 import { apiBaseUrl } from "./seedgrid-app-api";
 
 const apiCompanyId = process.env.SEEDGRID_APP_API_COMPANY_ID;
@@ -195,7 +207,27 @@ export async function fetchWithAdminSession(
 ): Promise<Response> {
   let response = await safeFetch(path, options);
 
+  // Estado de acesso da empresa (403 com `code`, T5.6). Nao e' refresh nem "sem permissao":
+  //  - COMPANY_DISABLED: a empresa foi desligada; limpa a sessao e repassa o 403 (o front vai ao login);
+  //  - COMPANY_READ_ONLY: a sessao segue viva; so' registra o estado no cookie e repassa o 403.
+  if (response.status === 403) {
+    const accessCode = await readCompanyAccessCode(response);
+    if (accessCode === COMPANY_DISABLED_CODE) {
+      await clearAdminAuthCookies();
+    } else if (accessCode === COMPANY_READ_ONLY_CODE) {
+      await markCompanyReadOnly();
+    }
+    return response;
+  }
+
   if (response.status !== 401) {
+    return response;
+  }
+
+  // SESSION_REVOKED: refresh nao resolve revogacao. Limpa a sessao e devolve o 401 como esta
+  // (sem renovar e sem repetir a chamada), para o front ir ao login com a mensagem certa.
+  if (await isSessionRevokedResponse(response)) {
+    await clearAdminAuthCookies();
     return response;
   }
 
@@ -214,6 +246,27 @@ export async function clearAdminAuthCookies() {
   cookieStore.delete(ADMIN_TOKEN_COOKIE);
   cookieStore.delete(ADMIN_REFRESH_TOKEN_COOKIE);
   cookieStore.delete(ADMIN_PASSWORD_CHANGE_REQUIRED_COOKIE);
+  cookieStore.delete(ADMIN_CURRENT_COMPANY_COOKIE);
+  cookieStore.delete(ADMIN_COMPANY_SELECTION_PENDING_COOKIE);
+}
+
+// Registra no cookie da empresa corrente que ela esta em READ_ONLY (o 403 e' a prova), para um
+// reload da pagina ja subir com a faixa. Fora de route handler o `cookies()` nao grava: ignora.
+async function markCompanyReadOnly() {
+  try {
+    const cookieStore = await cookies();
+    const current = parseCurrentCompany(cookieStore.get(ADMIN_CURRENT_COMPANY_COOKIE)?.value);
+    if (!current || current.accessMode === "READ_ONLY") {
+      return;
+    }
+    cookieStore.set(
+      ADMIN_CURRENT_COMPANY_COOKIE,
+      serializeCurrentCompany({ ...current, accessMode: "READ_ONLY", accessModeKnown: undefined }),
+      { httpOnly: true, path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production" },
+    );
+  } catch {
+    // Contexto sem escrita de cookie (server component): o estado chega no proximo login/refresh.
+  }
 }
 
 type RefreshOutcome =
@@ -234,7 +287,7 @@ type RefreshOutcome =
 // acumula — e o valor so' vive enquanto a chamada dura.
 const refreshInFlight = new Map<string, Promise<RefreshOutcome>>();
 
-async function refreshAdminSessionOnce(): Promise<boolean> {
+export async function refreshAdminSessionOnce(): Promise<boolean> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(ADMIN_REFRESH_TOKEN_COOKIE)?.value;
 

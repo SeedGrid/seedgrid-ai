@@ -11,6 +11,7 @@ import {
   ADMIN_TOKEN_COOKIE,
 } from "./admin-auth";
 import { applyAdminSessionCookies } from "./admin-session-cookies";
+import { isCompanyDisabledResponse, isSessionRevokedResponse } from "./api-error";
 import { apiBaseUrl } from "./seedgrid-app-api";
 
 const apiCompanyId = process.env.SEEDGRID_APP_API_COMPANY_ID;
@@ -217,7 +218,22 @@ export async function fetchWithAdminSession(
 ): Promise<Response> {
   let response = await safeFetch(path, options);
 
+  // COMPANY_DISABLED (403, T5.6): a empresa foi desligada. Nao e' refresh nem "sem permissao": limpa
+  // a sessao e repassa o 403 com o codigo (a plataforma nunca muda de estado, entao aqui e' rede de
+  // seguranca; o front de cliente trata a mensagem e a navegacao).
+  if (response.status === 403 && (await isCompanyDisabledResponse(response))) {
+    await clearAdminAuthCookies();
+    return response;
+  }
+
   if (response.status !== 401) {
+    return response;
+  }
+
+  // SESSION_REVOKED: refresh nao resolve revogacao. Limpa a sessao e devolve o 401 como esta
+  // (sem renovar e sem repetir a chamada), para o front ir ao login com a mensagem certa.
+  if (await isSessionRevokedResponse(response)) {
+    await clearAdminAuthCookies();
     return response;
   }
 
@@ -256,7 +272,7 @@ type RefreshOutcome =
 // acumula — e o valor so' vive enquanto a chamada dura.
 const refreshInFlight = new Map<string, Promise<RefreshOutcome>>();
 
-async function refreshAdminSessionOnce(): Promise<boolean> {
+export async function refreshAdminSessionOnce(): Promise<boolean> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(ADMIN_REFRESH_TOKEN_COOKIE)?.value;
 

@@ -71,6 +71,15 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
         ],
       },
       {
+        id: "seguranca/empresas",
+        label: "Empresas",
+        actions: [
+          { permission: "COMPANY_READ", label: OPEN_SCREEN },
+          { permission: "COMPANY_CREATE", label: "Criar empresa" },
+          { permission: "COMPANY_UPDATE", label: "Editar, inativar e reativar empresa" },
+        ],
+      },
+      {
         id: "seguranca/api-keys",
         label: "API Keys",
         actions: [
@@ -83,6 +92,40 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
         id: "seguranca/auditoria",
         label: "Auditoria",
         actions: [{ permission: "LOG_READ", label: OPEN_SCREEN }],
+      },
+    ],
+  },
+  {
+    id: "dias-uteis",
+    label: "Dias uteis",
+    screens: [
+      {
+        id: "dias-uteis/feriados",
+        label: "Feriados",
+        actions: [
+          { permission: "BUSINESS_DAY_READ", label: `${OPEN_SCREEN}, ver a semana de trabalho e o calendario` },
+          { permission: "BUSINESS_DAY_CREATE", label: "Criar feriado" },
+          { permission: "BUSINESS_DAY_UPDATE", label: "Editar feriado e a semana de trabalho" },
+          { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado" },
+        ],
+      },
+      {
+        id: "dias-uteis/lista-referencia",
+        label: "Lista de referencia",
+        actions: [
+          { permission: "BUSINESS_DAY_READ", label: OPEN_SCREEN },
+          { permission: "BUSINESS_DAY_UPDATE", label: "Marcar ou desmarcar feriado movel e voltar a herdar" },
+        ],
+      },
+      {
+        id: "dias-uteis/vai-trabalhar",
+        label: "Vai trabalhar",
+        actions: [
+          { permission: "BUSINESS_DAY_READ", label: OPEN_SCREEN },
+          { permission: "BUSINESS_DAY_CREATE", label: "Criar data de trabalho" },
+          { permission: "BUSINESS_DAY_UPDATE", label: "Editar data de trabalho" },
+          { permission: "BUSINESS_DAY_DELETE", label: "Excluir data de trabalho" },
+        ],
       },
     ],
   },

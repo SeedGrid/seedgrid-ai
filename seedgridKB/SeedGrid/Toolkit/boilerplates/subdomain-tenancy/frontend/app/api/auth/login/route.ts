@@ -8,6 +8,7 @@ import {
   isAdminLoginSuccess,
   type AdminLoginResponse,
 } from "@/lib/admin-auth";
+import { buildSessionResponseBody } from "@/lib/company-selection";
 import { SecurityPaths } from "@/lib/security-paths";
 
 import { applyAdminSessionCookies } from "@/lib/admin-session-cookies";
@@ -67,10 +68,5 @@ export async function POST(request: NextRequest) {
 
   await applyAdminSessionCookies(data);
 
-  return NextResponse.json({
-    status: "OK",
-    changePasswordRequired: data.changePasswordRequired ?? false,
-    twoFactorEnabled: data.twoFactorEnabled ?? false,
-    publicId: data.publicId ?? null,
-  });
+  return NextResponse.json(buildSessionResponseBody(data));
 }

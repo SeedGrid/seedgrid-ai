@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start --port 3003",
     "lint": "next lint",
+    "test": "node --experimental-strip-types --import ./scripts/register-test-loader.mjs --test lib/integration-roles.test.ts lib/plan-commercial.test.ts lib/query.test.ts proxy.test.ts",
     "postinstall": "node scripts/strip-bom-seedgrid.mjs"
   },
   "dependencies": {

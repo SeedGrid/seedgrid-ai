@@ -265,8 +265,8 @@ echo "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64=$(openssl pkey -in private.pem -pu
 |---|---|
 | `SECURITY_MAILER_FROM` | Remetente. Em produção precisa ser a conta autenticada / domínio verificado, ou o provedor recusa. |
 | `SECURITY_MAILER_HOST` | Host do servidor SMTP. |
-| `SECURITY_MAILER_PORT` | Porta SMTP (587 com STARTTLS; 1025 num MailHog local). |
-| `SECURITY_MAILER_START_TLS` | `REQUIRED` em produção, `DISABLED` num MailHog local. |
+| `SECURITY_MAILER_PORT` | Porta SMTP (587 com STARTTLS; 1025 num Mailpit local). |
+| `SECURITY_MAILER_START_TLS` | `REQUIRED` em produção, `DISABLED` num Mailpit local. |
 | `SECURITY_MAILER_USERNAME` | Usuário SMTP. Em ZeptoMail/SendGrid costuma ser um literal (`emailapikey`). |
 | `SECURITY_MAILER_PASSWORD` | Senha ou API key do SMTP. **Segredo.** |
 
@@ -649,3 +649,11 @@ Plano 4.12 (Fase 5 T5.5/T5.6). A empresa da sessao tem `accessMode` `ACTIVE | RE
   Os campos `requiresCompanySelection`/`companySelection` na previa da troca de plano sao PROVISORIOS (nome ainda nao fechado no
   contrato do billing).
 - Testes: `pnpm test` (vitest) em `lib/*.test.ts`.
+
+---
+
+## Testes de ponta a ponta
+
+- Backend (HTTP real, Testcontainers): `cd backend && mvn verify` (classes `B2c*E2ETest`).
+- Navegador (Playwright): `cd e2e-web && npx playwright test`, com a pilha de pé; passos no `e2e-web/README.md` e cobertura em `e2e-web/COBERTURA.md`. E-mails de teste via Mailpit.
+- Fora do automatizado: login social com Google/Facebook reais (manual).

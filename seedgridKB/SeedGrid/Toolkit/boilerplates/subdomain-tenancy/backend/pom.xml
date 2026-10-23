@@ -18,11 +18,11 @@
         <quarkus.platform.version>3.30.6</quarkus.platform.version>
         <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
         <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
-        <seedgrid.subdomain-tenancy.version>2026.10.14</seedgrid.subdomain-tenancy.version>
+        <seedgrid.subdomain-tenancy.version>2026.10.22</seedgrid.subdomain-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
-        <seedgrid.realtime.version>2026.10.08</seedgrid.realtime.version>
-        <seedgrid.notification.version>2026.10.14</seedgrid.notification.version>
-        <seedgrid.whatsapp.version>2026.07.27</seedgrid.whatsapp.version>
+        <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
+        <seedgrid.notification.version>2026.10.15</seedgrid.notification.version>
+        <seedgrid.whatsapp.version>2026.10.22</seedgrid.whatsapp.version>
         <minio.version>8.5.9</minio.version>
     </properties>
 
@@ -60,16 +60,6 @@
         </dependency>
         <dependency>
             <groupId>br.com.seedgrid</groupId>
-            <artifactId>seedgrid-exchange</artifactId>
-            <version>2026.10.13</version>
-        </dependency>
-        <dependency>
-            <groupId>br.com.seedgrid</groupId>
-            <artifactId>seedgrid-ai-pricing</artifactId>
-            <version>2026.10.13</version>
-        </dependency>
-        <dependency>
-            <groupId>br.com.seedgrid</groupId>
             <artifactId>seedgrid-subdomain-tenancy</artifactId>
             <version>${seedgrid.subdomain-tenancy.version}</version>
         </dependency>
@@ -90,6 +80,12 @@
             <groupId>br.com.seedgrid</groupId>
             <artifactId>seedgrid-audit-mongodb</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <!-- /q/health: o subdomain-tenancy declara /q/health como rota publica (seedgrid.subdomain-tenancy.public-routes),
+             mas nao traz a extension; sem ela o endpoint responde 404 (BackendStartsGuardianTest). -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
         <dependency>
             <groupId>br.com.seedgrid</groupId>
@@ -162,6 +158,25 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.4</version>
+            </plugin>
+            <!-- *IT roda contra o jar empacotado (fase verify): BackendJarStartsWithOtelIT prova a subida com OpenTelemetry ligado. -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                <maven.home>${maven.home}</maven.home>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

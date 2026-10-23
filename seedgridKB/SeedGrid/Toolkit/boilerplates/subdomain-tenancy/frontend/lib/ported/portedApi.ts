@@ -19,6 +19,13 @@
 // (PLAN.md §6.1) — nada de `renovarUmaVezSo` client-side aqui.
 // ---------------------------------------------------------------------------
 
+import {
+  buildChangePlanBody,
+  buildCheckoutBody,
+  buildSaveCompanySelectionBody,
+  type CompanySelection,
+  type DowngradeCompanySelectionState,
+} from "../downgrade-company-selection";
 import type {
   ChangePreview,
   CheckoutPreview,
@@ -151,11 +158,15 @@ export function getCheckoutPreview(planId: string) {
 // (ver CheckoutPreview.requiresUserSelection) — o servidor valida ANTES de criar a sessao no
 // provedor, entao assinar e a selecao acontecem juntas ou nao acontece nenhuma das duas.
 /** `invoke("start_checkout")` -> POST /me/billing/checkout */
-export function startCheckout(planId: string, userPublicIdsToDeactivate?: string[]) {
-  return postJson<CheckoutSessionResponse>("/api/me/billing/checkout", {
-    planId,
-    userPublicIdsToDeactivate: userPublicIdsToDeactivate ?? null,
-  });
+export function startCheckout(
+  planId: string,
+  userPublicIdsToDeactivate?: string[],
+  companySelection?: CompanySelection | null,
+) {
+  return postJson<CheckoutSessionResponse>(
+    "/api/me/billing/checkout",
+    buildCheckoutBody(planId, userPublicIdsToDeactivate, companySelection),
+  );
 }
 
 /** `invoke("get_change_preview")` -> GET /me/billing/change-preview?planId= */
@@ -167,11 +178,15 @@ export function getChangePreview(planId: string) {
 
 // Troca o plano da assinatura EXISTENTE (upgrade/downgrade) com rateio, sem novo checkout.
 /** `invoke("change_plan")` -> POST /me/billing/change-plan */
-export function changePlan(planId: string, userPublicIdsToDeactivate?: string[]) {
-  return postJson<unknown>("/api/me/billing/change-plan", {
-    planId,
-    userPublicIdsToDeactivate: userPublicIdsToDeactivate ?? null,
-  });
+export function changePlan(
+  planId: string,
+  userPublicIdsToDeactivate?: string[],
+  companySelection?: CompanySelection | null,
+) {
+  return postJson<unknown>(
+    "/api/me/billing/change-plan",
+    buildChangePlanBody(planId, userPublicIdsToDeactivate, companySelection),
+  );
 }
 
 /** `invoke("open_billing_portal")` -> POST /me/billing/portal */
@@ -205,6 +220,23 @@ export function saveDowngradeUserSelection(userPublicIds: string[]) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userPublicIds }),
+  });
+}
+
+/** GET /me/billing/downgrade-company-selection (T5.5): empresas elegiveis/protegidas do downgrade. */
+export function getDowngradeCompanySelection() {
+  return request<DowngradeCompanySelectionState>("/api/me/billing/downgrade-company-selection");
+}
+
+/**
+ * PUT /me/billing/downgrade-company-selection (T5.13): reedita a escolha de empresas de um downgrade
+ * ja agendado, enquanto o ciclo nao fecha. Erros: INVALID_COMPANY_SELECTION, COMPANY_SELECTION_NOT_REQUIRED.
+ */
+export function saveDowngradeCompanySelection(selection: CompanySelection) {
+  return request<{ status: string }>("/api/me/billing/downgrade-company-selection", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(buildSaveCompanySelectionBody(selection)),
   });
 }
 

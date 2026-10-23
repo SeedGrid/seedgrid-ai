@@ -46,9 +46,7 @@ O `run.sh` inicia somente o Quarkus; a infraestrutura deve estar rodando antes.
 
 ## Tenancy
 
-- `quarkus.http.auth.proactive=false` mantém a autenticação no fluxo REST, onde o
-  contexto de requisição está ativo para a resolução do tenant e das permissões RBAC.
-  Autenticação antecipada causa `ContextNotActiveException` em requisições com JWT.
+- A autenticação segue o padrão proativo do `seedgrid-security` (`quarkus.http.auth.proactive=true`): o escopo de RBAC vem da claim `subdomain` do JWT, sem depender do contexto da requisição.
 - `Host: localhost` seleciona o master; `Host: cliente.localhost` seleciona o cliente.
 - O BFF repassa o domínio em `X-Forwarded-Host`, mantendo a conexão interna em `127.0.0.1`.
 - `POST /public/tenants` cadastra; `POST /public/tenants/validate-email` recebe
@@ -124,7 +122,7 @@ Controllers `/admin/ai/models` e `/admin/ai/price-approvals`, entidades, service
 DTOs, scheduler, prompt e catálogo dos eventos pertencem à extensão. Ela publica
 `ai-pricing.approval-pending` e `ai-pricing.check-failed` via `seedgrid-notification-api`; o `seedgrid-notification`
 instalado no host aplica os canais e destinatários configurados.
-Para ligar um LLM, implemente `br.com.seedgrid.aipricing.spi.AiPriceExtractor`;
+Para ligar um LLM, implemente `br.com.seedgrid.aipricing.spis.AiPriceExtractor`;
 o prompt esta no jar em `/ai-pricing/prompts/pricing-extract.md`.
 Sem extrator concreto, vale o provider inerte da extensao.
 
@@ -170,8 +168,10 @@ semeia apenas permissões próprias do host e seus vínculos. Cada extension def
 próprias permissões e as associa às roles; o host não corrige audience nem cria esses vínculos.
 Migrations e históricos das extensions permanecem nas próprias locations; não copie tabelas ou
 seeds de extensions para `app`.
-AI Pricing e Exchange rodam no master quando `seedgrid.ai-pricing.migration.enabled` e
-`seedgrid.exchange.migration.enabled` estão ativos; cada extension mantém sua tabela de histórico.
+AI Pricing e Exchange rodam no master; Business days roda no master e em cada tenant. Todos vêm ligados
+(`seedgrid.subdomain-tenancy.modules.<módulo>.enabled`, default `true`); cada extension mantém sua tabela de
+histórico. Tenants já migrados só recebem o schema novo quando `seedgrid.subdomain-tenancy.migration.target-version`
+muda.
 
 ## Notifications pela extensão
 
@@ -208,6 +208,17 @@ Validação do exemplo, sem banco:
 ```bash
 mvn -o -Dtest=AppUserAdditionalFieldsValidatorTest test
 ```
+
+### Teste de subida do backend (sempre roda)
+
+`BackendStartsGuardianTest` sobe o backend de verdade (contexto CDI completo, Flyway das migrations de todas as
+extensions, Postgres real via Testcontainers) e confere `GET /q/health` = `UP`. E' o que impede um produto novo de
+nascer com um backend que nao inicia. Precisa de Docker/Podman; nao depende de Postgres local nem de variavel de
+ambiente. Rodar: `mvn -o -Dtest=BackendStartsGuardianTest test`.
+
+Em teste a saude do `mongodb-client` fica desligada (`%test.quarkus.mongodb.health.enabled=false`): a auditoria
+roda em `jpa` e o indicador esperaria 30 s por um Mongo que nao existe. Em producao (strategy `MONGODB`) ele segue ligado.
+
 
 
 ## Extensibilidade de PlanTerm e User

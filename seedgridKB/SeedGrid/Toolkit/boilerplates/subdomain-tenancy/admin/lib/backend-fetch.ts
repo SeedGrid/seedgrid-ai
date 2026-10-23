@@ -1,7 +1,8 @@
 import "server-only";
+import { adminForwardedHost } from "./tenant-host";
 
 export function backendHost(): string {
-  return process.env.SEEDGRID_TENANCY_DOMAIN?.trim() || "localhost";
+  return adminForwardedHost();
 }
 
 export async function backendFetch(url: string, options: RequestInit = {}): Promise<Response> {

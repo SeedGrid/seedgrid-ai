@@ -12,6 +12,8 @@
 // apagar metade de um arquivo testado e' justamente o que este boilerplate nao faz; ninguem as
 // assina.
 
+import { companySelectionErrorMessage } from "../downgrade-company-selection";
+
 /**
  * Normalizacao de erro do client + deteccao de "a sessao morreu".
  *
@@ -30,6 +32,24 @@
 export const SESSION_EXPIRED_MESSAGE = "Sua sessão expirou. Entre novamente.";
 
 /**
+ * Sessao REVOGADA pelo servidor (T2.4): o backend responde 401 problem+json com
+ * `code` = "SESSION_REVOKED". Refresh nao resolve; o usuario so' precisa entrar de novo.
+ */
+export const SESSION_REVOKED_CODE = "SESSION_REVOKED";
+export const SESSION_REVOKED_MESSAGE = "Sua sessão foi encerrada. Entre novamente.";
+
+/**
+ * Estado de acesso da empresa (T5.6): 403 problem+json com `code` COMPANY_READ_ONLY (escrita recusada;
+ * a sessao segue viva) ou COMPANY_DISABLED (empresa desligada: a sessao morreu, vai ao login).
+ */
+export const COMPANY_READ_ONLY_CODE = "COMPANY_READ_ONLY";
+export const COMPANY_DISABLED_CODE = "COMPANY_DISABLED";
+export const COMPANY_READ_ONLY_MESSAGE =
+  "A empresa está em modo somente leitura. Faça o upgrade do plano para alterar dados.";
+export const COMPANY_DISABLED_MESSAGE =
+  "O acesso desta empresa foi desativado. Entre em contato com o responsável pela conta.";
+
+/**
  * Trechos que identificam uma sessao IRRECUPERAVEL (nao adianta tentar de novo: so' logando).
  *
  * Comparados sem acento e em minusculas (ver `foldForMatch`), entao basta a forma ASCII.
@@ -42,6 +62,9 @@ const SESSION_EXPIRED_HINTS = [
   "refresh token",
   // Mensagem amigavel do Rust (e a nossa propria, ja' normalizada) — a deteccao e' idempotente.
   "sessao expirou",
+  "sessao foi encerrada",
+  // Empresa desligada (COMPANY_DISABLED): a sessao nao volta, so' trocando de empresa/entrando de novo.
+  "acesso desta empresa foi desativado",
   "session expired",
   // O state local ficou sem access token: nao ha sessao pra recuperar.
   "sessao autenticada nao encontrada",
@@ -102,6 +125,12 @@ export function readError(error: unknown): string {
     const normalized = message.trim();
     // Sessao morta vem antes de tudo: nao interessa qual endpoint reclamou, o usuario so'
     // precisa saber que tem de entrar de novo.
+    if (foldForMatch(normalized).includes("sessao foi encerrada")) {
+      return SESSION_REVOKED_MESSAGE;
+    }
+    if (foldForMatch(normalized).includes("acesso desta empresa foi desativado")) {
+      return COMPANY_DISABLED_MESSAGE;
+    }
     if (isSessionExpiredMessage(normalized)) {
       return SESSION_EXPIRED_MESSAGE;
     }
@@ -124,6 +153,11 @@ export function readError(error: unknown): string {
   const fromProblem = (value: unknown): string | null => {
     if (typeof value !== "object" || value === null) return null;
     const obj = value as Record<string, unknown>;
+    if (obj.code === SESSION_REVOKED_CODE) return SESSION_REVOKED_MESSAGE;
+    if (obj.code === COMPANY_DISABLED_CODE) return COMPANY_DISABLED_MESSAGE;
+    if (obj.code === COMPANY_READ_ONLY_CODE) return COMPANY_READ_ONLY_MESSAGE;
+    const selectionMessage = companySelectionErrorMessage(obj.code);
+    if (selectionMessage) return selectionMessage;
     const violations = obj.violations;
     if (Array.isArray(violations) && violations.length > 0) {
       const messages = violations

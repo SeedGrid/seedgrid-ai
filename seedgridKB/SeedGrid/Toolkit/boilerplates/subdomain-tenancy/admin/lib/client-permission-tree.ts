@@ -71,6 +71,15 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
         ],
       },
       {
+        id: "seguranca/empresas",
+        label: "Empresas",
+        actions: [
+          { permission: "COMPANY_READ", label: OPEN_SCREEN },
+          { permission: "COMPANY_CREATE", label: "Criar empresa" },
+          { permission: "COMPANY_UPDATE", label: "Editar, inativar e reativar empresa" },
+        ],
+      },
+      {
         id: "seguranca/api-keys",
         label: "API Keys",
         actions: [

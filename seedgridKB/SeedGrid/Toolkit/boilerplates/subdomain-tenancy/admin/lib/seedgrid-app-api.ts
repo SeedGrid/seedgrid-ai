@@ -1,26 +1,10 @@
 import type { CycleMeter, PlanTermMeter } from "./usage-meters";
 import { createApiClient } from "@/lib/core";
 
-// URL da API: env `SEEDGRID_APP_API_BASE_URL`, com a API local como default.
-//
-// O report-admin, de onde este arquivo veio, escolhia por `DEBUG_MODE` entre a API local e o
-// dominio de PRODUCAO DELE, hardcoded (mesmo criterio do client Tauri — ver
-// seedgrid-report-client/src-tauri/src/lib.rs, resolve_api_base_url). Num boilerplate isso nao
-// pode ficar: cada produto clonado apontaria, por default, para a API de OUTRO produto — e o
-// sintoma nao seria erro de conexao, seria autenticar contra o backend errado.
-//
-// Com o dominio fora, o `DEBUG_MODE` deixou de escolher qualquer coisa (os dois ramos viravam a
-// mesma URL), entao ele saiu junto em vez de virar um ternario que nao decide nada. Quem publica
-// define a env; sem ela, aponta para a API local, que e' o default seguro.
-//
-// 127.0.0.1 e NAO localhost: a API sobe ligada so' a interface IPv4, e no Windows
-// `localhost` resolve ::1 primeiro — a conexao IPv6 falha e o fallback para IPv4
-// custa ~200ms POR CONEXAO NOVA. Medido: 2-5ms por 127.0.0.1 contra 214-244ms por
-// localhost, com o custo todo no connect, antes de qualquer processamento.
-const LOCAL_API_BASE_URL = "http://127.0.0.1:8085";
+import { apiBaseUrl } from "./api-base-url";
 
-export const apiBaseUrl =
-  process.env.SEEDGRID_APP_API_BASE_URL?.trim() || LOCAL_API_BASE_URL;
+// URL da API: ver `lib/api-base-url.ts` (env `SEEDGRID_APP_API_BASE_URL`, default a API local).
+export { apiBaseUrl };
 const apiToken = process.env.SEEDGRID_APP_API_TOKEN;
 const apiCompanyId = process.env.SEEDGRID_APP_API_COMPANY_ID;
 
@@ -78,7 +62,8 @@ export type PlanTermAttributes = {
 /** Conta na visao da plataforma (GET /admin/accounts, do seedgrid-billing): consumo por contador. */
 export type AdminAccount = {
   publicId: string;
-  cnpj: string;
+  personType: string;
+  cpfCnpj: string | null;
   legalName: string;
   tradeName: string;
   status: string;
@@ -101,7 +86,8 @@ export type AdminAccount = {
  */
 export type AdminAccountOption = {
   publicId: string;
-  cnpj: string | null;
+  personType: string;
+  cpfCnpj: string | null;
   legalName: string | null;
   tradeName: string | null;
 };
@@ -211,6 +197,8 @@ export type ApiKeyRoleOption = {
   name: string;
   description: string | null;
   global: boolean;
+  // Permissoes liberadas do perfil (GET /apikeys/roles); ausente em backends antigos.
+  permissions?: { publicId: string; name: string; description: string | null }[];
 };
 
 // ── Backup / Data Export (ext seedgrid-backup, endpoints /exports) ──
@@ -264,6 +252,8 @@ export type PermissionOption = {
   publicId: string;
   name: string;
   description: string;
+  // Liberada pela software house para perfis de integracao (permissions.for_integration).
+  forIntegration?: boolean;
 };
 
 export type UserEntry = {

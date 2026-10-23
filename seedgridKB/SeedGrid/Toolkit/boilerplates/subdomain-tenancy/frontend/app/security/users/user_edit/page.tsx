@@ -32,7 +32,17 @@ import { useAdminAccess } from "../../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 import { formatDateTime } from "@/lib/format";
+import { parseMyCompanies, type MyCompany } from "@/lib/my-companies";
 import { isProtectedAccountUser, type RoleSummary, type UserEntry } from "@/lib/seedgrid-app-api";
+import {
+  editorMemberships,
+  membershipCompanyLabel,
+  offerableCompanies,
+  setMembershipCompanies,
+  setMembershipRoles,
+  toMembershipsPayload,
+  type MembershipDraft,
+} from "@/lib/user-memberships";
 
 type UserEditorState = {
   cargo: string;
@@ -46,6 +56,8 @@ type UserEditorState = {
   changePasswordRequired: boolean;
   passwordExpiresAt: string | null;
   rolePublicIds: string[];
+  // Empresas do usuario e os perfis dele em cada uma (T5.7). Perfis GLOBAIS ficam em `rolePublicIds`.
+  memberships: MembershipDraft[];
   // Parceiro (LCK, Token, ...) que este operador representa - null = operador "interno"
   // (equipe SeedGrid), sem escopo, ve todas as contas.
 };
@@ -62,6 +74,7 @@ const EMPTY_EDITOR: UserEditorState = {
   changePasswordRequired: true,
   passwordExpiresAt: null,
   rolePublicIds: [],
+  memberships: [],
 };
 
 /** Responsavel pela conta: ver isProtectedAccountUser. */
@@ -83,7 +96,7 @@ function UserEditPageContent() {
   const userPublicId = searchParams.get("publicId");
   const isEditing = Boolean(userPublicId);
 
-  const { hasPermission, loading: accessLoading } = useAdminAccess();
+  const { hasPermission, loading: accessLoading, currentCompany } = useAdminAccess();
   const canCreateUsers = hasPermission(ADMIN_PERMISSIONS.usersCreate);
   const canEditUsers = hasPermission(ADMIN_PERMISSIONS.usersEdit);
   const canAccessPage = isEditing ? canEditUsers : canCreateUsers;
@@ -93,6 +106,10 @@ function UserEditPageContent() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [editor, setEditor] = useState<UserEditorState>(EMPTY_EDITOR);
   const [roleOptions, setRoleOptions] = useState<RoleSummary[]>([]);
+  // Empresas do CHAMADOR (`GET /me/companies`): so elas sao oferecidas; o backend valida de novo.
+  const [myCompanies, setMyCompanies] = useState<MyCompany[]>([]);
+  // `UserDTORes.memberships` veio na leitura? Backend antigo = false: o salvar nao envia vinculos.
+  const [membershipsKnown, setMembershipsKnown] = useState(true);
   // Locked to the loaded identity, not the editable e-mail field, so the
   // protection holds even while the admin updates its own e-mail.
   const [protectedAdmin, setProtectedAdmin] = useState(false);
@@ -105,6 +122,12 @@ function UserEditPageContent() {
         description: role.description,
       })),
     [roleOptions],
+  );
+
+  const offeredCompanies = useMemo(() => offerableCompanies(myCompanies), [myCompanies]);
+  const companyChecklist = useMemo<SgCheckboxGroupOption[]>(
+    () => offeredCompanies.map((company) => ({ label: company.name, value: company.publicId })),
+    [offeredCompanies],
   );
 
   useEffect(() => {
@@ -146,8 +169,28 @@ function UserEditPageContent() {
       // entao fica fora da lista de perfis da tela.
       setRoleOptions(roles.filter((role) => role.forIntegration !== true));
 
+      // Empresas do chamador. Falha aqui nao bloqueia o cadastro: sem a lista a secao some e o
+      // usuario fica so com os perfis globais.
+      let mine: MyCompany[] = [];
+      try {
+        mine = parseMyCompanies(await adminProxyClient.get<unknown>("/api/me/companies"));
+      } catch {
+        mine = [];
+      }
+      if (cancelled) {
+        return;
+      }
+      setMyCompanies(mine);
+
       if (!isEditing || !userPublicId) {
-        setEditor(EMPTY_EDITOR);
+        // Usuario novo nasce vinculado a empresa corrente do cadastrador (pode trocar ou ampliar).
+        const current = offerableCompanies(mine).find(
+          (company) => company.publicId === currentCompany?.publicId,
+        );
+        setEditor({
+          ...EMPTY_EDITOR,
+          memberships: current ? [{ companyPublicId: current.publicId, rolePublicIds: [] }] : [],
+        });
         setProtectedAdmin(false);
         setLoading(false);
         return;
@@ -169,6 +212,8 @@ function UserEditPageContent() {
       }
 
       if (!cancelled) {
+        const loadedMemberships = editorMemberships(user.memberships);
+        setMembershipsKnown(loadedMemberships.known);
         setProtectedAdmin(isProtectedAdminUser(user));
         setEditor({
           email: user.email,
@@ -182,6 +227,7 @@ function UserEditPageContent() {
           changePasswordRequired: user.changePasswordRequired,
           passwordExpiresAt: user.passwordExpiresAt ?? null,
           rolePublicIds: user.roles.map((role) => role.publicId),
+          memberships: loadedMemberships.memberships,
         });
         setLoading(false);
       }
@@ -192,6 +238,7 @@ function UserEditPageContent() {
     return () => {
       cancelled = true;
     };
+    // `currentCompany` so define a pre-selecao do usuario NOVO; trocar de empresa recarrega a pagina.
   }, [accessLoading, canAccessPage, isEditing, userPublicId]);
 
   async function submitUser() {
@@ -239,6 +286,17 @@ function UserEditPageContent() {
         root: protectedAdmin ? true : editor.root,
         changePasswordRequired: editor.changePasswordRequired,
         rolePublicIds: editor.rolePublicIds,
+        // Vinculos por publicId, so com empresas do chamador e perfis que existem na lista. Na
+        // edicao com backend que nao devolveu os vinculos, a chave nem vai (vinculos intactos).
+        ...(isEditing && !membershipsKnown
+          ? {}
+          : {
+              memberships: toMembershipsPayload(
+                editor.memberships,
+                offeredCompanies.map((company) => company.publicId),
+                roleOptions.map((role) => role.publicId),
+              ),
+            }),
       };
 
       if (isEditing) {
@@ -292,7 +350,7 @@ function UserEditPageContent() {
       <SgCard
         cardStyle="outlined"
         title="Dados do usuario"
-        description="No admin web, todo usuario novo sera vinculado automaticamente a empresa 1."
+        description="Defina os dados de acesso, os perfis e as empresas do usuario."
       >
         <SgStack gap={12}>
           <SgButton
@@ -444,7 +502,7 @@ function UserEditPageContent() {
 
               <SgCheckboxGroup
                 id="user-roles"
-                title="Perfis"
+                title="Perfis (valem em todas as empresas do usuario)"
                 disabled={protectedAdmin}
                 source={roleChecklist}
                 value={editor.rolePublicIds}
@@ -455,6 +513,69 @@ function UserEditPageContent() {
                   }))
                 }
               />
+
+              {offeredCompanies.length > 0 ? (
+                <SgStack gap={12}>
+                  <SgCheckboxGroup
+                    id="user-companies"
+                    title="Empresas"
+                    disabled={protectedAdmin}
+                    source={companyChecklist}
+                    value={editor.memberships.map((m) => m.companyPublicId)}
+                    onChange={(value) =>
+                      setEditor((current) => ({
+                        ...current,
+                        memberships: setMembershipCompanies(current.memberships, value.map(String)),
+                      }))
+                    }
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {isEditing
+                      ? "Marque para vincular o usuario a uma empresa ou ajustar os perfis dele nela. Aparecem so as empresas as quais voce tem acesso."
+                      : "O usuario novo so pode ser vinculado as empresas as quais voce tem acesso."}
+                  </span>
+                  {editor.memberships.some(
+                    (m) => !offeredCompanies.some((c) => c.publicId === m.companyPublicId),
+                  ) ? (
+                    <span className="text-xs text-muted-foreground">
+                      Vinculado tambem a:{" "}
+                      {editor.memberships
+                        .filter((m) => !offeredCompanies.some((c) => c.publicId === m.companyPublicId))
+                        .map((m) => membershipCompanyLabel(m, myCompanies))
+                        .join(", ")}
+                      . Esses vinculos nao sao alterados por aqui.
+                    </span>
+                  ) : null}
+                  {editor.memberships.map((membership) => {
+                    const company = offeredCompanies.find(
+                      (item) => item.publicId === membership.companyPublicId,
+                    );
+                    if (!company) {
+                      return null;
+                    }
+                    return (
+                      <SgCheckboxGroup
+                        key={membership.companyPublicId}
+                        id={`user-company-roles-${membership.companyPublicId}`}
+                        title={`Perfis em ${company.name}`}
+                        disabled={protectedAdmin}
+                        source={roleChecklist}
+                        value={membership.rolePublicIds}
+                        onChange={(value) =>
+                          setEditor((current) => ({
+                            ...current,
+                            memberships: setMembershipRoles(
+                              current.memberships,
+                              membership.companyPublicId,
+                              value.map(String),
+                            ),
+                          }))
+                        }
+                      />
+                    );
+                  })}
+                </SgStack>
+              ) : null}
 
               <SgButton
                 appearance="outline"

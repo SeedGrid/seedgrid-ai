@@ -9,6 +9,7 @@ import { SeedThemeProvider } from "@seedgrid/fe-theme";
 import { ReactNode } from "react";
 
 import { AdminAccessProvider } from "./AdminAccessProvider";
+import { CompanyAccessBar } from "./CompanyAccessBar";
 import { ThemePersistenceBridge } from "../theme/themePersistence";
 
 // O `SgComponentsI18nProvider` com `locale="pt-BR"` fixo saiu daqui: quem o monta agora e' o
@@ -60,6 +61,7 @@ export function Providers({ children }: ProvidersProps) {
           }}
         >
           <ThemePersistenceBridge />
+          <CompanyAccessBar />
           {children}
           <SgToaster />
         </SgEnvironmentProvider>

@@ -288,7 +288,7 @@ function UserEditPageContent() {
       <SgCard
         cardStyle="outlined"
         title="Dados do usuario"
-        description="No admin web, todo usuario novo sera vinculado automaticamente a empresa 1."
+        description="O usuario novo sera vinculado a sua empresa atual."
       >
         <SgStack gap={12}>
           <SgButton

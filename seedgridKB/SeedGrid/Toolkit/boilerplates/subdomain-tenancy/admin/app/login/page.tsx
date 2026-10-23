@@ -20,6 +20,11 @@ import {
 } from "react";
 
 import type { AdminLoginResponse } from "@/lib/admin-auth";
+import {
+  COMPANY_DISABLED_MESSAGE,
+  SESSION_REVOKED_MESSAGE,
+  isCompanyDisabledBody,
+} from "@/lib/api-error";
 import { savePendingTwoFactor } from "@/lib/two-factor-pending";
 import { SeedGridLogoFull } from "../components/SeedGridLogoFull";
 
@@ -55,11 +60,20 @@ function LoginPageContent() {
   const expired = searchParams.get("expired");
   const expiredShownRef = useRef(false);
   useEffect(() => {
-    if (expired !== "1" || expiredShownRef.current) {
+    if (
+      (expired !== "1" && expired !== "revoked" && expired !== "disabled") ||
+      expiredShownRef.current
+    ) {
       return;
     }
     expiredShownRef.current = true;
-    toast.error("Sessao expirada. Efetue login novamente.");
+    toast.error(
+      expired === "revoked"
+        ? SESSION_REVOKED_MESSAGE
+        : expired === "disabled"
+          ? COMPANY_DISABLED_MESSAGE
+          : "Sessao expirada. Efetue login novamente.",
+    );
     router.replace(pathname, { scroll: false });
   }, [expired, pathname, router]);
 
@@ -94,6 +108,11 @@ function LoginPageContent() {
         if (isPasswordChangeRequiredError(payload)) {
           router.push("/change-password");
           router.refresh();
+          return;
+        }
+        // Empresa desligada (COMPANY_DISABLED): nao entra; mensagem propria, nao a generica.
+        if (isCompanyDisabledBody(payload)) {
+          setErrorMessage(COMPANY_DISABLED_MESSAGE);
           return;
         }
         setErrorMessage(extractMessage(payload) ?? "Falha ao autenticar no admin.");

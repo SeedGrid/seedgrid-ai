@@ -17,6 +17,15 @@ import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { MeterQuotaEditor, useUsageMeters } from "../../components/MeterQuotaEditor";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import type { TrialConfig } from "@/lib/seedgrid-app-api";
+import {
+  COMPANY_LIMIT_HELP,
+  EMPTY_COMMERCIAL_FIELDS,
+  PAST_DUE_HELP,
+  toCommercialFields,
+  toCommercialPayload,
+  type CommercialConditions,
+  type CommercialFields,
+} from "@/lib/plan-commercial";
 import { toMeterPayload, toMeterRows, type MeterQuotaRow } from "@/lib/usage-meters";
 
 export default function PlanTrialPage() {
@@ -28,6 +37,7 @@ export default function PlanTrialPage() {
   const [trial, setTrial] = useState<TrialConfig | null>(null);
   const [meterRows, setMeterRows] = useState<MeterQuotaRow[]>([]);
   const [trialDays, setTrialDays] = useState("");
+  const [commercial, setCommercial] = useState<CommercialFields>(EMPTY_COMMERCIAL_FIELDS);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -43,6 +53,7 @@ export default function PlanTrialPage() {
       const data = (await response.json()) as TrialConfig;
       setTrial(data);
       setTrialDays(String(data.trialDays));
+      setCommercial(toCommercialFields(data as CommercialConditions));
     } finally {
       setLoading(false);
     }
@@ -77,13 +88,19 @@ export default function PlanTrialPage() {
       return;
     }
 
+    const { payload: commercialPayload, error: commercialError } = toCommercialPayload(commercial);
+    if (commercialError) {
+      toast.error(commercialError);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const response = await fetch("/api/admin/plans/trial", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         // `meters` presente substitui a lista inteira: contador desligado sai do trial.
-        body: JSON.stringify({ meters, trialDays: days }),
+        body: JSON.stringify({ meters, trialDays: days, ...commercialPayload }),
       });
       if (!response.ok) {
         const text = await response.text();
@@ -146,6 +163,58 @@ export default function PlanTrialPage() {
               inputProps={{ value: trialDays }}
               onChange={setTrialDays}
             />
+
+            <div>
+              <SgInputNumber
+                id="trial-max-companies"
+                label="Empresas ativas"
+                enabled={canEdit}
+                decimals={0}
+                minValue={0}
+                inputProps={{ value: commercial.maxCompanies }}
+                onChange={(maxCompanies) => setCommercial((current) => ({ ...current, maxCompanies }))}
+              />
+              <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{COMPANY_LIMIT_HELP} Quantas empresas da conta operam normalmente durante o trial.</p>
+            </div>
+
+            <div>
+              <SgInputNumber
+                id="trial-max-read-only-companies"
+                label="Empresas somente leitura"
+                enabled={canEdit}
+                decimals={0}
+                minValue={0}
+                inputProps={{ value: commercial.maxReadOnlyCompanies }}
+                onChange={(maxReadOnlyCompanies) => setCommercial((current) => ({ ...current, maxReadOnlyCompanies }))}
+              />
+              <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{COMPANY_LIMIT_HELP} Quantas empresas podem só consultar.</p>
+            </div>
+
+            <div>
+              <SgInputNumber
+                id="trial-past-due-read-only-days"
+                label="Dias de atraso para somente leitura"
+                enabled={canEdit}
+                decimals={0}
+                minValue={0}
+                inputProps={{ value: commercial.pastDueReadOnlyAfterDays }}
+                onChange={(pastDueReadOnlyAfterDays) => setCommercial((current) => ({ ...current, pastDueReadOnlyAfterDays }))}
+              />
+              <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{PAST_DUE_HELP}</p>
+            </div>
+
+            <div>
+              <SgInputNumber
+                id="trial-past-due-disable-days"
+                label="Dias de atraso para desativar"
+                enabled={canEdit}
+                decimals={0}
+                minValue={0}
+                inputProps={{ value: commercial.pastDueDisableAfterDays }}
+                onChange={(pastDueDisableAfterDays) => setCommercial((current) => ({ ...current, pastDueDisableAfterDays }))}
+              />
+              <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{PAST_DUE_HELP}</p>
+            </div>
 
             <p style={{ fontSize: 13, lineHeight: 1.5, margin: 0, opacity: 0.75 }}>
               Contador desligado fica <strong>fora do trial</strong>: consumir dele mostra ao cliente

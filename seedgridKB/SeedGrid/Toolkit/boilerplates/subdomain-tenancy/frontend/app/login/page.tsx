@@ -20,6 +20,12 @@ import {
 } from "react";
 
 import type { AdminLoginResponse } from "@/lib/admin-auth";
+import {
+  COMPANY_DISABLED_MESSAGE,
+  SESSION_REVOKED_MESSAGE,
+  isCompanyDisabledBody,
+} from "@/lib/api-error";
+import { resolvePostLoginPath } from "@/lib/company-selection";
 import { savePendingTwoFactor } from "@/lib/two-factor-pending";
 import { SeedGridLogoFull } from "../components/SeedGridLogoFull";
 
@@ -55,11 +61,20 @@ function LoginPageContent() {
   const expired = searchParams.get("expired");
   const expiredShownRef = useRef(false);
   useEffect(() => {
-    if (expired !== "1" || expiredShownRef.current) {
+    if (
+      (expired !== "1" && expired !== "revoked" && expired !== "disabled") ||
+      expiredShownRef.current
+    ) {
       return;
     }
     expiredShownRef.current = true;
-    toast.error("Sessao expirada. Efetue login novamente.");
+    toast.error(
+      expired === "revoked"
+        ? SESSION_REVOKED_MESSAGE
+        : expired === "disabled"
+          ? COMPANY_DISABLED_MESSAGE
+          : "Sessao expirada. Efetue login novamente.",
+    );
     router.replace(pathname, { scroll: false });
   }, [expired, pathname, router]);
 
@@ -96,6 +111,11 @@ function LoginPageContent() {
           router.refresh();
           return;
         }
+        // Empresa desligada (COMPANY_DISABLED): nao entra; mensagem propria, nao a generica.
+        if (isCompanyDisabledBody(payload)) {
+          setErrorMessage(COMPANY_DISABLED_MESSAGE);
+          return;
+        }
         setErrorMessage(extractMessage(payload) ?? "Falha ao autenticar no admin.");
         return;
       }
@@ -110,16 +130,8 @@ function LoginPageContent() {
         return;
       }
 
-      if (
-        "changePasswordRequired" in payload &&
-        payload.changePasswordRequired === true
-      ) {
-        router.push("/change-password");
-        router.refresh();
-        return;
-      }
-
-      router.push("/");
+      // Sucesso: escolha da empresa (companySelectionRequired) > troca obrigatoria de senha > app.
+      router.push(resolvePostLoginPath(payload));
       router.refresh();
     });
   }
@@ -133,8 +145,8 @@ function LoginPageContent() {
           </div>
           <SgCard
             cardStyle="elevated"
-            description="Use uma conta com role ADMIN para acessar o backoffice."
-            title="Entrar no Admin Web"
+            description="Use o e-mail e a senha da sua conta."
+            title="Entrar"
           >
           <form onSubmit={onSubmit}>
             <SgStack gap={16}>

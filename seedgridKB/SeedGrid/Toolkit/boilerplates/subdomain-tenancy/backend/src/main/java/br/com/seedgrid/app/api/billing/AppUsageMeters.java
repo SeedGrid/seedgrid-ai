@@ -14,7 +14,7 @@ import jakarta.enterprise.context.ApplicationScoped;
  * <p>Os dois contadores sao EXEMPLOS, um para cada forma de contar (ver {@code UsageDemoResource}):</p>
  * <ul>
  *   <li>{@code requests}: uma chamada vale uma unidade, contada pela anotacao
- *       {@code @ConsumesUsage(meter = AppUsageMeters.REQUESTS)};</li>
+ *       {@code @SgConsumesUsage(meter = AppUsageMeters.REQUESTS)};</li>
  *   <li>{@code storage-mb}: a quantidade so' se conhece em runtime (o tamanho do arquivo), contada pelo
  *       codigo com {@code UsageService.consume(...)}.</li>
  * </ul>

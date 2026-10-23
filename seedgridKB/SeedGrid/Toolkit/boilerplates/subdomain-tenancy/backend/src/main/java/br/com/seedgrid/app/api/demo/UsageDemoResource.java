@@ -10,8 +10,8 @@ import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.com.seedgrid.app.api.billing.AppUsageMeters;
-import br.com.seedgrid.billing.annotations.ConsumesUsage;
-import br.com.seedgrid.billing.annotations.RequiresPlanFeature;
+import br.com.seedgrid.billing.annotations.SgConsumesUsage;
+import br.com.seedgrid.billing.annotations.SgRequiresPlanFeature;
 import br.com.seedgrid.billing.entities.Account;
 import br.com.seedgrid.billing.services.UsageService;
 import br.com.seedgrid.billing.spis.CurrentAccountResolver;
@@ -33,7 +33,7 @@ import jakarta.ws.rs.core.MediaType;
  * {@code code} do motivo) e contabiliza DEPOIS, so' se deu certo, dentro da transacao do metodo.</p>
  *
  * <p>Acesso: o perfil precisa de {@code USAGE_DEMO_READ} (marcavel no editor de perfis) E o plano da conta
- * precisa liberar a feature ({@code @RequiresPlanFeature}, editavel no admin). Seed: V3002.</p>
+ * precisa liberar a feature ({@code @SgRequiresPlanFeature}, editavel no admin). Seed: V3002.</p>
  */
 @Path("/api/demo")
 @Authenticated
@@ -58,8 +58,8 @@ public class UsageDemoResource {
     @POST
     @Path("/requests")
     @PermissionsAllowed(USAGE_DEMO_READ)
-    @RequiresPlanFeature(USAGE_DEMO_READ)
-    @ConsumesUsage(meter = AppUsageMeters.REQUESTS)
+    @SgRequiresPlanFeature(USAGE_DEMO_READ)
+    @SgConsumesUsage(meter = AppUsageMeters.REQUESTS)
     @Operation(summary = "Faz uma requisicao de exemplo (consome 1 requisicao)")
     public Map<String, Object> request() {
         return Map.of("status", "DONE", "at", Instant.now());
@@ -73,7 +73,7 @@ public class UsageDemoResource {
     @Path("/files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @PermissionsAllowed(USAGE_DEMO_READ)
-    @RequiresPlanFeature(USAGE_DEMO_READ)
+    @SgRequiresPlanFeature(USAGE_DEMO_READ)
     @Transactional
     @Operation(summary = "Envia um arquivo de exemplo (consome o tamanho em MB, arredondado para cima)")
     public Map<String, Object> upload(@RestForm("file") FileUpload file) {

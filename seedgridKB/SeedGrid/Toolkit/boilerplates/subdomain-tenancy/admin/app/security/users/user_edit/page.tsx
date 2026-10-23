@@ -234,8 +234,9 @@ function UserEditPageContent() {
         additionalAttributes: { cargo: editor.cargo.trim() || null },
         whatsApp: editor.whatsApp.trim(),
         password: editor.password.trim() || null,
-        // Rebaixar ou desativar o ultimo root da plataforma e' recusado pelo backend. O usuario protegido
-        // vai sempre ativo, root e com ADMIN, mesmo que o estado da tela tenha sido mexido.
+        // O backend recusa (409 LAST_ADMIN_PROTECTED) deixar a empresa sem ADMIN ativo; a mensagem lista as
+        // empresas que impedem e aparece no toast. O root da plataforma segue travado aqui por conservadorismo: vai sempre
+        // ativo, root e com ADMIN, mesmo que o estado da tela tenha sido mexido.
         active: protectedUser ? true : editor.active,
         root: protectedUser ? true : editor.root,
         changePasswordRequired: editor.changePasswordRequired,

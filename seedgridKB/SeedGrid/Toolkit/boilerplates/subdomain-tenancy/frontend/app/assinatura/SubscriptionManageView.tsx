@@ -21,9 +21,15 @@ import {
   getUpcomingInvoice,
   listInvoices,
   openBillingPortal,
+  getDowngradeCompanySelection,
   openUrl,
   reactivateSubscription,
+  saveDowngradeCompanySelection,
 } from "@/lib/ported/portedApi";
+import {
+  canReeditCompanySelection,
+  type CompanySelection,
+} from "@/lib/downgrade-company-selection";
 import {
   type InvoiceSummary,
   type SubscriptionResponse,
@@ -31,6 +37,7 @@ import {
 } from "@/lib/ported/billingTypes";
 import { isConnectionError } from "@/lib/ported/clientError";
 import { MeterUsageBar } from "../components/MeterUsageBar";
+import { DowngradeCompanySelectionDialog } from "./DowngradeCompanySelectionDialog";
 import { DowngradeUserSelectionDialog } from "./DowngradeUserSelectionDialog";
 import { SubscriptionPlansModal } from "./SubscriptionPlansView";
 
@@ -122,6 +129,9 @@ export function SubscriptionManageView({
   // Reedicao da escolha de quem perde acesso num downgrade ja agendado (a escolha inicial e'
   // feita JUNTO com a confirmacao da troca, no proprio dialog de "Trocar de plano").
   const [userSelectionOpen, setUserSelectionOpen] = useState(false);
+  // Reedicao da escolha de EMPRESAS (T5.13): enquanto o ciclo nao fecha, o PUT regrava a escolha.
+  const [companySelectionOpen, setCompanySelectionOpen] = useState(false);
+  const [canEditCompanies, setCanEditCompanies] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [reactivateBusy, setReactivateBusy] = useState(false);
@@ -141,6 +151,32 @@ export function SubscriptionManageView({
     void onRefresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- so' na abertura desta tela.
   }, []);
+
+  // Ha escolha de empresas a (re)editar? So' com troca de plano agendada e quando o servidor diz que
+  // o plano novo comporta menos empresas (senao o PUT responderia COMPANY_SELECTION_NOT_REQUIRED).
+  const hasPendingChange = Boolean(subscription?.pendingChange);
+  useEffect(() => {
+    if (!hasPendingChange) {
+      setCanEditCompanies(false);
+      return;
+    }
+    let cancelled = false;
+    void getDowngradeCompanySelection()
+      .then((state) => {
+        if (!cancelled) setCanEditCompanies(canReeditCompanySelection(state));
+      })
+      .catch(() => {
+        if (!cancelled) setCanEditCompanies(false); // backend sem o endpoint: sem botao, sem erro
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasPendingChange]);
+
+  async function handleSaveCompanySelection(selection: CompanySelection) {
+    await saveDowngradeCompanySelection(selection);
+    setActionMessage("Escolha de empresas salva com sucesso.");
+  }
 
   const loadInvoices = useCallback(async () => {
     setInvoicesLoading(true);
@@ -319,6 +355,16 @@ export function SubscriptionManageView({
               >
                 Editar selecao de usuarios
               </SgButton>
+              {canEditCompanies ? (
+                <SgButton
+                  severity="secondary"
+                  appearance="outline"
+                  size="sm"
+                  onClick={() => setCompanySelectionOpen(true)}
+                >
+                  Editar selecao de empresas
+                </SgButton>
+              ) : null}
               <SgButton
                 severity="secondary"
                 appearance="outline"
@@ -644,6 +690,13 @@ export function SubscriptionManageView({
         open={userSelectionOpen}
         onOpenChange={setUserSelectionOpen}
         onSaved={() => setActionMessage("Selecao de usuarios salva com sucesso.")}
+      />
+
+      <DowngradeCompanySelectionDialog
+        open={companySelectionOpen}
+        onOpenChange={setCompanySelectionOpen}
+        confirmLabel="Salvar escolha"
+        onConfirm={handleSaveCompanySelection}
       />
 
       <SgDialog open={cancelOpen} onOpenChange={setCancelOpen} size="sm" closeable closeOnEsc>

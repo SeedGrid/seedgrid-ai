@@ -1,19 +1,10 @@
 import "server-only";
 import { headers as requestHeaders } from "next/headers";
+import { resolveTenantHost, tenancyDomain } from "./tenant-host";
 
 export async function backendHost(): Promise<string> {
   const incoming = await requestHeaders();
-  const rawHost = incoming.get("host")?.toLowerCase() ?? "";
-  const host = rawHost.replace(/:\d+$/, "");
-  const domain = process.env.SEEDGRID_TENANCY_DOMAIN?.trim().toLowerCase() || "localhost";
-  if (host === domain) return domain;
-  const suffix = `.${domain}`;
-  if (!host.endsWith(suffix)) throw new Error("Dominio de acesso invalido.");
-  const tenant = host.slice(0, -suffix.length);
-  if (!/^[a-z0-9_]{5,50}$/.test(tenant) || tenant === "master") {
-    throw new Error("Subdominio de acesso invalido.");
-  }
-  return `${tenant}.${domain}`;
+  return resolveTenantHost(incoming.get("host"));
 }
 
 export async function backendFetch(url: string, options: RequestInit = {}): Promise<Response> {
@@ -22,7 +13,7 @@ export async function backendFetch(url: string, options: RequestInit = {}): Prom
   headers.set("X-Forwarded-Host", host);
   headers.delete("X-Company-Id");
   const target = new URL(url);
-  const domain = process.env.SEEDGRID_TENANCY_DOMAIN?.trim().toLowerCase() || "localhost";
+  const domain = tenancyDomain();
   if (host === domain && !target.pathname.startsWith("/public/tenants")) {
     throw new Error("Informe o subdominio da empresa para acessar.");
   }

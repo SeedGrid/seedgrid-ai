@@ -1,3 +1,5 @@
+import type { DowngradeCompanySelectionState } from "../downgrade-company-selection";
+
 // Tipos das duas telas portadas do `seedgrid-report-client` (Signup e Assinatura).
 //
 // Sao o contrato dos endpoints `/public/signup/**` (login-tenancy) e `/me/{plans,subscription,
@@ -229,6 +231,11 @@ export type ChangePreview = {
   // Responsavel pelo cadastro: sempre ativo, exposto pra tela mostra-lo marcado/travado na
   // selecao (ele tambem ocupa 1 vaga do plano — sem isso a conta visual nao bate).
   alwaysActiveUsers?: DowngradeEligibleUser[];
+  // Escolha de EMPRESAS (T5.5): quando o plano novo comporta menos empresas que as ativas hoje, a
+  // previa traz o mesmo conteudo do `GET /me/billing/downgrade-company-selection` e a tela o abre
+  // no `DowngradeCompanySelectionDialog`; a escolha vai no `companySelection` do POST /change-plan.
+  requiresCompanySelection?: boolean;
+  companySelection?: DowngradeCompanySelectionState;
 };
 
 // Previa ANTES de assinar (checkout, trial -> pago): se o plano tem menos vagas de usuario do
@@ -242,6 +249,11 @@ export type CheckoutPreview = {
   requiredCount: number;
   eligibleUsers: DowngradeEligibleUser[];
   alwaysActiveUsers?: DowngradeEligibleUser[];
+  // Escolha de EMPRESAS no checkout (T5.13): quando o plano comporta menos empresas que as ativas
+  // hoje, o preview traz `requiresCompanySelection` + `companySelection` (mesmo formato do GET
+  // downgrade-company-selection). A escolha vai no `companySelection` do POST /me/billing/checkout.
+  requiresCompanySelection?: boolean;
+  companySelection?: DowngradeCompanySelectionState;
 };
 
 // Estado da selecao de "quem perde acesso" quando um downgrade agendado precisa dela (o plano

@@ -19,6 +19,10 @@ export const ADMIN_PERMISSIONS = {
   rolesCreate: "ROLE_CREATE",
   rolesEdit: "ROLE_UPDATE",
   rolesDelete: "ROLE_DELETE",
+  // Empresas da conta (T5.3). CRU: nao existe COMPANY_DELETE (plano 4.18, a empresa so e inativada).
+  companiesView: "COMPANY_READ",
+  companiesCreate: "COMPANY_CREATE",
+  companiesEdit: "COMPANY_UPDATE",
   // Auditoria: a leitura de `/audit-logs` do ext-audit.
   auditView: "LOG_READ",
   // Convite de usuario externo (self-enter) — os mesmos codigos do `@PermissionsAllowed` do
@@ -30,6 +34,11 @@ export const ADMIN_PERMISSIONS = {
   apiKeysView: "APIKEY_READ",
   apiKeysCreate: "APIKEY_CREATE",
   apiKeysRevoke: "APIKEY_REVOKE",
+  // Calendario de dias uteis (ext business-days, V1101): sem audience, valem para plataforma e cliente.
+  businessDaysView: "BUSINESS_DAY_READ",
+  businessDaysCreate: "BUSINESS_DAY_CREATE",
+  businessDaysEdit: "BUSINESS_DAY_UPDATE",
+  businessDaysDelete: "BUSINESS_DAY_DELETE",
 } as const;
 
 export type AdminPermission =

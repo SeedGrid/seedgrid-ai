@@ -26,6 +26,14 @@ import {
 } from "@/lib/ported/portedApi";
 import { UserSelectionChecklist } from "@/components/ported/UserSelectionChecklist";
 import {
+  INVALID_COMPANY_SELECTION_CODE,
+  needsAnySelection,
+  type CompanySelection,
+} from "@/lib/downgrade-company-selection";
+import { extractProblemCode } from "@/lib/api-error";
+import { readError } from "@/lib/ported/clientError";
+import { DowngradeCompanySelectionDialog } from "./DowngradeCompanySelectionDialog";
+import {
   type ChangePreview,
   type CheckoutPreview,
   type PlanCatalogItem,
@@ -143,6 +151,13 @@ export function SubscriptionPlans({
   // Selecao de "quem perde acesso", quando o downgrade exige (changeConfirm.preview.requiresUserSelection).
   // Faz parte da MESMA confirmacao — vai junto no POST /change-plan (acao atomica no servidor).
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  // Selecao de EMPRESAS (ativa / somente leitura / desligar), quando o plano novo comporta menos
+  // empresas que as ativas hoje (changeConfirm.preview.requiresCompanySelection). Mesma regra: faz
+  // parte da confirmacao e vai junto no POST /change-plan (`companySelection`).
+  const [companySelection, setCompanySelection] = useState<CompanySelection | null>(null);
+  const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
+  // Mesma escolha de empresas, agora no CHECKOUT (T5.13): plano menor que as empresas ativas hoje.
+  const [checkoutCompanyDialogOpen, setCheckoutCompanyDialogOpen] = useState(false);
   // Plano cujo pagamento estamos aguardando confirmar (apos abrir o checkout no browser).
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
   // Checkout (trial -> pago) num plano com menos vagas do que os usuarios ativos hoje: confirma
@@ -264,6 +279,7 @@ export function SubscriptionPlans({
         // acesso) e abre a confirmacao antes de aplicar.
         const preview = await getChangePreview(plan.planId);
         setSelectedUserIds([]);
+        setCompanySelection(null);
         setChangeConfirm({ plan, preview });
         return;
       }
@@ -271,8 +287,9 @@ export function SubscriptionPlans({
       // (ex.: varios usuarios cadastrados durante o trial), confirma quem perde acesso ANTES de
       // abrir o checkout — nao da' pra pedir isso depois.
       const preview = await getCheckoutPreview(plan.planId);
-      if (preview.requiresUserSelection) {
+      if (needsAnySelection(preview)) {
         setSelectedUserIds([]);
+        setCompanySelection(null);
         setCheckoutConfirm({ plan, preview });
         return;
       }
@@ -329,10 +346,13 @@ export function SubscriptionPlans({
   // fica ativo faz parte da MESMA confirmacao (nunca uma tela separada que poderia ficar pra
   // tras se o cliente fechasse no meio do caminho). Plano de 1 usuario (so' o admin cabe) nao
   // tem nada pra escolher — requiredUserSelectionCount fica 0 e ja libera direto.
-  const canConfirmChange =
+  const usersOk =
     !changeConfirm?.preview.requiresUserSelection ||
     requiredUserSelectionCount === 0 ||
     userSelectionMatches;
+  // Empresas: so' confirma com a escolha completa (as contagens exatas sao garantidas pelo dialogo).
+  const companiesOk = !changeConfirm?.preview.requiresCompanySelection || companySelection !== null;
+  const canConfirmChange = usersOk && companiesOk;
 
   async function confirmChange() {
     if (!changeConfirm || !canConfirmChange) {
@@ -346,13 +366,17 @@ export function SubscriptionPlans({
         changeConfirm.preview.requiresUserSelection
           ? deactivateIdsFor(changeConfirm.preview, selectedUserIds)
           : undefined,
+        changeConfirm.preview.requiresCompanySelection ? companySelection : undefined,
       );
       const downgrade = changeConfirm.preview.downgrade;
       const planName = changeConfirm.plan.name;
       setChangeConfirm(null);
       onSubscriptionActivated?.({ kind: downgrade ? "downgrade" : "upgrade", planName });
     } catch (err) {
-      setError(typeof err === "string" ? err : "Falha ao trocar de plano.");
+      setError(typeof err === "string" ? readError(err) : "Falha ao trocar de plano.");
+      if (typeof err === "string" && extractProblemCode(err) === INVALID_COMPANY_SELECTION_CODE) {
+        setCompanySelection(null);
+      }
     } finally {
       setConfirmBusy(false);
     }
@@ -360,10 +384,13 @@ export function SubscriptionPlans({
 
   const checkoutRequiredCount = checkoutConfirm ? stayingRequiredCount(checkoutConfirm.preview) : 0;
   const checkoutSelectionMatches = selectedUserIds.length === checkoutRequiredCount;
-  const canConfirmCheckout =
+  const checkoutUsersOk =
     !checkoutConfirm?.preview.requiresUserSelection ||
     checkoutRequiredCount === 0 ||
     checkoutSelectionMatches;
+  const checkoutCompaniesOk =
+    !checkoutConfirm?.preview.requiresCompanySelection || companySelection !== null;
+  const canConfirmCheckout = checkoutUsersOk && checkoutCompaniesOk;
 
   async function confirmCheckoutWithSelection() {
     if (!checkoutConfirm || !canConfirmCheckout) {
@@ -372,13 +399,31 @@ export function SubscriptionPlans({
     setCheckoutConfirmBusy(true);
     setError(null);
     try {
-      const deactivateIds = deactivateIdsFor(checkoutConfirm.preview, selectedUserIds);
-      const checkout = await startCheckout(checkoutConfirm.plan.planId, deactivateIds);
+      const { preview, plan } = checkoutConfirm;
+      const deactivateIds = preview.requiresUserSelection
+        ? deactivateIdsFor(preview, selectedUserIds)
+        : undefined;
+      const checkout = await startCheckout(
+        plan.planId,
+        deactivateIds,
+        preview.requiresCompanySelection ? companySelection : undefined,
+      );
       await openUrl(checkout.checkoutUrl);
-      setPendingPlanId(checkoutConfirm.plan.planId);
+      setPendingPlanId(plan.planId);
       setCheckoutConfirm(null);
     } catch (err) {
-      setError(typeof err === "string" ? err : "Falha ao iniciar o checkout.");
+      setError(typeof err === "string" ? readError(err) : "Falha ao iniciar o checkout.");
+      // INVALID_COMPANY_SELECTION: as empresas mudaram desde a previa. Recarrega a previa e zera a
+      // escolha para o usuario refazer com os dados atuais (nada foi cobrado nem agendado).
+      if (typeof err === "string" && extractProblemCode(err) === INVALID_COMPANY_SELECTION_CODE) {
+        setCompanySelection(null);
+        try {
+          const fresh = await getCheckoutPreview(checkoutConfirm.plan.planId);
+          setCheckoutConfirm({ plan: checkoutConfirm.plan, preview: fresh });
+        } catch {
+          // Sem a previa nova a tela segue com a antiga; o servidor valida de novo.
+        }
+      }
     } finally {
       setCheckoutConfirmBusy(false);
     }
@@ -646,7 +691,11 @@ export function SubscriptionPlans({
           if (confirmBusy) return;
           if (!value) setChangeConfirm(null);
         }}
-        size={changeConfirm?.preview.requiresUserSelection ? "md" : "sm"}
+        size={
+          changeConfirm?.preview.requiresUserSelection || changeConfirm?.preview.requiresCompanySelection
+            ? "md"
+            : "sm"
+        }
         closeable={!confirmBusy}
         closeOnOverlayClick={!confirmBusy}
         closeOnEsc={!confirmBusy}
@@ -708,6 +757,28 @@ export function SubscriptionPlans({
               </div>
             ) : null}
 
+            {changeConfirm.preview.requiresCompanySelection ? (
+              <div className="flex flex-col gap-2 rounded-sg border border-amber-200 bg-amber-50 p-3">
+                <p className="text-sm text-amber-900">
+                  Este plano comporta menos empresas do que as ativas hoje. Escolha quais ficam
+                  ativas, quais passam para somente leitura e quais são desligadas.
+                </p>
+                <div className="flex items-center gap-3">
+                  <SgButton
+                    appearance="outline"
+                    severity="secondary"
+                    disabled={confirmBusy}
+                    onClick={() => setCompanyDialogOpen(true)}
+                  >
+                    {companySelection ? "Rever escolha de empresas" : "Escolher empresas"}
+                  </SgButton>
+                  <span className="text-xs text-amber-900">
+                    {companySelection ? "Escolha concluída." : "Escolha pendente."}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
             <div className="flex justify-end gap-2">
               <SgButton
                 appearance="outline"
@@ -731,6 +802,14 @@ export function SubscriptionPlans({
         ) : null}
       </SgDialog>
 
+      <DowngradeCompanySelectionDialog
+        open={companyDialogOpen && changeConfirm?.preview.requiresCompanySelection === true}
+        onOpenChange={setCompanyDialogOpen}
+        initialState={changeConfirm?.preview.companySelection ?? null}
+        previousSelection={companySelection}
+        onConfirm={setCompanySelection}
+      />
+
       <SgDialog
         open={checkoutConfirm != null}
         onOpenChange={(value) => {
@@ -749,6 +828,7 @@ export function SubscriptionPlans({
             <h3 className="text-lg font-semibold text-sg-text">
               Assinar {checkoutConfirm.plan.name}
             </h3>
+            {checkoutConfirm.preview.requiresUserSelection ? (
             <div className="flex flex-col gap-2 rounded-sg border border-amber-200 bg-amber-50 p-3">
               {checkoutRequiredCount === 0 ? (
                 <p className="text-sm text-amber-900">
@@ -779,6 +859,30 @@ export function SubscriptionPlans({
                 </>
               )}
             </div>
+            ) : null}
+
+            {checkoutConfirm.preview.requiresCompanySelection ? (
+              <div className="flex flex-col gap-2 rounded-sg border border-amber-200 bg-amber-50 p-3">
+                <p className="text-sm text-amber-900">
+                  Este plano comporta menos empresas do que as ativas hoje. Escolha quais ficam
+                  ativas, quais passam para somente leitura e quais são desligadas (dá para
+                  reeditar depois, até o fim do ciclo).
+                </p>
+                <div className="flex items-center gap-3">
+                  <SgButton
+                    appearance="outline"
+                    severity="secondary"
+                    disabled={checkoutConfirmBusy}
+                    onClick={() => setCheckoutCompanyDialogOpen(true)}
+                  >
+                    {companySelection ? "Rever escolha de empresas" : "Escolher empresas"}
+                  </SgButton>
+                  <span className="text-xs text-amber-900">
+                    {companySelection ? "Escolha concluída." : "Escolha pendente."}
+                  </span>
+                </div>
+              </div>
+            ) : null}
 
             <div className="flex justify-end gap-2">
               <SgButton
@@ -802,6 +906,14 @@ export function SubscriptionPlans({
           </div>
         ) : null}
       </SgDialog>
+
+      <DowngradeCompanySelectionDialog
+        open={checkoutCompanyDialogOpen && checkoutConfirm?.preview.requiresCompanySelection === true}
+        onOpenChange={setCheckoutCompanyDialogOpen}
+        initialState={checkoutConfirm?.preview.companySelection ?? null}
+        previousSelection={companySelection}
+        onConfirm={setCompanySelection}
+      />
     </div>
   );
 }

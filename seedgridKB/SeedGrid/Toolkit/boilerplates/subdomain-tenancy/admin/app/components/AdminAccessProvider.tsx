@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { ADMIN_ROLE, type AdminPermission } from "@/lib/admin-permissions";
+import { isCompanyDisabledSessionResponse, isSessionRevokedResponse } from "@/lib/api-error";
 import type { AdminMePermissions } from "@/lib/seedgrid-app-api";
 
 type AdminAccessContextValue = {
@@ -95,12 +96,22 @@ export function AdminAccessProvider({ children }: AdminAccessProviderProps) {
         // sumia inteiro e sobrava so' o menu do usuario ("Meu perfil", "Temas", "Sair"), o que
         // parecia perda de permissao em vez de sessao vencida.
         if (response.status === 401) {
+          // SESSION_REVOKED: o BFF ja limpou a sessao sem tentar refresh; o login mostra a
+          // mensagem "sessao encerrada" (e nao a de sessao vencida).
+          const revoked = await isSessionRevokedResponse(response);
+          const disabled = !revoked && (await isCompanyDisabledSessionResponse(response));
           setMe(null);
           setLoading(false);
           setSessionExpired(true);
           if (!expiredRef.current) {
             expiredRef.current = true;
-            router.replace("/login?expired=1");
+            router.replace(
+              revoked
+                ? "/login?expired=revoked"
+                : disabled
+                  ? "/login?expired=disabled"
+                  : "/login?expired=1",
+            );
           }
           return;
         }

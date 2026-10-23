@@ -13,6 +13,15 @@ import {
 } from "react";
 
 import { ADMIN_ROLE, type AdminPermission } from "@/lib/admin-permissions";
+import { isCompanyDisabledSessionResponse, isSessionRevokedResponse } from "@/lib/api-error";
+import {
+  isReadOnlyMode,
+  isWritePermission,
+  normalizeAccessMode,
+  type CompanyAccessMode,
+  type CurrentCompany,
+} from "@/lib/company-access";
+import { installCompanyAccessFetchGuard } from "@/lib/company-access-guard";
 import type { AdminMePermissions } from "@/lib/seedgrid-app-api";
 
 type AdminAccessContextValue = {
@@ -28,6 +37,14 @@ type AdminAccessContextValue = {
   sessionExpired: boolean;
   /** Rebusca o `me` sem navegar — quem muda o proprio perfil (foto, nome) chama isso. */
   refresh: () => void;
+  /** Empresa corrente da sessao (`AuthResponse.currentCompany`); null = ainda nao carregou/backend antigo. */
+  currentCompany: CurrentCompany | null;
+  /** Estado de acesso da empresa corrente (ACTIVE quando desconhecido). */
+  companyAccessMode: CompanyAccessMode;
+  /** Empresa em somente leitura: faixa visivel e permissoes de escrita negadas por `hasPermission`. */
+  readOnly: boolean;
+  /** Atalho: `!readOnly`. Use em botoes de escrita que nao dependem de uma permissao especifica. */
+  canWrite: boolean;
 };
 
 const AdminAccessContext = createContext<AdminAccessContextValue>({
@@ -37,6 +54,10 @@ const AdminAccessContext = createContext<AdminAccessContextValue>({
   hasPermission: () => false,
   sessionExpired: false,
   refresh: () => {},
+  currentCompany: null,
+  companyAccessMode: "ACTIVE",
+  readOnly: false,
+  canWrite: true,
 });
 
 type AdminAccessProviderProps = {
@@ -74,6 +95,9 @@ export function AdminAccessProvider({ children }: AdminAccessProviderProps) {
   // Um 401 costuma chegar por varias chamadas ao mesmo tempo; sem o guard, cada uma empurraria
   // seu proprio replace para o login (e o toast sairia repetido).
   const expiredRef = useRef(false);
+  // Um 403 COMPANY_READ_ONLY prova que a empresa virou somente leitura mesmo que o `me` ainda diga
+  // ACTIVE (o estado mudou depois do login). Vale para a empresa em que foi observado.
+  const [forcedReadOnlyFor, setForcedReadOnlyFor] = useState<string | null>(null);
 
   const loadPermissions = useCallback(async (signal?: AbortSignal) => {
     // API fora do ar (deploy, restart) devolve 5xx/502 por alguns segundos. Antes, QUALQUER
@@ -94,12 +118,22 @@ export function AdminAccessProvider({ children }: AdminAccessProviderProps) {
         // sumia inteiro e sobrava so' o menu do usuario ("Meu perfil", "Temas", "Sair"), o que
         // parecia perda de permissao em vez de sessao vencida.
         if (response.status === 401) {
+          // SESSION_REVOKED: o BFF ja limpou a sessao sem tentar refresh; o login mostra a
+          // mensagem "sessao encerrada" (e nao a de sessao vencida).
+          const revoked = await isSessionRevokedResponse(response);
+          const disabled = !revoked && (await isCompanyDisabledSessionResponse(response));
           setMe(null);
           setLoading(false);
           setSessionExpired(true);
           if (!expiredRef.current) {
             expiredRef.current = true;
-            router.replace("/login?expired=1");
+            router.replace(
+              revoked
+                ? "/login?expired=revoked"
+                : disabled
+                  ? "/login?expired=disabled"
+                  : "/login?expired=1",
+            );
           }
           return;
         }
@@ -153,6 +187,23 @@ export function AdminAccessProvider({ children }: AdminAccessProviderProps) {
     return () => controller.abort();
   }, [pathname, loadPermissions]);
 
+  // Guarda de fetch (T5.6): reconhece COMPANY_READ_ONLY / COMPANY_DISABLED em qualquer chamada ao BFF.
+  const currentCompanyId = me?.currentCompany?.publicId ?? "";
+  useEffect(() => {
+    return installCompanyAccessFetchGuard(window, {
+      onReadOnly: () => setForcedReadOnlyFor(currentCompanyId),
+      onDisabled: () => {
+        // O BFF ja limpou a sessao; segue para o login com a mensagem de empresa desativada.
+        setMe(null);
+        setSessionExpired(true);
+        if (!expiredRef.current) {
+          expiredRef.current = true;
+          router.replace("/login?expired=disabled");
+        }
+      },
+    });
+  }, [currentCompanyId, router]);
+
   const value = useMemo<AdminAccessContextValue>(() => {
     const roles = new Set(me?.roles ?? []);
     const permissions = new Set(me?.permissions ?? []);
@@ -160,15 +211,30 @@ export function AdminAccessProvider({ children }: AdminAccessProviderProps) {
     // a role ADMIN veria o menu vazio.
     const unrestricted = me?.isRoot === true || roles.has(ADMIN_ROLE);
 
+    const currentCompany = me?.currentCompany ?? null;
+    const companyAccessMode: CompanyAccessMode =
+      forcedReadOnlyFor !== null && forcedReadOnlyFor === currentCompanyId
+        ? "READ_ONLY"
+        : normalizeAccessMode(currentCompany?.accessMode);
+    const readOnly = isReadOnlyMode(companyAccessMode);
+
     return {
       loading,
       me,
       hasRole: (role) => roles.has(role),
-      hasPermission: (permission) => unrestricted || permissions.has(permission),
+      // Somente leitura: as permissoes que ALTERAM dados somem para as telas (botoes de escrita
+      // ficam ocultos). O servidor continua sendo a garantia (403 COMPANY_READ_ONLY).
+      hasPermission: (permission) =>
+        !(readOnly && isWritePermission(permission)) &&
+        (unrestricted || permissions.has(permission)),
       sessionExpired,
       refresh: () => void loadPermissions(),
+      currentCompany,
+      companyAccessMode,
+      readOnly,
+      canWrite: !readOnly,
     };
-  }, [loading, me, sessionExpired, loadPermissions]);
+  }, [loading, me, sessionExpired, loadPermissions, forcedReadOnlyFor, currentCompanyId]);
 
   return (
     <AdminAccessContext.Provider value={value}>

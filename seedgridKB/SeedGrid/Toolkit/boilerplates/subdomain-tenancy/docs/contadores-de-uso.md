@@ -174,4 +174,4 @@ Quando os contadores do seu produto estiverem no lugar:
 | Editor de franquia/excedente (admin) | `admin/app/components/MeterQuotaEditor.tsx`, `admin/lib/usage-meters.ts` |
 | Telas do admin | `admin/app/plans/plan_terms`, `plan_trial`, `accounts` (concessão por contador), `billing`, `subscriptions` |
 | Barras de consumo (cliente) | `frontend/app/components/MeterUsageBar.tsx`, `frontend/app/assinatura`, `frontend/app/exemplo-consumo` |
-| A extensão | `seedgrid-quarkus-ext-billing`, plano em `docs/refactor-meters-billing.md` |
+| A extensão | `seedgrid-quarkus-ext-billing`, plano em `seedgrid-platform-work/planos/billing/2026-10-02-contadores-de-uso-declarados-pelo-host.md` |

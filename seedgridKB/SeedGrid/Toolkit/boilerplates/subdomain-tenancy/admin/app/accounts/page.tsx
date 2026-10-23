@@ -186,7 +186,7 @@ export default function AccountsPage() {
       sortable: true,
       filter: true,
     },
-    { field: "cnpj", header: "CNPJ", sortable: true, filter: true },
+    { field: "cpfCnpj", header: "Documento", sortable: true, filter: true },
     {
       field: "status",
       header: "Status",
@@ -317,7 +317,7 @@ export default function AccountsPage() {
         {selectedAccount ? (
           <SgStack gap={16}>
             <div className="text-sm text-sg-muted">
-              CNPJ {selectedAccount.cnpj} · consumo atual {formatCycleMeters(selectedAccount.usage)}
+              Documento {selectedAccount.cpfCnpj ?? "não informado"} · consumo atual {formatCycleMeters(selectedAccount.usage)}
             </div>
 
             {/* So' os contadores que o plano da conta inclui: unidades de um contador fora do plano nao

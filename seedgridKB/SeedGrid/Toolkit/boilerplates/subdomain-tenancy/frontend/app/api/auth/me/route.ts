@@ -1,5 +1,19 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import {
+  COMPANY_DISABLED_CODE,
+  SESSION_REVOKED_CODE,
+  isCompanyDisabledBody,
+  isSessionRevokedBody,
+} from "@/lib/api-error";
+
+import {
+  ADMIN_CURRENT_COMPANY_COOKIE,
+  parseCurrentCompany,
+  resolveAccessModeFallback,
+} from "@/lib/company-access";
+import { parseMyCompanies } from "@/lib/my-companies";
 import { SecurityPaths } from "@/lib/security-paths";
 import {
   ApiRequestError,
@@ -23,7 +37,20 @@ export async function GET() {
     const permissions = await apiFetchServer<AdminMePermissions>(
       SecurityPaths.me.permissions,
     );
-    return NextResponse.json(permissions);
+    // Empresa corrente (estado de acesso, T5.6): vem do login/refresh/select-company, guardada no
+    // cookie da sessao. Sem ela (backend antigo) a casca assume ACTIVE.
+    const cookieStore = await cookies();
+    let currentCompany = parseCurrentCompany(cookieStore.get(ADMIN_CURRENT_COMPANY_COOKIE)?.value);
+    // Login/refresh sem `currentCompany.accessMode` (backend antigo): o estado vem de /me/companies.
+    if (currentCompany?.accessModeKnown === false) {
+      try {
+        const mine = await apiFetchServer<unknown>(SecurityPaths.me.companies);
+        currentCompany = resolveAccessModeFallback(currentCompany, parseMyCompanies(mine));
+      } catch {
+        // Sem a lista, segue ACTIVE: o 403 COMPANY_READ_ONLY continua sendo a garantia.
+      }
+    }
+    return NextResponse.json({ ...permissions, currentCompany });
   } catch (error) {
     if (isApiConnectionError(error)) {
       return NextResponse.json(
@@ -35,7 +62,20 @@ export async function GET() {
       error instanceof ApiRequestError &&
       isInvalidAdminSessionResponse(error.status, error.body)
     ) {
-      return NextResponse.json({ message: "Sessao invalida" }, { status: 401 });
+      return NextResponse.json(
+        isSessionRevokedBody(error.body)
+          ? { message: "Sessao invalida", code: SESSION_REVOKED_CODE }
+          : { message: "Sessao invalida" },
+        { status: 401 },
+      );
+    }
+    // Empresa desligada (403 COMPANY_DISABLED): o `fetchWithAdminSession` ja limpou a sessao; devolve
+    // 401 com o codigo para o provider levar ao login com a mensagem de empresa desativada.
+    if (error instanceof ApiRequestError && isCompanyDisabledBody(error.body)) {
+      return NextResponse.json(
+        { message: "Sessao invalida", code: COMPANY_DISABLED_CODE },
+        { status: 401 },
+      );
     }
     throw error;
   }
