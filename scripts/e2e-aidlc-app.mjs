@@ -44,7 +44,7 @@ function preparar() {
 
 // Ferramentas liberadas na sessao headless: o que um desenvolvedor usaria no produto, sem shell livre.
 const FERRAMENTAS = ['Bash(node:*)', 'Bash(git:*)', 'Bash(ls:*)', 'Bash(mkdir:*)', 'Bash(cat:*)', 'Bash(mvn:*)', 'Bash(pnpm:*)', 'Bash(npm:*)', 'Bash(npx:*)',
-  'Bash(podman:*)', 'Bash(podman-compose:*)', 'Bash(docker:*)', 'Bash(curl:*)', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Skill', 'Agent'];
+  'Bash(podman:*)', 'Bash(podman-compose:*)', 'Bash(docker:*)', 'Bash(curl:*)', 'Bash(bash:*)', 'Bash(sh:*)', 'Bash(sleep:*)', 'Bash(netstat:*)', 'Bash(taskkill:*)', 'Bash(pwd:*)', 'Bash(cd:*)', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Skill', 'Agent'];
 
 function turno(n, prompt, sessao) {
   const args = ['-p', '--output-format', 'json', '--permission-mode', 'acceptEdits', '--allowedTools', ...FERRAMENTAS.map(aspas)];

@@ -1471,8 +1471,8 @@
           "apikeys"
         ]
       },
-      "pergunta": "Descreva como as chaves de API serao usadas (quem consome, o que pode fazer).",
-      "recomendacao": "Uma ou duas frases; a resposta vai para o plano do produto e nao muda a geracao.",
+      "pergunta": "Descreva como as chaves de API serao usadas: quem consome, o que pode fazer e como se organizam (uma por conta, uma ou mais por usuario, ou uma por usuario e por produto); precisa de prefixo proprio?",
+      "recomendacao": "Uma ou duas frases; a resposta vai para o plano do produto e nao muda a geracao. A extension apikeys e um bloco unico: a chave tem dono e aponta para um perfil, sem dimensao de produto e sem prefixo configuravel. Organizacao por usuario/produto ou prefixo proprio sao feitos na camada do produto (registre em ADR) e viram demanda para a extension.",
       "efeito": {
         "produto": {
           "apikeysUso": "texto da resposta"
