@@ -17,7 +17,7 @@ const DESTINO = join(RAIZ, 'seedgridKB', 'SeedGrid', 'Toolkit', 'boilerplates');
 const ORIGEM_JSON = join(RAIZ, 'scripts', 'boilerplates-origem.json');
 const DOTFILES = ['.gitignore', '.gitattributes', '.npmignore'];
 const BINARIOS = /\.(png|jpe?g|gif|ico|webp|avif|woff2?|ttf|otf|eot|pdf|jar|zip|gz)$/i;
-const PASTAS_PROIBIDAS = new Set(['node_modules', 'target', '.git', 'infra', 'chave-mvn-central', 'dist', 'build', '.next']);
+const PASTAS_PROIBIDAS = new Set(['node_modules', 'target', '.git', 'infra', 'chave-mvn-central', 'dist', 'build', '.next', 'e2e-web']);
 
 const arg = (n) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] : undefined; };
 const flag = (n) => process.argv.includes(`--${n}`);

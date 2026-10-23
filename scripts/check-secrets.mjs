@@ -59,6 +59,7 @@ const PLACEHOLDER = /^(postgres|postgresql|admin|root|dev|local|localhost|minioa
 // Em codigo, palavra so de letras (rotulo de tela, chave de traducao) nao e segredo; segredo tem digito ou simbolo.
 const LABEL_LIKE = /^[A-Za-z][A-Za-z.\-_]*$/;
 const TEST_FILE =/(\.test\.|\.spec\.|[/\\]src[/\\]test[/\\]|[/\\]__tests__[/\\]|[/\\]e2e[/\\])/;
+const COMPOSE_DEV = /(^|\/)docker-compose[^/]*\.ya?ml$/;
 const SKIP_PATH = /(^|\/)(node_modules|target|dist|build|\.next)\//;
 const SKIP_EXT = /(\.(png|jpe?g|gif|webp|ico|svg|woff2?|ttf|eot|pdf|zip|gz|tgz|jar|class|lock)|pnpm-lock\.yaml|package-lock\.json)$/i;
 
@@ -89,6 +90,8 @@ function scanText(file, text, label = '', kb = false) {
     }
     if (isTest) return;
     const m = (CODE_EXT.test(file) ? ASSIGN_CODE : ASSIGN_CONF).exec(line);
+    // Decisao do dono: o compose de DESENVOLVIMENTO dos boilerplates traz a senha do pgAdmin literal, para subir e testar sem configurar nada.
+    if (m && COMPOSE_DEV.test(file) && /^PGADMIN_DEFAULT_PASSWORD$/i.test(m[1])) return;
     if (m && !PLACEHOLDER.test(m[2]) && m[2].length >= 6 && /^\S+$/.test(m[2]) && !(CODE_EXT.test(file) && LABEL_LIKE.test(m[2]))) {
       problems.push(`${where}: ${m[1]} com valor literal "${m[2].slice(0, 3)}..."`);
       return;
