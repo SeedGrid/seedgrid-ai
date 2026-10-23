@@ -455,7 +455,7 @@
               "apikeys"
             ],
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-apikeys:2026.10.14"
+              "br.com.seedgrid:seedgrid-apikeys:2026.10.22"
             ],
             "flyway_locations": [
               "apikeys"
