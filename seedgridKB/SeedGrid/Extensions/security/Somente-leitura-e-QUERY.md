@@ -18,6 +18,8 @@ Mude o **estado de acesso** dela (`companies.access_mode`):
 | `READ_ONLY` | normal | lê; qualquer escrita recebe **403 `COMPANY_READ_ONLY`** |
 | `DISABLED` | recusado: **403 `COMPANY_DISABLED`** (login, `select-company` e `refresh`) | nada; as sessões existentes caem (401 `SESSION_REVOKED`) |
 
+Há **dois conceitos que bloqueiam o login e dão o mesmo `COMPANY_DISABLED`**: `active = false` (decisão do administrador, empresa inativada) e `access_mode = DISABLED` (decisão do billing). Empresa **ativa** pode estar `ACTIVE` (lê e escreve) ou `READ_ONLY` (loga, só lê). O nome do estado normal no código é `ACTIVE` (enum `CompanyAccessMode`: `ACTIVE`, `READ_ONLY`, `DISABLED`); **não existe** `ENABLED` nem `COMPANY_ENABLED`. Só o administrador reativa uma empresa que ele próprio inativou, e o billing devolve o estado das que ele desligou.
+
 Quem muda (e só a plataforma pode):
 
 ```java
