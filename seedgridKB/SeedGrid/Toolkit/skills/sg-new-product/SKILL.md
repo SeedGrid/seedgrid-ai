@@ -22,7 +22,7 @@ Esta skill transforma um pedido de produto novo em uma pasta pronta para subir. 
 - `scripts/scaffold-produto.mjs`: valida as respostas contra a matriz e gera o produto.
 - `scripts/readme-produto.mjs`: esqueleto do `README.md` (C4 até C3 em Mermaid) e guardião dos marcadores.
 - `scripts/verificar-subida.mjs`: sobe o produto e verifica (seção 3b).
-- `.ai/boilerplates/`: os modelos (`login-tenancy`, `subdomain-tenancy`) que o script copia.
+- `.ai/boilerplates/`: os modelos (`login-tenancy-b2b`, `login-tenancy-b2c`, `modular`, `subdomain-tenancy`) que o script copia.
 
 ## 1. Entrevista
 
