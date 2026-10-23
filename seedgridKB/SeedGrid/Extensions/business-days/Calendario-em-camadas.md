@@ -124,9 +124,12 @@ Telas em `app/dias-uteis/*`, chamando o BFF `/api/business-days/*` (catch-all `a
 
 `CalendarIsolationGuardianIT` (o calendário de uma empresa nunca vaza para outra; o do tenant vale para todas e a empresa sobrepõe), `CompanyRequiredTest`, `ReferenceHolidayResourceTest`, `WorkOverrideResourceTest`, `MovableHolidayResourceTest`, `BusinessDaysMigrationTest` (sementes, lei em toda linha, 20/11 desde 2024, móveis não semeados), `MovableHolidayTest`, `BusinessCalendarLayersTest`, `MovableHolidayServiceTest`, `BusinessDayServiceTest`, `BusinessDaysCompanyRequiredDefaultGuardianTest`.
 
+## O que foi provado com a pilha real
+
+A UF vem mesmo de `Company.address.state` (sem provider de teste nem cabeçalho `X-Uf`): `BusinessDaysRegionE2eTest` (subdomain-tenancy, 8 testes) e `B2bCompanyRegionE2ETest` (login-tenancy-b2b, 4 testes), commit `4f16fc4` do repositório `boilerplate`. Empresa em SP tem 09/07 (`STATE`, `SP_REVOLUCAO_1932`) em `check`, `calendar`, `reference`, `count` e `add`; empresa no RJ e empresa sem endereço não têm; a mudança de UF reflete na hora (sem cache); não há vazamento entre empresas nem entre tenants; sem empresa corrente o b2b responde 403 `COMPANY_REQUIRED`. **No subdomain-tenancy o `company-required` está desligado** nesse boilerplate.
+
 ## Não verificado
 
-- A leitura real de `Company.address.state` pelo `SecurityBusinessDaysRegionProvider` não foi provada com a security subindo (os ITs usam um provider de teste por cabeçalho `X-Uf`).
 - A base legal veio de resultados de busca em Planalto, Senado, Câmara e ALESP (2026-10-21); a leitura do texto integral das leis no Planalto falhou (`ECONNRESET`). Confirme o texto antes de citar a lei a um cliente.
 - Regra de data repetida em "vai trabalhar": não verificada no README da extension; o erro do backend aparece como toast.
 - O `lckfiscal` não usa esta extension.
