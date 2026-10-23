@@ -101,6 +101,18 @@ Abreviações usadas na coluna Origem:
 
 Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]] e [[SeedGrid/Extensions/security/Configuracao|Configuração do security]].
 
+### 2.8 Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout
+
+> **Não publicado.** Entram com `seedgrid-billing-core` 2026.10.22. Receitas e contratos: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano e inadimplência]].
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `seedgrid.billing.past-due.enabled` | boolean | `true`, `false` | `false` | Não | Liga o ciclo de inadimplência das empresas e o agendador. Ligado, **substitui** o bloqueio geral 402 `PAYMENT_PAST_DUE` (`access-gate.block-past-due`); o bloqueio de consumo de contador continua. | `BillingPastDueConfig` | Prazos do `PlanTerm` sobrepõem | Runtime | `BillingPastDueConfig` |
+| `seedgrid.billing.past-due.read-only-after-days` | int | `0` ou mais | `7` | Não | Dias `PAST_DUE` até as empresas da conta virarem `READ_ONLY`. `0` não aplica o passo. `PlanTerm.pastDueReadOnlyAfterDays` sobrepõe (nulo usa este). | `PastDueService` | — | Runtime | `BillingPastDueConfig` |
+| `seedgrid.billing.past-due.disable-after-days` | int | `0` ou mais | `30` | Não | Dias `PAST_DUE` até desligar as empresas (menos a do responsável). `0` não aplica o passo. `PlanTerm.pastDueDisableAfterDays` sobrepõe. | `PastDueService` | — | Runtime | `BillingPastDueConfig` |
+| `seedgrid.billing.past-due.interval` | String | intervalo do `@Scheduled every` | `1h` | Não | Intervalo do agendador de inadimplência. | `PastDueScheduler` | — | Runtime | Insumo Fase 5 (não publicado) |
+| `seedgrid.billing.checkout.selection-ttl` | Duration | ex.: `48h` | `48h` | Não | Validade da referência (`selectionRef`) da escolha de usuários e empresas feita no checkout. Vencida, inexistente ou de outra conta: a assinatura é ativada sem perdas e o evento `CheckoutSelectionEvent` avisa o host. | `CheckoutSelectionService` | — | Runtime | Insumo Fase 5 (não publicado) |
+
 ## 3. Propriedades de frameworks (definidas no `core-mp`, ordinal 100)
 
 | Propriedade | Valor no `core-mp` | Efeito / recomendação |

@@ -108,6 +108,16 @@ A login-tenancy define os `configKey`; o mecanismo (`RateLimitService`) lê `ena
 
 `quarkus.datasource.jdbc.url`, `quarkus.datasource.username`, 🔒 `quarkus.datasource.password`, `seedgrid.security.jwt.private-key-location`, `seedgrid.security.jwt.public-key-location`; mínimos de `seedgrid.billing.*`/`seedgrid.filemanagement.*` se ativos. Além disso o host precisa de um `BillingProvider`.
 
+### Cadastro B2B, B2C e calendário (ciclo 2026.10.22, NÃO PUBLICADO)
+
+> **Não publicado.** Entram com `seedgrid-login-tenancy` 2026.10.22. Receitas: [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]].
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `seedgrid.login-tenancy.signup.customer-type` | enum | `B2B`, `B2C`, `BOTH` | `B2B` | Não | Quem pode se cadastrar; fora do tipo: 403 `SIGNUP_TYPE_NOT_ALLOWED`. Só faz sentido em `shared-database`. Em `B2C` ou `BOTH` o login social cria conta pessoal. | Signup | `seedgrid.security.isolation` | Runtime | Insumo Fase 1b e 7 (não publicado) |
+| `seedgrid.login-tenancy.signup.personal-document-required` | boolean | `true`, `false` | `false` | Não | `true`: `POST /public/signup/personal` sem CPF responde 400 `PERSONAL_DOCUMENT_REQUIRED`. Ligue só se o produto emitir nota. Não vale para login social. | Signup pessoal | — | Runtime | Insumo Fase 7 (não publicado) |
+| `seedgrid.login-tenancy.modules.business-days.company-required` | boolean | `true`, `false` | `true` | Não | Alimenta `seedgrid.business-days.company-required`: ligado, sem empresa corrente toda rota `/business-days/**` responde 403 `COMPANY_REQUIRED`. Chave do `microprofile-config.properties`, não do `@ConfigMapping`. | Calendário | `seedgrid.business-days.company-required` | Runtime | Insumo Fase 7 (não publicado) |
+
 ## 3. Propriedades de frameworks definidas pela extension
 
 | Propriedade | Valor | Onde | Fase Quarkus |

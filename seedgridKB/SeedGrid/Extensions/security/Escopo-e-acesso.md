@@ -275,6 +275,47 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 - Limites: o teste de API key imita o filtro real; inativar empresa ainda conta as `DISABLED` ao proteger a "última ativa".
 - Guardiões: `CompanyAccessGuardianIT`, `CompanyAccessAdminInvariantIT`, `CompanyAccessFilterTest`, `ReadOnlyPathMatcherTest`, `CompanyAccessProblemMappingTest`. As classes `*IT` do security não entram no `mvn install` padrão.
 
+## Fase R — `spi` vira `spis`
+
+Todo pacote `...spi` passou a `...spis`, sem alias. Lista de pacotes, o que trocar e o roteiro de atualização: [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]].
+
+## Fase 7 — login-tenancy e boilerplates
+
+Cadastro `B2B`/`B2C`/`BOTH`, CPF opcional, seletor de empresa, Mailpit e o backend dos boilerplates subindo de verdade: [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]]. O calendário exigindo empresa (`COMPANY_REQUIRED`): [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]].
+
+## Fase 8 — calendário em camadas
+
+Feriados nacionais e o de SP semeados, móveis que o tenant desmarca e "vai trabalhar": [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]].
+
+## Correções vindas do E2E (2026-10-22 e 23)
+
+Origem: baterias E2E dos boilerplates (backend + Playwright) e testes de integração com Postgres real. Ainda em "Não publicado" nos CHANGELOGs (versão 2026.10.22).
+
+- **READ_ONLY barra a administração** (`@SgReadOnlyEnforced` em `UserController`, `RoleController`, `PermissionController` e `CompanyController`). Quebra leve: ver [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]].
+- **`LastAdminGuard` perde menos ADMIN.** `PATCH /users/{id} {rolePublicIds}` que tira o perfil `ADMIN` do **único** ADMIN dá agora **409 `LAST_ADMIN_PROTECTED`** (antes 200: o vínculo repetia a role e escondia a perda). Duas desativações simultâneas dos dois únicos ADMIN deixavam o tenant com zero ADMIN, porque o datasource de tenant do subdomain-tenancy não participa da JTA (conexão em `autocommit`, o `SELECT ... FOR UPDATE` cai no fim do statement). Agora o guard serializa também **por JVM e por tenant** (`AdminGuardMutex`, espera máxima de 20 s). **Limite:** entre instâncias a proteção exige conexão transacional (enlistar o datasource de tenant na JTA; não feito).
+- **Empresa inativada no login.** `User.getActiveCompanies()` exige `company.active`: empresa inativada some de `allowedCompanies`, do escopo do token, do seletor e da seleção. Quem só tem empresas inativadas recebe 403 `COMPANY_DISABLED`. **Não existe** o código `COMPANY_ENABLED`.
+- **`memberships` no contrato restrito de usuários.** `POST /app/security/users` e `PATCH /app/security/users/{id}` aceitam `memberships: [{ companyPublicId, rolePublicIds }]` (por publicId, sem `root`); antes o campo era descartado (cadastro dava 400 genérico com 2 ou mais empresas e a edição ignorava o vínculo em silêncio). As empresas são validadas contra o alcance do chamador. Campo aditivo.
+- **Limite de usuários do plano** (`PlanUserQuotaValidator`, 402 `USER_QUOTA_EXCEEDED`): [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano]].
+- **Audit idempotente sob concorrência.** `insertEntityIfNotFound` e a gravação de `audit_log_users` não falham mais com chave duplicada quando várias requisições registram o mesmo item novo ao mesmo tempo (antes 500). PostgreSQL: `INSERT ... ON CONFLICT DO NOTHING`; MongoDB: `DUPLICATE_KEY` tratado como sucesso. Sem mudança de API. Chega aos hosts com o bump do `ext-audit` e de `seedgrid.audit.version`.
+- **Security-social reconhece o Bearer próprio.** Com o módulo no classpath nenhum Bearer era reconhecido (o `quarkus-oidc` registra um `OidcJsonWebTokenProducer` que toma o lugar do `JsonWebToken` do `smallrye-jwt`). O módulo agora o exclui do ArC; sem configuração nova.
+- **Subdomain-tenancy, token do admin do master.** Token **sem a claim `subdomain` e com `audience=platform`** respondia 500 "Tenant não determinável" em qualquer rota autenticada. Agora o `SubdomainTenancySecurityScopeResolver` devolve o tenant padrão (`seedgrid.subdomain-tenancy.default-tenant`, padrão `master`). Token sem `subdomain` e sem `audience=platform` continua falhando fechado.
+- **OpenTelemetry no subdomain-tenancy.** `TenantMigrationCoordinator` e `TenantProvisioningService` chamavam `GlobalOpenTelemetry.getTracer` em campo estático, o que no jar empacotado rodava antes do registro do SDK do Quarkus e abortava a subida. Agora `TenancyTracing` resolve o tracer sob demanda pelo bean do Quarkus. **Regra para o host: não chame `GlobalOpenTelemetry.get*()` em inicializador estático; injete `Instance<OpenTelemetry>`.**
+- **`BaseEntity.createdAt` e `updatedAt` viraram `Instant`.** Quebra de tipo e `ALTER ... USING ... AT TIME ZONE 'UTC'`: ver o roteiro em [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]] (passo 6).
+
+### Não confirmado nesta fase
+
+- Seletor de downgrade em `READ_ONLY`: confirmado só pela lista de contribuições do billing (`/me/billing/**`); não há teste específico localizado.
+- A proteção do `LastAdminGuard` entre instâncias (vários nós) não é coberta.
+
+## Perguntas e respostas deste ciclo
+
+- Ligar o login com Google: [[SeedGrid/Extensions/security/Login-social-Google|Login com Google]].
+- Exigir o aceite de termos: [[SeedGrid/Extensions/security/Termos-de-uso|Termos de uso]].
+- Limites do plano e inadimplência: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano e inadimplência]].
+- Bloquear a escrita sem apagar nada, `QUERY` e `@SgReadOnlySafe`: [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]].
+- Atualizar um host existente (`isolation`, `spis`, `cpf_cnpj`): [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]].
+- Cache (lock, failover, annotations): [[SeedGrid/Extensions/cache/Ciclo-2026-10-22|Cache: ciclo 2026.10.22]].
+
 ## Pendente neste ciclo
 
-- Fase 7: boilerplates.
+- Fase 6 (Rust): só depois; os tipos e macros Rust ficam fora desta nota.

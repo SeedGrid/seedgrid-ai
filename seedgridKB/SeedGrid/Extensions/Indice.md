@@ -60,6 +60,20 @@ Contagens de propriedades por extension e plataforma: [[SeedGrid/Extensions/Cata
 - [[SeedGrid/Extensions/Servicos-de-apoio|Serviços de apoio]]: imagem, porta e variáveis de cada serviço do `docker-compose.yml`.
 - [[SeedGrid/Extensions/Mailpit-uso|Usar o Mailpit]]: ver o e-mail do produto, apontar o SMTP, consultar a API em teste (Awaitility) e diagnosticar e-mail que não chega.
 
+## Ciclo 2026.10.22 (não publicado): perguntas e respostas
+
+Mudanças que ainda não existem no Maven Central; cada nota diz a versão e o que não foi verificado.
+
+- [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]]: visão por fase (isolamento, termos, revogação de sessão, login social, último ADMIN, integração, estado da empresa) e correções do E2E.
+- [[SeedGrid/Extensions/security/Login-social-Google|Login com Google]]: Google Cloud, `redirect_uri` por ambiente, segredos e variáveis.
+- [[SeedGrid/Extensions/security/Termos-de-uso|Termos de uso]]: aceite, versão e reaceite.
+- [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano e inadimplência]]: `PlanTerm`, 7 e 30 dias, downgrade e checkout.
+- [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]]: `READ_ONLY`, `@SgReadOnlySafe`, `QUERY` e o proxy do front.
+- [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]]: roteiro para atualizar um host existente.
+- [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]]: boilerplates `login-tenancy-b2b` e `-b2c`, Mailpit.
+- [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]]: feriados prontos, móveis e "vai trabalhar".
+- [[SeedGrid/Extensions/cache/Ciclo-2026-10-22|Cache: ciclo 2026.10.22]]: `tryWithLock`, failover, annotations.
+
 ## Totais
 
 - 17 módulos Java documentados (13 extensions + 4 libraries) e 15 unidades Rust (13 crates de porte + broker + runtime/macros).

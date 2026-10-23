@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-10-16
+analisado-em: 2026-10-20
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -24,17 +24,17 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | apikeys | 2 |
 | Quarkus | audit | 6 |
 | Quarkus | backup | 46 |
-| Quarkus | billing | 26 |
-| Quarkus | cache | 7 |
+| Quarkus | billing | 31 |
+| Quarkus | cache | 21 |
 | Quarkus | commons | 5 |
 | Quarkus | exchange | 2 |
 | Quarkus | filemanagement | 26 |
-| Quarkus | login-tenancy | 33 |
+| Quarkus | login-tenancy | 36 |
 | Quarkus | notification | 9 |
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
 | Quarkus | resilience | 15 |
-| Quarkus | security | 133 |
+| Quarkus | security | 153 |
 | Quarkus | subdomain-tenancy | 53 |
 | Quarkus | whatsapp | 5 |
 | Rust | apikeys | 2 |
@@ -59,7 +59,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **707** |
+| **Total** | | **749** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -170,6 +170,11 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.billing.stripe.test-clock-enabled` | Provider Stripe (seedgrid-billing-stripe) | boolean | `true` | runtime | Com chave sk_test, a nova assinatura nasce num customer preso a um Stripe Test Clock, para testes E2E | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.stripe.product` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — | runtime | No startup, StripeProductBootstrap faz retrieve-or-create do produto | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.stripe.product-name` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — (usa o próprio ID) | runtime | Nome do produto criado no bootstrap | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.past-due.enabled` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout | boolean | `false` | Runtime | Liga o ciclo de inadimplência das empresas e o agendador | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.past-due.read-only-after-days` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout | int | `7` | Runtime | Dias PAST_DUE até as empresas da conta virarem READ_ONLY. 0 não aplica o passo | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.past-due.disable-after-days` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout | int | `30` | Runtime | Dias PAST_DUE até desligar as empresas (menos a do responsável). 0 não aplica o passo | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.past-due.interval` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout | String | `1h` | Runtime | Intervalo do agendador de inadimplência | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.checkout.selection-ttl` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout | Duration | `48h` | Runtime | Validade da referência (selectionRef) da escolha de usuários e empresas feita no checkout | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 
 ### cache
 
@@ -182,6 +187,20 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.cache.timeout` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.timeout` (`Duration`, ex.: `PT5S`) | conforme Quarkus | Runtime (Quarkus) | Timeout do client | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
 | `seedgrid.cache.max-pool-size` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.max-pool-size` (int) | conforme Quarkus | Runtime (Quarkus) | Tamanho do pool | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
 | `seedgrid.cache.max-pool-waiting` | Fachada seedgrid.cache.* → quarkus.redis.* (alias) | conforme `quarkus.redis.max-pool-waiting` (int) | conforme Quarkus | Runtime (Quarkus) | Fila de espera do pool | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.memory.max-entries` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | int | `100000` | Runtime | Teto de entradas da memória local (string + bytes + long) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.memory.sweep-interval` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT60S` | Runtime | Intervalo da varredura de expirados (um agendador daemon compartilhado) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.enabled` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `false` | Runtime | Liga o modo FAILOVER (equivale a seedgrid.cache.if-provider-is-down=FAILOVER) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.failure-threshold` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | int | `1` | Runtime | Falhas de infraestrutura consecutivas para entrar em FAILOVER; um sucesso zera | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.recovery-probes` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | int | `3` | Runtime | Sondagens OK consecutivas para voltar ao provider; uma falha zera | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.probe-interval` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT30S` | Runtime | Intervalo da sondagem (só com provider distribuído caído) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.journal-max-entries` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | int | `10000` | Runtime | Máximo de entradas do journal reaplicado na volta | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.journal-ttl` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT8H` | Runtime | Validade das entradas do journal | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.alert-window` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT15M` | Runtime | Janela anti-flood dos alertas de entrada e saída do FAILOVER | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.failover.reminder-interval` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT6H` | Runtime | Lembrete a cada intervalo durante a queda | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.annotations.default-ttl` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | — | Boot | TTL padrão dos caches anotados com @SgCacheResult | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.annotations.ttl.<cache>` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | — | Boot | TTL de um cache anotado, por nome (vence o padrão, perde para o membro ttl) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.annotations.strict[.<cache>]` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `false` | Runtime | Invalidação perdida lança CacheInvalidationFailedException (senão só loga ERROR) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+| `seedgrid.cache.key-scope` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | enum | `TENANT` | Runtime | Escopo padrão da chave dos caches anotados | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
 
 ### commons
 
@@ -268,6 +287,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.ratelimit.signup-resend-email.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de POST /public/signup/resend-email | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.ratelimit.signup-resend-email.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `5` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.ratelimit.signup-resend-email.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1H` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.signup.customer-type` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22, NÃO PUBLICADO) | enum | `B2B` | Runtime | Quem pode se cadastrar; fora do tipo: 403 SIGNUP_TYPE_NOT_ALLOWED | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.signup.personal-document-required` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22, NÃO PUBLICADO) | boolean | `false` | Runtime | true: POST /public/signup/personal sem CPF responde 400 PERSONAL_DOCUMENT_REQUIRED | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.business-days.company-required` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22, NÃO PUBLICADO) | boolean | `true` | Runtime | Alimenta seedgrid.business-days.company-required: ligado, sem empresa corrente toda rota /business-days/ responde 403… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 
 ### notification
 
@@ -459,13 +481,33 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.ratelimit.2fa-verify.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `5` / `PT15M` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.ratelimit.2fa-resend.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `3` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.ratelimit.user-activation-resend.{enabled,permits,window}` | Rate-limit dos endpoints (seedgrid.ratelimit.<configKey>.*) | idem | `true` / `3` / `PT1H` | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.isolation` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | enum | `shared-database` | Runtime | Modelo de dados do host; só define os padrões das três chaves abaixo. login-tenancy declara shared-database… | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.account.enabled` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `true` em shared, `false` em dedicated | Runtime | Liga ou desliga /me/security/* (404 quando desligado) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.platform-scope.exempt` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | vazio em shared; `companies, users, roles, permissions:GET` em dedicated | Runtime | Recursos isentos do @SgPlatformScope | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.admin-guard.scope` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | enum | `company` em shared, `database` em dedicated | Runtime | Escopo da invariante "mínimo 1 ADMIN ativo": por empresa, ou no banco todo (mais cada empresa com 1 usuário ativo) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.terms.required` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `false` | Runtime | Exige aceite dos termos no cadastro e no login | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.terms.version` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | `1` | Runtime | Versão vigente dos termos; subir a versão exige novo aceite | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.terms.documents.<nome>` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Map&lt;String,String&gt; | vazio | Runtime | Documentos por nome (ex.: terms, privacy) com a URL pública de cada um | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.company-access.cache-ttl` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT60S` | Runtime | TTL do estado da empresa no seedgrid-cache (compartilhado entre os nós) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.company-access.read-only.allowed-paths` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | /public/auth/,/me/select-company,/me/profile,/me/password,/me/terms/accept,/me/identities,/2f,/user… | Runtime | Caminhos onde a escrita passa com a empresa em READ_ONLY | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.company-access.read-only.contributions.<nome>` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | vazio | Runtime | Contribuições aditivas (uma chave por contribuinte) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.providers` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | vazio (módulo inerte) | Boot | Provedores de login social ligados | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.<provedor>.client-id` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | `unset` | Boot | Credencial do cliente no provedor | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.<provedor>.client-secret` 🔒 | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | placeholder desligado | Boot | Segredo do cliente no provedor; só por variável de ambiente | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.<provedor>.state-secret` 🔒 | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | placeholder desligado | Boot | Cifra o estado do fluxo; igual em todas as instâncias | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.<provedor>.encryption-secret` 🔒 | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | placeholder desligado | Boot | Cifra o cookie de sessão do fluxo OIDC; igual em todas as instâncias | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.<provedor>.redirect-uri` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | `/public/auth/social/<provedor>/callback` | Boot | A redirect_uri cadastrada no provedor (o Google exige URL exata) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.allowed-return-hosts` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | lista | host de `frontend.base-url` | Runtime | Hosts do front permitidos em returnTo (anti open redirect) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.error-url` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | String | `frontend.base-url` + `frontend.login-path` | Runtime | Para onde voltar em falha do provedor (ex.: usuário cancelou) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social.ticket-ttl` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | `PT60S` | Runtime | Validade do ticket de uso único que leva o resultado ao front | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
+| `seedgrid.security.social-login.*` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | — | não confirmado | Runtime | Fluxo de confirmação do e-mail por código de 6 dígitos (provedor sem e-mail verificado) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 
 ### subdomain-tenancy
 
 | Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
 |---|---|---|---|---|---|---|
 | `seedgrid.subdomain-tenancy.domain-suffix` | Resolução de tenant e rotas | `Optional<String>` | `—` (MPC: `${SEEDGRID_SUBDOMAIN_TENANCY_DOMAIN_SUFFIX:}` → vazio = ausente) | runtime | TenantHostExtractor remove porta, põe em minúsculas, exige host.endsWith(suffix), retira o sufixo e o ponto; o prefixo… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
-| `seedgrid.subdomain-tenancy.tenant-header` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Se presente e o header vier preenchido, QuarkusTenantResolver usa seu valor como tenant — mas só quando o… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant-header` | Resolução de tenant e rotas | `Optional<String>` | `—` | Escopo e acesso]]) | Se presente e o header vier preenchido, QuarkusTenantResolver usa seu valor como tenant — mas só quando o… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.default-tenant` | Resolução de tenant e rotas | `String` | `master` | runtime | Tenant devolvido quando nada é resolvido; também decide "contexto master" no OpenAPI e a claim audience (platform ×… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.product-prefix` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Nome do banco do tenant = <prefix>_<tenant> (sem prefixo: <tenant>) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.openapi.master-only-paths` | Resolução de tenant e rotas | `List<String>` (CSV) | `/admin` (MPC: `${SEEDGRID_SUBDOMAIN_TENANCY_OPENAPI_MASTER_ONLY_PATHS:/admin}`) | runtime | Em contexto de tenant, GET /public/tenant-openapi remove os paths com esses prefixos (barra final removida), além das… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
@@ -514,7 +556,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.mailer.username` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: vazio (env `…_MAILER_USERNAME`) | runtime | → …".username | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | 🔒 `seedgrid.subdomain-tenancy.mailer.password` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: vazio (env `…_MAILER_PASSWORD`) | runtime | → …".password | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.mailer.auth-methods` | E-mail (mailer nomeado subdomaintenancy) | `Optional<String>` | MPC: `PLAIN LOGIN` (env `…_MAILER_AUTH_METHODS`) | runtime | → …".auth-methods; evita XOAUTH2 automático do Vert.x (Gmail) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
-| `seedgrid.subdomain-tenancy.otp-expiry-minutes` | Signup, OTP e limpeza | `int` | `10` | runtime | Validade do código OTP de 6 dígitos (TenantValidationToken.expiresAt) e valor passado no… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.otp-expiry-minutes` | Signup, OTP e limpeza | `int` | `10` | Escopo e acesso]]) | Validade do código OTP de 6 dígitos (TenantValidationToken.expiresAt) e valor passado no… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-ttl` | Signup, OTP e limpeza | `String` | `48H` (env `SEEDGRID_SUBDOMAIN_TENANCY_CLEANUP_NOT_VALIDATED_TTL`) | runtime | Tenants não validados criados antes de now - ttl têm o registro removido do master | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-cron` | Signup, OTP e limpeza | `String` | `0 0 * * * ?` (env `…_CLEANUP_NOT_VALIDATED_CRON`) | runtime | Agenda cleanupExpiredTenants (só roda se flyway_schema_history_subdomain_tenancy existir) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 
@@ -684,7 +726,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Propriedade | Grupo | Tipo | Padrão | Leitura | Finalidade | Nota |
 |---|---|---|---|---|---|---|
 | `seedgrid.ratelimit.{configKey}.enabled` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Bool` | `true` | por chamada | false libera sem tocar o cache (kill switch) | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
-| `seedgrid.ratelimit.{configKey}.permits` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | `SgRateLimit.permits` (5) | por chamada | permits por janela; ≤ 0 → panic | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
+| `seedgrid.ratelimit.{configKey}.permits` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | `SeedGridRateLimit.permits` (5) | por chamada | permits por janela; ≤ 0 → panic | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
 | `seedgrid.ratelimit.{configKey}.window` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Duration` | `window` × `window_unit` (30 s) | por chamada | tamanho da janela | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
 | `seedgrid.ratelimit.{configKey}.min-spacing` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Duration` | `min_spacing` × `min_spacing_unit` (0) | por chamada | espaçamento mínimo entre chamadas | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |
 | `seedgrid.ratelimit.{configKey}.burst-capacity` | Overrides de rate limit — seedgrid.ratelimit.{configKey}.* | `Long` | `burst_capacity` (0) | por chamada | capacidade do token bucket | [[SeedGrid/Extensions/resilience/Configuracao-Rust\|resilience/Configuracao-Rust]] |

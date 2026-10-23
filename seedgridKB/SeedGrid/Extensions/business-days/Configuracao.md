@@ -13,6 +13,7 @@ analisado-em: 2026-10-16
 | `seedgrid.business-days.enabled` | `true` (env `SEEDGRID_BUSINESS_DAYS_ENABLED`) | Liga/desliga o módulo: desligado = sem migrations e rotas 404 (e fora do OpenAPI). |
 | `seedgrid.business-days.persistence-unit` | PU default | PU das tabelas. Vazio ou `<default>` = default. |
 | `seedgrid.business-days.max-range-days` | `36600` (env `SEEDGRID_BUSINESS_DAYS_MAX_RANGE_DAYS`) | Teto de dias nas consultas de intervalo. |
+| `seedgrid.business-days.company-required` | `false` (o `login-tenancy` liga por padrão) | **Ciclo 2026.10.22, não publicado.** `true` exige empresa corrente em toda rota `/business-days/**`; sem ela, 403 `COMPANY_REQUIRED` (sem token continua 401). Ver [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]]. |
 | `seedgrid.migrations.host-managed` | `false` | Definido pelas tenancy: o runner da extension não age, a tenancy migra cada banco. |
 
 Mapear `br.com.seedgrid.businessdays.entities` na PU configurada (no subdomain-tenancy, na PU default; sem `packages` explícito o Quarkus já indexa).

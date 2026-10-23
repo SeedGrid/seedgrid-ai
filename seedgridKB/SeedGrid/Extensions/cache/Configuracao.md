@@ -49,6 +49,27 @@ Tipos, valores aceitos e padrões são os do `quarkus-redis-client` (Quarkus 3.3
 
 Variáveis de ambiente para o alias (ex.: `SEEDGRID_CACHE_HOSTS`): **Inferência** — o interceptor pede o nome exato `seedgrid.cache.hosts`, que o `EnvConfigSource` resolve pela regra MP. `QUARKUS_REDIS_HOSTS` continua funcionando como fallback. Não testado.
 
+### 2.3 Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS)
+
+> **Não publicado.** Entram com `seedgrid-cache` 2026.10.22. Contexto e quebras (`withLock` removido): [[SeedGrid/Extensions/cache/Ciclo-2026-10-22|Cache: ciclo 2026.10.22]].
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `seedgrid.cache.memory.max-entries` | int | maior que 0 | `100000` | Não | Teto de entradas da memória local (string + bytes + long). Sempre ativo: ausente ou `<= 0` volta ao padrão. Ao passar, remove expiradas e depois as menos recentemente usadas. | `DefaultSeedGridCache` | Vale também para a memória do FAILOVER | Runtime | Insumo C1 (não publicado) |
+| `seedgrid.cache.memory.sweep-interval` | Duration | ISO-8601 | `PT60S` | Não | Intervalo da varredura de expirados (um agendador daemon compartilhado). | `DefaultSeedGridCache` | — | Runtime | Insumo C1 (não publicado) |
+| `seedgrid.cache.failover.enabled` | boolean | `true`, `false` | `false` | Não | Liga o modo FAILOVER (equivale a `seedgrid.cache.if-provider-is-down=FAILOVER`). | `FailoverCache` | `if-provider-is-down` | Runtime | Insumo Fase 2 (não publicado) |
+| `seedgrid.cache.failover.failure-threshold` | int | 1 ou mais | `1` | Não | Falhas de infraestrutura consecutivas para entrar em FAILOVER; um sucesso zera. Menor que 1 falha o boot. | `FailoverCache` | — | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.recovery-probes` | int | 1 ou mais | `3` | Não | Sondagens OK consecutivas para voltar ao provider; uma falha zera. Menor que 1 falha o boot. | `FailoverCache` | `probe-interval` | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.probe-interval` | Duration | ISO-8601 | `PT30S` | Não | Intervalo da sondagem (só com provider distribuído caído). | `FailoverCache` | — | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.journal-max-entries` | int | 1 ou mais | `10000` | Não | Máximo de entradas do journal reaplicado na volta. | `FailoverCache` | `journal-ttl` | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.journal-ttl` | Duration | ISO-8601 | `PT8H` | Não | Validade das entradas do journal. | `FailoverCache` | — | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.alert-window` | Duration | ISO-8601 | `PT15M` | Não | Janela anti-flood dos alertas de entrada e saída do FAILOVER. | `FailoverCache` | `seedgrid-notification-api` | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.failover.reminder-interval` | Duration | ISO-8601 | `PT6H` | Não | Lembrete a cada intervalo durante a queda. | `FailoverCache` | `seedgrid-notification-api` | Runtime | Insumo C2 (não publicado) |
+| `seedgrid.cache.annotations.default-ttl` | Duration | `PT10M`, `500ms`, `30s`, `10m`, `2h`, `1d` | — | Sim, se uma annotation não declarar o `ttl` | TTL padrão dos caches anotados com `@SgCacheResult`. Sem TTL em nenhum nível a aplicação não sobe. | `SgCacheTtl` | `annotations.ttl.<cache>`, membro `ttl` | Boot | `SgCacheTtl` |
+| `seedgrid.cache.annotations.ttl.<cache>` | Duration | idem | — | Não | TTL de um cache anotado, por nome (vence o padrão, perde para o membro `ttl`). | `SgCacheTtl` | — | Boot | `SgCacheTtl` |
+| `seedgrid.cache.annotations.strict[.<cache>]` | boolean | `true`, `false` | `false` | Não | Invalidação perdida lança `CacheInvalidationFailedException` (senão só loga `ERROR`). | Interceptores `Sg` | membro `strict` | Runtime | Insumo C4 (não publicado) |
+| `seedgrid.cache.key-scope` | enum | `TENANT`, `COMPANY`, `USER`, `GLOBAL` | `TENANT` | Não | Escopo padrão da chave dos caches anotados. | Interceptores `Sg` | `SecurityCacheKeyContextProvider` | Runtime | Insumo C4 (não publicado) |
+
 ## 3. Propriedades de frameworks usadas/recomendadas
 
 | Propriedade | Situação | Origem |
