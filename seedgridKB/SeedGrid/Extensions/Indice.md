@@ -73,6 +73,7 @@ Mudanças que ainda não existem no Maven Central; cada nota diz a versão e o q
 - [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]]: boilerplates `login-tenancy-b2b` e `-b2c`, Mailpit.
 - [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]]: feriados prontos, móveis e "vai trabalhar".
 - [[SeedGrid/Extensions/cache/Ciclo-2026-10-22|Cache: ciclo 2026.10.22]]: `tryWithLock`, failover, annotations.
+- [[SeedGrid/Extensions/cities/Cidades-e-cidade-no-endereco|Cidades e cidade no endereço]]: `sg_cities`, `cityId` nas APIs, migração do texto e REST.
 
 ## Totais
 
