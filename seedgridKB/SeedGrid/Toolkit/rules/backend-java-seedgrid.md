@@ -50,7 +50,7 @@ public record ClienteDTORes(
 
 ## API REST
 
-- **BE-31.** Os paths ficam centralizados em uma classe `RestControllerPath` no pacote `controllers` (`final`, construtor privado), usada na API **e** nos testes de integração. Padrão: constante do nome do parâmetro (`PUBLIC_ID_PARAM = "publicId"`), uma seção por recurso com a base (`USERS = "/users"`), os sub-paths (`USERS_BY_PUBLIC_ID = "/{" + PUBLIC_ID_PARAM + "}"`) e os caminhos completos com sufixo `_FULL` (`USERS_BY_PUBLIC_ID_FULL = USERS + USERS_BY_PUBLIC_ID`). O controller usa a base e os sub-paths; o teste usa os `_FULL`.
+- **BE-31.** Os paths ficam centralizados em uma classe `RestControllerPath` no pacote `configs` (`final`, construtor privado), usada na API **e** nos testes de integração. O `@Path` do controller **e o de cada método** usam constante; **nenhuma string literal de path** em controller, e o teste nunca escreve o texto do path. Padrão: constante do nome do parâmetro (`PUBLIC_ID_PARAM = "publicId"`), uma seção por recurso com a base (`USERS = "/users"`), os sub-paths (`USERS_BY_PUBLIC_ID = "/{" + PUBLIC_ID_PARAM + "}"`) e os caminhos completos com sufixo `_FULL` (`USERS_BY_PUBLIC_ID_FULL = USERS + USERS_BY_PUBLIC_ID`). O controller usa a base e os sub-paths; o teste usa os `_FULL`.
 
 ## Testes
 
