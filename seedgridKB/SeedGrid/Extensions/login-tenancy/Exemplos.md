@@ -54,7 +54,7 @@ Migrations do domínio em `src/main/resources/db/migration/app/`.
 
 ## 3. Pós-processar o cadastro confirmado
 
-Fonte: `SignupConfirmedEvent` (record com `cnpj`, `companyPublicId`, `corporateName`, `tradeName`, `rootEmail`, `representativeName`) e o padrão usado por `LoginTenancyBillingProvisioner`.
+Fonte: `SignupConfirmedEvent` (record com `personType`, `cpfCnpj`, `companyPublicId`, `corporateName`, `tradeName`, `rootEmail`, `representativeName`) e o padrão usado por `LoginTenancyBillingProvisioner`.
 
 ```java
 import br.com.seedgrid.logintenancy.dtos.SignupConfirmedEvent;
@@ -106,12 +106,12 @@ public class MeusTemplates implements LoginTenancyTemplateProvider {
 Fonte: `LoginTenancySignupController`, `InstitutionalSignupRequest`.
 
 ```http
-GET /public/signup/cnpj-status?cnpj=12345678000199
+GET /public/signup/document-status?cpfCnpj=12345678000199
 → { "status": "AVAILABLE", "pendingEmailMasked": null }
 
 POST /public/signup
 {
-  "cnpj": "12345678000199",
+  "cpfCnpj": "12345678000199",
   "corporateName": "Acme Tecnologia LTDA",
   "tradeName": "Acme Labs",
   "address": { "street": "...", "number": "1000", "complement": "...", "postalCode": "01310100",

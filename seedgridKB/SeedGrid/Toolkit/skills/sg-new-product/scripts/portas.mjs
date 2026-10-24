@@ -9,7 +9,6 @@ const FINALIDADE = [
   [/redis|valkey/i, () => 'cache Redis'],
   [/minio/i, (c) => (c === 9001 || c === 9011 ? 'console web do MinIO' : 'API S3 do MinIO')],
   [/mailpit/i, (c) => (c === 8025 ? 'interface web do Mailpit (e-mails enviados)' : 'SMTP do Mailpit (sem autenticacao)')],
-  [/mailhog/i, (c) => (c === 8025 ? 'interface web do MailHog (e-mails enviados)' : 'SMTP do MailHog')],
   [/mongo-express/i, () => 'interface web do MongoDB'],
   [/mongo/i, () => 'banco MongoDB'],
   [/pgadmin/i, () => 'interface web do PostgreSQL (pgAdmin)'],

@@ -15,7 +15,7 @@ Voltar: [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral do login-te
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
 | [[#SignupRequestStatus]] | `br.com.seedgrid.logintenancy.enums` — `runtime/src/main/java/br/com/seedgrid/logintenancy/enums/SignupRequestStatus.java` | coluna `signup_request.status`; respostas de `POST /public/signup`, `/resend-email`, `/confirm-email` | Sim |
-| [[#CnpjSignupStatus]] | `br.com.seedgrid.logintenancy.enums` — `.../enums/CnpjSignupStatus.java` | resposta de `GET /public/signup/cnpj-status` | Sim |
+| [[#DocumentSignupStatus]] | `br.com.seedgrid.logintenancy.enums` — `.../enums/DocumentSignupStatus.java` | resposta de `GET /public/signup/document-status` (CPF ou CNPJ; antes `CnpjSignupStatus` e `cnpj-status`, 2026.10.22) | Sim |
 | [[#FoundationModule]] | `br.com.seedgrid.logintenancy.configs` — `.../configs/FoundationModule.java` | `LoginTenancyModuleRegistry` (bean público), `activeModules` do status | Sim |
 
 ## SignupRequestStatus
@@ -24,7 +24,7 @@ FQN: `br.com.seedgrid.logintenancy.enums.SignupRequestStatus` — "Estado de uma
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
-| `PENDING_EMAIL_VERIFICATION` | Solicitação criada, aguardando o código enviado por e-mail | Valor inicial (`SignupRequestEntity` `@PrePersist`, quando nulo); reatribuído no `resend-email`; filtro de `SignupRequestRepository#findPendingByCnpj` (reaproveitamento da solicitação e `cnpj-status = PENDING_CONFIRMATION`); índices únicos parciais da `V703` | Confirmado |
+| `PENDING_EMAIL_VERIFICATION` | Solicitação criada, aguardando o código enviado por e-mail | Valor inicial (`SignupRequestEntity` `@PrePersist`, quando nulo); reatribuído no `resend-email`; filtro de `SignupRequestRepository#findPendingByDocument` (reaproveitamento da solicitação e `document-status = PENDING_CONFIRMATION`); índices únicos parciais da `V703` | Confirmado |
 | `CONFIRMED` | Código confirmado: `Company` e usuário root criados | Atribuído em `LoginTenancySignupController#confirmEmail`; a linha sai dos índices parciais da V703 e vira histórico | Confirmado |
 
 - **Persistência**: `@Enumerated(EnumType.STRING)`, coluna `status varchar(64) not null` (V700). Não há CHECK constraint; a V703 só referencia `'PENDING_EMAIL_VERIFICATION'` nos índices parciais (coerente com o enum).
@@ -39,17 +39,17 @@ stateDiagram-v2
     CONFIRMED --> PENDING_EMAIL_VERIFICATION: POST /resend-email (sem filtro de status)
 ```
 
-## CnpjSignupStatus
+## DocumentSignupStatus
 
-FQN: `br.com.seedgrid.logintenancy.enums.CnpjSignupStatus` — situação de um CNPJ na tela de cadastro, consultada antes do submit.
+FQN: `br.com.seedgrid.logintenancy.enums.DocumentSignupStatus` (antes `CnpjSignupStatus`, 2026.10.22) — situação de um documento (CPF ou CNPJ) na tela de cadastro, consultada antes do submit.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
-| `AVAILABLE` | Sem company e sem solicitação pendente: pode cadastrar | `CnpjStatusResponse.available()` — também devolvido para CNPJ vazio | Confirmado |
-| `REGISTERED` | Já existe `Company` com o CNPJ: o caminho é o login | `CnpjStatusResponse.registered()` | Confirmado |
-| `PENDING_CONFIRMATION` | Há solicitação `PENDING_EMAIL_VERIFICATION`: o caminho é o reenvio | `CnpjStatusResponse.pending(maskedEmail)` — único caso com `pendingEmailMasked` preenchido | Confirmado |
+| `AVAILABLE` | Sem company e sem solicitação pendente: pode cadastrar | `DocumentStatusResponse.available()` — também devolvido para documento vazio | Confirmado |
+| `REGISTERED` | Já existe `Company` com o documento: o caminho é o login | `DocumentStatusResponse.registered()` | Confirmado |
+| `PENDING_CONFIRMATION` | Há solicitação `PENDING_EMAIL_VERIFICATION`: o caminho é o reenvio | `DocumentStatusResponse.pending(maskedEmail)` — único caso com `pendingEmailMasked` preenchido | Confirmado |
 
-- **JSON**: campo `status` de `CnpjStatusResponse` com o nome da constante. Não é persistido.
+- **JSON**: campo `status` de `DocumentStatusResponse` com o nome da constante. Não é persistido.
 
 ## FoundationModule
 

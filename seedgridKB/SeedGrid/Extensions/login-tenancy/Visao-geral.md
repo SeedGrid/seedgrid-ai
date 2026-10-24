@@ -90,7 +90,7 @@ Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `flyway_schema_his
 |---|---|---|---|
 | `POST` | `/public/signup` | `signup`, 10/min | Cadastro institucional → `202 {status, signupRequestId, emailDelivered}`. Reaproveita solicitação pendente do mesmo CNPJ+e-mail; outro e-mail no mesmo CNPJ → `409`. E-mail existente = vinculação de nova empresa (senha ignorada). |
 | `GET` | `/public/signup/email-exists?email=` | `signup-email-exists`, 10/min | `{exists}` |
-| `GET` | `/public/signup/cnpj-status?cnpj=` | `signup-cnpj-status`, 10/min | `{status: AVAILABLE\|REGISTERED\|PENDING_CONFIRMATION, pendingEmailMasked}` |
+| `GET` | `/public/signup/document-status?cpfCnpj=` | `signup-document-status`, 10/min | `{status: AVAILABLE\|REGISTERED\|PENDING_CONFIRMATION, pendingEmailMasked}` |
 | `POST` | `/public/signup/confirm-email` | `signup-confirm-email`, 10/min | `{token}` (6 dígitos, com ou sem traço) → cria `Company` + usuário root com role `ADMIN` por conta, envia boas-vindas, dispara `SignupConfirmedEvent` |
 | `POST` | `/public/signup/resend-email` | `signup-resend-email`, 5/h | Gera novo código e reenvia |
 | `GET` | `/public/login-tenancy/status` | — | `app`, `activeModules`, `bootstrap`, `security.jwtIssuer`, `security.firstAdminConfigured`; `404` se `foundation.status.enabled=false` |
@@ -102,7 +102,7 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 
 | Símbolo | Tipo | Uso |
 |---|---|---|
-| `br.com.seedgrid.logintenancy.dtos.SignupConfirmedEvent(cnpj, companyPublicId, corporateName, tradeName, rootEmail, representativeName)` | evento CDI | Pós-processamento de domínio no host |
+| `br.com.seedgrid.logintenancy.dtos.SignupConfirmedEvent(personType, cpfCnpj, companyPublicId, corporateName, tradeName, rootEmail, representativeName)` | evento CDI | Pós-processamento de domínio no host |
 | `br.com.seedgrid.logintenancy.spis.LoginTenancyTemplateProvider` | SPI (`DefaultLoginTenancyTemplateProvider` é `@DefaultBean`) | `signupConfirmation`, `signupWelcome`, `userActivation`. Override por bean ou por arquivo em `templates/logintenancy/<nome>.html` (fallback `templates/logintenancy-default/html/`) |
 | `LoginTenancyConfig` / `LoginTenancyFoundationConfig` | `@ConfigMapping` / fachada CDI | ver [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] |
 | `LoginTenancyModuleRegistry` | bean | `isActive(FoundationModule)`, `activeModules()` |
@@ -111,7 +111,7 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 
 ## Migrations próprias
 
-`runtime/src/main/resources/db/migration/login-tenancy/`: `V700__signup_request.sql`, `V701__privacy_search_hashes.sql`, `V702__timestamps_com_fuso.sql`, `V703__signup_request_pendente_unica_por_cnpj.sql` (faixa 700). Há um `docs/RUNBOOK-remocao-da-V704.md` (não analisado em detalhe).
+`runtime/src/main/resources/db/migration/login-tenancy/`: `V700__signup_request.sql`, `V701__privacy_search_hashes.sql`, `V702__timestamps_com_fuso.sql`, `V703__signup_request_pendente_unica_por_cnpj.sql`, `V704__signup_request_person_type_cpf_cnpj.sql`, `V705__signup_request_terms.sql`, `V706__signup_request_address_city.sql` (faixa 700; V704 a V706 são do ciclo 2026.10.22, não publicado). Veja [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]] (cadastro de pessoa física, termos e `cityId`). Há um `docs/RUNBOOK-remocao-da-V704.md` (não analisado em detalhe).
 
 ## Testes existentes (não executados)
 
@@ -120,7 +120,7 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 | `runtime/src/test/.../LoginTenancyFoundationIT` | config com defaults, migrations por schema, company default, endpoint de status, readiness (PostgreSQL via Dev Services) |
 | `.../controllers/SignupAccountRootIT` | confirmação torna o dono root da conta, não root global |
 | `.../controllers/SignupBillingAccountIT` | confirmação cria conta de billing com trial |
-| `.../controllers/SignupDedupIT` | reaproveitamento de pendente, conflito com outro e-mail, `emailDelivered`, `cnpj-status` |
+| `.../controllers/SignupDedupIT` | reaproveitamento de pendente, conflito com outro e-mail, `emailDelivered`, `document-status` |
 | `.../spis/*Test` | metadata/escopo de audit, resolvedor de escopo de login, defaults de gestão de conta |
 | `.../unit/LoginTenancyFoundationConfigTest`, `LoginTenancyModuleRegistryTest` | lógica da fachada e do registry |
 
