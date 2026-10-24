@@ -34,10 +34,10 @@ Para as extensions (propriedades, enums, exemplos), consulte a KB: comece por `.
 ## Extensions/crates SeedGrid, LGPD e auditoria
 
 - **BE-60.** Use as extensions (Java) ou os crates (Rust) SeedGrid antes de escrever código próprio de autenticação/permissões (`security`), auditoria (`audit`), notificação, billing, cache, storage, rate limit etc. Consulte `.ai/brain/SeedGrid/Extensions/Indice.md` e configure pelas propriedades documentadas. Código próprio só quando nenhum cobre, com a justificativa na entrega.
-- **BE-61.** Dado pessoal (CPF, telefone, e-mail, endereço, data de nascimento, nome quando identifica a pessoa) usa o `privacy` do SeedGrid: cifrado em repouso e, se a busca por igualdade for necessária, consultado por hash. Anotações e colunas na rule da linguagem.
+- **BE-61.** Dado pessoal (CPF, CNPJ, inscrição estadual, e-mail, telefone, WhatsApp, logradouro; nome quando identifica a pessoa e data de nascimento também) usa o `privacy` do SeedGrid, **pelo que o campo representa**: cifrado em repouso e com hash de busca em todo campo cifrado. Anotações e colunas na rule da linguagem.
 - **BE-62.** A cifra de campo é opt-in: o projeto liga a cifra e fornece as chaves por segredo/variável de ambiente, nunca em arquivo versionado.
 - **BE-63.** Dado pessoal **não** vai em claro para auditoria, log, exportação ou resposta de erro: use o mascaramento do `privacy` (e remoção total para senha e segredos).
-- **BE-64.** Criação, alteração e exclusão de entidades de negócio são auditadas pela extension/crate `audit`.
+- **BE-64.** Todo método de service é auditado pela extension/crate `audit`, inclusive a leitura (para saber quem leu).
 - **BE-65.** Endpoints protegidos pelo mecanismo de segurança da extension `security`; a UI esconder um botão não substitui a checagem no back.
 
 ## Ao terminar

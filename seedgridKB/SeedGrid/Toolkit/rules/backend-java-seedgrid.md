@@ -64,9 +64,20 @@ public record ClienteDTORes(
 
 ## LGPD e auditoria em Java
 
-- **BE-61.** Dado pessoal usa o `seedgrid-privacy`: campo `String` com `@Convert(converter = EncryptedFieldAttributeConverter.class)` e `@SgEncryptedField`, coluna `length = 512`; se a busca por igualdade for necessária, `@SgEncryptedField(searchField = "<campo>Hash", normalize = ...)` com a coluna irmã `<campo>_hash` (`length = 64`) e a consulta feita pelo hash (`EncryptedFieldSearch#hashForSearch`, com a **mesma** normalização da anotação). Entidade com campo cifrado leva `@EntityListeners(EncryptedFieldListener.class)`.
+- **BE-61.** Dado pessoal (lista e regras no BE-67) usa o `seedgrid-privacy`: campo `String` com `@Convert(converter = EncryptedFieldAttributeConverter.class)` e `@SgEncryptedField`, coluna `length = 512`, **sempre** com `@SgEncryptedField(searchField = "<campo>Hash", normalize = ...)` e a coluna irmã `<campo>_hash` (`length = 64`); a busca por igualdade é feita pelo hash (`EncryptedFieldSearch#hashForSearch`, com a **mesma** normalização da anotação). Entidade com campo cifrado leva `@EntityListeners(EncryptedFieldListener.class)`.
 - **BE-62.** O host liga `seedgrid.privacy.encryption.enabled=true` e fornece `seedgrid.privacy.crypto.key` e `seedgrid.privacy.search.key` (Base64, 32 bytes) por segredo/variável de ambiente, nunca em arquivo versionado.
-- **BE-63.** Use `@SgPersonalData`/`@SgMaskRule` para mascarar dado pessoal em auditoria, log, exportação e resposta de erro (e `remove = true` para senha e segredos).
-- **BE-64.** Criação, alteração e exclusão de entidades de negócio usam `@SgAudit` (`entityFqcn`, `operation`, `description`) no método de serviço, dentro de `@Transactional`.
+- **BE-63.** Use `@SgPersonalData`/`@SgMaskRule` para mascarar dado pessoal em auditoria, log, exportação e resposta de erro (e `remove = true` para senha e segredos). Os gabaritos dos dados da lista do BE-67 estão lá.
+- **BE-64.** **Todo método público de service é auditado com `@SgAudit`** (`entityFqcn`, `operation`, `description`), inclusive as consultas, para saber quem leu: `CREATE`, `UPDATE` e `DELETE` nas escritas (dentro de `@Transactional`), `READ` nas leituras e `OTHER` nas demais operações. Em alteração e exclusão, o `publicId` é o **primeiro argumento** do método (o `@SgAudit` o usa para achar o estado anterior).
+- **BE-67.** **Dado pessoal segue a LGPD, pelo que o campo representa (não pelo nome).** Todo campo que guarda CPF, CNPJ, inscrição estadual, e-mail, telefone, WhatsApp ou logradouro (`fone`, `celular`, `endereco.rua` valem) tem **sempre**: (1) **cifra** em repouso; (2) **hash de busca**, em todo campo cifrado (BE-61), consultado pelo `QueryFilter` (BE-35); (3) **máscara** em log, auditoria, exportação e resposta de erro, com `@SgMaskRule`; **nunca vai em claro** para esses destinos. A máscara usa `MaskingStrategy.TEMPLATE` (`#` mostra o caractere da mesma posição, `*` mascara, o resto é literal; o resultado tem o tamanho do gabarito, então um gabarito mais largo que a coluna esconde o tamanho real). Gabaritos (valor guardado **sem pontuação**):
+  | Dado | Gabarito | Resultado |
+  |---|---|---|
+  | CPF (11 dígitos) | `###***###**` | `058***698**` |
+  | CNPJ (14 dígitos) | `#####***####**` | `05952***0001**` |
+  | Telefone/WhatsApp celular (11 dígitos) | `####*****##` | `1698*****53` |
+  | Telefone fixo (10 dígitos) | `####****##` | `1633****53` |
+  | Inscrição estadual (tamanho varia por estado) | `###***********` | `111***********` |
+  | E-mail | `####****************` | `luck****************` |
+  | Logradouro | `######**************` | `AV. E.**************` |
+  O gabarito é posicional: IE, e-mail e logradouro têm tamanho variável, então só o **começo** pode ser mostrado (um "últimos N" cairia em posição errada). O logradouro mostra no máximo 6 caracteres para o número não aparecer em endereço curto ("AV. E. 293"). Se o valor for guardado **com** pontuação, use o gabarito com os mesmos literais (CPF `###.***.###-**`).
 - **BE-65.** Endpoints protegidos com as anotações de segurança do Quarkus (`@Authenticated`, `@RolesAllowed`, `@PermissionsAllowed`) e permissões registradas conforme a extension `security`.
 - **BE-66.** Cadastros novos seguem a skill `sg-crud-back`.
