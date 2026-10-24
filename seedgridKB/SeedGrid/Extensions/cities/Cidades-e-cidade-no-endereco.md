@@ -1,5 +1,5 @@
 ---
-description: "Como usar países, estados e cidades (com código IBGE) no produto e guardar a cidade do endereço como id de município (Address.city é @ManyToOne para a cities), em perguntas e respostas: dependência, pacotes do Hibernate, API de empresa e cadastro (cityId), migração do texto antigo, REST e armadilhas (2026.10.22, não publicado)."
+description: "Como usar países, estados e cidades (com código IBGE) no produto e guardar a cidade do endereço como id de município (Address.city é @ManyToOne para a cities), em perguntas e respostas: dependência, pacotes do Hibernate, API de empresa e cadastro (cityId), migração do texto antigo, REST (inclusive a consulta pública) e armadilhas (2026.10.22, não publicado)."
 tags: [seedgrid, extension, cities, endereco, ibge, commons, security, host, perguntas-e-respostas]
 analisado-em: 2026-10-24
 ---
@@ -47,9 +47,19 @@ No código, o bean `CityLookupService` (security) tem `requireById(id)` e `findB
 
 ## E a REST de consulta de cidades?
 
-Opcional e **desligada por padrão**: exige `seedgrid.cities.enabled=true` (padrão) e `seedgrid.cities.rest.enabled=true` (prefixo `/cities-api`; ligada nos boilerplates). Exemplos: `GET /cities-api/cities/by-ibge-code/{code}` e `/cities?name=...&stateId=...`. O `id` devolvido é o `cityId` aceito pelas APIs acima. Exige a permissão `CITY_READ` (role `ADMIN`).
+Opcional e **desligada por padrão**: exige `seedgrid.cities.enabled=true` (padrão) e `seedgrid.cities.rest.enabled=true` (prefixo `/cities-api`; ligada nos boilerplates). Exemplos: `GET /cities-api/cities/by-ibge-code/{code}` e `/cities?name=...&stateId=...`. O `id` devolvido é o `cityId` aceito pelas APIs acima. Exige a permissão `CITY_READ` (role `ADMIN`); para o cadastro público, veja a consulta pública abaixo.
 
-> **Pendência conhecida:** a REST exige token, então o formulário de cadastro **público** ainda não consegue consultá-la. O time dos fronts está verificando; não prometa seletor de cidade no cadastro público.
+### Consulta pública (para o cadastro, sem token)
+
+Rotas `GET /public/cities?uf=&name=` e `GET /public/cities/by-ibge-code/{7 dígitos}`, **desligadas por padrão** (404): ligue com `seedgrid.cities.public-rest.enabled=true`, independente de `rest.enabled`. Os 3 boilerplates ligam a propriedade; o cadastro envia `address.cityId` pelo BFF (`/api/signup/city/{ibge}`) e, se a consulta falha, cai no texto.
+
+- **Resposta só `{id, name, uf, ibgeCode}`** (decisão do dono: a tabela completa não pode ser copiada).
+- **Limites:** UF obrigatória, termo de 3 a 60 caracteres, teto de 20 resultados sem paginação, sem listagem total; `%`, `_` e `\` do termo são escapados.
+- **Rate limit em memória:** 30 por minuto por IP e 600 por minuto global (429 com `Retry-After`).
+- **Cache:** `Cache-Control` de 24 h com `ETag`/304.
+- **IP do cliente:** vem da conexão, ou do cabeçalho em `seedgrid.cities.public-rest.client-ip-header`. O proxy da frente precisa **sobrescrever** o `X-Forwarded-For`; senão o cliente forja o IP e escapa do limite.
+
+Testes informados pelo time de plataforma: `cities` 116 verdes; Playwright b2b 13/13, b2c 15/15 e subdomain-tenancy 16/17 (spec 06 intermitente, sem relação).
 
 ## Como migro os dados que já tenho em texto?
 
@@ -68,5 +78,5 @@ Opcional e **desligada por padrão**: exige `seedgrid.cities.enabled=true` (padr
 ## Não verificado
 
 - O código e os testes (98 da `cities`, mais os de empresa, cadastro e tenant): vêm dos insumos do time de plataforma.
-- A consulta de cidade no cadastro público (pendência acima).
+- A consulta pública foi conferida só na existência da rota, da propriedade e do filtro no código; os números de teste vêm do time de plataforma.
 - Versões ainda não publicadas no Maven Central: produto gerado só compila onde as extensions estão instaladas localmente.
