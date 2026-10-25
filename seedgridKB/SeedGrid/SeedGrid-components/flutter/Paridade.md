@@ -3,7 +3,7 @@ description: "Tabela de paridade React × Flutter dos componentes SeedGrid, em p
 tags: [seedgrid, front, component, flutter, dart, paridade, perguntas-e-respostas]
 fonte: front/seedgrid-fe-flutter/docs/PARIDADE.md
 branch: main
-commit: 2e33260
+commit: 314cb5a
 analisado-em: 2026-10-25
 ---
 
@@ -13,7 +13,7 @@ analisado-em: 2026-10-25
 
 ## Qual é o placar?
 
-**89 componentes** do React: **27 portados**, **62 parciais**, 0 pendentes, 0 não aplicáveis (cabeçalho do `docs/PARIDADE.md`).
+**89 componentes** do React: **24 portados**, **65 parciais**, 0 pendentes, 0 não aplicáveis (cabeçalho do `docs/PARIDADE.md`; mesma fonte em `docs/paridade.json`). No commit anterior da nota (`2e33260`) o placar era 27/62: `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone` deixaram de ser `portado` porque a linha agora registra "validadores do componente rodam no submit (decisao do dono)" (`docs/DIVERGENCIAS_DO_REACT.md`, decisão 2).
 
 - `portado`: sem ressalva registrada na coluna "Onde / motivo".
 - `parcial`: existe o widget, com a diferença registrada (motivo na tabela).
@@ -24,12 +24,12 @@ analisado-em: 2026-10-25
 | Onda | Componentes |
 |---|---|
 | 0 | `SgComponentsI18nProvider`, `SgEnvironmentProvider` |
-| 1 | `SgAvatar`, `SgAvatarGroup`, `SgBadge`, `SgBadgeOverlay`, `SgButton`, `SgInputCPF`, `SgInputCPFCNPJ`, `SgInputPhone`, `SgSkeleton`, `SgStepperInput` |
+| 1 | `SgAvatar`, `SgAvatarGroup`, `SgBadge`, `SgBadgeOverlay`, `SgButton`, `SgSkeleton`, `SgStepperInput` |
 | 2 | `SgAccordion`, `SgExpandablePanel`, `SgGroupBox`, `SgPageControl`, `SgPageControlPage`, `SgScreen`, `SgToaster`, `SgToastHost`, `SgWhistleHost`, `SgWhistler`, `SgWizardPage` |
 | 3 | `SgYearPartSelector` |
 | 4 | `SgClockThemeProvider`, `SgFlipDigit`, `SgSegmentDigit` |
 
-Todos os demais estão `parcial`. Os números de onda são os do plano (0 = fundação, 1 = formulário e inputs básicos, 2 = layout/overlay/providers, 3 = seleção avançada e dados, 4 = dígitos e gadgets, 5 = navegação e dados pesados, 6 = editor).
+São 24 (2 + 7 + 11 + 1 + 3). Todos os demais estão `parcial`, inclusive `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone`, que eram listados aqui. Os números de onda são os do plano (0 = fundação, 1 = formulário e inputs básicos, 2 = layout/overlay/providers, 3 = seleção avançada e dados, 4 = dígitos e gadgets, 5 = navegação e dados pesados, 6 = editor).
 
 ## Que limitações se repetem nos `parcial`?
 
@@ -38,7 +38,9 @@ Textos da coluna "Onde / motivo":
 - **Não testado em IME nem em dispositivo** (inputs e gadgets).
 - **`inputProps`/`className`/`style` não existem** (ADR 50); `inputProps` é aceito e ignorado.
 - **Sem `Intl`:** `SgInputNumber` e `SgInputCurrency` usam tabela gerada de locales e moedas; `SgCalendar` cobre 9 locales; `SgClock` tem fusos embutidos.
-- **Valor nulo = não controlado** (Dart não distingue `null` de indefinido): `SgCombobox`, `SgPeriodSelector`, `SgDatatable` (`sortField`/`selection`), `SgInputText`.
+- **Decisões do dono (2026-10-25), repetidas em muitas linhas:** "validadores do componente rodam no submit" (inputs de texto, máscara, número, data, `SgToggleSwitch`, `SgInputOTP`) e "onChange do usuário também dentro de formulário" (`SgMultiSelect`, `SgMultiSelectChips`). Ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
+- **Valor nulo = não controlado** (Dart não distingue `null` de indefinido): `SgCombobox`, `SgPeriodSelector`, `SgDatatable` (`sortField`/`selection`), `SgRating`, `SgInputText`. No `SgInputText`, `value` controla o texto (nulo = não controlado); com `name` + formulário o valor do formulário manda e `value` é ignorado, como no React (`inputs/sg_input_text.dart`, prop `value`).
+- **Texto interno do `SgCombobox`, `SgAutocomplete`, `SgMultiSelect` e `SgMultiSelectChips`:** ainda passa por um `SgFormController` interno; o `SgInputText` já aceita `value` controlado e a migração está registrada como pendente.
 - **Motor diferente do React:** `SgSlider` (Slider do Material tematizado), `SgDatatable` e `SgMenu` (motor próprio), `SgQRCode` (qrcodegen portado), `SgTextEditor` (`flutter_quill`).
 - **Sem hover no toque:** `SgDockMenu` (sem zoom nem rótulo), dicas do `SgFloatActionButton`.
 - **Sem navegação por `href`:** `SgBreadcrumb` dispara `onClick`/`onNavigate`, não abre a URL (falta `url_launcher`); `SgMenu` só chama `onNavigate`.
@@ -47,7 +49,7 @@ Textos da coluna "Onde / motivo":
 
 ## O que o `SgTextEditor` não suporta?
 
-Motor `flutter_quill` (MIT) em vez de TipTap; o conteúdo trafega como HTML por conversor próprio (HTML do TipTap lido e reescrito igual em 160+ fixtures do TipTap real, segundo o `docs/PARIDADE.md`). Fora do modelo Delta: tabelas e iframes (descartados); `<br>` vira U+2028; `sub` e `sup` juntos (vence um); `<mark>` sem cor vira amarelo; cor com alfa perde o alfa; tamanho em em/pt/% vira px; `ol start`; item de lista com vários parágrafos vira um item com quebra suave; citação com lista/título/citação aninhada achata; classe de linguagem do bloco de código; regras de markdown (`# `, `- `, `1. `, `> `) e atalhos só os do `flutter_quill`. Salvar/carregar HTML usa `file_picker` (extra `htmlFilePicker`); `onSave` recebe `SgTextEditorFile`.
+Motor `flutter_quill` (MIT) em vez de TipTap; o conteúdo trafega como HTML por conversor próprio (HTML do TipTap lido e reescrito igual em 160+ fixtures do TipTap real, segundo o `docs/PARIDADE.md`). Fora do modelo Delta: tabelas e iframes (descartados); `<br>` vira U+2028; `sub` e `sup` juntos (vence um); `<mark>` sem cor vira amarelo; cor com alfa perde o alfa; tamanho em em/pt/% vira px; `ol start`; item de lista com vários parágrafos vira um item com quebra suave; citação com lista/título/citação aninhada achata; classe de linguagem do bloco de código; regras de markdown (`# `, `- `, `1. `, `> `) e atalhos só os do `flutter_quill` (dependência `flutter_quill: ^11.5.0` em `packages/seedgrid_components/pubspec.yaml`). Cor do texto e destaque por seletor próprio (paleta + hex); diálogos de link/imagem próprios no lugar de `window.prompt`; `disabled` reativo. O widget ainda fica fora do arquivo raiz do pacote (barril `editor_inputs.dart`). Salvar/carregar HTML usa `file_picker` (extra `htmlFilePicker`); `onSave` recebe `SgTextEditorFile`.
 
 ## Como leio e regenero a tabela?
 
@@ -59,5 +61,5 @@ A mesma fonte alimenta o menu do showcase: componentes ainda não portados apare
 
 ## Não verificado
 
-- Não regenerei a tabela nem rodei `flutter test`; os números (27/62/0/0) são os do cabeçalho do `docs/PARIDADE.md` no commit `2e33260`, e o repositório tinha alterações sem commit na data da análise, então o placar pode mudar.
+- Não regenerei a tabela nem rodei `flutter test`; os números (24/65/0/0) são os do cabeçalho do `docs/PARIDADE.md` no commit `314cb5a` (árvore limpa na data da análise). Os 3 componentes que saíram de `portado` foram deduzidos comparando com a lista da versão anterior desta nota; que ao todo 18 componentes mudaram por decisão do dono é informação do dono, não contada no `docs/PARIDADE.md`.
 - Antes de a T8.1 do plano (paridade final) ser marcada, a tabela deve ser regenerada e esta nota revista; ela não é a evidência dessa tarefa.

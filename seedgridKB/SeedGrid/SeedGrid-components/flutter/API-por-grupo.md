@@ -3,7 +3,7 @@ description: "Mapa dos componentes Flutter SeedGrid por grupo (botões, commons,
 tags: [seedgrid, front, component, flutter, dart, api]
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 2e33260
+commit: 314cb5a
 analisado-em: 2026-10-25
 ---
 
@@ -17,7 +17,7 @@ analisado-em: 2026-10-25
 |---|---|---|
 | Botões | `buttons/` | `SgButton`, `SgSplitButton`, `SgFloatActionButton` |
 | Commons | `commons/` | `SgBadge`, `SgBadgeOverlay`, `SgAvatar`, `SgAvatarGroup`, `SgSkeleton` |
-| Formulário | `form/` | `SgForm`, `SgFormController`, `SgRules`/`SgRuleValue` (sem equivalente 1:1: substitui o react-hook-form, ADR 49) |
+| Formulário | `form/` | `SgForm`, `SgFormController`, `SgRules`/`SgRuleValue`, `SgFieldValidator` (sem equivalente 1:1: substitui o react-hook-form, ADR 49). `SgFormController.registerField(name, {rules, initialValue, validator})` e `unregisterValidator`; `SgForm` tem `controller`, `defaultValues`, `onValid`, `onInvalid` e `submitOnEnter` (envia no Enter de campo de uma linha; padrão `true`) |
 | Inputs de texto | `inputs/` e `inputs/text/` | `SgInputText`, `SgInputTextArea`, `SgInputTextSearch`, `SgInputEmail`, `SgInputPassword` |
 | Inputs com máscara | `inputs/masked/` | `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone`, `SgInputPostalCode`, `SgInputBirthDate`, `SgInputDate` |
 | Inputs numéricos | `inputs/number/` | `SgInputNumber`, `SgInputCurrency`, `SgStepperInput` |
@@ -46,13 +46,16 @@ Os pacotes `seedgrid_theme` (`SgTheme`, tokens com os mesmos nomes do React) e `
 
 Todos os itens abaixo estão na coluna "Onde / motivo" do `docs/PARIDADE.md`.
 
+- **Texto como `String` ou `Widget`:** `SgButton.label`/`child`, `SgCard.title`/`description`, `SgDialog.title`/`subtitle`, `SgConfirmationDialog.title`/`message`/`subtitle` e `SgConfirmationDialogButtonConfig.label` são `Object?` e passam por `sgNode` (`props/sg_node.dart`); `SgDatatableColumn.header` aceita `String`, `num` ou `Widget`.
+- **Formulário:** o `onChange` do usuário é chamado também dentro de formulário e os validadores do componente rodam em `handleSubmit`/`trigger` (campos que registram `validator` em `registerField`: `SgInputText` e derivados, máscaras, `SgInputEmail`, `SgInputPassword`, `SgInputTextArea`, datas, `SgInputNumber`/`SgInputCurrency`, `SgToggleSwitch`, `SgInputOTP`); detalhe em [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]]. `SgInputText` aceita `value` controlado.
+- **`SgToaster`:** solto em `Column`/`ListView` desenha no `Overlay` da rota sem ocupar espaço; em área limitada preenche o pai; `SgToastHost` é a versão global (`feedback/sg_toaster.dart`).
 - **Controllers no lugar de `ref`:** `SgDatatableController`, `SgDiscardDigitController`, `SgStringAnimatorController.startAnimation()`.
 - **Clientes injetáveis (testáveis sem rede):** `SgInputPostalCode` e `SgInputCNPJ` (`SgViaCepResult`, `SgHttpClient`); `SgRealtimeProvider` recebe o cliente por `connectionFactory` (`SgPulseConnection`; sem ele o status fica `unavailable`; adaptador do SDK Pulse descrito em `providers/PULSE_ADAPTER.md`, não ligado por dependência).
 - **Sem `Intl` no Dart:** `SgInputNumber`/`SgInputCurrency` usam tabela gerada (pt-BR, pt-PT, en-US, es, fr, de-DE; 162 moedas; locale fora da lista cai em en-US). `SgCalendar` tem dados para 9 locales (fora deles, en-US); `SgClock` embute 11 zonas com regra (`registerSgClockTimeZone` acrescenta).
 - **Datas:** `SgInputDate`/`SgInputBirthDate` têm máscara por idioma e calendário próprio (o React usa `input type=date` nativo); datas em texto só ISO 8601.
 - **Toque (< 600 px):** `SgCombobox`, `SgSplitButton`, `SgDatatable` (painel de colunas) e `SgMenu` usam painel de baixo (ADR 51). `SgDockMenu` não tem zoom nem rótulo ao passar sem mouse; `SgOrderList`/`SgPickList` arrastam por toque longo (cerca de 150 ms).
 - **Motores próprios:** `SgMenu` (sem `MenuAnchor`), `SgDatatable` (sem dependência nova), `SgQRCode` (algoritmo qrcodegen portado; o `qr_flutter` foi descartado), `SgFlipDigit` (sem `@pqina/flip`).
-- **Editor:** `SgTextEditor` usa `flutter_quill`; o conteúdo trafega como HTML por conversor próprio; tabelas e iframes são descartados (lista completa em [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]]).
+- **Editor:** `SgTextEditor` (Onda 6, `inputs/editor/`) usa `flutter_quill` (`^11.5.0`); o conteúdo trafega como HTML por conversor próprio; tabelas e iframes são descartados (lista completa em [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]]).
 - **Relógio:** só temas embutidos (10) em formato JSON `sg-clock-theme/1`; tema por URL/SVG livre não é portado (`SgClockUrlThemeUnsupportedError`, ADR 51/D8).
 - **Extras do Flutter:** `SgToolBar` aceita `children` e `overflow`; `SgCalendar` tem a prop `today`; `SgCarousel` desliza com o dedo; `SgTreeView` tem navegação por teclado (setas, Home/End, Enter, Espaço, `*`).
 
@@ -64,5 +67,6 @@ Todos os itens abaixo estão na coluna "Onde / motivo" do `docs/PARIDADE.md`.
 
 ## Não verificado
 
-- Os nomes de widget e arquivos vêm do `docs/PARIDADE.md` (gerado pelo script `tools/parity_table/generate.mjs`); não abri cada `.dart`.
+- Os nomes de widget e arquivos vêm do `docs/PARIDADE.md` (gerado pelo script `tools/parity_table/generate.mjs`); não abri cada `.dart`. Conferi no código só `form/sg_form.dart`, `props/sg_node.dart`, `feedback/sg_toaster.dart`, `buttons/sg_button.dart`, `overlay/sg_confirmation_dialog.dart` e a prop `value` de `inputs/sg_input_text.dart`.
+- A lista de campos que registram validador vem da tabela "Quem registra o validador" do `docs/DIVERGENCIAS_DO_REACT.md`; não abri cada widget.
 - Exemplos de uso completos de cada widget **não** estão aqui: estão no showcase do repositório. Os de `SgForm`, `SgDatatable`, `SgConfirmationDialog` e `toast` aparecem como pares React/Dart em [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
