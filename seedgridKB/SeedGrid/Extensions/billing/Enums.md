@@ -18,19 +18,19 @@ Arquivos em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src
 
 | Enum | Arquivo | Usado em | Público? |
 |---|---|---|---|
-| `SubscriptionStatus` | `entities/SubscriptionStatus.java` | `tenant_subscriptions.status`, `AdminSubscriptionRequest.status` | sim |
+| `SubscriptionStatus` | `entities/SubscriptionStatus.java` | `sg_tenant_subscriptions.status`, `AdminSubscriptionRequest.status` | sim |
 | `AccountStatus` | `entities/AccountStatus.java` | `accounts.status` | sim (entidade) |
-| `PurchaseStatus` | `entities/PurchaseStatus.java` | `billing_purchases.status` | sim (entidade) |
-| `AccountHistoryType` | `entities/AccountHistoryType.java` | `billing_account_history.type`; `AccountHistoryResponse.type` (String) | sim |
+| `PurchaseStatus` | `entities/PurchaseStatus.java` | `sg_billing_purchases.status` | sim (entidade) |
+| `AccountHistoryType` | `entities/AccountHistoryType.java` | `sg_billing_account_history.type`; `AccountHistoryResponse.type` (String) | sim |
 | `SubscriptionLifecycleEvent.Type` | `dtos/events/SubscriptionLifecycleEvent.java` | evento CDI e códigos `billing.*` | sim |
 | `UserAccessEvent.Type` | `dtos/events/UserAccessEvent.java` | evento CDI e e-mails de acesso | sim |
-| `BillingEventType` | `dtos/BillingEventType.java` | `BillingEvent.type` (SPIs), `billing_events.type` | sim |
+| `BillingEventType` | `dtos/BillingEventType.java` | `BillingEvent.type` (SPIs), `sg_billing_events.type` | sim |
 | `RecurringInterval` | `dtos/RecurringInterval.java` | `CreatePriceRequest`, `CreateMeteredPriceRequest`, `PriceInfo` | sim |
 | `TiersMode` | `dtos/TiersMode.java` | `CreateMeteredPriceRequest.tiersMode` | sim |
 | `AggregationFormula` | `dtos/AggregationFormula.java` | `CreateMeterRequest.aggregation` | sim |
 
 ## SubscriptionStatus
-FQN `br.com.seedgrid.billing.entities.SubscriptionStatus`. STRING em `tenant_subscriptions.status varchar(32)` (V509), sem CHECK. Sem campos nem métodos.
+FQN `br.com.seedgrid.billing.entities.SubscriptionStatus`. STRING em `sg_tenant_subscriptions.status varchar(32)` (V509), sem CHECK. Sem campos nem métodos.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -66,7 +66,7 @@ FQN `br.com.seedgrid.billing.entities.AccountStatus`. STRING em `accounts.status
 Na prática o status da conta não influencia o acesso: quem decide é a assinatura.
 
 ## PurchaseStatus
-FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `billing_purchases.status varchar(64)` (V509), sem CHECK.
+FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `sg_billing_purchases.status varchar(64)` (V509), sem CHECK.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -76,7 +76,7 @@ FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `billing_purcha
 | `REFUNDED` | Reembolsada. | `REFUND_CREATED` marca a compra localizada por `providerReference`. | Confirmado. Como a consulta usa só `PAID`, deixa de contar. |
 
 ## AccountHistoryType
-FQN `br.com.seedgrid.billing.entities.AccountHistoryType`. STRING em `billing_account_history.type varchar(40)` (V511), sem CHECK. O método `static of(SubscriptionLifecycleEvent.Type)` faz `valueOf(type.name())`: os 9 primeiros valores **precisam** ter o mesmo nome das constantes de `SubscriptionLifecycleEvent.Type`.
+FQN `br.com.seedgrid.billing.entities.AccountHistoryType`. STRING em `sg_billing_account_history.type varchar(40)` (V511), sem CHECK. O método `static of(SubscriptionLifecycleEvent.Type)` faz `valueOf(type.name())`: os 9 primeiros valores **precisam** ter o mesmo nome das constantes de `SubscriptionLifecycleEvent.Type`.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -121,7 +121,7 @@ FQN `br.com.seedgrid.billing.dtos.events.UserAccessEvent.Type`. Não persistido.
 | `RESTORED` | Estava escolhido, mas o downgrade foi desfeito. | `SeatService` | `accessRestored`. |
 
 ## BillingEventType
-FQN `br.com.seedgrid.billing.dtos.BillingEventType`. Campo `BillingEvent.type`. Persistido por nome em `billing_events.type varchar(50)` (idempotência do webhook). Evento Stripe não mapeado gera `UnsupportedEventException` e resposta 204.
+FQN `br.com.seedgrid.billing.dtos.BillingEventType`. Campo `BillingEvent.type`. Persistido por nome em `sg_billing_events.type varchar(50)` (idempotência do webhook). Evento Stripe não mapeado gera `UnsupportedEventException` e resposta 204.
 
 | Valor | Significado | Efeito no `SubscriptionBillingEventHandler` | Origem no Stripe |
 |---|---|---|---|

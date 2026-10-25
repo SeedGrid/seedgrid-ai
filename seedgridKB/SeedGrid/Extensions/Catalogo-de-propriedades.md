@@ -69,7 +69,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|---|---|---|---|
 | `seedgrid.ai-pricing.persistence-unit` | Propriedades | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager de todas as tabelas do ai-pricing (repositories) | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
 | `seedgrid.app.ai-pricing.timezone` | Propriedades | String (ZoneId) | `America/Sao_Paulo` | runtime | Fuso em que o cron do robô (vindo do banco) é interpretado | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
-| `seedgrid.app.ai-pricing.source-url` | Propriedades | String (URL) | `https://developers.openai.com/api/docs/pricing` | runtime | URL usada só quando ai_pricing_config.source_url está nula ou vazia | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+| `seedgrid.app.ai-pricing.source-url` | Propriedades | String (URL) | `https://developers.openai.com/api/docs/pricing` | runtime | URL usada só quando sg_ai_pricing_config.source_url está nula ou vazia | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
 
 ### apikeys
 
@@ -216,7 +216,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 
 | Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
 |---|---|---|---|---|---|---|
-| `seedgrid.exchange.persistence-unit` | Propriedades lidas pela extension | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager das tabelas currencies e currency_exchange_rates | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
+| `seedgrid.exchange.persistence-unit` | Propriedades lidas pela extension | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager das tabelas sg_currencies e sg_currency_exchange_rates | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
 | `seedgrid.app.business-timezone` | Propriedades lidas pela extension | String (ZoneId) | `America/Sao_Paulo` | Configuração do commons]]. | Fuso usado para apresentar o horário do próximo retry nos avisos (exchange.rate-fetch-failed) | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
 
 ### filemanagement

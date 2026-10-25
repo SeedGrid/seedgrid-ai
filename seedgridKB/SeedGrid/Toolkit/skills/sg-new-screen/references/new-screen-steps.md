@@ -9,7 +9,7 @@ por plano.
 
 ```sql
 -- Audience: 'client' = app do cliente (frontend/); 'platform' = admin da plataforma (admin/).
-insert into permissions (name, description, public_id, audience) values
+insert into sg_permissions (name, description, public_id, audience) values
     ('REPORT_READ',     'Relatorios',         gen_random_uuid()::text, 'client'),
     ('REPORT_GENERATE', 'Gerar relatorio',    gen_random_uuid()::text, 'client'),
     ('REPORT_DELETE',   'Excluir relatorio',  gen_random_uuid()::text, 'client')
@@ -18,8 +18,8 @@ set description = excluded.description,
     audience    = excluded.audience;
 
 -- O ADMIN tem todas as permissoes (o responsavel pela conta entra com ADMIN no cadastro).
-insert into role_permissions (role_id, permission_id)
-select r.id, p.id from roles r cross join permissions p
+insert into sg_role_permissions (role_id, permission_id)
+select r.id, p.id from sg_roles r cross join sg_permissions p
 where r.name = 'ADMIN' and p.name in ('REPORT_READ', 'REPORT_GENERATE', 'REPORT_DELETE')
 on conflict do nothing;
 
@@ -27,12 +27,12 @@ on conflict do nothing;
 -- Sem billing (modulo desligado) as tabelas de plano nao existem: o bloco so' pula.
 do $$
 begin
-    if to_regclass('plan_term_permissions') is null then
+    if to_regclass('sg_plan_term_permissions') is null then
         return;
     end if;
-    insert into plan_term_permissions (plan_term_id, permission_id)
+    insert into sg_plan_term_permissions (plan_term_id, permission_id)
     select t.id, p.id
-    from plan_terms t join plans pl on pl.id = t.plan_id cross join permissions p
+    from sg_plan_terms t join sg_plans pl on pl.id = t.plan_id cross join sg_permissions p
     where p.name = 'REPORT_READ'
       and (t.public_id = '00000000-0000-0000-0000-0000000000a2' or pl.code in ('PRO'))
     on conflict do nothing;

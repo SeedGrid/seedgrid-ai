@@ -66,23 +66,23 @@ Cobre security, billing-core, login-tenancy e subdomain-tenancy. B2C vale **só 
 
 ### Contratos e comportamento (quebras de compatibilidade, sem alias)
 
-- **`companies`** (migration V238 do security): `person_type` (`PJ` \| `PF`); `cnpj` virou `cpf_cnpj` e `cnpj_hash` virou `cpf_cnpj_hash`, ambos **anuláveis** (PF pode não ter CPF; dois PF sem documento não colidem). API: `personType` e `cpfCnpj` em `CompanyDTOReq/Patch/Res`; **não existe mais `cnpj`**. PJ exige CNPJ válido (inclui alfanumérico); PF aceita CPF válido ou nenhum. Erro: 400 `COMPANY_DOCUMENT_INVALID`; documento repetido: 409.
+- **`sg_companies`** (migration V238 do security): `person_type` (`PJ` \| `PF`); `cnpj` virou `cpf_cnpj` e `cnpj_hash` virou `cpf_cnpj_hash`, ambos **anuláveis** (PF pode não ter CPF; dois PF sem documento não colidem). API: `personType` e `cpfCnpj` em `CompanyDTOReq/Patch/Res`; **não existe mais `cnpj`**. PJ exige CNPJ válido (inclui alfanumérico); PF aceita CPF válido ou nenhum. Erro: 400 `COMPANY_DOCUMENT_INVALID`; documento repetido: 409.
 - **Empresa-plataforma** continua sendo a `Company` PJ cujo CNPJ é `seedgrid.security.default-company.cnpj` (propriedade inalterada). Empresa PF nunca é plataforma.
-- **`accounts`** (billing-core, V514): `cpf_cnpj` anulável e `person_type`; `AccountHolder(companyId, personType, cpfCnpj, ...)`; `GET /admin/accounts?personType=PF|PJ`; `AdminAccountResponse` e `AccountOptionResponse` trazem `personType` e `cpfCnpj` (sem `cnpj`).
-- **`signup_request`** (login-tenancy, V704 e V705): `cpf_cnpj`, `person_type`, índice de pendente PF por e-mail; guarda o aceite dos termos até a confirmação do e-mail.
+- **`sg_accounts`** (billing-core, V514): `cpf_cnpj` anulável e `person_type`; `AccountHolder(companyId, personType, cpfCnpj, ...)`; `GET /admin/accounts?personType=PF|PJ`; `AdminAccountResponse` e `AccountOptionResponse` trazem `personType` e `cpfCnpj` (sem `cnpj`).
+- **`sg_signup_request`** (login-tenancy, V704 e V705): `cpf_cnpj`, `person_type`, índice de pendente PF por e-mail; guarda o aceite dos termos até a confirmação do e-mail.
 - **Endpoints do login-tenancy:**
   - `POST /public/signup` (empresa): campo `cpfCnpj` (CNPJ) no lugar de `cnpj`.
   - `POST /public/signup/personal` (PF): `name`, `email`, `password`, `whatsapp`, `cpf` (opcional), `acceptedTerms`, `termsVersion`. E-mail que já tem conta: **409** (PF nunca vincula).
   - `GET /public/signup/document-status?cpfCnpj=` substitui `cnpj-status`.
   - `GET /public/signup/config` devolve `{customerType, termsRequired, termsVersion, termsDocuments}` (o front monta PF, PJ ou o seletor).
   - `SignupConfirmedEvent(personType, cpfCnpj, ...)`.
-- **Termos** (security, V239): tabela `terms_acceptance` (um registro por usuário e versão, com instante, IP e user-agent); `GET /public/terms`; `POST /me/terms/accept` (`{version}`; versão diferente da vigente: 409 `TERMS_VERSION_MISMATCH`); o login devolve `termsAcceptanceRequired`; cadastro sem aceite da versão vigente: 400 `TERMS_NOT_ACCEPTED`.
+- **Termos** (security, V239): tabela `sg_terms_acceptance` (um registro por usuário e versão, com instante, IP e user-agent); `GET /public/terms`; `POST /me/terms/accept` (`{version}`; versão diferente da vigente: 409 `TERMS_VERSION_MISMATCH`); o login devolve `termsAcceptanceRequired`; cadastro sem aceite da versão vigente: 400 `TERMS_NOT_ACCEPTED`.
 - **Login social (decisão para a Fase 2b, 2026-10-19):** o e-mail do provedor é opcional (o Facebook nem sempre devolve); a identidade é `(provider, subject)`, sem coluna por rede; sem e-mail verificado o fluxo pede e confirma o e-mail antes de criar ou vincular; CPF não é pedido no login social. Implementado na Fase 2b abaixo.
 
 ### Migração do host
 
 - Trocar `cnpj` por `cpfCnpj` em payloads e na leitura de `Company` e `Account`. `Company#getCnpj` virou `getCpfCnpj` e `CompanyRepository.findByCnpj` virou `findByDocument`.
-- Host com SQL cru em `companies`, `accounts` ou `signup_request` (ex.: provisionamento do subdomain-tenancy) usa `cpf_cnpj` e `cpf_cnpj_hash`.
+- Host com SQL cru em `sg_companies`, `sg_accounts` ou `sg_signup_request` (ex.: provisionamento do subdomain-tenancy) usa `cpf_cnpj` e `cpf_cnpj_hash`.
 - Host que não muda `customer-type` nem `terms.required` continua B2B e sem termos.
 - Front: campo de documento com `SgInputCPFCNPJ` (ou `SgInputCPF`/`SgInputCNPJ` quando o tipo é fixo); veja as regras FE-13 e FE-29.
 
@@ -128,7 +128,7 @@ Cobre `security`, `lib-cache` (core, redis, valkey, dragonfly) e os fronts. Sem 
 
 ## Fase 2b — login social (Google e Facebook)
 
-Cobre `security`, `login-tenancy` e o **módulo novo e opcional** `seedgrid-quarkus-ext-security-social` (usa `quarkus-oidc`; host que não o adiciona não carrega OIDC). Migration nova do security: **V270** (`user_identity`, `social_login_pending`, `users.password` anulável). **Verificado com servidor OIDC falso:** o login com Google e Facebook reais ainda não foi testado (fica para a fase E2E, manual do dono).
+Cobre `security`, `login-tenancy` e o **módulo novo e opcional** `seedgrid-quarkus-ext-security-social` (usa `quarkus-oidc`; host que não o adiciona não carrega OIDC). Migration nova do security: **V270** (`sg_user_identity`, `sg_social_login_pending`, `users.password` anulável). **Verificado com servidor OIDC falso:** o login com Google e Facebook reais ainda não foi testado (fica para a fase E2E, manual do dono).
 
 ### Como funciona
 
@@ -183,7 +183,7 @@ Cobre `security` e `billing` (billing-core). Sem migration nova (faixa V250–V2
 - **No mínimo 1 ADMIN ativo** (não exatamente 1) por empresa. ADMIN é a role de **sistema**, global e ativa (`is_system`, `company_id` nulo), nunca só pelo nome. "Ativo" = `active = true` no usuário e no vínculo. A autoridade segue `User.effectiveRoles` (roles do vínculo; se vazias, as globais).
 - Escopo por `seedgrid.security.admin-guard.scope` (padrão do `isolation`): `company` (shared-database: cada empresa mantém ≥ 1 ADMIN ativo) ou `database` (dedicated-database: o banco mantém ≥ 1 ADMIN em empresa ativa, e ADMIN global sem vínculo também conta, **e** cada empresa mantém ≥ 1 usuário ativo com acesso).
 - Erro: HTTP **409** `code: LAST_ADMIN_PROTECTED`; a mensagem lista as empresas (publicIds) que impedem.
-- Caminhos cobertos: excluir/desativar usuário (a operação global confere todas as empresas do usuário), desativar/remover vínculo, trocar roles do vínculo, remover empresa do `user_companies` e inativar empresa (no escopo `database` só recusa se a empresa guarda o único ADMIN do banco; no `company` continua 200). A role `ADMIN` segue imutável (403 `RoleProtectedException`).
+- Caminhos cobertos: excluir/desativar usuário (a operação global confere todas as empresas do usuário), desativar/remover vínculo, trocar roles do vínculo, remover empresa do `sg_user_companies` e inativar empresa (no escopo `database` só recusa se a empresa guarda o único ADMIN do banco; no `company` continua 200). A role `ADMIN` segue imutável (403 `RoleProtectedException`).
 - Sucessão: atribui-se ADMIN a outro e depois se inativa o antigo. Plataforma e conta PF seguem a mesma regra.
 - Concorrência: verificação na mesma transação com `SELECT … FOR UPDATE` nas empresas envolvidas (todas, no escopo `database`), em ordem de id. O lock só protege se o chamador estiver na mesma transação da mudança.
 
@@ -223,7 +223,7 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 ### Regra
 
 - `permissions.for_integration` = "pode ser concedida a integrações". `roles.for_integration` = "é role de integração" (nunca atribuída a usuário; só via API key).
-- Toda permissão nasce `for_integration = false`. **A software house libera por migration do host:** `UPDATE permissions SET for_integration = true WHERE name IN (...)`. O cliente nunca libera.
+- Toda permissão nasce `for_integration = false`. **A software house libera por migration do host:** `UPDATE sg_permissions SET for_integration = true WHERE name IN (...)`. O cliente nunca libera.
 - Role de integração só aceita permissões liberadas: **422** `PERMISSION_NOT_FOR_INTEGRATION` (criar, alterar ou transformar role comum em integração; rota da conta `/me/security/roles` e a global `/roles`).
 - Quem monta a role não concede permissão que não tem: **403** `INTEGRATION_PERMISSION_NOT_HELD` (só o acréscimo é conferido; fora de requisição autenticada não se aplica).
 - O dono altera e exclui as próprias roles de integração (antes: `RoleProtectedException`); só as de **sistema** seguem protegidas.
@@ -233,8 +233,8 @@ Cobre `security`, `apikeys` e `subdomain-tenancy`. Migration nova do security: *
 ### V255
 
 - Coluna `permissions.for_integration BOOLEAN NOT NULL DEFAULT FALSE`.
-- Remove de `role_permissions` os vínculos não liberados **só das roles de integração**; as demais roles não se relacionam com o flag.
-- Trigger `trg_permission_revoke_integration`: se o host faz `UPDATE permissions SET for_integration = FALSE`, a permissão sai das roles de integração.
+- Remove de `sg_role_permissions` os vínculos não liberados **só das roles de integração**; as demais roles não se relacionam com o flag.
+- Trigger `trg_permission_revoke_integration`: se o host faz `UPDATE sg_permissions SET for_integration = FALSE`, a permissão sai das roles de integração.
 
 ### Migração do host
 
@@ -296,7 +296,7 @@ Origem: baterias E2E dos boilerplates (backend + Playwright) e testes de integra
 - **Empresa inativada no login.** `User.getActiveCompanies()` exige `company.active`: empresa inativada some de `allowedCompanies`, do escopo do token, do seletor e da seleção. Quem só tem empresas inativadas recebe 403 `COMPANY_DISABLED`. **Não existe** o código `COMPANY_ENABLED`.
 - **`memberships` no contrato restrito de usuários.** `POST /app/security/users` e `PATCH /app/security/users/{id}` aceitam `memberships: [{ companyPublicId, rolePublicIds }]` (por publicId, sem `root`); antes o campo era descartado (cadastro dava 400 genérico com 2 ou mais empresas e a edição ignorava o vínculo em silêncio). As empresas são validadas contra o alcance do chamador. Campo aditivo.
 - **Limite de usuários do plano** (`PlanUserQuotaValidator`, 402 `USER_QUOTA_EXCEEDED`): [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano]].
-- **Audit idempotente sob concorrência.** `insertEntityIfNotFound` e a gravação de `audit_log_users` não falham mais com chave duplicada quando várias requisições registram o mesmo item novo ao mesmo tempo (antes 500). PostgreSQL: `INSERT ... ON CONFLICT DO NOTHING`; MongoDB: `DUPLICATE_KEY` tratado como sucesso. Sem mudança de API. Chega aos hosts com o bump do `ext-audit` e de `seedgrid.audit.version`.
+- **Audit idempotente sob concorrência.** `insertEntityIfNotFound` e a gravação de `sg_audit_log_users` não falham mais com chave duplicada quando várias requisições registram o mesmo item novo ao mesmo tempo (antes 500). PostgreSQL: `INSERT ... ON CONFLICT DO NOTHING`; MongoDB: `DUPLICATE_KEY` tratado como sucesso. Sem mudança de API. Chega aos hosts com o bump do `ext-audit` e de `seedgrid.audit.version`.
 - **Security-social reconhece o Bearer próprio.** Com o módulo no classpath nenhum Bearer era reconhecido (o `quarkus-oidc` registra um `OidcJsonWebTokenProducer` que toma o lugar do `JsonWebToken` do `smallrye-jwt`). O módulo agora o exclui do ArC; sem configuração nova.
 - **Subdomain-tenancy, token do admin do master.** Token **sem a claim `subdomain` e com `audience=platform`** respondia 500 "Tenant não determinável" em qualquer rota autenticada. Agora o `SubdomainTenancySecurityScopeResolver` devolve o tenant padrão (`seedgrid.subdomain-tenancy.default-tenant`, padrão `master`). Token sem `subdomain` e sem `audience=platform` continua falhando fechado.
 - **OpenTelemetry no subdomain-tenancy.** `TenantMigrationCoordinator` e `TenantProvisioningService` chamavam `GlobalOpenTelemetry.getTracer` em campo estático, o que no jar empacotado rodava antes do registro do SDK do Quarkus e abortava a subida. Agora `TenancyTracing` resolve o tracer sob demanda pelo bean do Quarkus. **Regra para o host: não chame `GlobalOpenTelemetry.get*()` em inicializador estático; injete `Instance<OpenTelemetry>`.**

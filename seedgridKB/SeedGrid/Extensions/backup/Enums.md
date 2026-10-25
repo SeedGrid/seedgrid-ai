@@ -16,10 +16,10 @@ Nenhum enum desta extensão é tipo de propriedade de configuração (`BackupCon
 
 | Enum | Pacote/arquivo (`runtime/src/main/java/br/com/seedgrid/backup/`) | Usado em | Público? |
 |---|---|---|---|
-| [[SeedGrid/Extensions/backup/Enums#ExportStatus\|ExportStatus]] | `domains/ExportStatus.java` | `ExportJob.status` (coluna `export_jobs.status`), `ExportResponse.status`, `ExportJobRepository` | Sim |
-| [[SeedGrid/Extensions/backup/Enums#ExportScope\|ExportScope]] | `domains/ExportScope.java` | `ExportRequest.scope`, `ExportResponse.scope`, `ExportJob.scope` (`export_jobs.scope`), `ExportContext.getScope()` (SPI) | Sim |
-| [[SeedGrid/Extensions/backup/Enums#BackupFormat\|BackupFormat]] | `domains/BackupFormat.java` | `ExportRequest.format`, `ExportResponse.format`, `ExportJob.format` (`export_jobs.format`), SPI `BackupExporter#format()` | Sim |
-| [[SeedGrid/Extensions/backup/Enums#ExportArtifact.ArtifactType\|ExportArtifact.ArtifactType]] | `entities/ExportArtifact.java` | `ExportArtifact.artifactType` (`export_artifacts.artifact_type`), `ExportResponse.artifacts[].type` | Sim |
+| [[SeedGrid/Extensions/backup/Enums#ExportStatus\|ExportStatus]] | `domains/ExportStatus.java` | `ExportJob.status` (coluna `sg_export_jobs.status`), `ExportResponse.status`, `ExportJobRepository` | Sim |
+| [[SeedGrid/Extensions/backup/Enums#ExportScope\|ExportScope]] | `domains/ExportScope.java` | `ExportRequest.scope`, `ExportResponse.scope`, `ExportJob.scope` (`sg_export_jobs.scope`), `ExportContext.getScope()` (SPI) | Sim |
+| [[SeedGrid/Extensions/backup/Enums#BackupFormat\|BackupFormat]] | `domains/BackupFormat.java` | `ExportRequest.format`, `ExportResponse.format`, `ExportJob.format` (`sg_export_jobs.format`), SPI `BackupExporter#format()` | Sim |
+| [[SeedGrid/Extensions/backup/Enums#ExportArtifact.ArtifactType\|ExportArtifact.ArtifactType]] | `entities/ExportArtifact.java` | `ExportArtifact.artifactType` (`sg_export_artifacts.artifact_type`), `ExportResponse.artifacts[].type` | Sim |
 | [[SeedGrid/Extensions/backup/Enums#ExportResult.ArtifactType\|ExportResult.ArtifactType]] | `spi/ExportResult.java` | `ExportResult.ArtifactData.type` (retorno do SPI `BackupExporter#export`) | Sim |
 
 ## ExportStatus
@@ -83,7 +83,7 @@ Arquivo: `domains/ExportScope.java` — FQN `br.com.seedgrid.backup.domains.Expo
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
 | `DOMAIN` | Entidades de negócio (metamodel JPA) | `ExtractDataService` extrai entidades JPA, pulando pacotes de `seedgrid.backup.excluded-domain-entity-packages`; ambos exporters aceitam | **Confirmado**. Exporta `data/<entidade>.csv` / `.sql` |
-| `RAW` | Tabelas do schema via `information_schema` | `ExtractDataService`; exclui `export_jobs`/`export_artifacts` | **Confirmado** |
+| `RAW` | Tabelas do schema via `information_schema` | `ExtractDataService`; exclui `sg_export_jobs`/`sg_export_artifacts` | **Confirmado** |
 | `CUSTOM` | Seleção de módulos (feature futura) | **Aceito pela API** (`POST /exports` retorna `201`), mas `validate()` dos dois exporters lança `ExportValidationException` e `switch` lança `ExportException`; como a validação ocorre em `executeExport`, o job termina `FAILED` com `errorMessage` ("CUSTOM scope not yet implemented for CSV/SQL dump export") | **Confirmado**. Existe no enum, mas nenhum código o trata com sucesso |
 
 **Campos**: `(code, displayName, description)`; `getCode()` = `domain`/`raw`/`custom`; `fromCode(String)` ignora caixa e lança `IllegalArgumentException`, **não chamado** pela extensão.
@@ -114,7 +114,7 @@ Arquivo: `entities/ExportArtifact.java` (enum aninhado) — FQN `br.com.seedgrid
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
 | `ZIP` | Arquivo principal do export | Único tipo que `ExportService#getDownloadArtifact` procura para o download; único tipo gerado pelos exporters embutidos | **Confirmado** |
-| `MANIFEST` | `manifest.json` como artefato próprio | Só convertido em `mapArtifactType`; nenhum exporter embutido o produz (o manifest vai dentro do ZIP) | Existe no enum, mas nenhum código o produz; pode ser enviado por exporter customizado, que é gravado em `export_artifacts` mas não é baixável pela API |
+| `MANIFEST` | `manifest.json` como artefato próprio | Só convertido em `mapArtifactType`; nenhum exporter embutido o produz (o manifest vai dentro do ZIP) | Existe no enum, mas nenhum código o produz; pode ser enviado por exporter customizado, que é gravado em `sg_export_artifacts` mas não é baixável pela API |
 | `CHECKSUMS` | `checksums.txt` como artefato próprio | idem | idem |
 | `LOG` | Log de execução | idem | idem |
 

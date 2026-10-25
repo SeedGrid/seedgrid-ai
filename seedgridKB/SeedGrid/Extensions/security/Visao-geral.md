@@ -119,7 +119,7 @@ Filtros JAX-RS: `SelfEnterDisabledFilter` (`@PreMatching`, 404 quando self-enter
 
 ## Migrations
 
-`runtime/src/main/resources/db/migration/security`, **V200 a V235** (o README fala em V200–V234; V235 `entry_request_company_cascade` existe). Tabelas principais: `users`, `roles`, `permissions`, `role_permissions`, `user_roles`, `password_history`, `entry_requests`, `entry_request_validation_tokens`, `backup_codes`, `refresh_tokens`, `companies`, `user_companies`, `user_company_roles`, `default_user_avatars`. V204 semeia a role `ADMIN` (exigida pelo bootstrap).
+`runtime/src/main/resources/db/migration/security`, **V200 a V235** (o README fala em V200–V234; V235 `entry_request_company_cascade` existe). Tabelas principais: `sg_users`, `sg_roles`, `sg_permissions`, `sg_role_permissions`, `sg_user_roles`, `sg_password_history`, `sg_entry_requests`, `sg_entry_request_validation_tokens`, `sg_backup_codes`, `sg_refresh_tokens`, `sg_companies`, `sg_user_companies`, `sg_user_company_roles`, `sg_default_user_avatars`. V204 semeia a role `ADMIN` (exigida pelo bootstrap).
 
 ## Testes
 

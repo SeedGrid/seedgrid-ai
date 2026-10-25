@@ -63,7 +63,7 @@ sequenceDiagram
 - Resolução do repositório: `entityFqcn` com pacote `.entities` → `.repositories` + sufixo `Repository`. Plano de lookup: `lookupMethod` → `lookups` → `publicId` (se herda `br.com.seedgrid.commons.persistence.BaseEntity`/`BaseEntityPanache`) → `@Id` compatível com o 1º argumento. Sem repository derivável, usa `EntityManager` (active-record). **Confirmado** (`AuditInterceptor#resolveLookupPlan`, `#findViaActiveRecord`).
 - Roteamento de persistência: `AuditPersistenceRouter` produz `AuditLogRepository`, `AuditLogUsersRepository`, `AuditLogEntitiesRepository` a partir do `AuditPersistenceProvider` cuja `strategy()` = `seedgrid.audit.persistence.strategy`. Sem provider → `IllegalStateException`. **Confirmado**.
 - `PostgreSqlAuditPersistenceProvider`: usa o `EntityManager` CDI do host se resolvível; senão cria um `EntityManagerFactory` standalone (`audit-pu`, `PGSimpleDataSource`, dialeto PostgreSQL) a partir de `seedgrid.audit.jpa.*`. **Confirmado**.
-- `MongoAuditPersistenceProvider`: usa `Instance<MongoDatabase>`; coleções `audit_logs`, `audit_log_users`, `audit_log_entities` e `counters` (sequência `audit_log_sequence`); índices criados de forma lazy. **Confirmado**. A extensão **não produz** um bean `MongoDatabase`: ele vem de `seedgrid-login-tenancy` (`LoginTenancyMongoAuditDatabaseProducer`, banco único, registrado só com o driver Mongo no classpath), de `seedgrid-subdomain-tenancy` (`TenantAwareMongoProducer`, banco por tenant), ambos `@DefaultBean`, ou de um producer da aplicação. **Confirmado**.
+- `MongoAuditPersistenceProvider`: usa `Instance<MongoDatabase>`; coleções `sg_audit_logs`, `sg_audit_log_users`, `sg_audit_log_entities` e `counters` (sequência `audit_log_sequence`); índices criados de forma lazy. **Confirmado**. A extensão **não produz** um bean `MongoDatabase`: ele vem de `seedgrid-login-tenancy` (`LoginTenancyMongoAuditDatabaseProducer`, banco único, registrado só com o driver Mongo no classpath), de `seedgrid-subdomain-tenancy` (`TenantAwareMongoProducer`, banco por tenant), ambos `@DefaultBean`, ou de um producer da aplicação. **Confirmado**.
 - Validação em build (`AuditProcessor#validateAuditUsage`, idêntico nos dois deployments): falha o build se `entityFqcn` vazio/inexistente, se `lookupMethod` e `lookups` forem usados juntos, se um campo de `lookups` não existir, se houver mais lookups que parâmetros, ou se o lookup implícito por PK for incompatível; avisa (warn) quando o repository derivado não existe. **Confirmado**.
 
 ## APIs públicas e pontos de integração
@@ -94,7 +94,7 @@ sequenceDiagram
 
 ## Migrations (PostgreSQL)
 
-`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.
+`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `sg_audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.
 
 ## Testes (não executados)
 

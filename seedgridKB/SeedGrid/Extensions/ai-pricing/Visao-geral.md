@@ -40,12 +40,12 @@ flowchart LR
     ADM[POST /admin/ai/price-approvals/check] --> CHK
     CHK -->|HttpClient GET| PAGE((página de preços))
     CHK -->|regex determinística, senão| EXT{{AiPriceExtractor SPI}}
-    CHK --> PEND[(ai_model_prices_to_approve)]
+    CHK --> PEND[(sg_ai_model_prices_to_approve)]
     CHK -. ai-pricing.approval-pending / check-failed .-> NOTIF[notification-api]
-    APR[approve/reject] --> PRICES[(ai_model_prices)]
+    APR[approve/reject] --> PRICES[(sg_ai_model_prices)]
 ```
 
-- `AiPricingScheduler` agenda o job `ai-pricing-daily-check` pela API programática do `Scheduler`. Usa `enabled` e `cron` da tabela `ai_pricing_config` e o fuso de `seedgrid.app.ai-pricing.timezone`. Reagenda ao salvar a config, sem restart. Se a tabela não existir no startup, registra um WARN e não derruba o boot (`ModuloDesligadoTest`).
+- `AiPricingScheduler` agenda o job `ai-pricing-daily-check` pela API programática do `Scheduler`. Usa `enabled` e `cron` da tabela `sg_ai_pricing_config` e o fuso de `seedgrid.app.ai-pricing.timezone`. Reagenda ao salvar a config, sem restart. Se a tabela não existir no startup, registra um WARN e não derruba o boot (`ModuloDesligadoTest`).
 - `AiPricingCheckService#runCheck`:
   - Sem extrator configurado, retorna `SKIPPED`.
   - Com proposta pendente, também retorna `SKIPPED`.
@@ -89,7 +89,7 @@ Declarados em `AiPricingNotificationCatalog`:
 
 | Versão | Conteúdo |
 |---|---|
-| V900 | tabelas `ai_models`, `ai_model_prices`, `ai_model_prices_to_approve`, `ai_pricing_config` |
+| V900 | tabelas `sg_ai_models`, `sg_ai_model_prices`, `sg_ai_model_prices_to_approve`, `sg_ai_pricing_config` |
 | V901 | permissões `AI_MODEL_READ/CREATE/UPDATE/DELETE`, `AI_MODEL_PRICE_CREATE` e `AI_PRICE_APPROVE` (audience `platform`, vinculadas a `ADMIN`) |
 | V902 | seed de modelos OpenAI (`gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-5.1`) e da config do robô (ligado, cron `0 0 6 * * ?`, `source_url` = página de preços da OpenAI) |
 | V903 | coluna `active` |

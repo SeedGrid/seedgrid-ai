@@ -30,7 +30,7 @@ Países, estados e municípios do Brasil com código IBGE (5.571 municípios, in
 
 - `Address.setCity(city)` **deriva** a UF e o nome: a cidade manda, e texto e UF ficam coerentes para o calendário e para integrações que leem texto. `setCity(null)` mantém texto e UF.
 - No `Builder`, `city(String)` virou `cityName(String)`; `city(City)` define a cidade.
-- Cada dono do embeddable mapeia a coluna da FK com `@AssociationOverride(name = "city", joinColumns = @JoinColumn(name = "addr_city_id"), ...)` e `@AttributeOverride(name = "cityName", ...)`. Tabelas: `companies.addr_city_id` (security), `signup_request.addr_city_id` (login-tenancy) e `tenants.addr_city_id` (subdomain-tenancy, no master). A FK aponta para `sg_cities.id`.
+- Cada dono do embeddable mapeia a coluna da FK com `@AssociationOverride(name = "city", joinColumns = @JoinColumn(name = "addr_city_id"), ...)` e `@AttributeOverride(name = "cityName", ...)`. Tabelas: `companies.addr_city_id` (security), `sg_signup_request.addr_city_id` (login-tenancy) e `tenants.addr_city_id` (subdomain-tenancy, no master). A FK aponta para `sg_cities.id`.
 
 ## O que mudou nas APIs?
 
@@ -70,10 +70,10 @@ Testes informados pelo time de plataforma: `cities` 116 verdes; Playwright b2b 1
 
 ## Armadilhas
 
-- **O seed de `CITY_READ` é de melhor esforço.** Se a tabela `permissions` do host tem outras colunas `NOT NULL` sem default que a `cities` não conhece (por exemplo, gerada por entidade), ele pula com aviso e **não derruba o boot**; a permissão fica sem semear.
+- **O seed de `CITY_READ` é de melhor esforço.** Se a tabela `sg_permissions` do host tem outras colunas `NOT NULL` sem default que a `cities` não conhece (por exemplo, gerada por entidade), ele pula com aviso e **não derruba o boot**; a permissão fica sem semear.
 - **A `cities` traz o `quarkus-security`** (usa `@PermissionsAllowed`) para todo host que usa o `commons`. O que era anotação inerte num host sem security passa a valer: teste de host sem identidade real precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`. Tornar essa dependência opcional é **decisão do dono, em aberto**.
 - Host com `database.generation=drop-and-create` funciona: as entidades declaram as `unique` da migration (`ibge_code`, `uf`, `code`).
-- O prefixo `sg_` segue a regra de tabelas de extension (a `cities` e a `notification` são as únicas que já a cumprem; as demais ainda não, em plano próprio).
+- O prefixo `sg_` é a regra de tabelas de extension: só `sg_` + o nome da tabela. Toda extension com tabelas já a cumpre (2026.10.22, sem migration de rename: banco que rodou a versão anterior é recriado).
 
 ## Não verificado
 

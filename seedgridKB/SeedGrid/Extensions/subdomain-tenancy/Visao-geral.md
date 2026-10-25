@@ -20,7 +20,7 @@ Configuração: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuraç
 Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo **subdomínio** do host (`cliente1.crm.example.com` → tenant `cliente1`). Inclui:
 
 - Resolução de tenant por request (`X-Forwarded-Host`/`Host`) e `TenantResolver`/`TenantConnectionResolver` do Hibernate ORM em modo `DATABASE`.
-- Banco **master** (persistence unit `master`) com o catálogo `tenants`, security, billing, apikeys e afins.
+- Banco **master** (persistence unit `master`) com o catálogo `sg_tenants`, security, billing, apikeys e afins.
 - **Signup self-service** com validação por OTP de 6 dígitos por e-mail e **provisionamento** automático (CREATE DATABASE + migrations + usuário root).
 - Cache de pools JDBC por tenant com limite, evicção por TTL/LRU e **circuit breaker** por tenant.
 - **Orquestração de migrations por tenant** (sob demanda no login, manual, ou todas no boot) com lock distribuído e heartbeat.
@@ -76,7 +76,7 @@ flowchart LR
 - **Conexões**: `TenantConnectionResolverImpl` verifica no master se o tenant existe e está ativo (`TenantNotFoundException` caso contrário), cria `SimpleDriverDataSource` por tenant, aplica limite/evicção e circuit breaker. Detalhes dos parâmetros em [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuração]].
 - **Startup** (`MigrationService#onStart`, `@Priority(APPLICATION)`): no master roda, em ordem, security → audit (se `jpa`) → backup → billing → apikeys → ai-pricing → exchange → business-days (módulos de produto, `modules.<x>.enabled`, default `true`) → subdomain-tenancy → `db/migration/master` (+ additional), depois `AdminUserBootstrapService#seedAdminUserIfNeeded`. Tenants não migram no boot por padrão.
 - **Signup → provisionamento**: `POST /public/tenants` grava o tenant pendente e envia OTP; `POST /public/tenants/validate-email` valida o código e chama `TenantProvisioningService#createTenantWithAdmin` (lock local + `pg_try_advisory_lock`, `CREATE DATABASE` idempotente, migrations security → tenant → audit → backup → apikeys → business-days, usuário root; rollback com `DROP DATABASE` se o banco foi criado no fluxo), depois `SubdomainBillingAccounts#ensureFor` (conta + trial no billing) e ativa o tenant.
-- **Migração por tenant**: `TenantMigrationCoordinator` com estado em `tenant_migration_state` (`PENDING`/`MIGRATING`/`READY`/`FAILED`), lock com fencing token e heartbeat. Gatilhos: login (gate devolve `503` + `Retry-After: 15`), endpoint manual, ou boot.
+- **Migração por tenant**: `TenantMigrationCoordinator` com estado em `sg_tenant_migration_state` (`PENDING`/`MIGRATING`/`READY`/`FAILED`), lock com fencing token e heartbeat. Gatilhos: login (gate devolve `503` + `Retry-After: 15`), endpoint manual, ou boot.
 - **Limpeza**: `TenantCleanupScheduler` remove do master os cadastros não validados mais velhos que o TTL (não remove o banco — ver Limitações).
 
 ## APIs públicas e pontos de integração
@@ -123,7 +123,7 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 
 | Location | Versões | History | Onde roda |
 |---|---|---|---|
-| `db/migration/subdomain-tenancy` | `V100`–`V110` (tenants, root user, campos de trial legados, snapshots, `tenant_migration_state`, fencing token, índices, `tenant_validation_tokens`, hashes de busca de privacy, conta de billing) | `flyway_schema_history_subdomain_tenancy` | master |
+| `db/migration/subdomain-tenancy` | `V100`–`V110` (tenants, root user, campos de trial legados, snapshots, `sg_tenant_migration_state`, fencing token, índices, `sg_tenant_validation_tokens`, hashes de busca de privacy, conta de billing) | `flyway_schema_history_subdomain_tenancy` | master |
 | `db/migration/tenancy` | `V706__timestamps_com_fuso.sql` | — | **Não aplicada** pela extension (nenhuma location aponta para ela). `java/MIGRATION_RANGES.md` documenta a faixa 100–199 e trata a V706 como exceção legada |
 | `db/migration/master` / `db/migration/tenant` (do host) | livres | `flyway_schema_history_master` / `_tenant` | master no boot / tenant no provisionamento e migração |
 
@@ -140,5 +140,5 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 - **Somente PostgreSQL** (`CREATE DATABASE`, `pg_try_advisory_lock`, `pg_terminate_backend`); o usuário de tenant precisa de `CREATE DATABASE`.
 - **Subdomínios com `_`**: o signup aceita `^[a-z0-9_]{5,50}$`, mas o extractor só aceita `^[a-z0-9-]+$` → esses tenants caem em `master` pelo host (**Confirmado**; ver Dúvidas na Configuração).
 - Teto de `max-active-datasources` sem pool ocioso → `TenantProvisioningException` na resolução.
-- `TenantCleanupScheduler` remove só o registro em `tenants`, não o banco físico (contradiz o Javadoc). Se houver banco criado para cadastro não validado, ele fica órfão (o provisionamento só ocorre após validação, então na prática isso só acontece em cenários de falha — **Inferência**).
+- `TenantCleanupScheduler` remove só o registro em `sg_tenants`, não o banco físico (contradiz o Javadoc). Se houver banco criado para cadastro não validado, ele fica órfão (o provisionamento só ocorre após validação, então na prática isso só acontece em cenários de falha — **Inferência**).
 - Vários literais `"master"` fixos: `default-tenant` diferente de `master` não é consistente.

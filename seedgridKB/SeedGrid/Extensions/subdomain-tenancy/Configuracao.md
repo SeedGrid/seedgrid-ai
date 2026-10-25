@@ -94,7 +94,7 @@ Um `io.smallrye.faulttolerance.api.Guard` por tenant (`tenant-datasource-<tenant
 
 ### 2.5 Orquestração de migrations por tenant
 
-Estado em `tenant_migration_state` (master), lock com fencing token e heartbeat. Ordem no banco do tenant: security → tenant (+ additional) → audit (se `seedgrid.audit.persistence.strategy=jpa`) → backup → apikeys.
+Estado em `sg_tenant_migration_state` (master), lock com fencing token e heartbeat. Ordem no banco do tenant: security → tenant (+ additional) → audit (se `seedgrid.audit.persistence.strategy=jpa`) → backup → apikeys.
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
@@ -109,11 +109,11 @@ Estado em `tenant_migration_state` (master), lock com fencing token e heartbeat.
 
 ### 2.6 Bootstrap do admin global (banco master)
 
-Executado por `MigrationService#masterMigrate` → `AdminUserBootstrapService#seedAdminUserIfNeeded` **somente** se a tabela `users` do master existir e estiver vazia.
+Executado por `MigrationService#masterMigrate` → `AdminUserBootstrapService#seedAdminUserIfNeeded` **somente** se a tabela `sg_users` do master existir e estiver vazia.
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
-| `seedgrid.subdomain-tenancy.admin-user.name` | `Optional<String>` | texto | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME`) | Condicional: obrigatória quando `users` do master está vazia — senão `IllegalStateException("Missing required property: …")` derruba o startup | Nome do admin global | `AdminUserBootstrapService#seedAdminUserIfNeeded` | `email` | runtime | Decl.: `RT/configs/SubdomainTenancyAdminUserConfig#name()`, `SubdomainTenancyBridgeConfig.AdminUser#name()`, `MPC` |
+| `seedgrid.subdomain-tenancy.admin-user.name` | `Optional<String>` | texto | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME`) | Condicional: obrigatória quando `sg_users` do master está vazia — senão `IllegalStateException("Missing required property: …")` derruba o startup | Nome do admin global | `AdminUserBootstrapService#seedAdminUserIfNeeded` | `email` | runtime | Decl.: `RT/configs/SubdomainTenancyAdminUserConfig#name()`, `SubdomainTenancyBridgeConfig.AdminUser#name()`, `MPC` |
 | `seedgrid.subdomain-tenancy.admin-user.email` | `Optional<String>` | e-mail | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL`) | Condicional (idem) | Normalizado (`trim().toLowerCase()`) | idem | — | runtime | idem (`#email()`) |
 | 🔒 `seedgrid.subdomain-tenancy.admin-user.initial-password` | `Optional<String>` | senha que passe em `PasswordService#validate` (security) | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD`) | Não | Vazia → senha gerada por `PasswordGenerator` e enviada por e-mail de boas-vindas (se o e-mail falhar, o admin fica sem a senha) | `AdminUserBootstrapService#resolvePassword` | Política de senha do `seedgrid-security` | runtime | idem (`#initialPassword()`) |
 
@@ -139,7 +139,7 @@ As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-ttl` | `String` | `48H`, `30M`, `7D`, `PT…` | `48H` (env `SEEDGRID_SUBDOMAIN_TENANCY_CLEANUP_NOT_VALIDATED_TTL`) | Não | Tenants não validados criados antes de `now - ttl` têm o registro removido do master. Parser próprio; erro → 48 h com warning | `TenantCleanupScheduler` (construtor) | O formato combinado `2D12H` citado no Javadoc vira `PT2D12H`, inválido para `Duration.parse` → cai em 48 h (**Inferência** pela gramática ISO-8601) | runtime | Decl.: `SubdomainTenancyBridgeConfig.Cleanup#notValidatedTtl()`, `MPC`. Consumo: `RT/schedulers/TenantCleanupScheduler#parseDuration` |
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-cron` | `String` | cron Quartz do Quarkus Scheduler | `0 0 * * * ?` (env `…_CLEANUP_NOT_VALIDATED_CRON`) | Não | Agenda `cleanupExpiredTenants` (só roda se `flyway_schema_history_subdomain_tenancy` existir) | `@Scheduled(cron = "{seedgrid.subdomain-tenancy.cleanup.not-validated-cron}")` | `not-validated-ttl` | runtime | Decl.: `SubdomainTenancyBridgeConfig.Cleanup#notValidatedCron()`, `MPC`. Consumo: `TenantCleanupScheduler#cleanupExpiredTenants` |
 
-> O cleanup chama `TenantProvisioningService#deleteTenantConfigById`, que só remove a linha de `tenants`; **não** há `DROP DATABASE` nesse caminho (o Javadoc do scheduler diz "including their databases" — **Confirmado** que o código não faz isso).
+> O cleanup chama `TenantProvisioningService#deleteTenantConfigById`, que só remove a linha de `sg_tenants`; **não** há `DROP DATABASE` nesse caminho (o Javadoc do scheduler diz "including their databases" — **Confirmado** que o código não faz isso).
 
 ## 3. Propriedades de frameworks e de outras extensions
 

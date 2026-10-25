@@ -12,7 +12,7 @@ analisado-em: 2026-10-23
 
 - O **cadastro** passa a exigir o aceite dos termos na versão vigente.
 - O **login** devolve `termsAcceptanceRequired: true` quando o usuário ainda não aceitou a versão vigente, e o front mostra o aceite de novo (reaceite).
-- Cada aceite fica gravado (tabela `terms_acceptance`, **um registro por usuário e versão**, com o instante, o IP e o *user-agent*).
+- Cada aceite fica gravado (tabela `sg_terms_acceptance`, **um registro por usuário e versão**, com o instante, o IP e o *user-agent*).
 - Padrão: **desligado**. Quem não configura nada continua sem termos.
 
 ## Quais propriedades configuro?
@@ -73,4 +73,4 @@ Escolha um formato de versão que você consiga comparar a olho (data, número).
 
 **Os usuários antigos precisam aceitar?** Sim, no primeiro login depois de ligar `required=true`, porque não há aceite da versão vigente.
 
-**Posso consultar quem aceitou?** Os registros ficam em `terms_acceptance`. Os insumos não listam endpoint de consulta ou relatório de aceites **[não verificado]**; o produto lê pelo banco.
+**Posso consultar quem aceitou?** Os registros ficam em `sg_terms_acceptance`. Os insumos não listam endpoint de consulta ou relatório de aceites **[não verificado]**; o produto lê pelo banco.

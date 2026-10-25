@@ -40,7 +40,7 @@ flowchart LR
     SCH -->|every 10m| DRAIN[drainPendingRetries]
     DRAIN --> FETCH
     FETCH -->|HttpClient, URL resolvida| SRC((fonte: PTAX/AwesomeAPI...))
-    FETCH --> DB[(currency_exchange_rates)]
+    FETCH --> DB[(sg_currency_exchange_rates)]
     FETCH -. exchange.rate-fetch-failed .-> NOTIF[notification-api]
 ```
 
@@ -48,7 +48,7 @@ flowchart LR
 
 Componente: `CurrencyRateScheduler`.
 
-- Cria **um job por moeda ativa** (`currency-rate-<code>`), com `fetch_cron` e `time_zone` da própria linha em `currencies`.
+- Cria **um job por moeda ativa** (`currency-rate-<code>`), com `fetch_cron` e `time_zone` da própria linha em `sg_currencies`.
 - No startup, para cada moeda ativa sem cotação do dia, dispara a busca na hora.
 - Se a tabela não existir, registra WARN e sai sem derrubar o boot (`ModuloDesligadoTest`).
 - `@Scheduled(every = "10m")` drena os retries vencidos. O estado do retry fica no banco (`next_retry_at`).
@@ -104,7 +104,7 @@ Os `{id}` são `publicId`. **Confirmado** nos resources.
 | V801 | permissões `CURRENCY_*`, audience `platform`, vinculadas a `ADMIN` |
 | V802 | seed USD-BRL: PTAX, cron às 7h, São Paulo |
 | V803 | histórico PTAX sem `$select` |
-| V804 | `currency_exchange_rates.active` |
+| V804 | `sg_currency_exchange_rates.active` |
 
 A extension migra sozinha o datasource default na subida (sem flag). Nas tenancy, quem migra é a tenancy (master do subdomain-tenancy; banco único do login-tenancy), com o toggle `modules.exchange.enabled` (default `true`).
 

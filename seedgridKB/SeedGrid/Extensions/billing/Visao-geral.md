@@ -150,20 +150,20 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 
 | Versão | Conteúdo |
 |---|---|
-| V500 | `billing_events` |
+| V500 | `sg_billing_events` |
 | V501 | permissões de checkout/portal |
-| V502 | `accounts`, `plans`, `plan_terms` |
+| V502 | `sg_accounts`, `sg_plans`, `sg_plan_terms` |
 | V503 | timestamps com fuso |
-| V504 | `max_users`, `plan_term_permissions` |
+| V504 | `max_users`, `sg_plan_term_permissions` |
 | V505 | plano/term TRIAL com IDs fixos |
 | V506 | `trial_days` |
 | V507 | `additional_attributes jsonb` |
 | V508 | colunas `BaseEntity` |
-| V509 | `tenant_subscriptions`, `subscription_billing_cycles`, `billing_purchases` |
+| V509 | `sg_tenant_subscriptions`, `sg_subscription_billing_cycles`, `sg_billing_purchases` |
 | V510 | permissões `PLAN_*`, `PLAN_TERM_*`, `SUBSCRIPTION_*` |
-| V511 | `billing_account_history`, permissões `ACCOUNT_*` |
+| V511 | `sg_billing_account_history`, permissões `ACCOUNT_*` |
 | V512 | audiences |
-| V513 | `plan_term_meters`, `billing_cycle_meters` |
+| V513 | `sg_plan_term_meters`, `sg_billing_cycle_meters` |
 
 **Confirmado** (arquivos SQL e README do core).
 
@@ -174,7 +174,7 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 - `seedgrid-billing-stripe/runtime/src/test`: `StripeBillingProviderTest`.
 
 ## Limitações
-- Colunas antigas (`plan_terms.overage_price`, `provider_overage_price_id`, `subscription_billing_cycles.*_units`) continuam no banco, **inertes**, até o seedgrid-report migrar os dados (CHANGELOG 2026.10.08).
+- Colunas antigas (`sg_plan_terms.overage_price`, `provider_overage_price_id`, `sg_subscription_billing_cycles.*_units`) continuam no banco, **inertes**, até o seedgrid-report migrar os dados (CHANGELOG 2026.10.08).
 - O billing depende da security. Com Flyway nativo, o host precisa listar `db/migration/security` e `db/migration/billing` (comentário em `deployment/src/test/resources/application.properties`).
 - O `microprofile-config.properties` do core redefine `quarkus.flyway.*` com ordinal 100. Ver [[SeedGrid/Extensions/billing/Configuracao|Configuração]], seção de frameworks.
 - Os assuntos dos e-mails de acesso estão fixos em código, com "SeedGrid App" (`UserAccessEmails`). Não há propriedade para mudá-los.

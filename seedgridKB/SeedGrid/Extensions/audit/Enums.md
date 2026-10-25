@@ -14,7 +14,7 @@ Voltar: [[SeedGrid/Extensions/audit/Visao-geral|Visão geral do audit]] · [[See
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| [[#AuditOperationEnum]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/enums/AuditOperationEnum.java` | `@SgAudit(operation)`, `AuditLog.operation`, query param `operation` de `GET /audit-logs`, coluna `audit_log.operation`, campo Mongo `operation` | Sim |
+| [[#AuditOperationEnum]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/enums/AuditOperationEnum.java` | `@SgAudit(operation)`, `AuditLog.operation`, query param `operation` de `GET /audit-logs`, coluna `sg_audit_log.operation`, campo Mongo `operation` | Sim |
 | [[#AuditPersistenceStrategy]] | `seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/configs/AuditPersistenceStrategy.java` | propriedade `seedgrid.audit.persistence.strategy`, SPI `AuditPersistenceProvider#strategy()` | Sim |
 
 ## AuditOperationEnum
@@ -35,7 +35,7 @@ Serialização:
 - JSON (respostas de `/audit-logs`): nome da constante (Jackson padrão; sem `@JsonValue`). **Inferência** (nenhuma anotação Jackson no enum).
 - Query param `operation` em `GET /audit-logs`: convertido pelo JAX-RS pelo nome exato (`valueOf`), portanto case-sensitive; valor inválido falha a conversão do parâmetro. **Inferência** (comportamento padrão do JAX-RS; sem `ParamConverter` próprio).
 - PostgreSQL: `@Enumerated(EnumType.STRING)` em `AuditLogEntity#operation`; coluna `operation VARCHAR(50)` (V300) **sem CHECK constraint** — o banco aceita qualquer texto, mas a aplicação só grava as 5 constantes. **Confirmado**.
-- MongoDB: campo `operation` do documento `MongoAuditLogDocument` (coleção `audit_logs`), gravado pelo codec POJO como o nome da constante. **Inferência** (sem codec próprio no módulo).
+- MongoDB: campo `operation` do documento `MongoAuditLogDocument` (coleção `sg_audit_logs`), gravado pelo codec POJO como o nome da constante. **Inferência** (sem codec próprio no módulo).
 
 Onde é usado: anotação `@SgAudit` ([[SeedGrid/Extensions/audit/Exemplos|Exemplos]]), filtro `AuditFilter#operation` (JPQL/Criteria em `JpaAuditRepositoryImpl`, filtro Mongo em `MongoAuditLogRepositoryImpl`), índice `idx_audit_log_operation_date`.
 

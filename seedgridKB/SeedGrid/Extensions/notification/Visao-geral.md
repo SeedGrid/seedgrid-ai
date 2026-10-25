@@ -91,7 +91,7 @@ Modelo de regra (runtime): `NotificationRule(enabled, channels, emails, phones, 
 
 ## Migrations
 
-`runtime/src/main/resources/db/migration/notification/V1000__notification.sql` e `V1001__notification_permissions.sql`. Faixa reservada **1000–1099** (README). V1001 insere `NOTIFICATION_READ`/`NOTIFICATION_UPDATE` com `audience='platform'` (se a tabela `permissions` existir) e as vincula à role `ADMIN` (se `roles`/`role_permissions` existirem).
+`runtime/src/main/resources/db/migration/notification/V1000__notification.sql` e `V1001__notification_permissions.sql`. Faixa reservada **1000–1099** (README). V1001 insere `NOTIFICATION_READ`/`NOTIFICATION_UPDATE` com `audience='platform'` (se a tabela `permissions` existir) e as vincula à role `ADMIN` (se `roles`/`sg_role_permissions` existirem).
 
 ## Testes existentes (não executados)
 

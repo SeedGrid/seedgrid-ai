@@ -16,7 +16,7 @@ Nenhuma propriedade de configuração desta extension é tipada por enum (todas 
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| [[#TenantMigrationStatus]] | `migration/TenantMigrationStatus.java` | coluna `tenant_migration_state.status`; JSON de `/internal/migrations`, `/internal/health`; resposta 503 do gate de login | Sim |
+| [[#TenantMigrationStatus]] | `migration/TenantMigrationStatus.java` | coluna `sg_tenant_migration_state.status`; JSON de `/internal/migrations`, `/internal/health`; resposta 503 do gate de login | Sim |
 | [[#TenantMigrationDecision]] | `migration/TenantMigrationDecision.java` | retorno de `TenantMigrationCoordinator`; JSON de `POST /internal/migrations/tenants/{id}/trigger` | Sim |
 | [[#TenantHealthStatus]] | `health/TenantHealthStatus.java` | JSON de `GET /internal/health/tenants/{id}` | Sim |
 | [[#TenantHealthCode]] | `health/TenantHealthCode.java` | idem | Sim |
@@ -35,7 +35,7 @@ Caminhos relativos a `java/seedgrid-quarkus-ext-subdomain-tenancy/runtime/src/ma
 | `MIGRATING` | Migração em andamento com lock | Gravado por `tryAcquireLock`; se outra instância tem lock ativo, o gate de login devolve 503 `tenant_migration_in_progress`; `TenantHealthService` → `MIGRATION_RUNNING` | — |
 | `FAILED` | Última tentativa falhou | Gravado por `markFailed` (com `last_error`); gate devolve 503 `tenant_migration_failed`; health → `MIGRATION_FAILED` | Nova tentativa é permitida (login ou `trigger`) |
 
-- **Persistência:** coluna `tenant_migration_state.status VARCHAR(20) NOT NULL DEFAULT 'PENDING'` (migration `V104`), gravada como `name()` por SQL direto (`TenantMigrationStateStore`, sem JPA). **Não há CHECK constraint**; a leitura é tolerante: `valueOf(status.trim().toUpperCase())`, qualquer valor desconhecido vira `PENDING`.
+- **Persistência:** coluna `sg_tenant_migration_state.status VARCHAR(20) NOT NULL DEFAULT 'PENDING'` (migration `V104`), gravada como `name()` por SQL direto (`TenantMigrationStateStore`, sem JPA). **Não há CHECK constraint**; a leitura é tolerante: `valueOf(status.trim().toUpperCase())`, qualquer valor desconhecido vira `PENDING`.
 - **JSON:** `name()` em `status` (migrações, gate 503 — `UNKNOWN` quando não há estado) e `migrationStatus` (health, `null` se não há linha).
 - **Transições** (confirmadas nas chamadas do coordinator/store):
 
@@ -85,7 +85,7 @@ stateDiagram-v2
 |---|---|---|---|
 | `OK` | Tudo certo | `status=UP`, HTTP 200 | Fábrica `TenantHealthReport.up` |
 | `INVALID_TENANT` | Id do tenant vazio/inválido | `status=DOWN`, HTTP 400 | — |
-| `TENANT_NOT_FOUND` | Não existe em `tenants` | `status=DOWN`, HTTP 404 | — |
+| `TENANT_NOT_FOUND` | Não existe em `sg_tenants` | `status=DOWN`, HTTP 404 | — |
 | `TENANT_INACTIVE` | Existe, mas `active=false` | `status=OUT_OF_SERVICE`, HTTP 503 | — |
 | `DATABASE_UNREACHABLE` | `SELECT 1` no banco do tenant falhou | `status=DOWN`, HTTP 503 | Usa `TenantConnectionResolverImpl` (circuit breaker pode causar isto) |
 | `MIGRATION_PENDING` | Estado de migração `PENDING` | `status=OUT_OF_SERVICE`, HTTP 503 | Não é emitido quando não há linha de estado (`migrationStatus=null` → `OK`) |

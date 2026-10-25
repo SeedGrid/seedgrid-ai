@@ -14,7 +14,7 @@ A extension **não define nenhum `enum` Java**. Há dois conjuntos de valores fi
 
 | Conjunto | Onde | Usado em |
 |---|---|---|
-| status da proposta | constantes `STATUS_*` em `runtime/src/main/java/br/com/seedgrid/aipricing/entities/AiModelPriceToApproveEntity.java` | coluna `ai_model_prices_to_approve.status varchar(16) default 'PENDING'` (V900), sem CHECK |
+| status da proposta | constantes `STATUS_*` em `runtime/src/main/java/br/com/seedgrid/aipricing/entities/AiModelPriceToApproveEntity.java` | coluna `sg_ai_model_prices_to_approve.status varchar(16) default 'PENDING'` (V900), sem CHECK |
 | status do resultado da checagem | literais em `services/AiPricingCheckService.java` (`CheckOutcome`) | resposta de `POST /admin/ai/price-approvals/check` |
 
 ## Status da proposta (`AiModelPriceToApproveEntity.STATUS_*`)

@@ -14,7 +14,7 @@ Voltar: [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral do login-te
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| [[#SignupRequestStatus]] | `br.com.seedgrid.logintenancy.enums` — `runtime/src/main/java/br/com/seedgrid/logintenancy/enums/SignupRequestStatus.java` | coluna `signup_request.status`; respostas de `POST /public/signup`, `/resend-email`, `/confirm-email` | Sim |
+| [[#SignupRequestStatus]] | `br.com.seedgrid.logintenancy.enums` — `runtime/src/main/java/br/com/seedgrid/logintenancy/enums/SignupRequestStatus.java` | coluna `sg_signup_request.status`; respostas de `POST /public/signup`, `/resend-email`, `/confirm-email` | Sim |
 | [[#DocumentSignupStatus]] | `br.com.seedgrid.logintenancy.enums` — `.../enums/DocumentSignupStatus.java` | resposta de `GET /public/signup/document-status` (CPF ou CNPJ; antes `CnpjSignupStatus` e `cnpj-status`, 2026.10.22) | Sim |
 | [[#FoundationModule]] | `br.com.seedgrid.logintenancy.configs` — `.../configs/FoundationModule.java` | `LoginTenancyModuleRegistry` (bean público), `activeModules` do status | Sim |
 

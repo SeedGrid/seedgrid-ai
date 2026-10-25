@@ -12,7 +12,7 @@ Voltar para [[SeedGrid/Extensions/exchange/Visao-geral|Visão geral]] · [[SeedG
 
 | Enum | Arquivo | Usado em | Público? |
 |---|---|---|---|
-| `CurrencyExchangeRateStatus` | `runtime/src/main/java/br/com/seedgrid/exchange/entities/CurrencyExchangeRateStatus.java` | coluna `currency_exchange_rates.status`; respostas de `/admin/currency-exchange-rates` | sim |
+| `CurrencyExchangeRateStatus` | `runtime/src/main/java/br/com/seedgrid/exchange/entities/CurrencyExchangeRateStatus.java` | coluna `sg_currency_exchange_rates.status`; respostas de `/admin/currency-exchange-rates` | sim |
 
 ## CurrencyExchangeRateStatus
 FQN `br.com.seedgrid.exchange.entities.CurrencyExchangeRateStatus`. Sem campos nem métodos. Persistido com `@Enumerated(EnumType.STRING)` em `status varchar(16) not null` (V800), **sem CHECK constraint**. Não é tipo de propriedade de configuração. No JSON aparece pelo nome da constante (sem `@JsonValue`).

@@ -126,10 +126,10 @@ Observação (Confirmado): mesmo com `async-enabled=true`, o scheduler de fila t
 
 | Versão | Conteúdo |
 |---|---|
-| V400 | `export_jobs`, `export_artifacts` (PostgreSQL, `TIMESTAMPTZ`, FK `ON DELETE CASCADE`) |
-| V401 | Insere permissões `BACKUP_CREATE/READ/DOWNLOAD/DELETE` em `permissions` e vincula ao papel `ADMIN` (`roles`, `role_permissions`) — exige tabelas da extensão de segurança |
+| V400 | `sg_export_jobs`, `sg_export_artifacts` (PostgreSQL, `TIMESTAMPTZ`, FK `ON DELETE CASCADE`) |
+| V401 | Insere permissões `BACKUP_CREATE/READ/DOWNLOAD/DELETE` em `sg_permissions` e vincula ao papel `ADMIN` (`sg_roles`, `sg_role_permissions`) — exige tabelas da extensão de segurança |
 | V402 | Coluna `active` nas duas tabelas |
-| V403 | `audience = null` nas permissões de backup (se `permissions` existir) |
+| V403 | `audience = null` nas permissões de backup (se `sg_permissions` existir) |
 
 ## Testes (não executados)
 

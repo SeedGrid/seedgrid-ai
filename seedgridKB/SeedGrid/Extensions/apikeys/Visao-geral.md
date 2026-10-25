@@ -92,7 +92,7 @@ Os endpoints de gestão chamam `ensureManagementEnabled()` (`ApiKeyActivationPol
 
 ## Migrations (Confirmado)
 
-`runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `flyway_schema_history_apikeys`).
+`runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `sg_api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `flyway_schema_history_apikeys`).
 
 ## Testes existentes (não executados)
 

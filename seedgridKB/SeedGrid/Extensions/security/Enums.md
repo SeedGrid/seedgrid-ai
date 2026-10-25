@@ -17,8 +17,8 @@ Caminho-base: `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/s
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
 | [[SeedGrid/Extensions/security/Enums#TwoFactorMethodType\|TwoFactorMethodType]] | `twofactors/TwoFactorMethodType.java` | Corpo de `POST /2f/enable` e `POST /2f/setup/confirm`, resposta de enable, estratégias 2FA, config `2f.allowed-methods` (por código textual) | Sim |
-| [[SeedGrid/Extensions/security/Enums#EntryRequestStatus\|EntryRequestStatus]] | `entities/EntryRequestStatus.java` | Coluna `entry_requests.status`, self-enter, job de limpeza | Sim (persistido) |
-| [[SeedGrid/Extensions/security/Enums#EntryRequestOrigin\|EntryRequestOrigin]] | `entities/EntryRequestOrigin.java` | Coluna `entry_requests.origin`, self-enter | Sim (persistido) |
+| [[SeedGrid/Extensions/security/Enums#EntryRequestStatus\|EntryRequestStatus]] | `entities/EntryRequestStatus.java` | Coluna `sg_entry_requests.status`, self-enter, job de limpeza | Sim (persistido) |
+| [[SeedGrid/Extensions/security/Enums#EntryRequestOrigin\|EntryRequestOrigin]] | `entities/EntryRequestOrigin.java` | Coluna `sg_entry_requests.origin`, self-enter | Sim (persistido) |
 | [[SeedGrid/Extensions/security/Enums#UserCreateOptions.Delivery\|UserCreateOptions.Delivery]] | `services/UserCreateOptions.java` (enum aninhado) | API Java para quem cria usuário por fluxo próprio (`UserService#createUser`) | Sim (API de bean) |
 
 ## TwoFactorMethodType
@@ -50,7 +50,7 @@ Arquivo: `…/security/entities/EntryRequestStatus.java` — FQN `br.com.seedgri
 | `REJECTED` | Rejeitada por um administrador | `EntryRequest#reject`; elegível a purga | Confirmado |
 | `EXPIRED` | Expirada | `EntryRequest#expire` (ao aprovar/confirmar uma solicitação vencida) e `EntryRequestRepository#expireOldRequests` (PENDING_EMAIL/PENDING_APPROVAL com `expiresAt` vencido); elegível a purga | Confirmado |
 
-- **Persistência:** `@Enumerated(EnumType.STRING)` em `entry_requests.status` (`VARCHAR(30)`). **CHECK** `chk_entry_request_status` (V201) aceita exatamente `PENDING_EMAIL, PENDING_APPROVAL, APPROVED, REJECTED, EXPIRED` — igual às constantes.
+- **Persistência:** `@Enumerated(EnumType.STRING)` em `sg_entry_requests.status` (`VARCHAR(30)`). **CHECK** `chk_entry_request_status` (V201) aceita exatamente `PENDING_EMAIL, PENDING_APPROVAL, APPROVED, REJECTED, EXPIRED` — igual às constantes.
 - **JSON:** `EntryRequestDTORes.status` é do tipo `EntryRequestStatus`, serializado pelo nome da constante (sem `@JsonValue`).
 - **Purga:** `EntryRequestCleanupJob` apaga `APPROVED/REJECTED/EXPIRED` mais antigos que `self-enter.cleanup.purge-after` ([[SeedGrid/Extensions/security/Configuracao|Configuração]]).
 

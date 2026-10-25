@@ -12,7 +12,7 @@ analisado-em: 2026-10-23
 
 Parcialmente, e só o que a lei fixa:
 
-- **Nove nacionais fixos**, semeados na tabela `business_day_reference_holidays` (somente leitura, sem `company_id`): `NEW_YEAR` (01/01), `TIRADENTES` (21/04), `LABOUR_DAY` (01/05), `INDEPENDENCE` (07/09), `OUR_LADY_APARECIDA` (12/10), `ALL_SOULS` (02/11), `REPUBLIC_DAY` (15/11), `BLACK_CONSCIOUSNESS` (20/11, **a partir de 2024**) e `CHRISTMAS` (25/12). Cada linha guarda a base legal em `legal_basis`.
+- **Nove nacionais fixos**, semeados na tabela `sg_business_day_reference_holidays` (somente leitura, sem `company_id`): `NEW_YEAR` (01/01), `TIRADENTES` (21/04), `LABOUR_DAY` (01/05), `INDEPENDENCE` (07/09), `OUR_LADY_APARECIDA` (12/10), `ALL_SOULS` (02/11), `REPUBLIC_DAY` (15/11), `BLACK_CONSCIOUSNESS` (20/11, **a partir de 2024**) e `CHRISTMAS` (25/12). Cada linha guarda a base legal em `legal_basis`.
 - **Um único estadual: `SP_REVOLUCAO_1932`** (SP, 09/07, Lei estadual 9.497/1997). **Outros estados não têm feriado estadual semeado.**
 - **Três móveis**, calculados a partir da Páscoa (testados de 2020 a 2050): `CARNIVAL` (terça, Páscoa − 47), `GOOD_FRIDAY` (Páscoa − 2) e `CORPUS_CHRISTI` (Páscoa + 60).
 
@@ -24,7 +24,7 @@ Resolve **em camadas**; vence o mais específico: **empresa > tenant > estadual 
 
 ## Os feriados móveis valem para todo mundo?
 
-Por padrão **sim, em todo o país** (Carnaval, Sexta-feira Santa e Corpus Christi ligados). O tenant ou a empresa **desmarca cada um de forma permanente** (vale todo ano), na tabela `business_day_movable_settings` (`V1103`). Prioridade: empresa > tenant > padrão ligado. `enabled: null` remove a configuração do escopo e volta a herdar.
+Por padrão **sim, em todo o país** (Carnaval, Sexta-feira Santa e Corpus Christi ligados). O tenant ou a empresa **desmarca cada um de forma permanente** (vale todo ano), na tabela `sg_business_day_movable_settings` (`V1103`). Prioridade: empresa > tenant > padrão ligado. `enabled: null` remove a configuração do escopo e volta a herdar.
 
 ```bash
 # desmarcar o Carnaval para a empresa/tenant corrente (permanente, todo ano)
@@ -35,7 +35,7 @@ curl -X PUT /business-days/movable-holidays -d '{"code":"CARNIVAL","enabled":nul
 
 ## Como a empresa trabalha num dia que seria feriado?
 
-Cadastra um **"vai trabalhar"** (`V1102`, `business_day_work_overrides`): exceção por **data concreta**, com `weight` opcional entre 0 e 1 e motivo (até 200 caracteres).
+Cadastra um **"vai trabalhar"** (`V1102`, `sg_business_day_work_overrides`): exceção por **data concreta**, com `weight` opcional entre 0 e 1 e motivo (até 200 caracteres).
 
 ```bash
 curl -X POST /business-days/work-overrides -d '{"date":"2026-11-20","reason":"plantão"}'

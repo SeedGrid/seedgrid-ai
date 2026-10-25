@@ -18,7 +18,7 @@ Voltar para [[SeedGrid/Extensions/exchange/Visao-geral|Visão geral do exchange]
 | Mecanismo | só `@ConfigProperty`. Não há `@ConfigMapping`, `@ConfigRoot` nem `microprofile-config.properties` no runtime. |
 | Classes | `ExchangeEntityManager`, `ExchangeTimeZone` |
 | Fase | runtime |
-| Configuração em banco | tabela `currencies`, uma linha por moeda. Fonte, cron, fuso, retry e caminhos JSON são **cadastro**, não propriedades (seção 2.2). |
+| Configuração em banco | tabela `sg_currencies`, uma linha por moeda. Fonte, cron, fuso, retry e caminhos JSON são **cadastro**, não propriedades (seção 2.2). |
 
 Abreviação usada na coluna Origem: `rt/` = `java/seedgrid-quarkus-ext-exchange/runtime/src/main/java/br/com/seedgrid/exchange/`.
 
@@ -32,10 +32,10 @@ Variáveis de ambiente pela regra MP, sem ambiguidade:
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
-| `seedgrid.exchange.persistence-unit` | Optional\<String\> | nome de PU; vazio ou `<default>` = PU default | — (PU default) | Não | Escolhe o `EntityManager` das tabelas `currencies` e `currency_exchange_rates`. | `ExchangeEntityManager` → `CurrencyEntityRepository`, `CurrencyExchangeRateEntityRepository` | O subdomain-tenancy define `master` (**Confirmado** no microprofile-config dele). As entidades `br.com.seedgrid.exchange.entities` devem estar mapeadas nessa PU. | runtime | `rt/repositories/ExchangeEntityManager.java` (construtor) |
+| `seedgrid.exchange.persistence-unit` | Optional\<String\> | nome de PU; vazio ou `<default>` = PU default | — (PU default) | Não | Escolhe o `EntityManager` das tabelas `sg_currencies` e `sg_currency_exchange_rates`. | `ExchangeEntityManager` → `CurrencyEntityRepository`, `CurrencyExchangeRateEntityRepository` | O subdomain-tenancy define `master` (**Confirmado** no microprofile-config dele). As entidades `br.com.seedgrid.exchange.entities` devem estar mapeadas nessa PU. | runtime | `rt/repositories/ExchangeEntityManager.java` (construtor) |
 | `seedgrid.app.business-timezone` | String (ZoneId) | `ZoneId` válido | `America/Sao_Paulo` | Não | Fuso usado para **apresentar** o horário do próximo retry nos avisos (`exchange.rate-fetch-failed`). Valor vazio ou inválido cai silenciosamente em `America/Sao_Paulo`, sem log. **Não** afeta o cron das moedas, que usa `currencies.time_zone`. | `ExchangeTimeZone#zoneId` → `CurrencyRateFetchService` | **Chave compartilhada**: declarada também em `seedgrid-quarkus-lib-commons` (`commons/core/time/BusinessTimeZone`). Ver [[SeedGrid/Extensions/commons/Configuracao|Configuração do commons]]. | runtime | `rt/config/ExchangeTimeZone.java` (construtor) |
 
-### 2.2 Configuração em banco (`currencies`, por moeda)
+### 2.2 Configuração em banco (`sg_currencies`, por moeda)
 
 | Coluna | Default (entidade/DDL) | Efeito |
 |---|---|---|

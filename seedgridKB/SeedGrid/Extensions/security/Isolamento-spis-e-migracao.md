@@ -57,12 +57,12 @@ No `dedicated-database`, o ADMIN de um tenant com 2 ou mais empresas usa `/users
 
 Para aceitar **pessoa física** (B2C). Sem alias:
 
-- `companies` (security, migration `V238`): `person_type` (`PJ` ou `PF`); `cnpj` → `cpf_cnpj` e `cnpj_hash` → `cpf_cnpj_hash`, **anuláveis** (uma PF pode não ter CPF; duas PF sem documento não colidem). PJ exige CNPJ válido (inclusive alfanumérico); PF aceita CPF válido ou nenhum. Erro: 400 `COMPANY_DOCUMENT_INVALID`; documento repetido: 409.
-- `accounts` (billing-core, `V514`): `cpf_cnpj` anulável e `person_type`; `GET /admin/accounts?personType=PF|PJ`.
-- `signup_request` (login-tenancy, `V704`/`V705`): `cpf_cnpj` e `person_type`.
+- `sg_companies` (security, migration `V238`): `person_type` (`PJ` ou `PF`); `cnpj` → `cpf_cnpj` e `cnpj_hash` → `cpf_cnpj_hash`, **anuláveis** (uma PF pode não ter CPF; duas PF sem documento não colidem). PJ exige CNPJ válido (inclusive alfanumérico); PF aceita CPF válido ou nenhum. Erro: 400 `COMPANY_DOCUMENT_INVALID`; documento repetido: 409.
+- `sg_accounts` (billing-core, `V514`): `cpf_cnpj` anulável e `person_type`; `GET /admin/accounts?personType=PF|PJ`.
+- `sg_signup_request` (login-tenancy, `V704`/`V705`): `cpf_cnpj` e `person_type`.
 - API: `personType` e `cpfCnpj` em `CompanyDTOReq/Patch/Res`; **não existe mais `cnpj`**. `GET /public/signup/document-status?cpfCnpj=` substitui `cnpj-status`. `Company#getCnpj` virou `getCpfCnpj`; `CompanyRepository.findByCnpj` virou `findByDocument`.
 - A empresa-plataforma continua sendo a `Company` PJ cujo CNPJ é `seedgrid.security.default-company.cnpj` (propriedade **inalterada**); empresa PF nunca é plataforma.
-- Host com SQL cru em `companies`, `accounts` ou `signup_request` (ex.: provisionamento do subdomain-tenancy) usa `cpf_cnpj` e `cpf_cnpj_hash`.
+- Host com SQL cru em `sg_companies`, `sg_accounts` ou `sg_signup_request` (ex.: provisionamento do subdomain-tenancy) usa `cpf_cnpj` e `cpf_cnpj_hash`.
 
 ## Roteiro de migração, na ordem
 
@@ -83,7 +83,7 @@ Para aceitar **pessoa física** (B2C). Sem alias:
 | Cadastro com `cnpj` | `cpfCnpj` (acima) |
 | Erro sem `code` | `ProblemDetails` ganhou o campo opcional `code` |
 
-4. **Permissões de integração.** A `V255` zera os vínculos não liberados das roles de integração. A software house **libera por migration do host**, idempotente: `UPDATE permissions SET for_integration = true WHERE name IN (...)`, e refaz o vínculo da role de integração (exemplo: `INTEGRACAO_USUARIOS` com `USER_READ`, `USER_CREATE`, `USER_UPDATE`). Sem isso não se cria chave de API. O cliente nunca libera. Detalhes: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 4.
+4. **Permissões de integração.** A `V255` zera os vínculos não liberados das roles de integração. A software house **libera por migration do host**, idempotente: `UPDATE sg_permissions SET for_integration = true WHERE name IN (...)`, e refaz o vínculo da role de integração (exemplo: `INTEGRACAO_USUARIOS` com `USER_READ`, `USER_CREATE`, `USER_UPDATE`). Sem isso não se cria chave de API. O cliente nunca libera. Detalhes: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 4.
 5. **Banco.** As migrations das extensions rodam sozinhas. Números que entram, por módulo: security `V236`, `V237`, `V238`, `V239` (termos), `V255` (integração), `V260` e `V261` (estado de acesso), `V270` (login social); billing `V514`, `V515`, `V516`; login-tenancy `V704`, `V705`; business-days `V1102` a `V1104` (a `V1100` não foi reescrita, para preservar o checksum). As migrations do **host** devem evitar estes números (as faixas são reservadas às extensions).
 6. **`BaseEntity.createdAt` e `updatedAt`** passaram de `LocalDateTime` para **`java.time.Instant`** (coluna `timestamptz`; no JSON saem com `Z`). Quem usava `getCreatedAt()` como `LocalDateTime` ajusta (ex.: `LocalDateTime.ofInstant(i, ZoneId.of("America/Sao_Paulo"))`). No Postgres converta as colunas **com o `USING`**:
 
