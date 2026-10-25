@@ -13,7 +13,7 @@ analisado-em: 2026-10-25
 
 ## Qual é o placar?
 
-**89 componentes** do React: **24 portados**, **65 parciais**, 0 pendentes, 0 não aplicáveis (cabeçalho do `docs/PARIDADE.md`; mesma fonte em `docs/paridade.json`). No commit anterior da nota (`2e33260`) o placar era 27/62: `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone` deixaram de ser `portado` porque a linha agora registra "validadores do componente rodam no submit (decisao do dono)" (`docs/DIVERGENCIAS_DO_REACT.md`, decisão 2).
+**89 componentes** do React: **27 portados**, **62 parciais**, 0 pendentes, 0 não aplicáveis (cabeçalho do `docs/PARIDADE.md`; mesma fonte em `docs/paridade.json`, commit `623bdc0`). `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone` voltaram a `portado`: validar também no submit é divergência aceita pelo dono como paridade (`docs/DIVERGENCIAS_DO_REACT.md`, decisão 2); os três validam a cada digitação, ao sair do campo e no `handleSubmit`.
 
 - `portado`: sem ressalva registrada na coluna "Onde / motivo".
 - `parcial`: existe o widget, com a diferença registrada (motivo na tabela).
@@ -29,7 +29,7 @@ analisado-em: 2026-10-25
 | 3 | `SgYearPartSelector` |
 | 4 | `SgClockThemeProvider`, `SgFlipDigit`, `SgSegmentDigit` |
 
-São 24 (2 + 7 + 11 + 1 + 3). Todos os demais estão `parcial`, inclusive `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone`, que eram listados aqui. Os números de onda são os do plano (0 = fundação, 1 = formulário e inputs básicos, 2 = layout/overlay/providers, 3 = seleção avançada e dados, 4 = dígitos e gadgets, 5 = navegação e dados pesados, 6 = editor).
+São 27 (2 + 7 + 11 + 1 + 3 + `SgInputCPF`, `SgInputCPFCNPJ` e `SgInputPhone`). Todos os demais estão `parcial`. Os números de onda são os do plano (0 = fundação, 1 = formulário e inputs básicos, 2 = layout/overlay/providers, 3 = seleção avançada e dados, 4 = dígitos e gadgets, 5 = navegação e dados pesados, 6 = editor).
 
 ## Que limitações se repetem nos `parcial`?
 
@@ -61,5 +61,5 @@ A mesma fonte alimenta o menu do showcase: componentes ainda não portados apare
 
 ## Não verificado
 
-- Não regenerei a tabela nem rodei `flutter test`; os números (24/65/0/0) são os do cabeçalho do `docs/PARIDADE.md` no commit `314cb5a` (árvore limpa na data da análise). Os 3 componentes que saíram de `portado` foram deduzidos comparando com a lista da versão anterior desta nota; que ao todo 18 componentes mudaram por decisão do dono é informação do dono, não contada no `docs/PARIDADE.md`.
+- Não rodei `flutter test` ao escrever esta nota; os números (27/62/0/0) são os do cabeçalho do `docs/PARIDADE.md` regenerado no commit `623bdc0` do repositório Flutter.
 - Antes de a T8.1 do plano (paridade final) ser marcada, a tabela deve ser regenerada e esta nota revista; ela não é a evidência dessa tarefa.
