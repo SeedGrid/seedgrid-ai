@@ -24,7 +24,7 @@ Entrega **apenas** Circuit Breaker e Rate Limiter, ambos guardando estado num `S
 ## Arquitetura
 No Java, CB e rate limit são interceptors CDI (`@SgCircuitBreaker`, `@SgRateLimit`). Em Rust:
 - **Circuit Breaker**: `circuit_breaker(name, CircuitBreakerConfig, cache)` devolve uma guarda `CircuitBreaker` com `call(fut)` / `call_with_fallback(fut, fallback)`; estado em `CacheBackedCircuitBreakerStore` (chave `cb:<name>`). Config efetiva por `CircuitBreakerConfigResolver::resolve(&SeedGridCircuitBreaker, nome)`.
-- **Rate Limiter**: `RateLimitService::new(cache, Arc<dyn ConfigSource>)` + `try_acquire(&SeedGridRateLimit, &InvocationInfo, ctx)`; algoritmos `FIXED_WINDOW`, `SLIDING_WINDOW`, `TOKEN_BUCKET`; chave `rl:<tenant>[:<operação>]:<escopo>:<identidade>`. Para Axum: `ServiceRateLimiter` + `rate_limit_middleware` (429 + headers `X-RateLimit-*`).
+- **Rate Limiter**: `RateLimitService::new(cache, Arc<dyn ConfigSource>)` + `try_acquire(&SgRateLimit, &InvocationInfo, ctx)`; algoritmos `FIXED_WINDOW`, `SLIDING_WINDOW`, `TOKEN_BUCKET`; chave `rl:<tenant>[:<operação>]:<escopo>:<identidade>`. Para Axum: `ServiceRateLimiter` + `rate_limit_middleware` (429 + headers `X-RateLimit-*`).
 - Ordem: rate limit é a camada mais externa (prioridade Java 1000), circuit breaker por dentro (1010).
 - As macros de `seedgrid-runtime` (`#[rate_limit]`, `#[circuit_breaker]`) geram essa fiação — ver [[SeedGrid/Extensions/runtime/Visao-geral|Visão geral do runtime]].
 
@@ -33,7 +33,7 @@ No Java, CB e rate limit são interceptors CDI (`@SgCircuitBreaker`, `@SgRateLim
 |---|---|
 | `config` | `ConfigSource` (trait tipada: `get_bool/long/int/double/duration/string`), `EmptyConfigSource`, `MapConfigSource`, `ConfigValue` |
 | `circuitbreaker` | `SeedGridCircuitBreaker`, `CircuitBreakerConfig` (+ builder), `CircuitBreakerConfigResolver`, `CircuitBreakerStore`, `CacheBackedCircuitBreakerStore`, `circuit_breaker`, `CircuitBreaker`, `AsErrorClass`, `ErrorClass`, `CircuitBreakerOpenException`, `SlidingWindowType` |
-| `ratelimiter` | `SeedGridRateLimit`, `InvocationInfo`, `RateLimitService`, `Clock`, `RateLimiter`, `ServiceRateLimiter`, `rate_limit_middleware`, `apply_rate_limit_headers`, `IdentityResolver` (`IpIdentityResolver` — usa `X-Forwarded-For`/`X-Real-IP`; `AnonymousIdentityResolver`), `SeedGridInvocationContext`, `MapInvocationContext`, `RateLimitExceededException`, `RateLimitAlgorithm`, `KeyScope` (`Method`, `Class`, `Group`), `TimeUnit` |
+| `ratelimiter` | `SgRateLimit`, `InvocationInfo`, `RateLimitService`, `Clock`, `RateLimiter`, `ServiceRateLimiter`, `rate_limit_middleware`, `apply_rate_limit_headers`, `IdentityResolver` (`IpIdentityResolver` — usa `X-Forwarded-For`/`X-Real-IP`; `AnonymousIdentityResolver`), `SeedGridInvocationContext`, `MapInvocationContext`, `RateLimitExceededException`, `RateLimitAlgorithm`, `KeyScope` (`Method`, `Class`, `Group`), `TimeUnit` |
 
 ## Exemplos
 Circuit breaker (doc de `src/circuitbreaker/guard.rs`):

@@ -42,7 +42,7 @@ Porte da extensão `seedgrid-quarkus-ext-login-tenancy` (ex-`accounttenancy`): *
 | `spi_security::{LoginTenancyAllowedCompaniesResolver, LoginTenancyJwtTokenCustomizer}` (`AUDIENCE_PLATFORM`, `AUDIENCE_CLIENT`) | SPIs para o security |
 | `spi_audit::{LoginTenancyAuditReadScopeProvider, CompanyAuditMetadataContributor, CachedCompanyPublicIdResolver}` | SPIs para o audit (headers `x-seedgrid-company-id` / `x-seedgrid-all-companies`) |
 | `security_gate::{SecurityAuditAuthorizer, FixedAuditStateResolver, inject_trusted_company_scope_middleware}` | auth da leitura de auditoria |
-| `ratelimit::signup_*_rate_limit()` | fábricas `SeedGridRateLimit` (o host aplica) |
+| `ratelimit::signup_*_rate_limit()` | fábricas `SgRateLimit` (o host aplica) |
 | `openapi()` | spec utoipa |
 
 ## Endpoints (Confirmado em `src/routes.rs`)

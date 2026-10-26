@@ -30,7 +30,7 @@ Domínio de billing independente de provedor (planos, assinaturas, uso), SPI de 
 | `BillingEventDispatcher::new(service, repo, Option<handler>)` | idempotência por `(provider, event_id)` | `src/dispatcher.rs` |
 | `BillingApiState::new` / `::builder(..).authorizer(..).build()` | estado do router; guard default `AllowAllBillingAuthorizer` | `src/state.rs` |
 | `router(state)` | rotas abaixo | `src/routes.rs` |
-| `checkout_rate_limit()`, `portal_rate_limit()`, `webhook_rate_limit()` | `SeedGridRateLimit` (`billing-checkout` 30/min, `billing-portal` 30/min, `billing-webhook` 300/min) para o host acoplar o middleware do resilience | `src/routes.rs` |
+| `checkout_rate_limit()`, `portal_rate_limit()`, `webhook_rate_limit()` | `SgRateLimit` (`billing-checkout` 30/min, `billing-portal` 30/min, `billing-webhook` 300/min) para o host acoplar o middleware do resilience | `src/routes.rs` |
 | `stripe::StripeBillingProvider::new(StripeConfig)` | backend Stripe; Test Clock em chaves `sk_test` | `src/stripe/provider.rs` |
 | `stripe::ensure_product_bootstrap` | garante o produto base no startup (opt-in por `product`) — o host precisa chamar | `src/stripe/bootstrap.rs` |
 | `BillingPlatform::assemble(Option<&PgPool>, BillingOverrides)` | montagem "estilo CDI": exige Postgres **e** `api_key` Stripe; roda migrations | `src/platform.rs` (features `postgres`+`stripe`) |

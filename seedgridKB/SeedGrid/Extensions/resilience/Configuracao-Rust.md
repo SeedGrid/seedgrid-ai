@@ -13,7 +13,7 @@ Visão do crate: [[SeedGrid/Extensions/resilience/Rust|Porte Rust do resilience]
 ## Cabeçalho
 | Item | Valor |
 |---|---|
-| Mecanismo | (1) structs-"anotação" `SeedGridCircuitBreaker` e `SeedGridRateLimit` com `Default` (= defaults das anotações Java); (2) overrides por nome lidos de uma `ConfigSource` injetada (`src/config.rs`) |
+| Mecanismo | (1) structs-"anotação" `SeedGridCircuitBreaker` e `SgRateLimit` com `Default` (= defaults das anotações Java); (2) overrides por nome lidos de uma `ConfigSource` injetada (`src/config.rs`) |
 | Variáveis de ambiente | **nenhuma** — `grep` por `env::var` em `src/` não encontra nada (**Confirmado**) |
 | `ConfigSource` disponíveis | `EmptyConfigSource` (nenhuma chave) e `MapConfigSource` (mapa tipado). **Não existe** implementação baseada em ambiente no workspace |
 | Uso real no workspace | security (`src/ratelimit.rs`) e `seedgrid-runtime` (exemplo/teste) usam `EmptyConfigSource` → os overrides abaixo **não têm efeito** a menos que o host implemente `ConfigSource` |
@@ -26,7 +26,7 @@ Os overrides só são consultados quando a "anotação" tem `config_key` (rate l
 | Propriedade | Tipo (`ConfigValue`) | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.ratelimit.{configKey}.enabled` | `Bool` | `true`/`false` | `true` | Não | `false` libera sem tocar o cache (kill switch) | `RateLimitService::try_acquire` | — | por chamada | `src/ratelimiter/service.rs` → `is_enabled` |
-| `seedgrid.ratelimit.{configKey}.permits` | `Long` | > 0 | `SeedGridRateLimit.permits` (5) | Não | permits por janela; ≤ 0 → panic | `resolve_permits` | `burst-capacity` | por chamada | idem |
+| `seedgrid.ratelimit.{configKey}.permits` | `Long` | > 0 | `SgRateLimit.permits` (5) | Não | permits por janela; ≤ 0 → panic | `resolve_permits` | `burst-capacity` | por chamada | idem |
 | `seedgrid.ratelimit.{configKey}.window` | `Duration` | > 0 | `window` × `window_unit` (30 s) | Não | tamanho da janela | `resolve_window_ms` | — | por chamada | idem |
 | `seedgrid.ratelimit.{configKey}.min-spacing` | `Duration` | ≥ 0 | `min_spacing` × `min_spacing_unit` (0) | Não | espaçamento mínimo entre chamadas | `resolve_min_spacing_ms` | — | por chamada | idem |
 | `seedgrid.ratelimit.{configKey}.burst-capacity` | `Long` | ≥ 0 (0 = usa `permits`) | `burst_capacity` (0) | Não | capacidade do token bucket | `resolve_burst_capacity` | `algorithm` | por chamada | idem |
@@ -49,7 +49,7 @@ Os overrides só são consultados quando a "anotação" tem `config_key` (rate l
 
 `record_exceptions` (padrão `["Exception"]`), `ignore_exceptions` e `fallback_method` existem só na struct (referências de código).
 
-## Defaults de `SeedGridRateLimit`
+## Defaults de `SgRateLimit`
 `permits=5`, `window=30`, `window_unit=Seconds`, `algorithm=FixedWindow`, `burst_capacity=0`, `min_spacing=0`, `min_spacing_unit=Millis`, `identity=IpIdentityResolver`, `group=""`, `scope=Method`, `emit_headers=true`, `config_key=""` (`src/ratelimiter/config.rs`).
 
 ## Features Cargo

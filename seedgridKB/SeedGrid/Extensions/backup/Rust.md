@@ -41,7 +41,7 @@ Fonte: `src/service.rs`, `src/extract.rs`, `src/exporter.rs`, `src/scheduler.rs`
 | `ExportService` | `create_export_job`, `get_export_status`, `list_export_jobs`, `cancel_export_job`, `delete_export_job`, `download_export_file`, `execute_export_async`… |
 | `BackupScheduler` | `spawn`, `clean_expired_exports`, `process_queued_exports`, `process_notifications` |
 | `router(BackupApiState)` / `router_with_resolver(...)` | rotas `/exports` |
-| `rest::export_create_rate_limit()` | `SeedGridRateLimit` (`export-create`, 10/hora) para o host acoplar |
+| `rest::export_create_rate_limit()` | `SgRateLimit` (`export-create`, 10/hora) para o host acoplar |
 | `migrate(&PgPool)` / `MIGRATOR` | migrations `0400`–`0402`, histórico `_sqlx_migrations_backup` |
 | `openapi()` | spec utoipa |
 | SPIs: `BackupExporter`, `DomainDatasetProvider`, `TenantProvider` (default `SingleTenantBackupProvider` → `public`), `CurrentUserProvider`, `PermissionGuard` (default `AllowAllPermissionGuard`), `ExportNotificationService`, `Mailer`, `TemplateBackupProvider`, `UserContactProvider` | `src/spi.rs`, `src/rest.rs` |
