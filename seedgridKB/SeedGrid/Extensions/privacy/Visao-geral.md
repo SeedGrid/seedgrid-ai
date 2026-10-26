@@ -77,6 +77,22 @@ Fluxo do Secure Fields (**Confirmado**):
 
 Sem endpoints REST, eventos CDI ou migrations (as colunas cifradas/hash são do host; o exemplo usa `length = 512` para cifrado e `64` para hash).
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@SgEncryptedField` | `br.com.seedgrid.privacy` | `FIELD` | `searchField` (`""`), `normalize` (`SearchNormalization.NONE`), `cryptoAlgorithm` (`CryptoAlgorithm.AES_256_GCM`), `searchAlgorithm` (`SearchAlgorithm.HMAC_SHA256`) | Marca um campo `String` como sensivel: cifrado no banco (reversivel) e, opcionalmente, pesquisavel por igualdade via um campo auxiliar de hash deterministico. |
+| `@SgMaskRule` | `br.com.seedgrid.privacy.masking` | `` | `field`, `type` (`MaskingStrategy.FULL`), `maskWith` (`"***"`), `remove` (`false`) | Regra de mascaramento por caminho de campo, aplicada por quem chama o `PersonalDataSanitizer` (ex.: regras específicas de um endpoint, que vencem as anotações `SgPersonalData` do modelo). |
+| `@SgPersonalData` | `br.com.seedgrid.privacy.masking` | `FIELD`, `METHOD` | `type` (`MaskingStrategy.FULL`), `maskWith` (`"***"`) | Marca um campo (ou getter) como dado pessoal (LGPD/GDPR) que deve ser mascarado quando o objeto for redigido pelo `PersonalDataSanitizer` (ex.: trilha de auditoria, export). |
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
 ## Testes existentes (não executados)
 
 `src/test/java/br/com/seedgrid/privacy/`: `AesGcmCryptoServiceTest`, `HmacSha256SearchHashServiceTest`, `DefaultValueNormalizerTest`, `SearchNormalizationTest`, `EncryptedFieldAttributeConverterTest`, `EncryptedFieldListenerTest`, `EncryptionEnabledFlagTest`, `EncryptedFieldEmbeddableJpaTest` (JPA com `PrivacyTestPersistenceUnitInfo`, PostgreSQL/Testcontainers), `masking/{MaskingStrategy,PersonalDataMasker,PersonalDataResolver,PersonalDataSanitizer}Test`. ~57 anotações `@Test`/`@ParameterizedTest` por grep. Exemplo com testes de integração: `platform-examples/examples/seedgrid-privacy-example` (`CustomerEncryptionTest`, `PrivacySchemaBootstrapTest`). **Não executados.**

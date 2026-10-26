@@ -89,6 +89,18 @@ Garantias e comportamento (Confirmado no código e em `docs/ARCHITECTURE.md`):
 
 Modelo de regra (runtime): `NotificationRule(enabled, channels, emails, phones, whatsappChannelId, conditionalRecipients)` com `Channel {EMAIL, WHATSAPP}` e `ConditionalRecipient(channel, address, attribute, value)`.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-notification` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-notification` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
 ## Migrations
 
 `runtime/src/main/resources/db/migration/notification/V1000__notification.sql` e `V1001__notification_permissions.sql`. Faixa reservada **1000–1099** (README). V1001 insere `NOTIFICATION_READ`/`NOTIFICATION_UPDATE` com `audience='platform'` (se a tabela `permissions` existir) e as vincula à role `ADMIN` (se `roles`/`sg_role_permissions` existirem).

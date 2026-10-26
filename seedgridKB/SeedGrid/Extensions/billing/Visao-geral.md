@@ -80,10 +80,48 @@ Modelo: `Plan` 1:N `PlanTerm` 1:N `PlanTermMeter`. `Account` 1:N `Subscription` 
 ## APIs públicas e pontos de integração
 
 ### Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@SgConsumesUsage` | `br.com.seedgrid.billing.annotations` | `METHOD`, `TYPE` | `meter`, `units` (`1`) | O metodo consome `#units()` unidades do contador `#meter()` da conta corrente. |
+| `@SgRequiresPlanFeature` | `br.com.seedgrid.billing.annotations` | `METHOD`, `TYPE` | `value` (`""`), `message` (`""`) | O plano vigente da conta corrente precisa incluir a permissao `#value()`; senao 402 `FEATURE_NOT_IN_PLAN` (ou `TRIAL_EXPIRED`, se o trial venceu). |
+
+**Detalhes já documentados:**
+
 - `@SgConsumesUsage(meter = "...", units = 1)`: checa antes da execução e contabiliza só se o método retornar normalmente. O `meter` é obrigatório.
 - `@SgRequiresPlanFeature(value = "PERMISSAO", message = "")`: responde 402 `FEATURE_NOT_IN_PLAN` (ou `TRIAL_EXPIRED`).
 
-### SPIs (todas com default `@DefaultBean`, exceto o provider)
+### SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `AccountCompaniesGateway` | `br.com.seedgrid.billing.spis` | `CompanyAccountCompaniesGateway` | As empresas de uma conta de billing, no banco onde elas moram. |
+| `AccountMembersGateway` | `br.com.seedgrid.billing.spis` | `CompanyAccountMembersGateway` | Os usuarios de uma conta de billing, no banco onde eles moram. |
+| `BillingAccountScope` | `br.com.seedgrid.billing.spis` | `UnrestrictedBillingAccountScope` | Implementado pelo host para restringir as contas que o usuario logado enxerga nas telas administrativas (`/admin/accounts`, `/admin/subscriptions` e os agregados de `/admin/billing/overview`). |
+| `BillingCatalogProvider` | `br.com.seedgrid.billing.spis` | sem padrão | Capacidade OPCIONAL de gestão de catálogo (produtos/preços) no provider. |
+| `BillingEventHandler` | `br.com.seedgrid.billing.spis` | `SubscriptionBillingEventHandler` | SPI que o host/aplicação deve implementar para processar eventos de billing. |
+| `BillingProvider` | `br.com.seedgrid.billing.spis` | sem padrão | SPI principal que cada provider de billing deve implementar. |
+| `BillingUsageProvider` | `br.com.seedgrid.billing.spis` | sem padrão | Capacidade OPCIONAL de cobrança por uso (meters/metered prices) no provider. |
+| `CurrentAccountResolver` | `br.com.seedgrid.billing.spis` | `DefaultCurrentAccountResolver` | Quem esta chamando: usuario, empresa e conta de billing da requisicao corrente. |
+| `PlanTermAdditionalFieldsValidator` | `br.com.seedgrid.billing.spis` | `DefaultPlanTermAdditionalFieldsValidator` | Regras do PRODUTO sobre os `additionalAttributes` de um term (ex.: `monthlyRequests` inteiro positivo). |
+| `PlanTermUsageChecker` | `br.com.seedgrid.billing.spis` | `DefaultPlanTermUsageChecker` | "Este plano tem movimento?" alem das assinaturas, que o billing ja conta sozinho. |
+| `UsageMeterContributor` | `br.com.seedgrid.billing.spis` | sem padrão | Os CONTADORES de uso do produto (requisicoes, MB armazenados, notas emitidas...). |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuAccountCompaniesGateway implements AccountCompaniesGateway {
+    // implemente os métodos da interface
+}
+```
+
+**Detalhes já documentados:**
+
 | SPI | Default | Assinatura principal |
 |---|---|---|
 | `BillingProvider` | — (fornecido por `seedgrid-billing-stripe`) | `createCheckout`, `createPortal`, `parseAndVerifyWebhook`, `changeSubscriptionPlan(..., List<String> newMeteredPriceIds)`, ... |

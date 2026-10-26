@@ -96,9 +96,39 @@ flowchart LR
 Paths centralizados em `RestControllerPath`. Exceções mapeadas por `SubdomainTenancyExceptionExtension` (`ApiExceptionExtension` do commons): `TenantNotFoundException` → 404, `SubdomainAlreadyExistsException`/`CnpjAlreadyExistsException` → 409, `TenantAlreadyActiveException`/`ValidationCodeExpiredException` → 400.
 
 ### Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@SgMasterOnly` | `br.com.seedgrid.subdomaintenancy.annotations` | `TYPE`, `METHOD` | — | Marca um endpoint ou resource class como disponível apenas no domínio master. |
+| `@SgTenantOnly` | `br.com.seedgrid.subdomaintenancy.annotations` | `TYPE`, `METHOD` | — | Marca um endpoint ou resource class como disponível apenas para tenants. |
+
+**Detalhes já documentados:**
+
 - `@SgMasterOnly` / `@SgTenantOnly` (`annotations/`): meta-anotações com `@Tag("master-only")`/`@Tag("tenant-only")` — **só documentação/OpenAPI**, não controlam acesso.
 
-### SPIs para o host
+### SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `EmailTemplateProvider` | `br.com.seedgrid.subdomaintenancy.spis` | sem padrão | Service Provider Interface for rendering email templates. |
+| `PasswordEncoder` | `br.com.seedgrid.subdomaintenancy.spis` | `BCryptPasswordEncoder` | Service Provider Interface for password encoding. |
+| `SubdomainTenancyNotificationService` | `br.com.seedgrid.subdomaintenancy.spis` | `MailerNotificationService` | Service Provider Interface for sending tenant notifications (email, SMS, WhatsApp, etc). |
+| `TemplateSubdomainTenancyProvider` | `br.com.seedgrid.subdomaintenancy.spis` | `DefaultTemplateSubdomainTenancyProvider` | SPI para renderizar templates de e-mail do módulo subdomain-tenancy. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuEmailTemplateProvider implements EmailTemplateProvider {
+    // implemente os métodos da interface
+}
+```
+
+**Detalhes já documentados:**
 
 | Interface | Default fornecido | Uso |
 |---|---|---|

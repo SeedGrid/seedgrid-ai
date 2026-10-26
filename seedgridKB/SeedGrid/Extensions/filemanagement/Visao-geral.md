@@ -76,6 +76,30 @@ Extensão: o host cria um `@ApplicationScoped FileStorageFactory` com `typeIdent
 
 **Consumidores no monorepo** (**Confirmado** por busca): `seedgrid-quarkus-ext-backup` (`ExportService#buildStorageConfig`, mapeia `seedgrid.backup.*` → chaves do mapa) — ver [[SeedGrid/Extensions/backup/Visao-geral|Visão geral do backup]]; `seedgrid-quarkus-ext-security` (`UserAvatarService#buildStorageConfig`) — ver [[SeedGrid/Extensions/security/Visao-geral|Visão geral do security]]; dependência declarada em `seedgrid-quarkus-ext-login-tenancy`.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `FileStorage` | `br.com.seedgrid.filemanagement.spis` | sem padrão | Service Provider Interface for file storage backends. |
+| `FileStorageFactory` | `br.com.seedgrid.filemanagement.spis` | sem padrão | Service Provider Interface for creating `FileStorage` instances. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuFileStorage implements FileStorage {
+    // implemente os métodos da interface
+}
+```
+
 ## Testes existentes (não executados)
 
 `src/test/java/...`: `StorageKeyTest`, `StorageOptionsTest`, `FileMetadataTest`, `FileStorageRegistryTest` (Mockito), `FileStorageRegistryFilesystemTest` (cache por config), `FilesystemStorageTest`, `StorageExceptionTest`, `FileStorageIntegrationTest` (`@QuarkusTest`, só `filesystem`). ~60 `@Test` por grep. Nenhum teste de backend de nuvem. **Não executados.**

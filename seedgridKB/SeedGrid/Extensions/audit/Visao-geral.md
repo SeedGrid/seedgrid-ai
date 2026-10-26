@@ -92,6 +92,33 @@ sequenceDiagram
 
 **Confirmado** (`RestControllerPath`, `AuditLogController`). Os paths são fixos (não configuráveis).
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@SgAudit` | `br.com.seedgrid.audit.core.annotations` | `METHOD`, `TYPE` | `operation` (`AuditOperationEnum.OTHER`), `description` (`""`), `entityFqcn` (`""`), `lookupMethod` (`""`), `lookups` (`{}`), `options` (`{}`) | [não verificado] |
+| `@SgAuditLookup` | `br.com.seedgrid.audit.core.annotations` | `` | `field` | [não verificado] |
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `AuditPersistenceProvider` | `br.com.seedgrid.audit.core.spis` | sem padrão | [não verificado] |
+| `AuditReadScopeProvider` | `br.com.seedgrid.audit.core.spis` | `DefaultAuditReadScopeProvider` | SPI para o host FORCAR o escopo de leitura do audit (server-side), sem acoplar o audit-core a company/tenant. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
+    // implemente os métodos da interface
+}
+```
+
 ## Migrations (PostgreSQL)
 
 `seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `sg_audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.

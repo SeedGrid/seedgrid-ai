@@ -44,8 +44,8 @@ Fonte: `java/seedgrid-quarkus-lib-commons/pom.xml`. **Confirmado.**
 | `utils.JsonAttributeLimits` / `JsonAttributeLimitsSpec` | utilitário + record | `findViolation(Map<String, JsonNode>, spec)` — limites de tamanho (bytes), profundidade e nº de chaves |
 | `utils.JsonAttributeMerger` | utilitário | `merge(target, patch)`, `copyWithoutNulls(source)` |
 | `enums.StateEnum` | enum | UFs com `sigla`, `nome`, `regiao`, `ibge`; `fromSigla`, `fromNome`, `fromJson` |
-| `exceptions.BusinessException` | `RuntimeException` | `userMessage` + `devMessage` |
-| `exceptions.EntityNotFoundException`, `EntityInUseException` | estendem `BusinessException` | — |
+| `exceptions.BusinessException` | `RuntimeException` | `userMessage` + `devMessage` + `status` (`Response.Status` 4xx, padrão 400; não publicado, 2026.10.22) |
+| `exceptions.EntityNotFoundException`, `EntityInUseException` | estendem `BusinessException` | 404 e 409 respectivamente (não publicado; antes 400) |
 | `exceptions.ThrowableUtils` | utilitário | `hasException(Throwable, Class)` |
 | `pagination.PageReq` (record), `PageResult<T>` | DTOs | paginação simples |
 | `validators.@ValidBirthDate(minAge, maxAge)` | Bean Validation | `-1` desabilita cada limite |
@@ -67,7 +67,27 @@ Fonte: `java/seedgrid-quarkus-lib-commons/pom.xml`. **Confirmado.**
 
 Colunas usadas por `BaseEntity`: `public_id`, `active`, `created_at`, `updated_at`, `create_user_public_id`, `update_user_public_id`. A lib **não** traz migrations; cada host/extension cria as colunas. **Confirmado.**
 
-### SPIs gerais (`br.com.seedgrid.commons.spi`) e eventos
+### SPIs
+
+_Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `ApiExceptionExtension` | `br.com.seedgrid.commons.web.exceptions.spis` | sem padrão | [não verificado] |
+| `CurrentUserProvider` | `br.com.seedgrid.commons.persistence.spis` | `DefaultCurrentUserProvider` | [não verificado] |
+| `TenantProvider` | `br.com.seedgrid.commons.spis` | `SingleTenantProvider` | Service Provider Interface for tenant management. |
+| `UserContactProvider` | `br.com.seedgrid.commons.spis` | `DefaultUserContactProvider` | Provides user contact data from a persisted publicId. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuApiExceptionExtension implements ApiExceptionExtension {
+    // implemente os métodos da interface
+}
+```
+
+**Detalhes já documentados:**
 
 | Símbolo | Resumo |
 |---|---|
@@ -80,12 +100,25 @@ Colunas usadas por `BaseEntity`: `public_id`, `active`, `created_at`, `updated_a
 | Símbolo | Resumo |
 |---|---|
 | `cors.CorsFilter` (`@Provider @PreMatching`, prioridade `AUTHENTICATION - 100`) + `cors.CorsConfig` | responde preflight `OPTIONS` (200 com headers, ou 403 para origem não permitida); origem `"null"` → 403; adiciona `Access-Control-*` nas respostas para origens permitidas; `Allow-Credentials: true`, `Allow-Headers: Accept,Authorization,Content-Type,X-Requested-With`, `Expose-Headers: Location,Link`, `Max-Age: 0` |
-| `exceptions.ApiExceptionHandler` (`ExceptionMapper<Throwable>`) | Problem Details: `NotFoundException`→404; `WebApplicationException`→status da exceção; `ConstraintViolationException`→400 com `violations[]`; `BusinessException` (inclui `EntityNotFoundException`/`EntityInUseException`)→**400** `ERRO_NEGOCIO`; senão tenta `ApiExceptionExtension`s; fallback 500 |
+| `exceptions.ApiExceptionHandler` (`ExceptionMapper<Throwable>`) | Problem Details: `NotFoundException`→404; `WebApplicationException`→status da exceção; `ConstraintViolationException`→400 com `violations[]`; `BusinessException`→o `status` dela (padrão **400** `ERRO_NEGOCIO`; `EntityNotFoundException`→404 `RECURSO_NAO_ENCONTRADO`, `EntityInUseException`→409 `ENTIDADE_EM_USO`; os dois últimos não publicados, versão local 2026.10.22); senão tenta `ApiExceptionExtension`s; fallback 500 |
 | `exceptions.ConstraintViolationExceptionMapper` (`@Priority(1)`) | sobrepõe o mapper built-in do Quarkus e delega ao handler |
 | `exceptions.spi.ApiExceptionExtension` + `DefaultApiExceptionExtension` | ponto de extensão (`tryHandle` devolve `Response` ou `null`) |
 | `exceptions.ProblemType` | URIs `https://seedgrid.com.br/<path>` |
 
 Não há endpoints REST próprios.
+
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@QUERY` | `br.com.seedgrid.commons.web.annotations` | `METHOD` | — | Metodo HTTP `QUERY` (IETF "The HTTP QUERY Method"): como o `GET`, e SEGURO e idempotente (nao muda estado), mas aceita CORPO na requisicao - para consultas com filtros grandes ou complexos que nao cabem na URL. |
+| `@ValidBirthDate` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE`, `TYPE_USE` | `message` (`"{br.com.seedgrid.subdomaintenancy.validation.BirthDateIsValid.message}"`), `groups` (`{}`), `payload` (`{}`), `minAge` (`-1`), `maxAge` (`-1`), `value` | [não verificado] |
+| `@ValidEmail` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Email invalido"`), `groups` (`{}`), `payload` (`{}`) | [não verificado] |
+| `@ValidName` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER` | `message` (`"O texto deve conter pelo menos {quantidadePalavras} palavras."`), `groups` (`{}`), `payload` (`{}`), `quantidadePalavras` | [não verificado] |
+| `@ValidPassword` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Senha inválida"`), `groups` (`{}`), `payload` (`{}`), `upperRequired` (`true`), `lowerRequired` (`true`), `numberRequired` (`true`), `specialCharacterRequired` (`true`), `prohibitsRepeatedCharactersInSequence` (`true`), `minSize` (`8`) | [não verificado] |
+| `@ValidPhone` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Telefone invalido"`), `groups` (`{}`), `payload` (`{}`) | [não verificado] |
 
 ## Testes existentes (não executados)
 
@@ -93,7 +126,7 @@ Não há endpoints REST próprios.
 
 ## Limitações
 
-- `EntityNotFoundException` e `EntityInUseException` resultam em **400** (caem no ramo `BusinessException`); para 404/409 é preciso lançar `WebApplicationException`/`NotFoundException`. **Confirmado** (`ApiExceptionHandler#toResponse`).
+- Nas versões publicadas até hoje, `EntityNotFoundException` e `EntityInUseException` resultam em **400**; a versão local 2026.10.22 (não publicada) passa a 404 e 409 (`BusinessException` com `status`). Status 422 não existe em `Response.Status`: use `ApiExceptionExtension`. **Confirmado** (`ApiExceptionHandlerTest`).
 - `@ValidBirthDate` tem mensagem default `{br.com.seedgrid.subdomaintenancy.validation.BirthDateIsValid.message}` — chave de bundle de outra extension; não há `ValidationMessages.properties` nesta lib. **Confirmado** (busca de resources vazia).
 - `Address`/`Contact` dependem do modo de criptografia da lib privacy (`seedgrid.privacy.*`) — ver [[SeedGrid/Extensions/privacy/Configuracao|Configuração do privacy]].
 - `CorsFilter` é próprio e convive com o CORS nativo do Quarkus (`quarkus.http.cors.*`); interação não documentada — **Não confirmado**.

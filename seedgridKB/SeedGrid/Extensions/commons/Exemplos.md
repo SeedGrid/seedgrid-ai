@@ -75,7 +75,14 @@ throw new BusinessException("Nao foi possivel concluir", "detalhe tecnico para d
 // -> 400, type https://seedgrid.com.br/erro-negocio, application/problem+json
 ```
 
-`EntityNotFoundException`/`EntityInUseException` também resultam em **400** (estendem `BusinessException`). Para outro status, use `ApiExceptionExtension`:
+`BusinessException` aceita um status 4xx (`Response.Status`, padrão e nulo = 400; status fora de 4xx lança `IllegalArgumentException`). `EntityNotFoundException` responde **404** (`RECURSO_NAO_ENCONTRADO`) e `EntityInUseException` **409** (`ENTIDADE_EM_USO`) — *não publicado, versão local 2026.10.22; antes eram 400*:
+
+```java
+throw new EntityNotFoundException("Cidade nao encontrada.");                       // 404
+throw new BusinessException("Limite atingido", "detalhe", Response.Status.PAYMENT_REQUIRED); // 402
+```
+
+Para um status que o `Response.Status` não tem (por exemplo 422), use `ApiExceptionExtension`:
 
 ```java
 @ApplicationScoped

@@ -70,6 +70,36 @@ flowchart LR
 
 Não há endpoints REST, eventos CDI, migrations nem anotações próprias.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@Covers` | `br.com.seedgrid.cache.testkit.contract` | `METHOD` | `value` | Declara quais erros do plano (E1..E21, ver `planos/cache/2026-10-19-annotations-do-cache.md`) um cenario da suite de contrato cobre. |
+| `@SgCacheInterception` | `br.com.seedgrid.cache.core.annotations` | `TYPE`, `ANNOTATION_TYPE` | — | Binding INTERNO e transitivo dos interceptores de cache (`SgCacheResult` e as de invalidacao). |
+| `@SgCacheInvalidate` | `br.com.seedgrid.cache.core.annotations` | `METHOD` | `cacheName`, `scope` (`CacheKeyScope.DEFAULT`), `afterInvocation` (`true`), `strict` (`false`) | Invalida UMA entrada de um cache de `SgCacheResult`: a que tem a MESMA chave que o metodo cacheado teria para estes argumentos. |
+| `@SgCacheInvalidateAll` | `br.com.seedgrid.cache.core.annotations` | `METHOD` | `cacheName`, `scopeOnly` (`false`), `scope` (`CacheKeyScope.DEFAULT`), `afterInvocation` (`true`), `strict` (`false`) | Invalida TODAS as entradas de um cache de `SgCacheResult` (apaga o prefixo `sgc:{cacheName`:} com `deleteByPrefix`: `SCAN` + `UNLINK` nos servidores, nunca `KEYS`; custo proporcional ao keyspace por chamada, entao prefira `SgCacheInvalidate` quando souber a chave). |
+| `@SgCacheKey` | `br.com.seedgrid.cache.core.annotations` | `PARAMETER` | — | Marca um parametro como parte da chave de `SgCacheResult`. |
+| `@SgCacheResult` | `br.com.seedgrid.cache.core.annotations` | `METHOD` | `cacheName`, `ttl` (`""`), `scope` (`CacheKeyScope.DEFAULT`), `lock` (`false`) | Cacheia o RESULTADO do metodo: na primeira chamada com certos argumentos o metodo roda e o valor e' guardado; nas seguintes o valor guardado e' devolvido sem rodar o metodo. |
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `SeedGridCacheProvider` | `br.com.seedgrid.cache.core.commons.spis` | `DefaultSeedGridCache` | SPI do cache (memória, Redis, Valkey, Dragonfly e o decorador de failover). |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuSeedGridCacheProvider implements SeedGridCacheProvider {
+    // implemente os métodos da interface
+}
+```
+
 ## Testes existentes (não executados)
 
 | Local | Tipo | Cobre |

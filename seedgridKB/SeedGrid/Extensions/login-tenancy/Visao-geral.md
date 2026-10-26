@@ -109,6 +109,29 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 | `LoginTenancyMongoAuditDatabaseProducer` | producer `@DefaultBean` de `MongoDatabase` | registrado só se `com.mongodb.client.MongoClient` estiver no classpath (`LoginTenancyProcessor#registerMongoAuditDatabaseProducer`) |
 | `LoginTenancyApiExceptionExtension` | `ApiExceptionExtension` | `SignupRequestNotFoundException`→404, `SignupRequestPendingException`→409, `RequiredRoleMissingException`→500 (`application/problem+json`) |
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `LoginTenancyTemplateProvider` | `br.com.seedgrid.logintenancy.spis` | `DefaultLoginTenancyTemplateProvider` | SPI de templates da foundation login-tenancy. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuLoginTenancyTemplateProvider implements LoginTenancyTemplateProvider {
+    // implemente os métodos da interface
+}
+```
+
 ## Migrations próprias
 
 `runtime/src/main/resources/db/migration/login-tenancy/`: `V700__signup_request.sql`, `V701__privacy_search_hashes.sql`, `V702__timestamps_com_fuso.sql`, `V703__signup_request_pendente_unica_por_cnpj.sql`, `V704__signup_request_person_type_cpf_cnpj.sql`, `V705__signup_request_terms.sql`, `V706__signup_request_address_city.sql` (faixa 700; V704 a V706 são do ciclo 2026.10.22, não publicado). Veja [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]] (cadastro de pessoa física, termos e `cityId`). Há um `docs/RUNBOOK-remocao-da-V704.md` (não analisado em detalhe).

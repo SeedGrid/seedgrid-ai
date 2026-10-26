@@ -95,6 +95,29 @@ Os `{id}` são `publicId`. **Confirmado** nos resources.
 ### Evento de notificação
 `exchange.rate-fetch-failed` (`ExchangeNotificationCatalog`), publicado após o commit da tentativa. O evento inclui a variável `reason`, com o horário do próximo retry no fuso `seedgrid.app.business-timezone`.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-exchange` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-exchange` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `ExchangeAuditSink` | `br.com.seedgrid.exchange.spis` | `NoOpExchangeAuditSink` | Registra acao administrativa sobre cambio: cotacao lancada a mao, moeda criada, editada ou removida. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuExchangeAuditSink implements ExchangeAuditSink {
+    // implemente os métodos da interface
+}
+```
+
 ## Migrations
 `db/migration/exchange`, de **V800 a V804**. Histórico em `flyway_schema_history_exchange`.
 

@@ -94,6 +94,33 @@ flowchart LR
 
 Endpoints REST próprios: nenhum no runtime (o `integration-tests` tem só `GET /seedgrid-resilience-core` de template). Migrations: nenhuma. Eventos: nenhum.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@SgCircuitBreaker` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations` | `METHOD`, `TYPE` | `name` (`""`), `slidingWindowSize` (`100`), `windowType` (`SlidingWindowType.COUNT_BASED`), `failureRateThreshold` (`50.0`), `slowCallDurationThresholdMs` (`0`), `slowCallRateThreshold` (`100.0`), `minimumNumberOfCalls` (`20`), `openStateDurationMs` (`30_000`), `permittedCallsInHalfOpen` (`10`), `recordExceptions` (`{Exception.class}`), `ignoreExceptions` (`{}`), `fallbackMethod` (`""`) | [não verificado] |
+| `@SgRateLimit` | `br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations` | `METHOD`, `TYPE` | `permits` (`5`), `window` (`30`), `windowUnit` (`ChronoUnit.SECONDS`), `algorithm` (`RateLimitAlgorithm.FIXED_WINDOW`), `burstCapacity` (`0`), `minSpacing` (`0`), `minSpacingUnit` (`ChronoUnit.MILLIS`), `identity` (`IpIdentityResolver.class`), `group` (`""`), `scope` (`KeyScope.METHOD`), `emitHeaders` (`true`), `configKey` (`""`) | [não verificado] |
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `CircuitBreakerStore` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.spis` | sem padrão | [não verificado] |
+| `IdentityResolver` | `br.com.seedgrid.resilience.core.runtime.ratelimiter.spis` | sem padrão | Resolve a identidade (ex.: ip, apiKey, tenantId, userId) para compor a chave do rate limit. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuCircuitBreakerStore implements CircuitBreakerStore {
+    // implemente os métodos da interface
+}
+```
+
 ## Testes existentes (não executados)
 
 | Local | Tipo | Cobre |

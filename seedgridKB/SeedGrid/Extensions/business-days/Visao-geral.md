@@ -31,6 +31,30 @@ Calendário de dias úteis para hosts Quarkus: **feriados** (recorrentes ou de u
 - `company_id` nulo = feriado/perfil **global** (não é FK, a extension não depende da security). A empresa vê globais + os dela, mas só altera os dela.
 - Perfil da semana: COMPANY > GLOBAL > DEFAULT (segunda a sexta).
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-business-days` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-business-days` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `BusinessDaysRegionProvider` | `br.com.seedgrid.businessdays.spis` | `GlobalBusinessDaysRegionProvider` | Diz de QUAL UF e' o calendario, para os feriados ESTADUAIS. |
+| `BusinessDaysScopeProvider` | `br.com.seedgrid.businessdays.spis` | `GlobalBusinessDaysScopeProvider` | Diz de QUEM e' o calendario da requisicao corrente. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuBusinessDaysRegionProvider implements BusinessDaysRegionProvider {
+    // implemente os métodos da interface
+}
+```
+
 ## Migrations
 
 Faixa V1100–V1199, location `db/migration/business-days`, histórico `flyway_schema_history_business_days`.

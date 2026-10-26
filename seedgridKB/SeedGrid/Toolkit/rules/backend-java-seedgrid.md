@@ -14,6 +14,8 @@ Regras **obrigatórias** para projetos Java que usam o SeedGrid. Cada regra tem 
 - **BE-05.** DTOs: sufixo `DTOReq` para entrada (request) e `DTORes` para saída (response): `ClienteDTOReq`, `ClienteDTORes`.
   - O **Req** leva só as propriedades necessárias (um update não precisa do `id`) e, para relacionamentos, **somente a chave estrangeira** pelo `publicId` (`cidadePublicId`), nunca campos nem objeto da entidade relacionada. Validações (`@NotNull`, `@Size`...) ficam no próprio record; para exigir os obrigatórios só no POST/PUT, use um grupo `Full extends Default` dentro do record.
   - O **Res** é **plano** ("plain"): tudo no mesmo nível, sem objetos aninhados. Traz o `publicId` (nunca o `id` interno) e, para cada relacionamento, o `publicId` e a descrição (`cidadePublicId`, `cidadeDescricao`), inclusive os de mais de um nível (`paisPublicId`, `paisDescricao`). Pode existir mais de um Res para a mesma entidade, com menos campos, conforme o uso (por exemplo uma listagem enxuta).
+  - **O service valida as chaves estrangeiras do Req.** Cada `...PublicId` recebido é buscado no banco (repositório da entidade relacionada, pelo `publicId`); se não existir, o service lança `EntityNotFoundException` (`seedgrid-commons`, BE-11) com mensagem que nomeia o relacionamento ("Cidade não encontrada."), **antes** de gravar qualquer coisa. Vale para **POST, PUT e PATCH**: o usuário nunca consegue gravar um id inválido. Nunca confie no id recebido nem deixe a violação de FK do banco virar 500. No `PATCH`, valida só os ids enviados (campo ausente não muda).
+  - O **Req** espelha a entidade: os campos próprios dela mais um `...PublicId` por `@ManyToOne` (`cidade` vira `cidadePublicId`); o **Res** é plano e traz o que o Req recebe, mais a descrição de cada relação.
   - Records Java, na pasta `dtos/` (BE-01).
 
 ```java
@@ -40,7 +42,7 @@ public record ClienteDTORes(
 ## Injeção e exceptions
 
 - **BE-10.** Injeção **somente por construtor**, dependências `private final`. Nunca `@Inject` em atributo (só é permitido quando houver mais de um construtor).
-- **BE-11.** Exceptions **tipadas** que reflitam o objetivo; nunca lance `RuntimeException` direto.
+- **BE-11.** Exceptions **tipadas** que reflitam o objetivo; nunca lance `RuntimeException` direto. Todas estendem `BusinessException` (`br.com.seedgrid.commons.core.exceptions`: `userMessage` para o cliente e `devMessage` para o desenvolvedor), que o `ApiExceptionHandler` do `seedgrid-commons` já converte em Problem Details; **extensions novas também criam as exceptions delas a partir dela**. O `commons` já traz duas prontas: `EntityNotFoundException` (buscar uma entidade que não existe, inclusive o id de chave estrangeira recebido no Req, BE-05) e `EntityInUseException` (apagar algo em uso por um relacionamento, quebra de integridade referencial: verifique antes e lance, em vez de deixar a violação de FK do banco virar 500). A `BusinessException` leva um **status 4xx** (`Response.Status`, padrão 400 `ERRO_NEGOCIO`): `EntityNotFoundException` responde 404 e `EntityInUseException` 409; para outro status, passe-o no construtor (`new BusinessException(user, dev, Response.Status.PAYMENT_REQUIRED)`). Status que o `Response.Status` não tem (422) exige `ApiExceptionExtension` (nota `Extensions/commons/Exemplos`). *Não publicado (commons 2026.10.22); até lá, 400 nas duas.*
 
 ## Persistência
 

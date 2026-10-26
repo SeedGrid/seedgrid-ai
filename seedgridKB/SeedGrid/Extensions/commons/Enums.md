@@ -86,8 +86,8 @@ Arquivo: `java/seedgrid-quarkus-lib-commons/src/main/java/br/com/seedgrid/common
 | `PARAMETRO_INVALIDO` | `/parametro-invalido` | Parâmetro inválido | Nenhum código do monorepo usa este valor | Existe no enum; pode ser usado por hosts |
 | `MENSAGEM_INCOMPREENSIVEL` | `/mensagem-incompreensivel` | Corpo ilegível/não processável | `ApiExceptionHandler`: `WebApplicationException` com 415 ou 422 | — |
 | `RECURSO_NAO_ENCONTRADO` | `/recurso-nao-encontrado` | Recurso inexistente | `ApiExceptionHandler`: `NotFoundException` e status 404; usado por billing, security e login-tenancy | — |
-| `ENTIDADE_EM_USO` | `/entidade-em-uso` | Conflito: entidade em uso | `ApiExceptionHandler`: status 409 de `WebApplicationException`; usado por billing (`PlanInUseException`) e security | `EntityInUseException` **não** usa este tipo (é `BusinessException` → `ERRO_NEGOCIO`, 400) |
-| `ERRO_NEGOCIO` | `/erro-negocio` | Violação de regra de negócio | `ApiExceptionHandler`: `BusinessException` e subclasses (400) | — |
+| `ENTIDADE_EM_USO` | `/entidade-em-uso` | Conflito: entidade em uso | `ApiExceptionHandler`: status 409 de `WebApplicationException`; usado por billing (`PlanInUseException`) e security | `EntityInUseException` usa este tipo (409) só na versão local 2026.10.22, não publicada; até a 2026.10.21 era `ERRO_NEGOCIO` (400) |
+| `ERRO_NEGOCIO` | `/erro-negocio` | Violação de regra de negócio | `ApiExceptionHandler`: `BusinessException` e subclasses com status 400 (o padrão) | — |
 | `OBRIGATORIO_TROCA_DE_SENHA` | `/obrigatorio-troca-de-senha` | Troca de senha obrigatória | Nenhum código do monorepo usa este valor | Existe no enum; pode ser usado por hosts |
 | `ACESSO_NEGADO` | `/acesso-negado` | Sem permissão (403) | `ApiExceptionHandler`: status 403; usado por security | — |
 | `ERRO_AO_ENVIAR_O_EMAIL` | `/erro-ao-enviar-o-email` | Falha ao enviar e-mail | Nenhum código do monorepo usa este valor | Existe no enum; pode ser usado por hosts |

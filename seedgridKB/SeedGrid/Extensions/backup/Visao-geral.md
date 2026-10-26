@@ -106,7 +106,28 @@ Observação (Confirmado): mesmo com `async-enabled=true`, o scheduler de fila t
 | GET | `/exports/{jobId}/download` | `BACKUP_DOWNLOAD` | 200 `application/zip` / 404 (não pronto ou não-dono) / 410 (terminal não baixável) |
 | DELETE | `/exports/{jobId}` | `BACKUP_DELETE` | 204 / 404 (cancela se em progresso; senão exclui job + artefatos) |
 
-### SPIs e beans substituíveis (Confirmado)
+### SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-backup` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `BackupExporter` | `br.com.seedgrid.backup.spis` | sem padrão | Service Provider Interface for backup exporters. |
+| `ExportNotificationService` | `br.com.seedgrid.backup.spis` | `EmailExportNotificationService` | SPI for notifying users when an export is ready. |
+| `ProgressCallback` | `br.com.seedgrid.backup.spis` | sem padrão | Progress callback interface. |
+| `TemplateBackupProvider` | `br.com.seedgrid.backup.spis` | `DefaultTemplateBackupProvider` | SPI para renderizar templates de notificações de backup. |
+| `TenantProvider` | `br.com.seedgrid.backup.spis` | `SingleTenantBackupProvider` | Optional provider for tenant context. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuBackupExporter implements BackupExporter {
+    // implemente os métodos da interface
+}
+```
+
+**Detalhes já documentados:**
 
 | Tipo | Default | Como substituir |
 |---|---|---|
@@ -130,6 +151,12 @@ Observação (Confirmado): mesmo com `async-enabled=true`, o scheduler de fila t
 | V401 | Insere permissões `BACKUP_CREATE/READ/DOWNLOAD/DELETE` em `sg_permissions` e vincula ao papel `ADMIN` (`sg_roles`, `sg_role_permissions`) — exige tabelas da extensão de segurança |
 | V402 | Coluna `active` nas duas tabelas |
 | V403 | `audience = null` nas permissões de backup (se `sg_permissions` existir) |
+
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-backup` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
 
 ## Testes (não executados)
 

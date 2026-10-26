@@ -57,6 +57,25 @@ flowchart LR
 ## APIs públicas
 
 ### SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-ai-pricing` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `AiPriceExtractor` | `br.com.seedgrid.aipricing.spis` | `NoOpAiPriceExtractor` | Seam entre o robo de precos e um LLM. |
+| `AiPricingAuditSink` | `br.com.seedgrid.aipricing.spis` | `NoOpAiPricingAuditSink` | Registra acao administrativa sobre precos: modelo criado/editado/removido, preco aprovado ou rejeitado. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuAiPriceExtractor implements AiPriceExtractor {
+    // implemente os métodos da interface
+}
+```
+
+**Detalhes já documentados:**
+
 | SPI | Default | Assinatura |
 |---|---|---|
 | `AiPriceExtractor` | `NoOpAiPriceExtractor` (`@DefaultBean`, `isConfigured()=false`) | `String extract(String pricingPageContent) throws Exception`; `boolean isConfigured()` |
@@ -83,6 +102,12 @@ Todos os resources são `@SgMonoCompany`.
 Declarados em `AiPricingNotificationCatalog`:
 - `ai-pricing.approval-pending`, com variáveis `proposalId` e `quantity`.
 - `ai-pricing.check-failed`, com variáveis `proposalId` e `failureKind`.
+
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-ai-pricing` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
 
 ## Migrations
 `db/migration/ai-pricing`, de **V900 a V903**. Histórico em `flyway_schema_history_ai_pricing`.

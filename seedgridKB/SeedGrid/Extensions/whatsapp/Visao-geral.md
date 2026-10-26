@@ -73,6 +73,21 @@ flowchart LR
   - Cloud (`CloudRestClient`): `POST /{phoneNumberId}/messages`, `POST /{phoneNumberId}/media` (upload multipart montado por `CloudMultipart`; arquivos de mídia/áudio são subidos e depois enviados por id).
 - Arquivos locais: `sendAudioFile` lê `fullFileName` do disco (`Files.readAllBytes`) em ambos os providers; `sendMediaFile` usa `mediaBase64`.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, não publicada)._
+
+| Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
+|---|---|---|---|---|
+| `@EvolutionProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | [não verificado] |
+| `@OfficialProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | [não verificado] |
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
 ## Migrations
 
 Nenhuma (sem persistência).

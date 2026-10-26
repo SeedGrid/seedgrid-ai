@@ -90,6 +90,30 @@ Os endpoints de gestão chamam `ensureManagementEnabled()` (`ApiKeyActivationPol
 
 `APIKEY_CREATE`, `APIKEY_READ`, `APIKEY_REVOKE` (V602). V605 marcou `audience='client'`; V606 reverteu para audience nula (visível nos dois escopos).
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão local 2026.10.22, não publicada)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `ApiKeyActivationPolicy` | `br.com.seedgrid.apikeys.spis` | `DefaultApiKeyActivationPolicy` | [não verificado] |
+| `ApiKeyScopeRunner` | `br.com.seedgrid.apikeys.spis` | `DefaultApiKeyScopeRunner` | Executa a consulta da chave no ESCOPO de dados da requisicao (ex.: o banco do tenant). |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
+
+```java
+@ApplicationScoped
+public class MeuApiKeyActivationPolicy implements ApiKeyActivationPolicy {
+    // implemente os métodos da interface
+}
+```
+
 ## Migrations (Confirmado)
 
 `runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `sg_api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `flyway_schema_history_apikeys`).

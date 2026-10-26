@@ -23,17 +23,34 @@ No **`PlanTerm`** (a condição comercial do plano), em quatro campos de empresa
 - Os campos estão em `PlanTermRequest`, `PlanTermPatch` e `PlanTermResponse`, e também em `PATCH|GET /admin/plans/trial`: o **trial** aceita, grava e devolve os mesmos campos. No PATCH, campo ausente não mexe, `0` grava `0`, negativo dá 400.
 - Quem altera é a equipe do produto, no **admin web**, nas telas de condição comercial (`plans/plan_terms` e `plans/plan_trial`, presentes nos boilerplates `login-tenancy-b2b` e `subdomain-tenancy`). O cliente final não altera.
 
+## Quero a cota do plano (ou meu host não cobra por usuário/empresa): o que ligo?
+
+As duas cotas são **opt-in**, ambas com padrão `false` (decisão do dono em 2026-10-26: limite por usuário ou por empresa é regra do host). **BREAKING** (nada publicado; versão local 2026.10.22): antes os validadores eram beans sempre ativos.
+
+| Propriedade | Padrão | Efeito quando `true` |
+|---|---|---|
+| `seedgrid.billing.quota.users.enabled` | `false` | sobe o `PlanUserQuotaValidator` (aplica `maxUsers`) |
+| `seedgrid.billing.quota.companies.enabled` | `false` | sobe o `PlanCompanyQuotaValidator` (aplica `maxCompanies`) |
+
+- Desligada, o bean **não é criado** (`@IfBuildProperty`, resolvida no BUILD: mudar o valor exige rebuild em modo prod) e vale o padrão "sem limite" da security; a extension nem consulta conta ou assinatura nesse cadastro. Os campos do plano (`maxUsers`, `maxCompanies`, `maxReadOnlyCompanies`) continuam existindo e sendo gravados e devolvidos pela API: só o **bloqueio** depende da propriedade.
+- **Quero a cota do plano:** `seedgrid.billing.quota.companies.enabled=true` (empresas), `seedgrid.billing.quota.users.enabled=true` (usuários) ou as duas. Os boilerplates `login-tenancy-b2b`, `login-tenancy-b2c` e `subdomain-tenancy` ligam as duas.
+- **Meu host não cobra por usuário/empresa:** não configure nada.
+- **Meu host tem regra própria:** deixe a propriedade desligada e declare o seu `UserQuotaValidator`/`CompanyQuotaValidator` como bean normal, **sem `@Alternative` nem `@Priority`**. Ligar a propriedade **e** declarar o próprio dá dois beans e o boot falha com `AmbiguousResolutionException`.
+- **Atenção ao atualizar:** host que já dependia do limite precisa ligar a propriedade; sem ela o limite some em silêncio (não é erro).
+
+As seções abaixo descrevem o comportamento **com a cota ligada**.
+
 ## O que acontece ao passar do limite de empresas?
 
 - Criar empresa (`POST /companies`) ou reativar (`PATCH /companies/{id}` com `active` de `false` para `true`) com as empresas `ACTIVE` da conta já em `maxCompanies` responde **402 `COMPANY_QUOTA_EXCEEDED`**.
 - Não ocupam vaga de ativa: empresa inativada pelo administrador (`active=false`), em `READ_ONLY` ou `DISABLED`.
 - A empresa da **plataforma** nunca conta nem é limitada. Conta **sem assinatura vigente** = sem limite. Vale também para o trial.
 - O **cadastro** (signup) cria a primeira empresa da conta direto e nunca consulta a cota: com `maxCompanies=1` a conta nasce com 1 de 1. A segunda empresa, por `POST /companies`, dá 402.
-- Como funciona por baixo: o billing implementa o SPI `CompanyQuotaValidator` da security (`br.com.seedgrid.security.spis`), sem `@DefaultBean`, e vence o padrão "sem limite".
+- Como funciona por baixo: com `seedgrid.billing.quota.companies.enabled=true`, o billing implementa o SPI `CompanyQuotaValidator` da security (`br.com.seedgrid.security.spis`), sem `@DefaultBean`, e vence o padrão "sem limite".
 
 ## E o limite de usuários?
 
-`PlanUserQuotaValidator` implementa o SPI `UserQuotaValidator` e aplica `maxUsers` ao **cadastrar, vincular e reativar** um membro (admin, self-enter e demais fluxos que passam pelo SPI). Passou do limite: **402 `USER_QUOTA_EXCEEDED`** (com o campo `limit`). A conta é a da empresa que recebe o usuário; a empresa da plataforma nunca é limitada; sem assinatura ou `maxUsers` nulo/`0` = sem limite. Para uma regra própria, forneça outro `UserQuotaValidator` `@ApplicationScoped`.
+Com `seedgrid.billing.quota.users.enabled=true`, o `PlanUserQuotaValidator` implementa o SPI `UserQuotaValidator` e aplica `maxUsers` ao **cadastrar, vincular e reativar** um membro (admin, self-enter e demais fluxos que passam pelo SPI). Passou do limite: **402 `USER_QUOTA_EXCEEDED`** (com o campo `limit`). A conta é a da empresa que recebe o usuário; a empresa da plataforma nunca é limitada; sem assinatura ou `maxUsers` nulo/`0` = sem limite. Para uma regra própria, deixe a propriedade desligada e forneça o seu `UserQuotaValidator` `@ApplicationScoped`, sem `@Alternative`/`@Priority`.
 
 ## Como funciona a inadimplência?
 
@@ -116,7 +133,7 @@ O `subdomain-tenancy` traz o `SubdomainAccountCompaniesGateway`: as empresas da 
 
 ## Guardiões
 
-`CompanyLimitsTest`, `CompanySelectionCheckoutTest`, `CheckoutSelectionRefTest`, `CompanySelectionLastAdminTest`, `CompanySelectionPlatformTest`, `PastDueSchedulerRealTest`, `SignupCompanyQuotaTest`, `PlanUserQuotaValidatorTest` e, no subdomain-tenancy, `TenantBillingIntegrationTest`.
+`CompanyLimitsTest`, `CompanySelectionCheckoutTest`, `CheckoutSelectionRefTest`, `CompanySelectionLastAdminTest`, `CompanySelectionPlatformTest`, `PastDueSchedulerRealTest`, `SignupCompanyQuotaTest`, `PlanUserQuotaValidatorTest` e, no subdomain-tenancy, `TenantBillingIntegrationTest`. `QuotaValidatorsOffByDefaultTest` (perfil com as duas propriedades `false`) prova que os dois beans não existem e que o `UserQuotaValidator` resolvido é o `DefaultUserQuotaValidator` da security; os testes de cota rodam com as duas ligadas no `application.properties` de teste.
 
 ## Limites conhecidos
 

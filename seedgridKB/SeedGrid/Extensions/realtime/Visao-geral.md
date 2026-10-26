@@ -84,6 +84,18 @@ flowchart LR
 
 O deployment (`SeedgridRealtimeProcessor`) registra a feature `seedgrid-realtime`, o `ConfigMappingBuildItem` e torna `RealtimePublisher`, `ConnectRateLimiter` e `SgUserEventObserver` unremovable.
 
+## Anotações
+
+_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão local 2026.10.22, não publicada)._
+
+Nenhuma.
+
 ## Migrations
 
 Nenhuma (a extension não tem banco). (Confirmado)
