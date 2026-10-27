@@ -96,7 +96,7 @@ podman compose --profile mock up -d mockoon
 GET http://localhost:3100/cities-api/states
 ```
 
-A fonte do mock é `mocks/cities.mockoon.json` no repositório da extension; a cópia dos exemplos é feita à mão por enquanto (a sincronia automática é a T1.11 do plano da `cities`). Sem o perfil `mock`, o compose sobe os mesmos serviços de antes.
+O mock vive no host: a fonte é `mocks/cities.mockoon.json` no repositório de exemplos. A extension não mantém mock (existe uma cópia antiga lá, sem manutenção) e não há sincronização automática. Sem o perfil `mock`, o compose sobe os mesmos serviços de antes.
 
 ## Veja também
 
