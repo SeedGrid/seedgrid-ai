@@ -49,9 +49,13 @@ Host que define `quarkus.hibernate-orm.packages` próprio acrescenta `br.com.see
 
 ## Nas tenancy
 
-As tenancy migram a `cities` em cada banco (`seedgrid.migrations.host-managed=true`), conforme o toggle `modules.cities.enabled` de cada uma.
+As tenancy migram a `cities` em cada banco (`seedgrid.migrations.host-managed=true`). **Não existe** o toggle `modules.cities.enabled`: como `Address.city` é obrigatório, a `cities` migra sempre.
 
-> **Não verificado:** o nome exato do toggle nas tenancy e a integração delas com a `cities` não foram conferidos no código das tenancy para esta página (o plano da `cities` registra a integração, T1.7, como pendente em 2026-10-27).
+- **login-tenancy:** o banco da aplicação recebe 5 países, 27 estados e 5.571 cidades, e a consulta de cidade do cadastro acha o município (`CitiesSeedHostManagedIT`).
+- **subdomain-tenancy:** o master e cada banco de tenant recém-provisionado recebem o seed; os serviços da `cities` leem do master (`seedgrid.cities.persistence-unit=master`) (`CitiesSeedPerDatabaseIT`).
+- **Sozinha** (sem tenancy): migra o datasource default (`CitiesMigrationIT`).
+
+Os testes provam o banco que atendeu (`current_database()`), não só o status HTTP.
 
 ## Veja também
 

@@ -87,6 +87,17 @@ CitiesMigrations.migrate(dataSource, "tenant_a");  // schema específico
 
 Com `seedgrid.migrations.host-managed=true` o runner da extension não age e o host chama isso em cada banco.
 
+## Back falso (Mockoon) para o front
+
+Quem faz o front sem subir o back usa o Mockoon: o `seedgrid-cities-example` traz o serviço `mockoon` (perfil `mock`, porta `3100`) no `infra/compose.yml` dos exemplos, servindo as 13 rotas de `/cities-api` com dados de amostra:
+
+```text
+podman compose --profile mock up -d mockoon
+GET http://localhost:3100/cities-api/states
+```
+
+A fonte do mock é `mocks/cities.mockoon.json` no repositório da extension; a cópia dos exemplos é feita à mão por enquanto (a sincronia automática é a T1.11 do plano da `cities`). Sem o perfil `mock`, o compose sobe os mesmos serviços de antes.
+
 ## Veja também
 
 - [[SeedGrid/Extensions/cities/Visao-geral|Visão geral da cities]]
