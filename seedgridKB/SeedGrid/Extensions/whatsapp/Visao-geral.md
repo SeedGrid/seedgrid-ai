@@ -86,7 +86,15 @@ _Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, n�
 
 _Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, não publicada)._
 
-Nenhuma.
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `WhatsAppApi` | `br.com.seedgrid.whatsapp.services` | `DefaultWhatsAppApi` (`@DefaultBean`, `@ApplicationScoped`): só registra log e devolve `WhatsAppSendMessageResultDTO.empty()`, sem chamar nenhum provedor | Contrato de envio de mensagens (texto, mídia, áudio, localização, contato, reação, figurinha, template). Implementações reais: `EvolutionWhatsAppApi` (`@EvolutionProvider`) e `OfficialCloudWhatsAppApi` (`@OfficialProvider`). |
+
+**Como a implementação é escolhida:** o `WhatsAppApiProducer` (`@Produces WhatsAppApi`) lê `seedgrid.whatsapp.api` (`WhatsAppProvider.fromConfig`) e entrega `DefaultWhatsAppApi` (`default`), a Evolution (`evolution`) ou a Cloud (`whatsapp-cloud`); se o provider escolhido não estiver no classpath, **cai no `DefaultWhatsAppApi`** em silêncio. Quem injeta usa `WhatsAppApi` sem qualificador.
+
+**Como substituir:** o seletor é fixo nos três valores do enum `WhatsAppProvider`; o Javadoc do `@EvolutionProvider` diz que um provider novo declara o próprio qualifier, mas o produtor não o consulta. **[não verificado]** não há teste de um quarto provider nem de um bean próprio de `WhatsAppApi` convivendo com o produtor (risco de ambiguidade CDI). Para trocar o comportamento hoje, o caminho comprovado é escolher o valor de `seedgrid.whatsapp.api`.
+
+`WhatsAppChatApi`, `WhatsAppEvolutionMessagingApi`, `WhatsAppInstanceManagementApi`, `WhatsAppGroupApi` e `WhatsAppLabelApi` são interfaces exclusivas da Evolution (implementadas por `EvolutionWhatsAppApi`), sem implementação padrão: dependem do qualifier `@EvolutionProvider`.
 
 ## Migrations
 

@@ -6,7 +6,7 @@ import { describe, test } from 'node:test';
 // Guardião da PL-21: toda extension Java da KB de host tem as seções "Anotações" e "SPIs" na Visão geral
 // (a seção pode dizer apenas "Nenhuma."). Crates só em Rust (broker) ficam de fora.
 const EXTENSIONS = path.resolve(process.cwd(), 'seedgridKB/SeedGrid/Extensions');
-const SOMENTE_RUST = new Set(['broker', 'runtime', 'cities']);
+const SOMENTE_RUST = new Set(['broker', 'runtime']);
 
 async function visaoGeral(dir: string): Promise<string | null> {
   const file = path.join(EXTENSIONS, dir, 'Visao-geral.md');
