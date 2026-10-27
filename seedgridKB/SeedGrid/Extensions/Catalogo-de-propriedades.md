@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-10-20
+analisado-em: 2026-10-27
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -26,6 +26,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | backup | 46 |
 | Quarkus | billing | 33 |
 | Quarkus | cache | 21 |
+| Quarkus | cities | 13 |
 | Quarkus | commons | 5 |
 | Quarkus | exchange | 2 |
 | Quarkus | filemanagement | 26 |
@@ -59,7 +60,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **752** |
+| **Total** | | **765** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -203,6 +204,24 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.cache.annotations.ttl.<cache>` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | Duration | — | Boot | TTL de um cache anotado, por nome (vence o padrão, perde para o membro ttl) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
 | `seedgrid.cache.annotations.strict[.<cache>]` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | boolean | `false` | Runtime | Invalidação perdida lança CacheInvalidationFailedException (senão só loga ERROR) | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
 | `seedgrid.cache.key-scope` | Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS) | enum | `TENANT` | Runtime | Escopo padrão da chave dos caches anotados | [[SeedGrid/Extensions/cache/Configuracao\|cache/Configuracao]] |
+
+### cities
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.cities.enabled` | Propriedades | — | `true` (env `SEEDGRID_CITIES_ENABLED`) | — | Liga/desliga o módulo: desligado = sem migrations e rotas 404 | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.persistence-unit` | Propriedades | — | unidade default | — | Unidade de persistência das tabelas sg_* | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.max-search-results` | Propriedades | — | `50` (env `SEEDGRID_CITIES_MAX_SEARCH_RESULTS`) | — | Teto de linhas da busca de cidades por nome | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.rest.enabled` | Propriedades | — | `false` (env `SEEDGRID_CITIES_REST_ENABLED`) | — | Liga a REST autenticada (exige CITY_READ) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.rest.prefix` | Propriedades | — | `/cities-api` (env `SEEDGRID_CITIES_REST_PREFIX`) | — | Prefixo das rotas, sem barra no fim | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Propriedades | — | `false` | — | Definido pelas tenancy: o runner da extension não age, a tenancy migra cada banco | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.enabled` | Consulta pública (seedgrid.cities.public-rest.*) | — | `false` (env `SEEDGRID_CITIES_PUBLIC_REST_ENABLED`) | — | Liga /public/cities e /public/cities/by-ibge-code/{código} (rotas fixas, sem prefixo configurável) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.min-name-length` | Consulta pública (seedgrid.cities.public-rest.*) | — | `3` | — | Mínimo de caracteres do termo (depois de tirar acento e espaços) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.max-results` | Consulta pública (seedgrid.cities.public-rest.*) | — | `20` | — | Teto de cidades por busca; não há paginação (page, size e limit são ignorados) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.rate-permits` / `.rate-window-seconds` | Consulta pública (seedgrid.cities.public-rest.*) | — | `30` / `60` | — | Pedidos por IP por janela | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.global-permits` | Consulta pública (seedgrid.cities.public-rest.*) | — | `600` | — | Pedidos por janela somando todos os IPs (contra quem varia o IP) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.client-ip-header` | Consulta pública (seedgrid.cities.public-rest.*) | — | vazio | — | Cabeçalho com o IP real (ex.: X-Forwarded-For) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
+| `seedgrid.cities.public-rest.cache-seconds` | Consulta pública (seedgrid.cities.public-rest.*) | — | `86400` | — | Cache-Control: public, max-age; também há ETag (304 com If-None-Match) | [[SeedGrid/Extensions/cities/Configuracao\|cities/Configuracao]] |
 
 ### commons
 
