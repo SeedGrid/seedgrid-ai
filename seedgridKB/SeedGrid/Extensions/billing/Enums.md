@@ -30,7 +30,7 @@ Arquivos em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src
 | `AggregationFormula` | `dtos/AggregationFormula.java` | `CreateMeterRequest.aggregation` | sim |
 
 ## SubscriptionStatus
-FQN `br.com.seedgrid.billing.entities.SubscriptionStatus`. STRING em `sg_tenant_subscriptions.status varchar(32)` (V509), sem CHECK. Sem campos nem métodos.
+FQN `br.com.seedgrid.billing.entities.SubscriptionStatus`. STRING em `sg_tenant_subscriptions.status varchar(32)` (`V500__billing_ddl.sql`), sem CHECK. Sem campos nem métodos.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -55,7 +55,7 @@ stateDiagram-v2
 Também pode ser enviado em `POST /admin/subscriptions` (`AdminSubscriptionRequest.status`, qualquer valor do enum; ausente = `ACTIVE`). O filtro `active`/`inactive` da listagem admin é texto livre, não este enum.
 
 ## AccountStatus
-FQN `br.com.seedgrid.billing.entities.AccountStatus`. STRING em `accounts.status varchar(64)` (V502), sem CHECK.
+FQN `br.com.seedgrid.billing.entities.AccountStatus`. STRING em `accounts.status varchar(64)` (`V500__billing_ddl.sql`), sem CHECK.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -66,7 +66,7 @@ FQN `br.com.seedgrid.billing.entities.AccountStatus`. STRING em `accounts.status
 Na prática o status da conta não influencia o acesso: quem decide é a assinatura.
 
 ## PurchaseStatus
-FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `sg_billing_purchases.status varchar(64)` (V509), sem CHECK.
+FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `sg_billing_purchases.status varchar(64)` (`V500__billing_ddl.sql`), sem CHECK.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
@@ -76,7 +76,7 @@ FQN `br.com.seedgrid.billing.entities.PurchaseStatus`. STRING em `sg_billing_pur
 | `REFUNDED` | Reembolsada. | `REFUND_CREATED` marca a compra localizada por `providerReference`. | Confirmado. Como a consulta usa só `PAID`, deixa de contar. |
 
 ## AccountHistoryType
-FQN `br.com.seedgrid.billing.entities.AccountHistoryType`. STRING em `sg_billing_account_history.type varchar(40)` (V511), sem CHECK. O método `static of(SubscriptionLifecycleEvent.Type)` faz `valueOf(type.name())`: os 9 primeiros valores **precisam** ter o mesmo nome das constantes de `SubscriptionLifecycleEvent.Type`.
+FQN `br.com.seedgrid.billing.entities.AccountHistoryType`. STRING em `sg_billing_account_history.type varchar(40)` (`V500__billing_ddl.sql`), sem CHECK. O método `static of(SubscriptionLifecycleEvent.Type)` faz `valueOf(type.name())`: os 9 primeiros valores **precisam** ter o mesmo nome das constantes de `SubscriptionLifecycleEvent.Type`.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|

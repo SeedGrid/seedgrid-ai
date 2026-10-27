@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, billing, quarkus]
 fonte: java/seedgrid-quarkus-ext-billing
 branch: main
-commit: ba38efc347
-analisado-em: 2026-10-14
+commit: e00008e
+analisado-em: 2026-10-27
 ---
 
 # Billing (Quarkus): visão geral
@@ -186,26 +186,19 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 - `StripeProductBootstrap` garante o produto base no startup (best-effort).
 
 ## Migrations
-`db/migration/billing`, de **V500 a V513** (tabela de histórico default `sg_flyway_schema_history_billing`):
 
-| Versão | Conteúdo |
+`db/migration/billing`, faixa **V500–V599** (tabela de histórico default `sg_flyway_schema_history_billing`):
+
+| Arquivo | Conteúdo |
 |---|---|
-| V500 | `sg_billing_events` |
-| V501 | permissões de checkout/portal |
-| V502 | `sg_accounts`, `sg_plans`, `sg_plan_terms` |
-| V503 | timestamps com fuso |
-| V504 | `max_users`, `sg_plan_term_permissions` |
-| V505 | plano/term TRIAL com IDs fixos |
-| V506 | `trial_days` |
-| V507 | `additional_attributes jsonb` |
-| V508 | colunas `BaseEntity` |
-| V509 | `sg_tenant_subscriptions`, `sg_subscription_billing_cycles`, `sg_billing_purchases` |
-| V510 | permissões `PLAN_*`, `PLAN_TERM_*`, `SUBSCRIPTION_*` |
-| V511 | `sg_billing_account_history`, permissões `ACCOUNT_*` |
-| V512 | audiences |
-| V513 | `sg_plan_term_meters`, `sg_billing_cycle_meters` |
+| `V500__billing_ddl.sql` | as 12 tabelas: `sg_billing_events`, `sg_accounts`, `sg_billing_account_history`, `sg_plans`, `sg_plan_terms`, `sg_plan_term_permissions`, `sg_plan_term_meters`, `sg_tenant_subscriptions`, `sg_subscription_billing_cycles`, `sg_billing_cycle_meters`, `sg_billing_purchases` e `sg_billing_checkout_selections` |
+| `R__billing_seed.sql` | permissões (`BILLING_CHECKOUT_CREATE`, `BILLING_PORTAL_CREATE`, `BILLING_OVERVIEW_READ`, `PLAN_*`, `PLAN_TERM_*`, `SUBSCRIPTION_*`, `ACCOUNT_*`), vínculo à role `ADMIN` e o plano e term TRIAL com IDs fixos (term `00000000-0000-0000-0000-0000000000a2`). Checkout e portal são `audience 'client'`; o resto é da plataforma (`'platform'`) |
 
-**Confirmado** (arquivos SQL e README do core).
+A `BillingMigrations` migra a security antes (o seed usa `sg_permissions` e `sg_roles`). `sg_plan_term_permissions.permission_id` e `sg_accounts.company_id` não têm FK, de propósito. As colunas antigas de excedente continuam na tabela, **inertes** (o código não lê nem grava).
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V500 a V516) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
+
+**Confirmado** (arquivos SQL).
 
 ## Testes (não executados)
 - `seedgrid-billing-core/runtime/src/test`: unitários Mockito sem Quarkus. Cobrem services (`UsageServiceTest`, `SeatServiceTest`, `TrialEndedNotifierTest`, `PlanPublicationServiceTest`...), filtros (`AccessGateFilterTest`, `BillingApiToggleFilterTest`, `BillingPathsTest`), `BillingEntityManagerTest` e notificações.

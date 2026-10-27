@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, business-days, quarkus]
 fonte: java/seedgrid-quarkus-ext-business-days
 branch: (repositório ainda não criado)
-commit: —
-analisado-em: 2026-10-16
+commit: acc7904
+analisado-em: 2026-10-27
 ---
 
 # Business days (Quarkus): visão geral
@@ -60,6 +60,11 @@ public class MeuBusinessDaysRegionProvider implements BusinessDaysRegionProvider
 ## Migrations
 
 Faixa V1100–V1199, location `db/migration/business-days`, histórico `sg_flyway_schema_history_business_days`.
+
+- `V1100__business-days_ddl.sql`: as 5 tabelas (`sg_business_day_holidays`, `sg_business_day_week_profiles`, `sg_business_day_reference_holidays`, `sg_business_day_movable_settings` e `sg_business_day_work_overrides`). `company_id` é o escopo do calendário e **não é FK** (a extension funciona sem a tabela de empresas da security; nulo = todos).
+- `R__business-days_seed.sql`: permissões `BUSINESS_DAY_READ/CREATE/UPDATE/DELETE` (sem `audience`: valem para plataforma e cliente) e os feriados nacionais de referência.
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V1100 a V1104) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 - **Sozinha no host**: colocou a dependência, ela migra o datasource default na subida (`BusinessDaysMigrationRunner`). Sem flag.
 - **Com login-tenancy / subdomain-tenancy**: a tenancy migra (`seedgrid.migrations.host-managed=true` faz o runner não agir). login-tenancy: banco único. subdomain-tenancy: **master e cada tenant**, cada um com o seu calendário (a PU default aponta para o master no domínio do admin e para o tenant nos demais).

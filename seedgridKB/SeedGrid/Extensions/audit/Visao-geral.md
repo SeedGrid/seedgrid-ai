@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, audit]
 fonte: java/seedgrid-quarkus-ext-audit
 branch: main
-commit: d5bf32e509
-analisado-em: 2026-10-14
+commit: 786786a
+analisado-em: 2026-10-27
 ---
 
 # SeedGrid Audit (Quarkus) — Visão geral
@@ -123,7 +123,9 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 
 ## Migrations (PostgreSQL)
 
-`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `sg_audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `sg_flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.
+`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/V300__audit_ddl.sql`: `sg_audit_log`, `sg_audit_log_metadata`, `sg_audit_log_entities` e `sg_audit_log_users` (as duas últimas com os índices de apoio aos combos da tela). Faixa **V300–V399**, tabela de histórico `sg_flyway_schema_history_audit`. Não há seed (`R__audit_seed.sql` só se vier a existir). A extension só migra com `seedgrid.audit.persistence.strategy=JPA`. **Confirmado**. MongoDB não tem migrations.
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V300 a V303) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes (não executados)
 

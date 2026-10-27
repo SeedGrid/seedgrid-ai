@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, security]
 fonte: java/seedgrid-quarkus-ext-security
 branch: main
-commit: 450735386e
-analisado-em: 2026-10-14
+commit: 2cbdeff
+analisado-em: 2026-10-27
 ---
 
 # security — Visão geral (extension Quarkus)
@@ -164,7 +164,14 @@ public class MeuAccountUserActivationMailer implements AccountUserActivationMail
 
 ## Migrations
 
-`runtime/src/main/resources/db/migration/security`, **V200 a V235** (o README fala em V200–V234; V235 `entry_request_company_cascade` existe). Tabelas principais: `sg_users`, `sg_roles`, `sg_permissions`, `sg_role_permissions`, `sg_user_roles`, `sg_password_history`, `sg_entry_requests`, `sg_entry_request_validation_tokens`, `sg_backup_codes`, `sg_refresh_tokens`, `sg_companies`, `sg_user_companies`, `sg_user_company_roles`, `sg_default_user_avatars`. V204 semeia a role `ADMIN` (exigida pelo bootstrap).
+`runtime/src/main/resources/db/migration/security`, faixa **V200–V299**.
+
+- `V200__security_ddl.sql`: a estrutura inteira (17 tabelas): `sg_users`, `sg_roles`, `sg_permissions`, `sg_role_permissions`, `sg_user_roles`, `sg_password_history`, `sg_entry_requests`, `sg_entry_request_validation_tokens`, `sg_backup_codes`, `sg_refresh_tokens`, `sg_companies`, `sg_user_companies`, `sg_user_company_roles`, `sg_default_user_avatars`, `sg_social_login_pending`, `sg_terms_acceptance` e `sg_user_identity`.
+- `R__security_seed.sql`: as permissões (`USER_*`, `ROLE_*`, `COMPANY_*`, `SELFENTER_*`, `PERMISSION_READ`, `LOG_READ`...), a role `ADMIN` (exigida pelo bootstrap) e os vínculos. Não sobrescreve `for_integration`: quem libera permissão para integração é o host ou o admin.
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V200 a V280) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
+
+As notas históricas desta pasta (`Escopo-e-acesso`, `Isolamento-spis-e-migracao`, `Termos-de-uso`, `Enums`) citam os números antigos (V201, V236, V239, V255...): eles descrevem o que mudou **em cada ciclo**; hoje tudo isso está dentro da V200 e do `R__security_seed.sql`.
 
 ## Testes
 

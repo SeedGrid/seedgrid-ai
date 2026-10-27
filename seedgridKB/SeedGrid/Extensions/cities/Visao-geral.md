@@ -3,7 +3,7 @@ description: "Visão geral da extension cities: países, estados e municípios d
 tags: [seedgrid, extension, cities, ibge, quarkus]
 fonte: java/seedgrid-quarkus-ext-cities
 branch: main
-commit: bad4c48
+commit: 80d2593
 analisado-em: 2026-10-27
 ---
 
@@ -11,7 +11,7 @@ analisado-em: 2026-10-27
 
 > **Status: NÃO PUBLICADO.** Versão de trabalho **2026.10.22** (nunca publicada; sem compatibilidade com a 2026.10.0).
 
-Países, estados e municípios do Brasil, com código IBGE, semeados por migration (5.571 municípios, 27 estados e 5 países; Fernando de Noronha, `2605459`, entra pela `V1204`). É dado de referência **somente leitura**: o host consulta, não altera. O endereço guarda a cidade por id (`Address.city`, no `commons`): veja [[SeedGrid/Extensions/cities/Cidades-e-cidade-no-endereco|Cidades e a cidade no endereço]].
+Países, estados e municípios do Brasil, com código IBGE, semeados por migration (5.571 municípios, 27 estados e 5 países; Fernando de Noronha, `2605459`, entra no `R__cities_seed.sql`). É dado de referência **somente leitura**: o host consulta, não altera. O endereço guarda a cidade por id (`Address.city`, no `commons`): veja [[SeedGrid/Extensions/cities/Cidades-e-cidade-no-endereco|Cidades e a cidade no endereço]].
 
 - Configuração: [[SeedGrid/Extensions/cities/Configuracao|Configuração da cities]]
 - Exemplos: [[SeedGrid/Extensions/cities/Exemplos|Exemplos da cities]]
@@ -65,7 +65,7 @@ Erros no mesmo JSON do `ProblemDetails` do produto (`CitiesProblem`), sem depend
 
 Faixa **V1200–V1299**, location `db/migration/cities`, histórico `sg_flyway_schema_history_cities`.
 
-- `V1200` cria as três tabelas; `V1201` e `V1202` semeiam países, estados e cidades; `V1203` semeia a permissão `CITY_READ` e a liga à role `ADMIN` (só quando as tabelas da security existem); `V1204` inclui Fernando de Noronha.
+- `V1200__create_sg_tables.sql` cria as três tabelas; `R__cities_seed.sql` (**gerado** por `tools/gerar-seed.mjs`, não se edita à mão; correção de dado entra em `CORRECOES` do script) semeia países, estados e cidades (upsert por id, reexecutável); `R__cities_permissions.sql` semeia `CITY_READ` e a liga à role `ADMIN` (só quando as tabelas da security existem). **Compressão (2026-10-27):** as antigas `V1201` a `V1204` viraram esses dois `R__`; banco criado antes deve ser recriado.
 - **Sozinha no host:** colocou a dependência, ela migra o datasource default na subida (`CitiesMigrationRunner`, `@Priority` 100 depois do `StartupEvent` das demais). Com `enabled=false`, com `seedgrid.migrations.host-managed=true` ou sem datasource default, o runner não age.
 - **Com login-tenancy / subdomain-tenancy:** a tenancy migra (`host-managed=true`), cada banco com o seu dado.
 - Para migrar por código: `CitiesMigrations.migrate(DataSource)` ou `migrate(DataSource, schema)`; `CitiesMigrations.seedPermissions(...)` semeia `CITY_READ` depois, se a security chegou tarde.
@@ -73,12 +73,12 @@ Faixa **V1200–V1299**, location `db/migration/cities`, histórico `sg_flyway_s
 
 ## Permissões
 
-`CITY_READ` (semeada na `V1203`, ligada à role `ADMIN`). Semear é melhor esforço: se a tabela `permissions` do host tiver colunas obrigatórias que a `cities` não conhece, ela pula com aviso e **não derruba** o boot.
+`CITY_READ` (semeada no `R__cities_permissions.sql`, ligada à role `ADMIN`). Semear é melhor esforço: se a tabela `permissions` do host tiver colunas obrigatórias que a `cities` não conhece, ela pula com aviso e **não derruba** o boot.
 
 ## Armadilhas
 
 - Host com `quarkus.hibernate-orm.packages` próprio precisa acrescentar `br.com.seedgrid.cities.entities`; sem isso o boot falha com "Association ... Company.address.city targets the type City which does not belong to the same persistence unit".
-- Host com `quarkus.hibernate-orm.database.generation=drop-and-create` recebe as tabelas das entidades (as `unique` de `ibge_code`, `uf` e `code` estão declaradas nelas; sem isso a `V1204` quebrava).
+- Host com `quarkus.hibernate-orm.database.generation=drop-and-create` recebe as tabelas das entidades (as `unique` de `ibge_code`, `uf` e `code` estão declaradas nelas; sem isso o upsert do `R__cities_seed.sql` quebrava).
 - Teste de host sem identidade real (ex.: ITs que carregam o `commons`) precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`, porque a `cities` traz o `quarkus-security`.
 - `quarkus.hibernate-orm.validate-in-dev-mode` vem `false`: a `cities` migra no `StartupEvent`, depois da validação do Hibernate.
 - Ordenação por nome usa `collate "C"` (não depende da collation do banco).

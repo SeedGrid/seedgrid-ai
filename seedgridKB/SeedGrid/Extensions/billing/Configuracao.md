@@ -65,7 +65,7 @@ Abreviações usadas na coluna Origem:
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.billing.trial.enabled` | boolean | `true`/`false` | `true` | Não | Conta nova sem nenhuma assinatura ganha uma assinatura `ACTIVE` no term do trial. | `TrialService#provisionTrial` | `core-mp`: `${SEEDGRID_BILLING_TRIAL_ENABLED:true}` | runtime | `core/configs/BillingTrialConfig#enabled`; consumo `core/services/TrialService#provisionTrial` |
-| `seedgrid.billing.trial.plan-term-public-id` | String | `publicId` de um term do plano TRIAL | `00000000-0000-0000-0000-0000000000a2` (semeado pela V505) | Não | Define o term usado no trial. Se não existir, `provisionTrial` só registra um WARN, enquanto `/admin/plans/trial` lança `TrialPlanNotFoundException`. Um term de outro plano também é recusado. | `TrialService#requireTrialTerm`, `#provisionTrial` | `core-mp`: `${SEEDGRID_BILLING_TRIAL_PLAN_TERM_PUBLIC_ID:...}` | runtime | `core/configs/BillingTrialConfig#planTermPublicId` |
+| `seedgrid.billing.trial.plan-term-public-id` | String | `publicId` de um term do plano TRIAL | `00000000-0000-0000-0000-0000000000a2` (semeado pelo `R__billing_seed.sql`) | Não | Define o term usado no trial. Se não existir, `provisionTrial` só registra um WARN, enquanto `/admin/plans/trial` lança `TrialPlanNotFoundException`. Um term de outro plano também é recusado. | `TrialService#requireTrialTerm`, `#provisionTrial` | `core-mp`: `${SEEDGRID_BILLING_TRIAL_PLAN_TERM_PUBLIC_ID:...}` | runtime | `core/configs/BillingTrialConfig#planTermPublicId` |
 | `seedgrid.billing.feature-gate.exempt-company-ids` | Optional\<List\<Long\>\> | IDs internos de `Company`, separados por vírgula | — | Não | Companies nunca bloqueadas por `@SgRequiresPlanFeature`, por exemplo a empresa da plataforma. | `PlanFeatureGate#isExempt` | — | runtime | `core/configs/BillingFeatureGateConfig#exemptCompanyIds`; consumo `core/services/PlanFeatureGate` |
 
 ### 2.5 Limites dos `additionalAttributes` e reconciliação
@@ -129,7 +129,6 @@ Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 |---|---|---|
 | `quarkus.hibernate-orm.database.generation` | `none` | — |
 | `quarkus.hibernate-orm.physical-naming-strategy` | (não definido) | **Recomendado** pelos testes: `org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy`. As entidades da security exigem esse valor. O login-tenancy já o fixa. |
-| `quarkus.flyway.out-of-order` | (não definido) | Só para upgrade de bancos criados com versões ≤ 2026.07.02 (V501 destravada). Ver README do core. |
 
 > Login-tenancy e subdomain-tenancy desligam o Flyway nativo e rodam as migrations por módulo (`LoginTenancyMigrationService`, `MigrationService`). Nesses hosts, os `quarkus.flyway.*` acima não governam a ordem.
 
@@ -207,7 +206,7 @@ seedgrid.billing.portal.return-url=https://<seu-app>/assinatura
 # ---------- Trial ----------
 # Default true.
 seedgrid.billing.trial.enabled=true
-# Default 00000000-0000-0000-0000-0000000000a2 (seed V505).
+# Default 00000000-0000-0000-0000-0000000000a2 (seed `R__billing_seed.sql`).
 #seedgrid.billing.trial.plan-term-public-id=<public-id-do-term-trial>
 
 # ---------- Feature gate ----------

@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
-commit: fe62530a29
-analisado-em: 2026-10-14
+commit: 08b1934
+analisado-em: 2026-10-27
 ---
 
 # subdomain-tenancy — Visão geral (Quarkus)
@@ -153,11 +153,12 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 
 ## Migrations
 
-| Location | Versões | History | Onde roda |
+| Location | Arquivos | History | Onde roda |
 |---|---|---|---|
-| `db/migration/subdomain-tenancy` | `V100`–`V110` (tenants, root user, campos de trial legados, snapshots, `sg_tenant_migration_state`, fencing token, índices, `sg_tenant_validation_tokens`, hashes de busca de privacy, conta de billing) | `sg_flyway_schema_history_subdomain_tenancy` | master |
-| `db/migration/tenancy` | `V706__timestamps_com_fuso.sql` | — | **Não aplicada** pela extension (nenhuma location aponta para ela). `java/MIGRATION_RANGES.md` documenta a faixa 100–199 e trata a V706 como exceção legada |
+| `db/migration/subdomain-tenancy` | `V100__subdomain-tenancy_ddl.sql` (3 tabelas: `sg_tenants`, `sg_tenant_validation_tokens`, `sg_tenant_migration_state`; datas em `timestamptz`, inclusive o lock de migração entre instâncias) | `sg_flyway_schema_history_subdomain_tenancy` | master |
 | `db/migration/master` / `db/migration/tenant` (do host) | livres | `sg_flyway_schema_history_master` / `_tenant` | master no boot / tenant no provisionamento e migração |
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V100 a V111 e a `V706` de timestamps, que ficava órfã em `db/migration/tenancy` e foi removida) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes
 

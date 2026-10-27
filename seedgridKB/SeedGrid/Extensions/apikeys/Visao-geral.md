@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, apikeys]
 fonte: java/seedgrid-quarkus-ext-apikeys
 branch: main
-commit: bfc9c25877
-analisado-em: 2026-10-14
+commit: 651ee2b
+analisado-em: 2026-10-27
 ---
 
 # API Keys (Quarkus) — visão geral
@@ -58,7 +58,7 @@ Pontos relevantes:
 - Header: `x-api-key` é **fixo** (`ApiKeyConstants.APIKEY_HEADER`), não configurável. `Authorization: Bearer` só é aceito se o token começar com `sgkey_`. O README recomenda `x-api-key`, porque com `smallrye-jwt` na classpath os dois mecanismos disputam o `Authorization`.
 - `OPTIONS` não autentica. IP do cliente vem de `X-Forwarded-For` (primeiro valor) ou `X-Real-IP`.
 - Chave revogada → `ApiKeyRevokedException`; expirada → `ApiKeyExpiredException`; role deixou de ser de integração ou foi desativada, ou dono saiu da empresa da chave → falha de autenticação (fail closed).
-- Escopo por empresa (V607): a chave guarda a empresa corrente de quem a criou; ao autenticar, `ApiKeyCompanyContextFilter` (`Priorities.AUTHORIZATION - 9`) fixa essa empresa como única permitida e corrente. Chave sem escopo não toca o contexto.
+- Escopo por empresa (coluna `company_id` da `V600`): a chave guarda a empresa corrente de quem a criou; ao autenticar, `ApiKeyCompanyContextFilter` (`Priorities.AUTHORIZATION - 9`) fixa essa empresa como única permitida e corrente. Chave sem escopo não toca o contexto.
 - Fora da empresa-plataforma, roles com qualquer permissão de audience `platform` não são elegíveis (`ApiKeyManagementService#listEligibleRoles`).
 
 ## API pública
@@ -88,7 +88,7 @@ Os endpoints de gestão chamam `ensureManagementEnabled()` (`ApiKeyActivationPol
 
 ### Permissões (migrations)
 
-`APIKEY_CREATE`, `APIKEY_READ`, `APIKEY_REVOKE` (V602). V605 marcou `audience='client'`; V606 reverteu para audience nula (visível nos dois escopos).
+`APIKEY_CREATE`, `APIKEY_READ`, `APIKEY_REVOKE` (`R__apikeys_seed.sql`), com `audience` nula (visível nos dois escopos).
 
 ## Anotações
 
@@ -118,7 +118,14 @@ public class MeuApiKeyActivationPolicy implements ApiKeyActivationPolicy {
 
 ## Migrations (Confirmado)
 
-`runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `sg_api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `sg_flyway_schema_history_apikeys`).
+`runtime/src/main/resources/db/migration/apikeys/`, faixa **V600–V699**, location `classpath:db/migration/apikeys`, histórico `sg_flyway_schema_history_apikeys`.
+
+- `V600__apikeys_ddl.sql`: tabela `sg_api_keys` (só o hash e o prefixo da chave; datas em `timestamptz`; snapshot de usuário; `company_id` com **FK para `sg_companies`** e `owner_id` para `sg_users`, ambas `ON DELETE CASCADE`).
+- `R__apikeys_seed.sql`: permissões `APIKEY_CREATE`, `APIKEY_READ` e `APIKEY_REVOKE` na role `ADMIN`, com `audience` nula (valem nos dois escopos).
+
+Depende da security (`sg_users`, `sg_roles`, `sg_companies`): a `ApiKeysMigrations` migra a security antes. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]]).
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V600 a V607) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes existentes (não executados)
 

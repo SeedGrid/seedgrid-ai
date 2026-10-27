@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, backup]
 fonte: java/seedgrid-quarkus-ext-backup
 branch: main
-commit: 3bed4075ea
-analisado-em: 2026-10-14
+commit: 20dd0be
+analisado-em: 2026-10-27
 ---
 
 # Backup (extension Quarkus)
@@ -147,12 +147,12 @@ public class MeuBackupExporter implements BackupExporter {
 
 `runtime/src/main/resources/db/migration/backup/`, tabela de histórico Flyway `sg_flyway_schema_history_backup` (definida em `BackupMigrations.HISTORY_TABLE`):
 
-| Versão | Conteúdo |
+| Arquivo | Conteúdo |
 |---|---|
-| V400 | `sg_export_jobs`, `sg_export_artifacts` (PostgreSQL, `TIMESTAMPTZ`, FK `ON DELETE CASCADE`) |
-| V401 | Insere permissões `BACKUP_CREATE/READ/DOWNLOAD/DELETE` em `sg_permissions` e vincula ao papel `ADMIN` (`sg_roles`, `sg_role_permissions`) — exige tabelas da extensão de segurança |
-| V402 | Coluna `active` nas duas tabelas |
-| V403 | `audience = null` nas permissões de backup (se `sg_permissions` existir) |
+| `V400__backup_ddl.sql` | `sg_export_jobs` e `sg_export_artifacts` (PostgreSQL, `TIMESTAMPTZ`, FK `ON DELETE CASCADE`, coluna `active`) |
+| `R__backup_seed.sql` | permissões `BACKUP_CREATE/READ/DOWNLOAD/DELETE` em `sg_permissions`, vinculadas ao papel `ADMIN`. Exige as tabelas da security: o host migra a security antes (a `backup` não depende dela por artefato) |
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V400 a V403) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Anotações
 

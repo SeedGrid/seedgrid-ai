@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, ai-pricing, quarkus]
 fonte: java/seedgrid-quarkus-ext-ai-pricing
 branch: main
-commit: 0608ca66b5
-analisado-em: 2026-10-14
+commit: fbf6eae
+analisado-em: 2026-10-27
 ---
 
 # AI Pricing (Quarkus): visão geral
@@ -112,16 +112,19 @@ _Fonte: código de `seedgrid-quarkus-ext-ai-pricing` (versão local 2026.10.22, 
 Nenhuma.
 
 ## Migrations
-`db/migration/ai-pricing`, de **V900 a V903**. Histórico em `sg_flyway_schema_history_ai_pricing`.
 
-| Versão | Conteúdo |
+`db/migration/ai-pricing`, faixa **V900–V999**. Histórico em `sg_flyway_schema_history_ai_pricing`.
+
+| Arquivo | Conteúdo |
 |---|---|
-| V900 | tabelas `sg_ai_models`, `sg_ai_model_prices`, `sg_ai_model_prices_to_approve`, `sg_ai_pricing_config` |
-| V901 | permissões `AI_MODEL_READ/CREATE/UPDATE/DELETE`, `AI_MODEL_PRICE_CREATE` e `AI_PRICE_APPROVE` (audience `platform`, vinculadas a `ADMIN`) |
-| V902 | seed de modelos OpenAI (`gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-5.1`) e da config do robô (ligado, cron `0 0 6 * * ?`, `source_url` = página de preços da OpenAI) |
-| V903 | coluna `active` |
+| `V900__ai-pricing_ddl.sql` | `sg_ai_models`, `sg_ai_model_prices`, `sg_ai_model_prices_to_approve`, `sg_ai_pricing_config` (com `active`) |
+| `R__ai-pricing_seed.sql` | permissões `AI_MODEL_READ/CREATE/UPDATE/DELETE`, `AI_MODEL_PRICE_CREATE` e `AI_PRICE_APPROVE` (audience `platform`, vinculadas a `ADMIN`), os modelos OpenAI (`gpt-4.1-nano`, `gpt-4.1-mini`, `gpt-5.1`) e a config do robô (ligado, cron `0 0 6 * * ?`, `source_url` = página de preços da OpenAI) |
+
+O seed de permissões usa `sg_permissions`/`sg_roles`: o host precisa da security migrada antes.
 
 A extension migra sozinha o datasource default na subida (sem flag). Nas tenancy, quem migra é a tenancy (master do subdomain-tenancy; banco único do login-tenancy), com o toggle `modules.ai-pricing.enabled` (default `true`). Ver [[SeedGrid/Extensions/ai-pricing/Configuracao|Configuração]].
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V900 a V903) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes (não executados)
 - `runtime/src/test`:

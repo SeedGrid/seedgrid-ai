@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, notification]
 fonte: java/seedgrid-quarkus-ext-notification
 branch: main
-commit: b989a6248a
-analisado-em: 2026-10-14
+commit: fe4400a
+analisado-em: 2026-10-27
 ---
 
 # Notification (Quarkus) — visão geral
@@ -103,7 +103,12 @@ Nenhuma.
 
 ## Migrations
 
-`runtime/src/main/resources/db/migration/notification/V1000__notification.sql` e `V1001__notification_permissions.sql`. Faixa reservada **1000–1099** (README). V1001 insere `NOTIFICATION_READ`/`NOTIFICATION_UPDATE` com `audience='platform'` (se a tabela `permissions` existir) e as vincula à role `ADMIN` (se `roles`/`sg_role_permissions` existirem).
+`runtime/src/main/resources/db/migration/notification/`, faixa reservada **1000–1099**.
+
+- `V1000__notification.sql`: `sg_notification_rule`, `sg_notification_event` e `sg_notification_delivery`.
+- `R__notification_seed.sql`: `NOTIFICATION_READ` e `NOTIFICATION_UPDATE` com `audience='platform'`, vinculadas à role `ADMIN` (a role global, `company_id` nulo).
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V1000 e V1001; a `V1001__notification_permissions.sql` foi absorvida pelo seed) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes existentes (não executados)
 

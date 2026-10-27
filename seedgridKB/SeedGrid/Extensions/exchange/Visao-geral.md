@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, exchange, quarkus]
 fonte: java/seedgrid-quarkus-ext-exchange
 branch: main
-commit: 30f1fd6005
-analisado-em: 2026-10-14
+commit: b894de7
+analisado-em: 2026-10-27
 ---
 
 # Exchange (Quarkus): visão geral
@@ -121,17 +121,17 @@ public class MeuExchangeAuditSink implements ExchangeAuditSink {
 ```
 
 ## Migrations
-`db/migration/exchange`, de **V800 a V804**. Histórico em `sg_flyway_schema_history_exchange`.
 
-| Versão | Conteúdo |
+`db/migration/exchange`, faixa **V800–V899**. Histórico em `sg_flyway_schema_history_exchange`.
+
+| Arquivo | Conteúdo |
 |---|---|
-| V800 | tabelas |
-| V801 | permissões `CURRENCY_*`, audience `platform`, vinculadas a `ADMIN` |
-| V802 | seed USD-BRL: PTAX, cron às 7h, São Paulo |
-| V803 | histórico PTAX sem `$select` |
-| V804 | `sg_currency_exchange_rates.active` |
+| `V800__exchange_ddl.sql` | `sg_currencies` e `sg_currency_exchange_rates` (com `active`, só para cumprir o contrato de `BaseEntity`) |
+| `R__exchange_seed.sql` | permissões `CURRENCY_*` (audience `platform`, vinculadas a `ADMIN`) e a moeda USD-BRL: fonte PTAX do Banco Central, cron às 7h, São Paulo |
 
 A extension migra sozinha o datasource default na subida (sem flag). Nas tenancy, quem migra é a tenancy (master do subdomain-tenancy; banco único do login-tenancy), com o toggle `modules.exchange.enabled` (default `true`).
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V800 a V804) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes (não executados)
 - `runtime/src/test`: `CurrencyRateNotificationTest`, `CurrencySourceResolverTest` e `ExchangeNotificationCatalogTest`.

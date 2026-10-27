@@ -35,7 +35,7 @@ Caminhos relativos a `java/seedgrid-quarkus-ext-subdomain-tenancy/runtime/src/ma
 | `MIGRATING` | Migração em andamento com lock | Gravado por `tryAcquireLock`; se outra instância tem lock ativo, o gate de login devolve 503 `tenant_migration_in_progress`; `TenantHealthService` → `MIGRATION_RUNNING` | — |
 | `FAILED` | Última tentativa falhou | Gravado por `markFailed` (com `last_error`); gate devolve 503 `tenant_migration_failed`; health → `MIGRATION_FAILED` | Nova tentativa é permitida (login ou `trigger`) |
 
-- **Persistência:** coluna `sg_tenant_migration_state.status VARCHAR(20) NOT NULL DEFAULT 'PENDING'` (migration `V104`), gravada como `name()` por SQL direto (`TenantMigrationStateStore`, sem JPA). **Não há CHECK constraint**; a leitura é tolerante: `valueOf(status.trim().toUpperCase())`, qualquer valor desconhecido vira `PENDING`.
+- **Persistência:** coluna `sg_tenant_migration_state.status VARCHAR(20) NOT NULL DEFAULT 'PENDING'` (migration `V100`), gravada como `name()` por SQL direto (`TenantMigrationStateStore`, sem JPA). **Não há CHECK constraint**; a leitura é tolerante: `valueOf(status.trim().toUpperCase())`, qualquer valor desconhecido vira `PENDING`.
 - **JSON:** `name()` em `status` (migrações, gate 503 — `UNKNOWN` quando não há estado) e `migrationStatus` (health, `null` se não há linha).
 - **Transições** (confirmadas nas chamadas do coordinator/store):
 

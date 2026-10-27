@@ -49,7 +49,7 @@ Variáveis de ambiente pela regra MP, sem ambiguidade:
 | `history_url` | — | URL da série histórica (`{rangeStart:FMT}`, `{date:FMT}`). Vazio faz o gráfico usar só as coletas diárias. |
 | `active` | `true` | Moeda inativa não é agendada nem buscada. |
 
-Origem: `rt/entities/CurrencyEntity.java`, `rt/dtos/CurrencyUpsertRequest.java`, `runtime/src/main/resources/db/migration/exchange/V802__seed_currencies.sql`. A seed V802 cria `USD-BRL` com a fonte PTAX/BCB, `cotacaoVenda`, cron às 7h e fuso `America/Sao_Paulo`.
+Origem: `rt/entities/CurrencyEntity.java`, `rt/dtos/CurrencyUpsertRequest.java`, `runtime/src/main/resources/db/migration/exchange/R__exchange_seed.sql`. O seed cria `USD-BRL` com a fonte PTAX/BCB, `cotacaoVenda`, cron às 7h e fuso `America/Sao_Paulo`.
 
 ### 2.3 Toggle do módulo
 

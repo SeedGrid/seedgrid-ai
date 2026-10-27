@@ -25,9 +25,9 @@ FQN: `br.com.seedgrid.logintenancy.enums.SignupRequestStatus` — "Estado de uma
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
 | `PENDING_EMAIL_VERIFICATION` | Solicitação criada, aguardando o código enviado por e-mail | Valor inicial (`SignupRequestEntity` `@PrePersist`, quando nulo); reatribuído no `resend-email`; filtro de `SignupRequestRepository#findPendingByDocument` (reaproveitamento da solicitação e `document-status = PENDING_CONFIRMATION`); índices únicos parciais da `V703` | Confirmado |
-| `CONFIRMED` | Código confirmado: `Company` e usuário root criados | Atribuído em `LoginTenancySignupController#confirmEmail`; a linha sai dos índices parciais da V703 e vira histórico | Confirmado |
+| `CONFIRMED` | Código confirmado: `Company` e usuário root criados | Atribuído em `LoginTenancySignupController#confirmEmail`; a linha sai dos índices parciais da V700 e vira histórico | Confirmado |
 
-- **Persistência**: `@Enumerated(EnumType.STRING)`, coluna `status varchar(64) not null` (V700). Não há CHECK constraint; a V703 só referencia `'PENDING_EMAIL_VERIFICATION'` nos índices parciais (coerente com o enum).
+- **Persistência**: `@Enumerated(EnumType.STRING)`, coluna `status varchar(64) not null` (V700). Não há CHECK constraint; os índices parciais da V700 só referencia `'PENDING_EMAIL_VERIFICATION'` nos índices parciais (coerente com o enum).
 - **JSON**: nome da constante (`SignupResponse.status`, `ConfirmSignupResponse.status`), serialização padrão do Jackson.
 - **Observação (Confirmado)**: `SignupRequestRepository#findByEmail` não filtra por status; logo `resend-email` numa solicitação já `CONFIRMED` gera novo código e a devolve a `PENDING_EMAIL_VERIFICATION`.
 

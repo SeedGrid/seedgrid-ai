@@ -54,7 +54,7 @@ Arquivo: `domains/ExportStatus.java` — FQN `br.com.seedgrid.backup.domains.Exp
 
 **Serialização**
 - JSON: nome da constante (`"DONE_NOTIFIED"`); sem `@JsonValue`/`@JsonProperty` (Confirmado). `ExportResponse.status` sai assim.
-- Banco: `@Enumerated(EnumType.STRING)` em `ExportJob.status`; coluna `status VARCHAR(20)` (V400). **Não há CHECK constraint** sobre os valores — só `chk_progress`. O comentário SQL da V400 lista `REQUESTED, QUEUED, RUNNING, DONE, FAILED, EXPIRED, CANCELLED` (**omite `DONE_NOTIFIED`**, só no comentário; o valor cabe em 20 caracteres e é gravado normalmente).
+- Banco: `@Enumerated(EnumType.STRING)` em `ExportJob.status`; coluna `status VARCHAR(20)` (`V400__backup_ddl.sql`). **Não há CHECK constraint** sobre os valores — só `chk_progress`. O comentário SQL da V400 lista `REQUESTED, QUEUED, RUNNING, DONE, FAILED, EXPIRED, CANCELLED` (**omite `DONE_NOTIFIED`**, só no comentário; o valor cabe em 20 caracteres e é gravado normalmente).
 
 **Transições confirmadas no código**
 

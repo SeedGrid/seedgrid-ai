@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Calendário em camadas: feriados prontos, móveis e "vai trabalhar"
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-business-days` **2026.10.22** (migrations `V1102` a `V1104`); exige `seedgrid-security` 2026.10.22 para o 403 `COMPANY_REQUIRED` com várias empresas. A extension ainda não tem repositório publicado ([[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]]). Base: [[SeedGrid/Extensions/business-days/Visao-geral|Visão geral]] e [[SeedGrid/Extensions/business-days/Configuracao|Configuração]].
+> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-business-days` **2026.10.22** (tabelas do calendário em camadas na `V1100`); exige `seedgrid-security` 2026.10.22 para o 403 `COMPANY_REQUIRED` com várias empresas. A extension ainda não tem repositório publicado ([[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]]). Base: [[SeedGrid/Extensions/business-days/Visao-geral|Visão geral]] e [[SeedGrid/Extensions/business-days/Configuracao|Configuração]].
 
 ## O calendário já traz os feriados do Brasil?
 
@@ -35,7 +35,7 @@ curl -X PUT /business-days/movable-holidays -d '{"code":"CARNIVAL","enabled":nul
 
 ## Como a empresa trabalha num dia que seria feriado?
 
-Cadastra um **"vai trabalhar"** (`V1102`, `sg_business_day_work_overrides`): exceção por **data concreta**, com `weight` opcional entre 0 e 1 e motivo (até 200 caracteres).
+Cadastra um **"vai trabalhar"** (tabela `sg_business_day_work_overrides`): exceção por **data concreta**, com `weight` opcional entre 0 e 1 e motivo (até 200 caracteres).
 
 ```bash
 curl -X POST /business-days/work-overrides -d '{"date":"2026-11-20","reason":"plantão"}'
@@ -99,7 +99,7 @@ Base `/business-days`, permissões `BUSINESS_DAY_READ`, `BUSINESS_DAY_CREATE`, `
 
 - **Comportamento:** o calendário passa a considerar os nacionais semeados e os móveis **automaticamente** (antes só valiam os cadastrados). Quem cadastrava Natal, Tiradentes etc. à mão pode apagar o cadastro (manter não faz mal). Para trabalhar num desses dias, use "vai trabalhar" ou desmarque o móvel.
 - `BusinessDayService` ganhou dependências no construtor (repositórios de exceções e de referência, `MovableHolidayService`, `BusinessDaysRegionProvider`); por CDI nada muda, quem o instancia à mão ajusta. `BusinessCalendar.of(weights, holidays)` segue valendo (feriados como do tenant, sem referência nem móveis); o completo é `BusinessCalendar.builder()`.
-- Migrations aditivas `V1102` a `V1104` (faixa 1100–1199); a `V1100` não foi reescrita (preserva o checksum do Flyway).
+- A estrutura do calendário em camadas está na `V1100__business-days_ddl.sql` (as antigas `V1102` a `V1104` foram absorvidas na compressão de 2026-10-27; banco antigo deve ser recriado).
 - Pacote `spis` (rename): [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]].
 - Com `company-required=true` (padrão no `login-tenancy`), quem não tem empresa corrente deixa de ler o calendário do tenant.
 

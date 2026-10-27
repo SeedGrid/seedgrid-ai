@@ -120,7 +120,7 @@ seedgrid.audit.jpa.password=<SEGREDO:audit-db-password>
 
 ## 8. Receitas
 
-- **Usar o banco do próprio host (JPA):** inclua `seedgrid-audit-postgresql`; mantenha `strategy=JPA`. Com `quarkus-hibernate-orm` ativo o provider usa o `EntityManager` CDI. Garanta que as migrations `db/migration/audit` (V300–V303) sejam aplicadas — revise `quarkus.flyway.locations` para combinar com as do host.
+- **Usar o banco do próprio host (JPA):** inclua `seedgrid-audit-postgresql`; mantenha `strategy=JPA`. Com `quarkus-hibernate-orm` ativo o provider usa o `EntityManager` CDI. Garanta que as migrations `db/migration/audit` (`V300__audit_ddl.sql`) sejam aplicadas — revise `quarkus.flyway.locations` para combinar com as do host.
 - **Banco de auditoria separado (JPA standalone):** sem `EntityManager` CDI resolvível, informe `seedgrid.audit.jpa.jdbc.url/username/password` (ou `SEEDGRID_AUDIT_DB_URL/USERNAME/PASSWORD`).
 - **MongoDB:** inclua `seedgrid-audit-mongodb`, defina `SEEDGRID_AUDIT_MONGODB_URI` (ou a propriedade) e garanta um producer de `MongoDatabase`: a extension não o produz; `seedgrid-login-tenancy` (banco único, nome via `seedgrid.audit.mongodb.database`) e `seedgrid-subdomain-tenancy` (banco por tenant) produzem um `@DefaultBean`.
 - **Isolamento de leitura por tenant/company:** não é por propriedade; implemente `AuditReadScopeProvider` (ver [[SeedGrid/Extensions/audit/Exemplos|Exemplos]]).

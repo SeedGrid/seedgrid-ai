@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, login-tenancy]
 fonte: java/seedgrid-quarkus-ext-login-tenancy
 branch: main
-commit: c67581bda9
-analisado-em: 2026-10-14
+commit: 5958b92
+analisado-em: 2026-10-27
 ---
 
 # Login-tenancy (Quarkus) — visão geral
@@ -69,7 +69,7 @@ flowchart LR
     BI -- off --> AK{modules.apikeys}
     AK -- on --> AP[apikeys] --> X
     AK -- off --> X{ai-pricing / exchange / business-days<br/>modules.*.enabled}
-    X --> LT[login-tenancy<br/>V700-V703] --> APP["app (database.locations)<br/>flyway_schema_history"]
+    X --> LT[login-tenancy<br/>V700] --> APP["app (database.locations)<br/>flyway_schema_history"]
 ```
 
 Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `sg_flyway_schema_history_<modulo>` (`ai-pricing` → `sg_flyway_schema_history_ai_pricing`; `login-tenancy` → `sg_flyway_schema_history_login_tenancy`); a aplicação usa `seedgrid.login-tenancy.database.locations` (padrão `classpath:db/migration/app`) e `flyway_schema_history`. Falha em qualquer módulo lança `MigrationExecutionException` e derruba o startup.
@@ -136,7 +136,9 @@ public class MeuLoginTenancyTemplateProvider implements LoginTenancyTemplateProv
 
 ## Migrations próprias
 
-`runtime/src/main/resources/db/migration/login-tenancy/`: `V700__signup_request.sql`, `V701__privacy_search_hashes.sql`, `V702__timestamps_com_fuso.sql`, `V703__signup_request_pendente_unica_por_cnpj.sql`, `V704__signup_request_person_type_cpf_cnpj.sql`, `V705__signup_request_terms.sql`, `V706__signup_request_address_city.sql` (faixa 700; V704 a V706 são do ciclo 2026.10.22, não publicado). Veja [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]] (cadastro de pessoa física, termos e `cityId`). Há um `docs/RUNBOOK-remocao-da-V704.md` (não analisado em detalhe).
+`runtime/src/main/resources/db/migration/login-tenancy/V700__login-tenancy_ddl.sql` (faixa 700): a tabela `sg_signup_request` completa, já com os hashes de busca de privacy, as datas em `timestamptz`, o índice único parcial de solicitação pendente por CNPJ (que ignora linhas `CONFIRMED`), o tipo de pessoa (CPF/CNPJ), o aceite dos termos e a cidade. Sem seed. Veja [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]].
+
+**Compressão das migrations (2026-10-27):** o histórico anterior (V700 a V706) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
 ## Testes existentes (não executados)
 

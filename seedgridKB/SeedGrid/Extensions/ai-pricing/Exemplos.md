@@ -90,7 +90,7 @@ Para cadastrar um modelo, `POST /admin/ai/models` recebe `{ "provider": "openai"
 ## 5. Configuração por tenancy
 
 ```properties
-# login-tenancy / subdomain-tenancy: a tenancy migra (V900–V903); o toggle é do módulo, default true
+# login-tenancy / subdomain-tenancy: a tenancy migra (`V900` e `R__ai-pricing_seed.sql`); o toggle é do módulo, default true
 #seedgrid.login-tenancy.modules.ai-pricing.enabled=true
 # subdomain-tenancy já define:
 # seedgrid.ai-pricing.persistence-unit=master

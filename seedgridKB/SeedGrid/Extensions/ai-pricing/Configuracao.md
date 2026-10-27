@@ -39,7 +39,7 @@ Variáveis de ambiente pela regra MP, sem ambiguidade:
 
 ### 2.2 Configuração em banco (`sg_ai_pricing_config`, linha única)
 
-| Campo | Default na entidade | Seed V902 | Edição | Efeito |
+| Campo | Default na entidade | Seed (`R__ai-pricing_seed.sql`) | Edição | Efeito |
 |---|---|---|---|---|
 | `enabled` | `false` (boolean Java) | `true` | `PUT /admin/ai/price-approvals/config` `{enabled}` | Com `false` (ou cron vazio), o job não é agendado. |
 | `cron` | `0 0 6 * * ?` | `0 0 6 * * ?` | `{cron}` | Cron Quartz do robô. Se for inválido, faz rollback e retorna erro ao admin. |
@@ -112,6 +112,6 @@ seedgrid.app.ai-pricing.timezone=America/Sao_Paulo
 | subdomain-tenancy | `seedgrid.ai-pricing.persistence-unit=master` (já default da extension de tenancy) |
 
 ## 9. Dúvidas e lacunas
-- O default da URL de origem diverge: a entidade usa `https://openai.com/api/pricing`, enquanto a propriedade e o seed V902 usam `https://developers.openai.com/api/docs/pricing`. Uma linha criada via `PUT config` sem linha prévia herda o valor da entidade.
+- O default da URL de origem diverge: a entidade usa `https://openai.com/api/pricing`, enquanto a propriedade e o seed `R__ai-pricing_seed.sql` usam `https://developers.openai.com/api/docs/pricing`. Uma linha criada via `PUT config` sem linha prévia herda o valor da entidade.
 - O default `enabled=false` da entidade, somado ao seed `true`, significa que, se a linha for criada pelo `PUT` antes do seed, o robô nasce desligado.
 - O fuso inválido gera uma mensagem de "cron inválido" (**Inferência**).

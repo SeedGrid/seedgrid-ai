@@ -34,7 +34,7 @@ Arquivo: `…/security/twofactors/TwoFactorMethodType.java` — FQN `br.com.seed
 
 - **Campos/métodos:** `getCode()` (igual ao nome da constante) e `static fromCode(String)` — comparação `equalsIgnoreCase`, retorna `null` se não achar. `fromCode` não é chamado em lugar nenhum do módulo.
 - **JSON:** sem `@JsonValue`/`@JsonCreator`; o Jackson usa o **nome exato** (maiúsculas, case-sensitive) em `Enable2FADTO.method`, `SetupConfirmDTO.method` e `Enable2FAResponseDTO.method`. Valor desconhecido → erro de desserialização (400).
-- **Persistência:** o enum **não** é persistido; `users.two_factor_primary_method` é `VARCHAR(32)` com o código textual (`User#enableTwoFactor(String)`). Não há CHECK constraint (V202), então estratégias custom (ex.: `SMS`) podem ser gravadas.
+- **Persistência:** o enum **não** é persistido; `users.two_factor_primary_method` é `VARCHAR(32)` com o código textual (`User#enableTwoFactor(String)`). Não há CHECK constraint (`V200__security_ddl.sql`), então estratégias custom (ex.: `SMS`) podem ser gravadas.
 - **Config:** `seedgrid.security.2f.allowed-methods` é `List<String>` (não usa o enum); os valores são normalizados com `trim().toUpperCase()` e cruzados com as estratégias registradas. Ver [[SeedGrid/Extensions/security/Configuracao|Configuração §2.5]].
 - **Observação:** como o DTO usa o enum, um método custom (`SMS`) não pode ser ativado por `POST /2f/enable` (o corpo é rejeitado) mesmo estando em `allowed-methods`. *Inferência* a partir do tipo do campo `method`.
 
@@ -50,7 +50,7 @@ Arquivo: `…/security/entities/EntryRequestStatus.java` — FQN `br.com.seedgri
 | `REJECTED` | Rejeitada por um administrador | `EntryRequest#reject`; elegível a purga | Confirmado |
 | `EXPIRED` | Expirada | `EntryRequest#expire` (ao aprovar/confirmar uma solicitação vencida) e `EntryRequestRepository#expireOldRequests` (PENDING_EMAIL/PENDING_APPROVAL com `expiresAt` vencido); elegível a purga | Confirmado |
 
-- **Persistência:** `@Enumerated(EnumType.STRING)` em `sg_entry_requests.status` (`VARCHAR(30)`). **CHECK** `chk_entry_request_status` (V201) aceita exatamente `PENDING_EMAIL, PENDING_APPROVAL, APPROVED, REJECTED, EXPIRED` — igual às constantes.
+- **Persistência:** `@Enumerated(EnumType.STRING)` em `sg_entry_requests.status` (`VARCHAR(30)`). **CHECK** `chk_entry_request_status` (`V200__security_ddl.sql`) aceita exatamente `PENDING_EMAIL, PENDING_APPROVAL, APPROVED, REJECTED, EXPIRED` — igual às constantes.
 - **JSON:** `EntryRequestDTORes.status` é do tipo `EntryRequestStatus`, serializado pelo nome da constante (sem `@JsonValue`).
 - **Purga:** `EntryRequestCleanupJob` apaga `APPROVED/REJECTED/EXPIRED` mais antigos que `self-enter.cleanup.purge-after` ([[SeedGrid/Extensions/security/Configuracao|Configuração]]).
 
@@ -75,7 +75,7 @@ Arquivo: `…/security/entities/EntryRequestOrigin.java` — FQN `br.com.seedgri
 | `PUBLIC` | Pedido criado pelo signup público | `SelfEnterService#requestAccess`; confirmação/reenvio de e-mail exigem esta origem; também é o default em `@PrePersist` quando nulo e o `DEFAULT 'PUBLIC'` da coluna | Confirmado |
 | `INVITE` | Pedido criado por convite administrativo | `SelfEnterService` (convite); aceite/complete/reenvio de convite exigem esta origem; repositório consulta convites pendentes | Confirmado |
 
-- **Persistência:** `@Enumerated(EnumType.STRING)`, coluna `origin VARCHAR(20) NOT NULL DEFAULT 'PUBLIC'` (V217). **Não há CHECK constraint** para `origin` (diferente de `status`).
+- **Persistência:** `@Enumerated(EnumType.STRING)`, coluna `origin VARCHAR(20) NOT NULL DEFAULT 'PUBLIC'` (`V200__security_ddl.sql`). **Não há CHECK constraint** para `origin` (diferente de `status`).
 - Relações: `public-enabled` rege `PUBLIC`; `invite-enabled` rege `INVITE` — [[SeedGrid/Extensions/security/Configuracao|Configuração §2.6]].
 
 ## UserCreateOptions.Delivery

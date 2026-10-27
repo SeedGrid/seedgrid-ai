@@ -45,7 +45,7 @@ Content-Type: application/json
 }
 ```
 
-Os valores acima são os mesmos da seed V802. A seed também grava `history_url`, mas `CurrencyUpsertRequest` **não tem** esse campo: pela API REST não dá para definir `historyUrl`. **Confirmado** pela leitura do record.
+Os valores acima são os mesmos do seed `R__exchange_seed.sql`. A seed também grava `history_url`, mas `CurrencyUpsertRequest` **não tem** esse campo: pela API REST não dá para definir `historyUrl`. **Confirmado** pela leitura do record.
 
 - `code`, `name`, `sourceUrl` e `fetchCron` são obrigatórios (`@NotBlank`).
 - No `PUT`, `retryOffsetsHours`, `rateJsonPath` e `quotedAtJsonPath` com `null` mantêm o valor gravado.

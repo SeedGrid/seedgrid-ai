@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Limites do plano e inadimplência (empresas, usuários e prazos)
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-billing` (billing-core) **2026.10.22**, com `seedgrid-security` 2026.10.22 e, para tenant por subdomínio, `seedgrid-quarkus-ext-subdomain-tenancy` 2026.10.22 ([[SeedGrid/Versoes|Versões]]). Migrations do billing `V515` e `V516`. Conferido contra as propriedades do código (`BillingPastDueConfig`) e os guardiões do billing. Visão geral do estado de acesso da empresa: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 5; como o `READ_ONLY` bloqueia escrita: [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]].
+> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-billing` (billing-core) **2026.10.22**, com `seedgrid-security` 2026.10.22 e, para tenant por subdomínio, `seedgrid-quarkus-ext-subdomain-tenancy` 2026.10.22 ([[SeedGrid/Versoes|Versões]]). As colunas e permissões da inadimplência estão no `V500__billing_ddl.sql` e no `R__billing_seed.sql` (antes `V515` e `V516`, absorvidas na compressão de 2026-10-27). Conferido contra as propriedades do código (`BillingPastDueConfig`) e os guardiões do billing. Visão geral do estado de acesso da empresa: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 5; como o `READ_ONLY` bloqueia escrita: [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]].
 
 ## Onde defino quantas empresas e usuários cada plano comporta?
 
