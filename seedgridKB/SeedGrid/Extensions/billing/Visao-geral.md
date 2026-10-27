@@ -95,6 +95,8 @@ _Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, nã
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/billing/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -184,7 +186,7 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 - `StripeProductBootstrap` garante o produto base no startup (best-effort).
 
 ## Migrations
-`db/migration/billing`, de **V500 a V513** (tabela de histórico default `flyway_schema_history_billing`):
+`db/migration/billing`, de **V500 a V513** (tabela de histórico default `sg_flyway_schema_history_billing`):
 
 | Versão | Conteúdo |
 |---|---|

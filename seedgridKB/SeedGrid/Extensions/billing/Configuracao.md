@@ -117,10 +117,12 @@ Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 
 ## 3. Propriedades de frameworks (definidas no `core-mp`, ordinal 100)
 
+> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `billing` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `BillingMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/billing` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.billing.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo. (billing-core.) O billing depende da security: ela migra antes.
+
 | Propriedade | Valor no `core-mp` | Efeito / recomendação |
 |---|---|---|
 | `quarkus.flyway.locations` | `db/migration/billing` | Só as migrations do billing. Um host com Flyway nativo **precisa** sobrescrever com `db/migration/security,db/migration/billing` (mais as próprias), senão o boot falha com `relation "companies" does not exist`. |
-| `quarkus.flyway.table` | `flyway_schema_history_billing` | Os testes de deployment sobrescrevem para `flyway_schema_history`. |
+| `quarkus.flyway.table` | `sg_flyway_schema_history_billing` | Os testes de deployment sobrescrevem para `flyway_schema_history`. |
 | `quarkus.flyway.migrate-at-start` | `true` | — |
 | `quarkus.flyway.baseline-on-migrate` | `true` | — |
 | `quarkus.flyway.baseline-version` | `0` | — |

@@ -143,7 +143,7 @@ src/main/resources/db/migration/
 └── tenant/   V1__create_persons_table.sql
 ```
 
-`master/` roda no boot (history `flyway_schema_history_master`); `tenant/` roda no provisionamento e nas migrações por tenant (history `flyway_schema_history_tenant`). Para pastas extras use `seedgrid.subdomain-tenancy.{master,tenant}.migrations.location.additional` com versões que não colidam com a base.
+`master/` roda no boot (history `sg_flyway_schema_history_master`); `tenant/` roda no provisionamento e nas migrações por tenant (history `sg_flyway_schema_history_tenant`). Para pastas extras use `seedgrid.subdomain-tenancy.{master,tenant}.migrations.location.additional` com versões que não colidam com a base.
 
 ## 8. Ciclo de vida de um tenant (HTTP)
 

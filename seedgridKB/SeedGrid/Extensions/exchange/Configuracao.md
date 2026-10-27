@@ -58,7 +58,7 @@ Origem: `rt/entities/CurrencyEntity.java`, `rt/dtos/CurrencyUpsertRequest.java`,
 | `seedgrid.exchange.enabled` | `true` | `false`: sem migrations, sem scheduler e as rotas `/admin/exchange-rate`, `/admin/currencies` e `/admin/currency-exchange-rates` respondem 404. Nas tenancy o default vem de `seedgrid.<tenancy>.modules.exchange.enabled`. |
 | `seedgrid.migrations.host-managed` | `false` | `true` (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco. |
 
-A extension **sempre migra** o datasource default na subida (`ExchangeMigrationRunner`, histórico `flyway_schema_history_exchange`). Não existe mais `seedgrid.exchange.migration.enabled`.
+A extension **sempre migra** o datasource default na subida (`ExchangeMigrationRunner`, histórico `sg_flyway_schema_history_exchange`). Não existe mais `seedgrid.exchange.migration.enabled`.
 
 ## 3. Propriedades de frameworks
 

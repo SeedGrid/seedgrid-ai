@@ -98,16 +98,18 @@ _Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não 
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
-| `@SgAudit` | `br.com.seedgrid.audit.core.annotations` | `METHOD`, `TYPE` | `operation` (`AuditOperationEnum.OTHER`), `description` (`""`), `entityFqcn` (`""`), `lookupMethod` (`""`), `lookups` (`{}`), `options` (`{}`) | [não verificado] |
-| `@SgAuditLookup` | `br.com.seedgrid.audit.core.annotations` | `` | `field` | [não verificado] |
+| `@SgAudit` | `br.com.seedgrid.audit.core.annotations` | `METHOD`, `TYPE` | `operation` (`AuditOperationEnum.OTHER`), `description` (`""`), `entityFqcn` (`""`), `lookupMethod` (`""`), `lookups` (`{}`), `options` (`{}`) | Audita a operação do método (ou de todos os métodos da classe) quando ele termina. |
+| `@SgAuditLookup` | `br.com.seedgrid.audit.core.annotations` | `` | `field` | Um argumento da busca da entidade auditada: `#field()` nomeia o campo do parâmetro do método anotado cujo valor é passado, na ordem em que aparece em `SgAudit#lookups()`, ao método de `SgAudit#lookupMethod()`. |
 
 ## SPIs
+
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/audit/SPIs|SPIs]].
 
 _Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
-| `AuditPersistenceProvider` | `br.com.seedgrid.audit.core.spis` | sem padrão | [não verificado] |
+| `AuditPersistenceProvider` | `br.com.seedgrid.audit.core.spis` | sem padrão | Ponte entre o audit-core e um backend de persistência (PostgreSQL por JPA ou MongoDB). |
 | `AuditReadScopeProvider` | `br.com.seedgrid.audit.core.spis` | `DefaultAuditReadScopeProvider` | SPI para o host FORCAR o escopo de leitura do audit (server-side), sem acoplar o audit-core a company/tenant. |
 
 **Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
@@ -121,7 +123,7 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 
 ## Migrations (PostgreSQL)
 
-`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `sg_audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.
+`seedgrid-quarkus-ext-audit-postgresql/runtime/src/main/resources/db/migration/audit/`: `V300__create_audit_tables.sql`, `V301__add_tech_operation.sql`, `V302__add_metadata.sql` (tabela `sg_audit_log_metadata`), `V303__operation_date_time_timestamptz.sql` (converte `operation_date_time` para `TIMESTAMPTZ` usando `AT TIME ZONE 'UTC'`). Faixa **V300–V303**, tabela de histórico `sg_flyway_schema_history_audit`. **Confirmado**. MongoDB não tem migrations.
 
 ## Testes (não executados)
 

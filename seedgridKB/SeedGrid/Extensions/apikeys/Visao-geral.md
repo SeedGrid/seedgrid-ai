@@ -98,11 +98,13 @@ Nenhuma.
 
 ## SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/apikeys/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
-| `ApiKeyActivationPolicy` | `br.com.seedgrid.apikeys.spis` | `DefaultApiKeyActivationPolicy` | [não verificado] |
+| `ApiKeyActivationPolicy` | `br.com.seedgrid.apikeys.spis` | `DefaultApiKeyActivationPolicy` | Política do host para ligar e desligar a API key. |
 | `ApiKeyScopeRunner` | `br.com.seedgrid.apikeys.spis` | `DefaultApiKeyScopeRunner` | Executa a consulta da chave no ESCOPO de dados da requisicao (ex.: o banco do tenant). |
 
 **Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
@@ -116,7 +118,7 @@ public class MeuApiKeyActivationPolicy implements ApiKeyActivationPolicy {
 
 ## Migrations (Confirmado)
 
-`runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `sg_api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `flyway_schema_history_apikeys`).
+`runtime/src/main/resources/db/migration/apikeys/V600`–`V607` (tabela `sg_api_keys`, snapshot de usuário, permissões, `active`, timestamps com fuso, audiences, `company_id` com FK condicional para `companies`). Location `classpath:db/migration/apikeys`. Quem roda as migrations é o host ou uma foundation (ex.: [[SeedGrid/Extensions/login-tenancy/Visao-geral|login-tenancy]] usa a tabela de histórico `sg_flyway_schema_history_apikeys`).
 
 ## Testes existentes (não executados)
 

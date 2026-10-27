@@ -62,7 +62,7 @@ Garantias e comportamento (Confirmado no código e em `docs/ARCHITECTURE.md`):
 - Estados: `PENDING → SENDING → SENT`, ou volta a `PENDING` com backoff `retry-delay × 2^min(tentativas-1, 10)`, terminando em `FAILED` ao atingir `max-attempts`. Entrega **ao menos uma vez**.
 - Templates em texto puro com `{variavel}` (substituição literal); assunto ≤ 300 caracteres sem CR/LF; corpo ≤ 16 000.
 - WhatsApp sem `messageId` na resposta é falha (o provider no-op nunca conta como sucesso).
-- Startup (`NotificationStartup`, `@Priority(APPLICATION + 1)`): valida a config, escolhe datasource (`datasource-name` → `master` → default) e roda Flyway próprio (`classpath:db/migration/notification`, tabela `flyway_schema_history_notification`, `baselineOnMigrate=true`). O dispatcher só trabalha depois disso (`isReady()`).
+- Startup (`NotificationStartup`, `@Priority(APPLICATION + 1)`): valida a config, escolhe datasource (`datasource-name` → `master` → default) e roda Flyway próprio (`classpath:db/migration/notification`, tabela `sg_flyway_schema_history_notification`, `baselineOnMigrate=true`). O dispatcher só trabalha depois disso (`isReady()`).
 - Persistence unit escolhida **no build** (`NotificationProcessor#registerEntities`): `master` se existir datasource com esse nome, senão a PU default (`<default>`).
 - Evento embutido: `platform.email-delivery-failed` (`OperationalNotificationCatalog`).
 

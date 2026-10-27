@@ -79,8 +79,8 @@ _Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, n�
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
-| `@EvolutionProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | [não verificado] |
-| `@OfficialProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | [não verificado] |
+| `@EvolutionProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | Qualifier CDI que marca a implementação de `WhatsAppApi` baseada na Evolution API. |
+| `@OfficialProvider` | `br.com.seedgrid.whatsapp.qualifiers` | `TYPE`, `METHOD`, `FIELD`, `PARAMETER` | — | Qualifier CDI que marca a implementação de `WhatsAppApi` baseada na API oficial (WhatsApp Business Cloud). |
 
 ## SPIs
 

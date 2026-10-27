@@ -108,6 +108,8 @@ Observação (Confirmado): mesmo com `async-enabled=true`, o scheduler de fila t
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/backup/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-backup` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -143,7 +145,7 @@ public class MeuBackupExporter implements BackupExporter {
 
 ## Persistência e migrations (Confirmado)
 
-`runtime/src/main/resources/db/migration/backup/`, tabela de histórico Flyway `flyway_schema_history_backup` (via `microprofile-config.properties`):
+`runtime/src/main/resources/db/migration/backup/`, tabela de histórico Flyway `sg_flyway_schema_history_backup` (via `microprofile-config.properties`):
 
 | Versão | Conteúdo |
 |---|---|

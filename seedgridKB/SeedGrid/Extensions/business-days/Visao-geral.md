@@ -39,6 +39,8 @@ Nenhuma.
 
 ## SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/business-days/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-business-days` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -57,7 +59,7 @@ public class MeuBusinessDaysRegionProvider implements BusinessDaysRegionProvider
 
 ## Migrations
 
-Faixa V1100–V1199, location `db/migration/business-days`, histórico `flyway_schema_history_business_days`.
+Faixa V1100–V1199, location `db/migration/business-days`, histórico `sg_flyway_schema_history_business_days`.
 
 - **Sozinha no host**: colocou a dependência, ela migra o datasource default na subida (`BusinessDaysMigrationRunner`). Sem flag.
 - **Com login-tenancy / subdomain-tenancy**: a tenancy migra (`seedgrid.migrations.host-managed=true` faz o runner não agir). login-tenancy: banco único. subdomain-tenancy: **master e cada tenant**, cada um com o seu calendário (a PU default aponta para o master no domínio do admin e para o tenant nos demais).

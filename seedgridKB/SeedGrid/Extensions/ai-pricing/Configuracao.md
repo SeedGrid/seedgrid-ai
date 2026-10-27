@@ -54,7 +54,7 @@ Origem: `rt/entities/AiPricingConfigEntity.java`, `runtime/src/main/resources/db
 | `seedgrid.ai-pricing.enabled` | `true` | `false`: sem migrations, sem robô e as rotas `/admin/ai/**` respondem 404. Nas tenancy o default vem de `seedgrid.<tenancy>.modules.ai-pricing.enabled`. |
 | `seedgrid.migrations.host-managed` | `false` | `true` (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco. |
 
-A extension **sempre migra** o datasource default na subida (`AiPricingMigrationRunner`, histórico `flyway_schema_history_ai_pricing`). Não existe mais `seedgrid.ai-pricing.migration.enabled`.
+A extension **sempre migra** o datasource default na subida (`AiPricingMigrationRunner`, histórico `sg_flyway_schema_history_ai_pricing`). Não existe mais `seedgrid.ai-pricing.migration.enabled`.
 
 ## 3. Propriedades de frameworks
 

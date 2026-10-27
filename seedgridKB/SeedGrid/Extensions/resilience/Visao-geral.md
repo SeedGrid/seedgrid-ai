@@ -100,16 +100,18 @@ _Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, 
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
-| `@SgCircuitBreaker` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations` | `METHOD`, `TYPE` | `name` (`""`), `slidingWindowSize` (`100`), `windowType` (`SlidingWindowType.COUNT_BASED`), `failureRateThreshold` (`50.0`), `slowCallDurationThresholdMs` (`0`), `slowCallRateThreshold` (`100.0`), `minimumNumberOfCalls` (`20`), `openStateDurationMs` (`30_000`), `permittedCallsInHalfOpen` (`10`), `recordExceptions` (`{Exception.class}`), `ignoreExceptions` (`{}`), `fallbackMethod` (`""`) | [não verificado] |
-| `@SgRateLimit` | `br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations` | `METHOD`, `TYPE` | `permits` (`5`), `window` (`30`), `windowUnit` (`ChronoUnit.SECONDS`), `algorithm` (`RateLimitAlgorithm.FIXED_WINDOW`), `burstCapacity` (`0`), `minSpacing` (`0`), `minSpacingUnit` (`ChronoUnit.MILLIS`), `identity` (`IpIdentityResolver.class`), `group` (`""`), `scope` (`KeyScope.METHOD`), `emitHeaders` (`true`), `configKey` (`""`) | [não verificado] |
+| `@SgCircuitBreaker` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.annotations` | `METHOD`, `TYPE` | `name` (`""`), `slidingWindowSize` (`100`), `windowType` (`SlidingWindowType.COUNT_BASED`), `failureRateThreshold` (`50.0`), `slowCallDurationThresholdMs` (`0`), `slowCallRateThreshold` (`100.0`), `minimumNumberOfCalls` (`20`), `openStateDurationMs` (`30_000`), `permittedCallsInHalfOpen` (`10`), `recordExceptions` (`{Exception.class}`), `ignoreExceptions` (`{}`), `fallbackMethod` (`""`) | Protege o método com um circuit breaker. |
+| `@SgRateLimit` | `br.com.seedgrid.resilience.core.runtime.ratelimiter.annotations` | `METHOD`, `TYPE` | `permits` (`5`), `window` (`30`), `windowUnit` (`ChronoUnit.SECONDS`), `algorithm` (`RateLimitAlgorithm.FIXED_WINDOW`), `burstCapacity` (`0`), `minSpacing` (`0`), `minSpacingUnit` (`ChronoUnit.MILLIS`), `identity` (`IpIdentityResolver.class`), `group` (`""`), `scope` (`KeyScope.METHOD`), `emitHeaders` (`true`), `configKey` (`""`) | Limita quantas vezes o método pode ser chamado numa janela de tempo. |
 
 ## SPIs
+
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/resilience/SPIs|SPIs]].
 
 _Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
-| `CircuitBreakerStore` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.spis` | sem padrão | [não verificado] |
+| `CircuitBreakerStore` | `br.com.seedgrid.resilience.core.runtime.circuitbreaker.spis` | `CacheBackedCircuitBreakerStore` (`@ApplicationScoped`, sem `@DefaultBean`) | Guarda o estado dos circuit breakers e decide, a cada chamada, se ela pode acontecer. |
 | `IdentityResolver` | `br.com.seedgrid.resilience.core.runtime.ratelimiter.spis` | sem padrão | Resolve a identidade (ex.: ip, apiKey, tenantId, userId) para compor a chave do rate limit. |
 
 **Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.

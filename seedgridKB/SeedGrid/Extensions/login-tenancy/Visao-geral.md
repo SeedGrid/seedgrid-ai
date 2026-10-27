@@ -59,7 +59,7 @@ O **provider de billing** concreto (`BillingProvider`) não vem embarcado: o hos
 
 ```mermaid
 flowchart LR
-    S[security<br/>flyway_schema_history_security] --> A{audit strategy = jpa?}
+    S[security<br/>sg_flyway_schema_history_security] --> A{audit strategy = jpa?}
     A -- sim --> AU[audit]
     A -- não --> B
     AU --> B{modules.backup}
@@ -72,7 +72,7 @@ flowchart LR
     X --> LT[login-tenancy<br/>V700-V703] --> APP["app (database.locations)<br/>flyway_schema_history"]
 ```
 
-Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `flyway_schema_history_<modulo>` (`ai-pricing` → `flyway_schema_history_ai_pricing`; `login-tenancy` → `flyway_schema_history_login_tenancy`); a aplicação usa `seedgrid.login-tenancy.database.locations` (padrão `classpath:db/migration/app`) e `flyway_schema_history`. Falha em qualquer módulo lança `MigrationExecutionException` e derruba o startup.
+Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `sg_flyway_schema_history_<modulo>` (`ai-pricing` → `sg_flyway_schema_history_ai_pricing`; `login-tenancy` → `sg_flyway_schema_history_login_tenancy`); a aplicação usa `seedgrid.login-tenancy.database.locations` (padrão `classpath:db/migration/app`) e `flyway_schema_history`. Falha em qualquer módulo lança `MigrationExecutionException` e derruba o startup.
 
 ### Isolamento lógico por company
 
@@ -116,6 +116,8 @@ _Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.2
 Nenhuma.
 
 ## SPIs
+
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/login-tenancy/SPIs|SPIs]].
 
 _Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.22, não publicada)._
 

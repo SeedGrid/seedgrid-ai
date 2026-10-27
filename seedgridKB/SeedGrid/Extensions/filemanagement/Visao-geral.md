@@ -84,6 +84,8 @@ Nenhuma.
 
 ## SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/filemanagement/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |

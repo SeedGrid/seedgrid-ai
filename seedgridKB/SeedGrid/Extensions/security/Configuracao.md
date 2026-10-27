@@ -324,6 +324,8 @@ Chaves de **outra extension** definidas no mp-config do security:
 |---|---|---|
 | `seedgrid.whatsapp.api` | `${SEEDGRID_WHATSAPP_API:evolution}` | Seleciona o provedor WhatsApp (`@LookupIfProperty` na extension whatsapp). O `microprofile-config.properties` do `seedgrid-whatsapp-core` também define essa chave (`${SEEDGRID_WHATSAPP_API:default}`) com o mesmo ordinal 100 — qual vence não é determinístico; **defina explicitamente** no host. As demais chaves do provedor são `seedgrid.whatsapp.*` — ver [[SeedGrid/Extensions/whatsapp/Configuracao\|Configuração do whatsapp]]. |
 
+> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `security` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `SecurityMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/security` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.security.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo. A security precisa migrar antes do Flyway do host por causa das FKs em `sg_users`.
+
 Recomendadas/exigidas para o host (README e `application.properties` de teste):
 
 | Propriedade | Valor | Motivo |

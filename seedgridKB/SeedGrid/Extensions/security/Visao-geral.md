@@ -103,6 +103,8 @@ _Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, n�
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/security/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -115,7 +117,7 @@ _Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, n�
 | `JwtTokenValidator` | `br.com.seedgrid.security.spis` | `DefaultJwtTokenValidator` | SPI (Service Provider Interface) for validating custom JWT token claims. |
 | `LoginScopeResolver` | `br.com.seedgrid.security.spis` | `DefaultLoginScopeResolver` | SPI que decide em QUAL company a sessao nasce escopada (T1) a partir de um `requestedScope` OPACO enviado pelo app no login. |
 | `RoleUsageChecker` | `br.com.seedgrid.security.spis` | sem padrão | Extensao: outros modulos informam quantos registros deles ainda dependem de uma role (ex.: API keys do ext-apikeys), para o `RoleService` recusar a exclusao com 409 em vez de estourar a FK. |
-| `SecurityScopeResolverProvider` | `br.com.seedgrid.security.spis` | `DefaultSecurityScopeResolver` | [não verificado] |
+| `SecurityScopeResolverProvider` | `br.com.seedgrid.security.spis` | `DefaultSecurityScopeResolver` | Define a partição dos dados de permissão (RBAC): o "escopo" em que o cache de permissões é guardado e consultado. |
 | `SocialAccountCreator` | `br.com.seedgrid.security.spis` | `DefaultSocialAccountCreator` | SPI que CRIA a conta pessoal (PF) de quem entra pela primeira vez por login social. |
 | `SocialIdentityProvider` | `br.com.seedgrid.security.spis` | sem padrão | SPI de um provedor de login social. |
 | `SocialProviderCatalog` | `br.com.seedgrid.security.spis` | `DefaultSocialProviderCatalog` | Quais provedores de login social estao HABILITADOS neste host (ex.: `google`, `facebook`), para o front montar os botoes. |

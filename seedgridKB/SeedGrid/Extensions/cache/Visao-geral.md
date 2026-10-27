@@ -85,6 +85,8 @@ _Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não 
 
 ## SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/cache/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |

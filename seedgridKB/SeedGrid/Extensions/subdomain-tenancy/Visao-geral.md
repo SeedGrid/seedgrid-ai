@@ -110,6 +110,8 @@ _Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/subdomain-tenancy/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -153,9 +155,9 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 
 | Location | Versões | History | Onde roda |
 |---|---|---|---|
-| `db/migration/subdomain-tenancy` | `V100`–`V110` (tenants, root user, campos de trial legados, snapshots, `sg_tenant_migration_state`, fencing token, índices, `sg_tenant_validation_tokens`, hashes de busca de privacy, conta de billing) | `flyway_schema_history_subdomain_tenancy` | master |
+| `db/migration/subdomain-tenancy` | `V100`–`V110` (tenants, root user, campos de trial legados, snapshots, `sg_tenant_migration_state`, fencing token, índices, `sg_tenant_validation_tokens`, hashes de busca de privacy, conta de billing) | `sg_flyway_schema_history_subdomain_tenancy` | master |
 | `db/migration/tenancy` | `V706__timestamps_com_fuso.sql` | — | **Não aplicada** pela extension (nenhuma location aponta para ela). `java/MIGRATION_RANGES.md` documenta a faixa 100–199 e trata a V706 como exceção legada |
-| `db/migration/master` / `db/migration/tenant` (do host) | livres | `flyway_schema_history_master` / `_tenant` | master no boot / tenant no provisionamento e migração |
+| `db/migration/master` / `db/migration/tenant` (do host) | livres | `sg_flyway_schema_history_master` / `_tenant` | master no boot / tenant no provisionamento e migração |
 
 ## Testes
 

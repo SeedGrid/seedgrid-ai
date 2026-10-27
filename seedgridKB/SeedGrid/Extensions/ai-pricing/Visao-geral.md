@@ -58,6 +58,8 @@ flowchart LR
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/ai-pricing/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-ext-ai-pricing` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
@@ -110,7 +112,7 @@ _Fonte: código de `seedgrid-quarkus-ext-ai-pricing` (versão local 2026.10.22, 
 Nenhuma.
 
 ## Migrations
-`db/migration/ai-pricing`, de **V900 a V903**. Histórico em `flyway_schema_history_ai_pricing`.
+`db/migration/ai-pricing`, de **V900 a V903**. Histórico em `sg_flyway_schema_history_ai_pricing`.
 
 | Versão | Conteúdo |
 |---|---|

@@ -52,11 +52,13 @@ Total: **6** propriedades com efeito (`persistence.strategy`, `jpa.jdbc.url`, `j
 
 ## 3. Propriedades de framework definidas/recomendadas
 
+> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `audit` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `AuditMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/audit` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.audit.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo.
+
 | Propriedade | Valor definido pela extension | Onde | Observação |
 |---|---|---|---|
 | `quarkus.mongodb.connection-string` | `${seedgrid.audit.mongodb.connection-string}` | módulo mongodb `microprofile-config.properties` | Ponte; o host pode sobrescrever |
 | `quarkus.flyway.locations` | `classpath:db/migration/audit` | módulo postgresql | **Atenção (Inferência):** por ser chave global do Flyway default, pode conflitar com as migrations do host se o host não a sobrescrever/compor |
-| `quarkus.flyway.table` | `flyway_schema_history_audit` | módulo postgresql | idem |
+| `quarkus.flyway.table` | `sg_flyway_schema_history_audit` | módulo postgresql | idem |
 | `quarkus.flyway.baseline-on-migrate` | `true` | módulo postgresql | — |
 | `quarkus.swagger-ui.path` | `/swagger-ui` | módulo postgresql | — |
 | `quarkus.swagger-ui.always-include` | `true` | módulo postgresql | — |
@@ -111,7 +113,7 @@ seedgrid.audit.jpa.password=<SEGREDO:audit-db-password>
 
 # --- Framework (já definidas pelo módulo postgresql; sobrescreva se o host tiver migrations próprias) ---
 #quarkus.flyway.locations=classpath:db/migration/audit
-#quarkus.flyway.table=flyway_schema_history_audit
+#quarkus.flyway.table=sg_flyway_schema_history_audit
 #quarkus.flyway.baseline-on-migrate=true
 ```
 

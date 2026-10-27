@@ -69,12 +69,14 @@ Colunas usadas por `BaseEntity`: `public_id`, `active`, `created_at`, `updated_a
 
 ### SPIs
 
+Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/commons/SPIs|SPIs]].
+
 _Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
-| `ApiExceptionExtension` | `br.com.seedgrid.commons.web.exceptions.spis` | sem padrão | [não verificado] |
-| `CurrentUserProvider` | `br.com.seedgrid.commons.persistence.spis` | `DefaultCurrentUserProvider` | [não verificado] |
+| `ApiExceptionExtension` | `br.com.seedgrid.commons.web.exceptions.spis` | `DefaultApiExceptionExtension` (`@Default`; não trata nada) | Gancho para uma extension ensinar o `ApiExceptionHandler` a responder por exceções dela. |
+| `CurrentUserProvider` | `br.com.seedgrid.commons.persistence.spis` | `DefaultCurrentUserProvider` | Quem é o usuário corrente, para preenchimento de auditoria e de campos de autoria. |
 | `TenantProvider` | `br.com.seedgrid.commons.spis` | `SingleTenantProvider` | Service Provider Interface for tenant management. |
 | `UserContactProvider` | `br.com.seedgrid.commons.spis` | `DefaultUserContactProvider` | Provides user contact data from a persisted publicId. |
 
@@ -114,11 +116,11 @@ _Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, nã
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
 | `@QUERY` | `br.com.seedgrid.commons.web.annotations` | `METHOD` | — | Metodo HTTP `QUERY` (IETF "The HTTP QUERY Method"): como o `GET`, e SEGURO e idempotente (nao muda estado), mas aceita CORPO na requisicao - para consultas com filtros grandes ou complexos que nao cabem na URL. |
-| `@ValidBirthDate` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE`, `TYPE_USE` | `message` (`"{br.com.seedgrid.subdomaintenancy.validation.BirthDateIsValid.message}"`), `groups` (`{}`), `payload` (`{}`), `minAge` (`-1`), `maxAge` (`-1`), `value` | [não verificado] |
-| `@ValidEmail` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Email invalido"`), `groups` (`{}`), `payload` (`{}`) | [não verificado] |
-| `@ValidName` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER` | `message` (`"O texto deve conter pelo menos {quantidadePalavras} palavras."`), `groups` (`{}`), `payload` (`{}`), `quantidadePalavras` | [não verificado] |
-| `@ValidPassword` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Senha inválida"`), `groups` (`{}`), `payload` (`{}`), `upperRequired` (`true`), `lowerRequired` (`true`), `numberRequired` (`true`), `specialCharacterRequired` (`true`), `prohibitsRepeatedCharactersInSequence` (`true`), `minSize` (`8`) | [não verificado] |
-| `@ValidPhone` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Telefone invalido"`), `groups` (`{}`), `payload` (`{}`) | [não verificado] |
+| `@ValidBirthDate` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE`, `TYPE_USE` | `message` (`"{br.com.seedgrid.subdomaintenancy.validation.BirthDateIsValid.message}"`), `groups` (`{}`), `payload` (`{}`), `minAge` (`-1`), `maxAge` (`-1`), `value` | A data de nascimento deve resultar numa idade dentro de `#minAge()` e `#maxAge()`. |
+| `@ValidEmail` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Email invalido"`), `groups` (`{}`), `payload` (`{}`) | O texto deve ser um e-mail bem formado e de um domínio aceito. |
+| `@ValidName` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER` | `message` (`"O texto deve conter pelo menos {quantidadePalavras} palavras."`), `groups` (`{}`), `payload` (`{}`), `quantidadePalavras` | O texto deve ter ao menos `#quantidadePalavras()` palavras (separadas por espaço), para exigir nome e sobrenome, por exemplo. |
+| `@ValidPassword` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Senha inválida"`), `groups` (`{}`), `payload` (`{}`), `upperRequired` (`true`), `lowerRequired` (`true`), `numberRequired` (`true`), `specialCharacterRequired` (`true`), `prohibitsRepeatedCharactersInSequence` (`true`), `minSize` (`8`) | A senha deve cumprir as regras de complexidade configuradas. |
+| `@ValidPhone` | `br.com.seedgrid.commons.core.validators` | `FIELD`, `METHOD`, `PARAMETER`, `ANNOTATION_TYPE` | `message` (`"Telefone invalido"`), `groups` (`{}`), `payload` (`{}`) | O texto deve ser um telefone brasileiro válido, com DDD: 10 dígitos (fixo) ou 11 (celular), só dígitos ou na máscara `(11) 91234-5678`. |
 
 ## Testes existentes (não executados)
 
