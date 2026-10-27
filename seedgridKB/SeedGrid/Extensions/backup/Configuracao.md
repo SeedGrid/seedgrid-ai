@@ -126,7 +126,7 @@ Para chaves com hífen em grupo (`azure-blob.*`, `google-drive.*`) a forma env (
 
 ### 3.1 Definidas pela extensão no `microprofile-config.properties` (ordinal 100 — o host pode sobrescrever)
 
-> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `backup` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `BackupMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/backup` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.backup.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo.
+> **Migrations por código (na `main` do `extensions` em 2026-10-27; vale a partir da próxima versão publicada).** A `backup` migra a si mesma, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `BackupMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup (sem customizer: migra só pelo runner). Ela **não define** `quarkus.flyway.table|locations|migrate-at-start|baseline-*`, e o host não lista `db/migration/backup` no `quarkus.flyway.locations`. Histórico próprio: `sg_flyway_schema_history_backup`; a `flyway_schema_history` do host não muda. A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.backup.migrations.enabled`.
 >
 > **Regra obrigatória para o host (quebra de compatibilidade):** aponte `quarkus.flyway.locations` para a pasta do próprio host (ex.: `classpath:db/migration/app`) e **nunca deixe o padrão `db/migration`**. O padrão varre as subpastas das extensions (`db/migration/security`, `/billing`, `/cities`...) e as migra de novo na `flyway_schema_history` do host; a migração da extension então falha com "tabela já existe" ou "ON CONFLICT sem constraint". Host sem migrations próprias também precisa da propriedade (a pasta pode nem existir). Host com migrations soltas em `db/migration/V1__...` deve movê-las para uma subpasta (ex.: `db/migration/app`).
 >
@@ -134,11 +134,6 @@ Para chaves com hífen em grupo (`azure-blob.*`, `google-drive.*`) a forma env (
 
 | Propriedade | Valor definido | Observação |
 |---|---|---|
-| `quarkus.flyway.locations` | `db/migration/backup` | ⚠️ define a datasource Flyway **default**; num host com migrations próprias o `application.properties` do host prevalece e precisa incluir `db/migration/backup` — Inferência |
-| `quarkus.flyway.table` | `sg_flyway_schema_history_backup` | idem |
-| `quarkus.flyway.migrate-at-start` | `true` | |
-| `quarkus.flyway.baseline-on-migrate` | `true` | |
-| `quarkus.flyway.baseline-version` | `0` | |
 | `quarkus.hibernate-orm.database.generation` | `none` | |
 
 ### 3.2 Exigidas/relacionadas
@@ -161,8 +156,6 @@ Para chaves com hífen em grupo (`azure-blob.*`, `google-drive.*`) a forma env (
 | `quarkus.datasource.devservices.db-name` | `seedgrid_backup` | |
 | `quarkus.datasource.username` / `password` | `<SEGREDO:test-db-credentials>` | credenciais locais de teste |
 | `quarkus.hibernate-orm.database.generation` | `none` | |
-| `quarkus.flyway.migrate-at-start` / `clean-at-start` | `true` / `true` | |
-| `quarkus.flyway.locations` | `classpath:db/testdata/backup` | migrations de teste (V400, V402, V405 auditoria, V406 entidade de exemplo, V490 seed) |
 | `quarkus.flyway.schemas` | `public` | |
 | `quarkus.http.test-port` | `0` | |
 | `quarkus.log.category."br.com.seedgrid".level` | `INFO` | |

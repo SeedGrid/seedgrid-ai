@@ -37,12 +37,14 @@ Total: **2 propriedades públicas**.
 
 A extension não registra defaults de `quarkus.*`. Ela depende, na prática, da configuração do `seedgrid-security` e do Quarkus (datasource, JWT) no host. O comentário do `integration-tests/src/main/resources/application.properties` registra que o security fixa `quarkus.http.auth.proactive=true` e que, por isso, o smallrye-jwt precisa de chave pública configurada mesmo em requests por API key (senão 500 `SRJWT02002`). (Confirmado como comentário; comportamento do security não verificado aqui.)
 
-> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `apikeys` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `ApiKeysMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/apikeys` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.apikeys.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo.
+> **Migrations por código (na `main` do `extensions` em 2026-10-27; vale a partir da próxima versão publicada).** A `apikeys` migra a si mesma, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `ApiKeysMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host (o host pode ter FK nas tabelas dela). Ela **não define** `quarkus.flyway.table|locations|migrate-at-start|baseline-*`, e o host não lista `db/migration/apikeys` no `quarkus.flyway.locations`. Histórico próprio: `sg_flyway_schema_history_apikeys`; a `flyway_schema_history` do host não muda. A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.apikeys.migrations.enabled`.
 >
 > **Regra obrigatória para o host (quebra de compatibilidade):** aponte `quarkus.flyway.locations` para a pasta do próprio host (ex.: `classpath:db/migration/app`) e **nunca deixe o padrão `db/migration`**. O padrão varre as subpastas das extensions (`db/migration/security`, `/billing`, `/cities`...) e as migra de novo na `flyway_schema_history` do host; a migração da extension então falha com "tabela já existe" ou "ON CONFLICT sem constraint". Host sem migrations próprias também precisa da propriedade (a pasta pode nem existir). Host com migrations soltas em `db/migration/V1__...` deve movê-las para uma subpasta (ex.: `db/migration/app`).
 >
 > **Ordem:** o Quarkus não ordena os `FlywayConfigurationCustomizer`, então a ordem entre extensions vem de dependência no código: `BillingMigrations.migrate` e `ApiKeysMigrations.migrate` chamam `SecurityMigrations.migrate` antes (idempotente). No startup, os runners (`XxxMigrationRunner`) seguem o `@Priority` do CDI: security 10, audit 20, backup 30, billing 40, apikeys 50, cities 100. Só security, billing e apikeys têm customizer (migram antes do Flyway do host, que pode ter FK nas tabelas delas); audit e backup migram só pelo runner.
 
+>
+> **Baseline do Flyway do host:** depois que a extension migra, o schema não está vazio e o host ainda não tem histórico; o Flyway dele recusaria subir. Por isso o customizer liga `baselineOnMigrate=true` com `baselineVersion=0` no Flyway do **host** (sem sobrescrever se o host já definiu): `SecurityMigrations.allowNonEmptySchema(FluentConfiguration)`.
 ## 4. Propriedades usadas só em testes
 
 `integration-tests/src/main/resources/application.properties` (fica em `src/main` porque o `@QuarkusIntegrationTest` roda o JAR empacotado):
@@ -66,7 +68,7 @@ Nenhuma propriedade `seedgrid.apikeys.*` é definida nos testes (usam os padrõe
 
 ## 6. Configuração mínima
 
-Nenhuma propriedade própria é obrigatória. O host precisa da configuração do [[SeedGrid/Extensions/security/Configuracao|security]] (JWT, datasource etc.) e de executar as migrations `classpath:db/migration/apikeys`.
+Nenhuma propriedade própria é obrigatória. O host precisa da configuração do [[SeedGrid/Extensions/security/Configuracao|security]] (JWT, datasource etc.) ; as migrations da apikeys rodam sozinhas (`ApiKeysMigrations`), depois das da security.
 
 ```properties
 # nada obrigatório em seedgrid.apikeys.*

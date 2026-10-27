@@ -215,7 +215,7 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 
 ## Limitações
 - Colunas antigas (`sg_plan_terms.overage_price`, `provider_overage_price_id`, `sg_subscription_billing_cycles.*_units`) continuam no banco, **inertes**, até o seedgrid-report migrar os dados (CHANGELOG 2026.10.08).
-- O billing depende da security. Com Flyway nativo, o host precisa listar `db/migration/security` e `db/migration/billing` (comentário em `deployment/src/test/resources/application.properties`).
+- O billing depende da security. A security migra antes (`BillingMigrations` chama `SecurityMigrations`) e o host não lista `db/migration/security` nem `db/migration/billing`.
 - O `microprofile-config.properties` do core redefine `quarkus.flyway.*` com ordinal 100. Ver [[SeedGrid/Extensions/billing/Configuracao|Configuração]], seção de frameworks.
 - Os assuntos dos e-mails de acesso estão fixos em código, com "SeedGrid App" (`UserAccessEmails`). Não há propriedade para mudá-los.
 - Não há job de expiração de trial: a verificação acontece a cada chamada.

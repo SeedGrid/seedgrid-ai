@@ -324,18 +324,18 @@ Chaves de **outra extension** definidas no mp-config do security:
 |---|---|---|
 | `seedgrid.whatsapp.api` | `${SEEDGRID_WHATSAPP_API:evolution}` | Seleciona o provedor WhatsApp (`@LookupIfProperty` na extension whatsapp). O `microprofile-config.properties` do `seedgrid-whatsapp-core` também define essa chave (`${SEEDGRID_WHATSAPP_API:default}`) com o mesmo ordinal 100 — qual vence não é determinístico; **defina explicitamente** no host. As demais chaves do provedor são `seedgrid.whatsapp.*` — ver [[SeedGrid/Extensions/whatsapp/Configuracao\|Configuração do whatsapp]]. |
 
-> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `security` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `SecurityMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/security` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.security.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo. A security precisa migrar antes do Flyway do host por causa das FKs em `sg_users`.
+> **Migrations por código (na `main` do `extensions` em 2026-10-27; vale a partir da próxima versão publicada).** A `security` migra a si mesma, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `SecurityMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host (o host pode ter FK nas tabelas dela). Ela **não define** `quarkus.flyway.table|locations|migrate-at-start|baseline-*`, e o host não lista `db/migration/security` no `quarkus.flyway.locations`. Histórico próprio: `sg_flyway_schema_history_security`; a `flyway_schema_history` do host não muda. A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.security.migrations.enabled`.
 >
 > **Regra obrigatória para o host (quebra de compatibilidade):** aponte `quarkus.flyway.locations` para a pasta do próprio host (ex.: `classpath:db/migration/app`) e **nunca deixe o padrão `db/migration`**. O padrão varre as subpastas das extensions (`db/migration/security`, `/billing`, `/cities`...) e as migra de novo na `flyway_schema_history` do host; a migração da extension então falha com "tabela já existe" ou "ON CONFLICT sem constraint". Host sem migrations próprias também precisa da propriedade (a pasta pode nem existir). Host com migrations soltas em `db/migration/V1__...` deve movê-las para uma subpasta (ex.: `db/migration/app`).
 >
 > **Ordem:** o Quarkus não ordena os `FlywayConfigurationCustomizer`, então a ordem entre extensions vem de dependência no código: `BillingMigrations.migrate` e `ApiKeysMigrations.migrate` chamam `SecurityMigrations.migrate` antes (idempotente). No startup, os runners (`XxxMigrationRunner`) seguem o `@Priority` do CDI: security 10, audit 20, backup 30, billing 40, apikeys 50, cities 100. Só security, billing e apikeys têm customizer (migram antes do Flyway do host, que pode ter FK nas tabelas delas); audit e backup migram só pelo runner.
 
+>
+> **Baseline do Flyway do host:** depois que a extension migra, o schema não está vazio e o host ainda não tem histórico; o Flyway dele recusaria subir. Por isso o customizer liga `baselineOnMigrate=true` com `baselineVersion=0` no Flyway do **host** (sem sobrescrever se o host já definiu): `SecurityMigrations.allowNonEmptySchema(FluentConfiguration)`.
 Recomendadas/exigidas para o host (README e `application.properties` de teste):
 
 | Propriedade | Valor | Motivo |
 |---|---|---|
-| `quarkus.flyway.migrate-at-start` | `true` | Aplicar migrations V200–V235 |
-| `quarkus.flyway.locations` | `classpath:db/migration/security` (+ `classpath:db/migration/audit` se usar audit) | Local das migrations |
 | `quarkus.hibernate-orm.physical-naming-strategy` | `org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy` | Nomes de coluna das entidades |
 | `quarkus.datasource.*` | PostgreSQL | Migrations e entidades são PostgreSQL (JSONB) |
 | `seedgrid.privacy.encryption.enabled`, `seedgrid.privacy.crypto.key` 🔒, `seedgrid.privacy.search.key` 🔒 | opcional | Cifra PII de `User`/`Company`/`EntryRequest` at-rest (lib privacy — ver [[SeedGrid/Extensions/privacy/Configuracao\|Configuração do privacy]]) |
@@ -393,8 +393,8 @@ seedgrid.security.frontend.base-url=https://<app.seu-dominio>
 seedgrid.security.password.min-size=8
 
 # Infra
-quarkus.flyway.migrate-at-start=true
-quarkus.flyway.locations=classpath:db/migration/security
+# Migrations: a security migra sozinha (SecurityMigrations); o host aponta o Flyway dele para a pasta dele
+quarkus.flyway.locations=classpath:db/migration/app
 quarkus.hibernate-orm.physical-naming-strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 ```
 

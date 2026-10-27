@@ -117,19 +117,16 @@ Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 
 ## 3. Propriedades de frameworks (definidas no `core-mp`, ordinal 100)
 
-> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `billing` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `BillingMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/billing` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.billing.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo. (billing-core.) O billing depende da security: ela migra antes.
+> **Migrations por código (na `main` do `extensions` em 2026-10-27; vale a partir da próxima versão publicada).** A `billing` migra a si mesma, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `BillingMigrations` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host (o host pode ter FK nas tabelas dela). Ela **não define** `quarkus.flyway.table|locations|migrate-at-start|baseline-*`, e o host não lista `db/migration/billing` no `quarkus.flyway.locations`. Histórico próprio: `sg_flyway_schema_history_billing`; a `flyway_schema_history` do host não muda. A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.billing.migrations.enabled`.
 >
 > **Regra obrigatória para o host (quebra de compatibilidade):** aponte `quarkus.flyway.locations` para a pasta do próprio host (ex.: `classpath:db/migration/app`) e **nunca deixe o padrão `db/migration`**. O padrão varre as subpastas das extensions (`db/migration/security`, `/billing`, `/cities`...) e as migra de novo na `flyway_schema_history` do host; a migração da extension então falha com "tabela já existe" ou "ON CONFLICT sem constraint". Host sem migrations próprias também precisa da propriedade (a pasta pode nem existir). Host com migrations soltas em `db/migration/V1__...` deve movê-las para uma subpasta (ex.: `db/migration/app`).
 >
 > **Ordem:** o Quarkus não ordena os `FlywayConfigurationCustomizer`, então a ordem entre extensions vem de dependência no código: `BillingMigrations.migrate` e `ApiKeysMigrations.migrate` chamam `SecurityMigrations.migrate` antes (idempotente). No startup, os runners (`XxxMigrationRunner`) seguem o `@Priority` do CDI: security 10, audit 20, backup 30, billing 40, apikeys 50, cities 100. Só security, billing e apikeys têm customizer (migram antes do Flyway do host, que pode ter FK nas tabelas delas); audit e backup migram só pelo runner.
 
+>
+> **Baseline do Flyway do host:** depois que a extension migra, o schema não está vazio e o host ainda não tem histórico; o Flyway dele recusaria subir. Por isso o customizer liga `baselineOnMigrate=true` com `baselineVersion=0` no Flyway do **host** (sem sobrescrever se o host já definiu): `SecurityMigrations.allowNonEmptySchema(FluentConfiguration)`.
 | Propriedade | Valor no `core-mp` | Efeito / recomendação |
 |---|---|---|
-| `quarkus.flyway.locations` | `db/migration/billing` | Só as migrations do billing. Um host com Flyway nativo **precisa** sobrescrever com `db/migration/security,db/migration/billing` (mais as próprias), senão o boot falha com `relation "companies" does not exist`. |
-| `quarkus.flyway.table` | `sg_flyway_schema_history_billing` | Os testes de deployment sobrescrevem para `flyway_schema_history`. |
-| `quarkus.flyway.migrate-at-start` | `true` | — |
-| `quarkus.flyway.baseline-on-migrate` | `true` | — |
-| `quarkus.flyway.baseline-version` | `0` | — |
 | `quarkus.hibernate-orm.database.generation` | `none` | — |
 | `quarkus.hibernate-orm.physical-naming-strategy` | (não definido) | **Recomendado** pelos testes: `org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy`. As entidades da security exigem esse valor. O login-tenancy já o fixa. |
 | `quarkus.flyway.out-of-order` | (não definido) | Só para upgrade de bancos criados com versões ≤ 2026.07.02 (V501 destravada). Ver README do core. |
@@ -140,8 +137,8 @@ Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 
 | Arquivo | Propriedades relevantes |
 |---|---|
-| `seedgrid-billing-core/deployment/src/test/resources/application.properties` | `quarkus.flyway.locations=db/migration/security,db/migration/billing`, `quarkus.flyway.table`, naming strategy, `quarkus.hibernate-orm.schema-management.strategy=none`, `seedgrid.security.*` (valores de teste) |
-| `seedgrid-billing-core/integration-tests/src/test/resources/application.properties` | datasource e Flyway (`classpath:db/migration/security,…/audit,…/billing`, `clean-at-start=true`), `seedgrid.audit.*`, `seedgrid.security.*`, `mp.jwt.*`, `smallrye.jwt.*`, `quarkus.mailer.mock`, `seedgrid.ratelimit.{login,auth-refresh,billing-checkout,billing-portal,billing-webhook}.enabled=false`, `quarkus.index-dependency.seedgrid-filemanagement.*`, `quarkus.arc.exclude-types`, e valores de teste para `seedgrid.billing.catalog.product-id`, `checkout.*`, `portal.return-url`, `reconciliation.throttle-seconds=0` e `plan-term.additional-attributes.*` (2048/4/20) |
+| `seedgrid-billing-core/deployment/src/test/resources/application.properties` | `quarkus.flyway.locations=classpath:db/migration/app` e `quarkus.flyway.table=flyway_schema_history` (security e billing migram sozinhas), naming strategy, `quarkus.hibernate-orm.schema-management.strategy=none`, `seedgrid.security.*` (valores de teste) |
+| `seedgrid-billing-core/integration-tests/src/test/resources/application.properties` | datasource e Flyway (`classpath:db/migration/app`, `clean-at-start=true`; security, audit e billing migram sozinhas), `seedgrid.audit.*`, `seedgrid.security.*`, `mp.jwt.*`, `smallrye.jwt.*`, `quarkus.mailer.mock`, `seedgrid.ratelimit.{login,auth-refresh,billing-checkout,billing-portal,billing-webhook}.enabled=false`, `quarkus.index-dependency.seedgrid-filemanagement.*`, `quarkus.arc.exclude-types`, e valores de teste para `seedgrid.billing.catalog.product-id`, `checkout.*`, `portal.return-url`, `reconciliation.throttle-seconds=0` e `plan-term.additional-attributes.*` (2048/4/20) |
 | `seedgrid-billing-core/integration-tests/.../TestData.java` | lê `seedgrid.security.default-company.cnpj` via `ConfigProvider` |
 | `seedgrid-billing-stripe/deployment/src/test/resources/application.properties` | `seedgrid.billing.stripe.apiKey`/`webhookSecret` com valores dummy, `seedgrid.security.*`, Flyway |
 | `seedgrid-billing-stripe/integration-tests/src/main/resources/application.properties` | vazio |
@@ -168,8 +165,8 @@ seedgrid.billing.stripe.product=<id-do-produto>
 seedgrid.billing.checkout.success-url=https://<seu-app>/assinatura?ok=1
 seedgrid.billing.checkout.cancel-url=https://<seu-app>/assinatura
 
-# Host com Flyway nativo (sem login/subdomain-tenancy): security antes do billing
-quarkus.flyway.locations=db/migration/security,db/migration/billing
+# Migrations: security e billing migram sozinhas (security antes); o host aponta o Flyway dele para a pasta dele
+quarkus.flyway.locations=classpath:db/migration/app
 quarkus.hibernate-orm.physical-naming-strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 ```
 

@@ -52,18 +52,17 @@ Total: **6** propriedades com efeito (`persistence.strategy`, `jpa.jdbc.url`, `j
 
 ## 3. Propriedades de framework definidas/recomendadas
 
-> **Em implementação (decisão do dono, 2026-10-27; ainda não está no código commitado).** A `audit` passará a migrar a si mesma por código, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `AuditMigrations` (pacote `br.com.seedgrid.audit.postgresql.utils`; `LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup e `FlywayConfigurationCustomizer` que migra **antes** do Flyway do host. Ela deixará de definir `quarkus.flyway.table|locations|migrate-at-start`, e o host deixará de listar `db/migration/audit` em `quarkus.flyway.locations` (mantém só as migrations dele, com a `flyway_schema_history` dele). A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.audit.migrations.enabled`. Até a publicação vale o comportamento descrito abaixo.
+> **Migrations por código (na `main` do `extensions` em 2026-10-27; vale a partir da próxima versão publicada).** A `audit` migra a si mesma, como `cities`, `ai-pricing`, `exchange`, `business-days` e `notification`: classe `AuditMigrations (pacote `br.com.seedgrid.audit.postgresql.utils`)` (`LOCATION`, `HISTORY_TABLE`, `migrate(DataSource[, schema])`), runner no startup (sem customizer: migra só pelo runner). Ela **não define** `quarkus.flyway.table|locations|migrate-at-start|baseline-*`, e o host não lista `db/migration/audit` no `quarkus.flyway.locations`. Histórico próprio: `sg_flyway_schema_history_audit`; a `flyway_schema_history` do host não muda. A única propriedade é `seedgrid.migrations.host-managed` (padrão `false`; `true` = o host migra chamando `migrate(...)` e o runner não age). Não existe `seedgrid.audit.migrations.enabled`.
 >
 > **Regra obrigatória para o host (quebra de compatibilidade):** aponte `quarkus.flyway.locations` para a pasta do próprio host (ex.: `classpath:db/migration/app`) e **nunca deixe o padrão `db/migration`**. O padrão varre as subpastas das extensions (`db/migration/security`, `/billing`, `/cities`...) e as migra de novo na `flyway_schema_history` do host; a migração da extension então falha com "tabela já existe" ou "ON CONFLICT sem constraint". Host sem migrations próprias também precisa da propriedade (a pasta pode nem existir). Host com migrations soltas em `db/migration/V1__...` deve movê-las para uma subpasta (ex.: `db/migration/app`).
 >
 > **Ordem:** o Quarkus não ordena os `FlywayConfigurationCustomizer`, então a ordem entre extensions vem de dependência no código: `BillingMigrations.migrate` e `ApiKeysMigrations.migrate` chamam `SecurityMigrations.migrate` antes (idempotente). No startup, os runners (`XxxMigrationRunner`) seguem o `@Priority` do CDI: security 10, audit 20, backup 30, billing 40, apikeys 50, cities 100. Só security, billing e apikeys têm customizer (migram antes do Flyway do host, que pode ter FK nas tabelas delas); audit e backup migram só pelo runner. A `audit` só migra com `seedgrid.audit.persistence.strategy=JPA` (o padrão).
 
+>
+> **Estratégia:** só migra com `seedgrid.audit.persistence.strategy=JPA` (o padrão). Com `MONGODB`, ou com `host-managed=true`, nenhuma tabela `sg_audit_*` nem o histórico são criados (coberto por `AuditMigrationRunnerIT`, que, como os demais `*IT` do módulo postgresql, só roda com `-Dtest=...`; o build padrão roda só `*Test`).
 | Propriedade | Valor definido pela extension | Onde | Observação |
 |---|---|---|---|
 | `quarkus.mongodb.connection-string` | `${seedgrid.audit.mongodb.connection-string}` | módulo mongodb `microprofile-config.properties` | Ponte; o host pode sobrescrever |
-| `quarkus.flyway.locations` | `classpath:db/migration/audit` | módulo postgresql | **Atenção (Inferência):** por ser chave global do Flyway default, pode conflitar com as migrations do host se o host não a sobrescrever/compor |
-| `quarkus.flyway.table` | `sg_flyway_schema_history_audit` | módulo postgresql | idem |
-| `quarkus.flyway.baseline-on-migrate` | `true` | módulo postgresql | — |
 | `quarkus.swagger-ui.path` | `/swagger-ui` | módulo postgresql | — |
 | `quarkus.swagger-ui.always-include` | `true` | módulo postgresql | — |
 | Permissão `LOG_READ` | — | `AuditLogController` | Não é propriedade; o host deve mapear a permissão (ex.: via security) |
@@ -115,10 +114,8 @@ seedgrid.audit.jpa.password=<SEGREDO:audit-db-password>
 # Só com seedgrid-login-tenancy (producer de banco único): nome do banco de auditoria.
 #seedgrid.audit.mongodb.database=<database>
 
-# --- Framework (já definidas pelo módulo postgresql; sobrescreva se o host tiver migrations próprias) ---
-#quarkus.flyway.locations=classpath:db/migration/audit
-#quarkus.flyway.table=sg_flyway_schema_history_audit
-#quarkus.flyway.baseline-on-migrate=true
+# --- Migrations: a audit migra sozinha (AuditMigrations); o host só aponta o Flyway dele para a pasta dele ---
+#quarkus.flyway.locations=classpath:db/migration/app
 ```
 
 ## 8. Receitas

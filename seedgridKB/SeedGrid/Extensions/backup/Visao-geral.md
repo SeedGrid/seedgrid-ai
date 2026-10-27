@@ -145,7 +145,7 @@ public class MeuBackupExporter implements BackupExporter {
 
 ## Persistência e migrations (Confirmado)
 
-`runtime/src/main/resources/db/migration/backup/`, tabela de histórico Flyway `sg_flyway_schema_history_backup` (via `microprofile-config.properties`):
+`runtime/src/main/resources/db/migration/backup/`, tabela de histórico Flyway `sg_flyway_schema_history_backup` (definida em `BackupMigrations.HISTORY_TABLE`):
 
 | Versão | Conteúdo |
 |---|---|
