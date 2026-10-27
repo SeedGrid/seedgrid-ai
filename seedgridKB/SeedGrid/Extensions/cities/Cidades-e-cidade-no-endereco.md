@@ -19,7 +19,7 @@ Países, estados e municípios do Brasil com código IBGE (5.571 municípios, in
 ## Como adiciono ao produto?
 
 - Dependência: `br.com.seedgrid:seedgrid-cities:2026.10.22`; vem transitiva pelo `seedgrid-commons` e pelo `security`.
-- **Host que define `quarkus.hibernate-orm.packages` próprio** (ou `.master.packages`) precisa acrescentar `br.com.seedgrid.cities.entities`. Sem isso o boot falha com "Association ... Company.address.city targets the type City which does not belong to the same persistence unit".
+- **Host que define `quarkus.hibernate-orm.packages` próprio** (ou `.master.packages`) precisa acrescentar `br.com.seedgrid.cities.entities`. Sem isso o boot falha com "Association ... Company.address.city targets the type City which does not belong to the same persistence unit". O boilerplate `modular` já traz o pacote em `application.properties` (boilerplate `659cc47`); um host novo criado por ele não precisa fazer nada.
 - **Extension nova** cujo runtime depende do `commons` precisa do `seedgrid-cities-deployment` no próprio `deployment`.
 - Multi-banco: a `cities` migra em cada banco (as tenancies já fazem); `seedgrid.cities.persistence-unit` escolhe a unidade dos serviços (`master` no subdomain-tenancy).
 - `quarkus.hibernate-orm.validate-in-dev-mode=false` é o padrão, porque a `cities` migra no `StartupEvent`, depois da validação do Hibernate.
