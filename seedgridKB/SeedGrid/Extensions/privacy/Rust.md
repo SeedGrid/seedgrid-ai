@@ -88,7 +88,7 @@ Java: [[SeedGrid/Extensions/privacy/Enums|Enums do privacy (Java)]].
 | `CryptoError`, `FieldError` | `src/crypto.rs`, `src/field.rs` | exceções |
 
 ### MaskingStrategy
-Variantes: `Full`, `Format`, `Partial`, `Hash`, `Template`, `Remove` (os mesmos 6 valores do Java). Sem serde; as regras são montadas por código (`MaskRule::format/hash/remove…`).
+Variantes: `Full`, `Format`, `Partial`, `Hash`, `Template`, `Remove` (os 6 valores que o Java tinha antes do `EMAIL`). **O `EMAIL` do Java (commit `916e289`, 2026-10-27) ainda não existe no crate**: o espelho Rust vem depois que o Java fechar. Sem serde; as regras são montadas por código (`MaskRule::format/hash/remove…`).
 
 | Valor | Efeito (`mask_value`) |
 |---|---|

@@ -70,7 +70,7 @@ Fluxo do Secure Fields (**Confirmado**):
 | `CryptoProperties` | POJO `cryptoKey`/`searchKey` |
 | `masking.@SgPersonalData(type, maskWith)` | campo/getter com PII para redação |
 | `masking.@SgMaskRule(field, type, maskWith, remove)` | regra por caminho (`cpf`, `endereco.cep`, `dependentes[].cpf`), usada por quem chama (ex.: `@SgAudit`) |
-| `masking.MaskingStrategy` | `FULL`, `FORMAT`, `PARTIAL`, `HASH` (SHA-256), `TEMPLATE`, `REMOVE` |
+| `masking.MaskingStrategy` | `FULL`, `FORMAT`, `PARTIAL`, `HASH` (SHA-256), `TEMPLATE`, `EMAIL`, `REMOVE` |
 | `masking.PersonalDataSanitizer` (bean) | `sanitizeToJson(value, sourceType, rules)`, `sanitizeToJson(value, rules)`, `sanitize(value, type[, rules])` (fail-closed) |
 | `masking.PersonalDataResolver` (bean) | `resolveRules(Class)` |
 | `masking.PersonalDataMasker` (estático) | `mask(value, strategy, param)`, `cpf()`, `cnpj()`, `cep()` |
