@@ -217,7 +217,7 @@ import { SgDialog, type SgDialogProps, type SgDialogSize, type SgDialogSeverity,
 | `children` | `React.ReactNode` | — | Não | Conteudo principal do corpo do dialog. |
 | `footer` | `React.ReactNode` | — | Não | Estrutura principal do conteúdo. |
 | `size` | `SgDialogSize` = `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"md"` | Não | Escala do container modal. |
-| `severity` | `SgDialogSeverity` = `"primary" \| "secondary" \| "success" \| "info" \| "warning" \| "help" \| "danger" \| "plain"` | `"plain"` | Não | Tom semantico do cabecalho e acentos visuais. |
+| `severity` | `SgDialogSeverity` = `"primary" \| "secondary" \| "success" \| "info" \| "warning" \| "help" \| "danger" \| "plain"` | `"plain"` | Não | Tom semântico: tinge o **fundo** do diálogo (12% da cor da severidade sobre `--background`, só sem `customColor`) e a **faixa do topo** (com `showTopAccent`). A cor é a mesma do fundo do `SgButton` da mesma severidade; `plain` não tinge. |
 | `animation` | `SgDialogAnimation` = `"fade" \| "zoom" \| "slideUp"` | `"zoom"` | Não | Animação e duração da transição. |
 | `transitionMs` | `number` | `160` | Não | Animação e duração da transição. |
 | `autoCloseMs` | `number` | — | Não | Fecha automaticamente após o tempo informado. |
@@ -276,7 +276,7 @@ Consome `useComponentsI18n()` (`components.dialog.ariaLabel`, `components.dialog
 
 ### Tipos auxiliares exportados
 
-`SgDialogSize` = `"sm" | "md" | "lg" | "xl" | "full"`; `SgDialogSeverity` = `"primary" | "secondary" | "success" | "info" | "warning" | "help" | "danger" | "plain"` (cor da borda superior quando `showTopAccent`); `SgDialogAnimation` = `"fade" | "zoom" | "slideUp"`.
+`SgDialogSize` = `"sm" | "md" | "lg" | "xl" | "full"`; `SgDialogSeverity` = `"primary" | "secondary" | "success" | "info" | "warning" | "help" | "danger" | "plain"` (tinge o fundo e, com `showTopAccent`, a borda superior, com a cor do fundo do `SgButton` da severidade; `plain` não tinge. **No código do front ainda não commitado em 2026-10-27**: até lá só a borda superior mudava, com tokens próprios); `SgDialogAnimation` = `"fade" | "zoom" | "slideUp"`.
 
 ---
 

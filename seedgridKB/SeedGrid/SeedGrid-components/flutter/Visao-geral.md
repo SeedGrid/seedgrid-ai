@@ -50,6 +50,8 @@ Para portar um componente novo: ler o componente React e o contrato gerado `lib/
 
 ## Em que o Flutter se comporta diferente do React?
 
+**Severidade do `SgDialog` (paridade com o React, commit `6d37734` do `seedgrid-fe-flutter`, 2026-10-27):** `severity` tinge o **fundo** do diálogo (12% da cor da severidade sobre `--background`, só sem `customColor`) e a **faixa do topo**, com a cor do fundo do `SgButton` da mesma severidade (`resolveButtonColors`); `plain` não tinge. O `SgConfirmationDialog` herda isso. O showcase tem um botão por severidade, cada um com a cor da sua severidade.
+
 Decisões deliberadas (detalhe em [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]] e no `docs/DIVERGENCIAS_DO_REACT.md`, decisões do dono de 2026-10-25): em formulário o `onChange` do usuário **sempre** é chamado (o React o engole em Combobox, Autocomplete, MultiSelect, Slider e outros; a varredura achou só `SgMultiSelect` e `SgMultiSelectChips` ainda engolindo, corrigidos); os validadores dos componentes rodam também em `handleSubmit`/`trigger` (no React só no blur), via `SgFormController.registerField(validator:)`; campo com valor inicial mostra sempre o valor mascarado; breakpoints do `SgGrid` medem a janela, como o `@media` do React. Por causa das duas primeiras decisões, 18 componentes passaram de `portado` para `parcial` ou ganharam a ressalva ([[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]]). Também: `SgForm` envia no Enter de campo de uma linha (`submitOnEnter`) e `SgToaster` pode ficar solto numa `Column`/`ListView` (desenha no `Overlay`). Alvo **mobile-first**: abaixo de 600 px a lista de opções (combobox, split button, colunas do datatable, menu) vira painel de baixo (ADR 51).
 
 ## O que ainda falta?
