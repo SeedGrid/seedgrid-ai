@@ -547,3 +547,24 @@ test('modelo modular: self-enter e config do security; ligado traz as telas de c
   assert.ok(!ler(nao.destino, 'frontend/app/data.ts').includes('/security/self-enter'));
   assert.equal(env(ler(nao.destino, 'backend/dev.env')).SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');
 });
+
+test('cities (cidades e estados do Brasil): dependencia direta no pom em cada modelo, ausente sem a opcao e determinismo', async () => {
+  for (const [nome, base] of [['login-tenancy-b2b', B2B], ['subdomain-tenancy', SUB], ['modular', MODULAR]] as const) {
+    const sem = await gerar({ ...base, extensoes: base.extensoes.filter((x) => x !== 'cities') });
+    assert.equal(sem.saida.ok, true, `${nome} sem cities: ${(sem.saida.erros ?? []).join('\n')}`);
+    assert.ok(!ler(sem.destino, 'backend/pom.xml').includes('<artifactId>seedgrid-cities</artifactId>'), `${nome}: sem a opcao a cities nao e declarada`);
+
+    const com1 = await gerar({ ...base, extensoes: [...base.extensoes, 'cities'] });
+    const com2 = await gerar({ ...base, extensoes: [...base.extensoes, 'cities'] });
+    assert.equal(com1.saida.ok, true, `${nome} com cities: ${(com1.saida.erros ?? []).join('\n')}`);
+    const pom = ler(com1.destino, 'backend/pom.xml');
+    assert.equal(pom.split('<artifactId>seedgrid-cities</artifactId>').length - 1, 1, `${nome}: uma unica dependencia seedgrid-cities`);
+    assert.ok(/<artifactId>seedgrid-cities<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom), `${nome}: versao da cities`);
+    assert.ok(com1.saida.extensoes.includes('cities'), `${nome}: cities nas extensions resolvidas`);
+    // dados de referencia: nenhuma migration de cidade copiada para o host (a extension migra sozinha)
+    assert.ok(!arquivos(com1.destino).some((f) => /migration.*cit(y|ies)/i.test(f)), `${nome}: o host nao carrega migration da cities`);
+  }
+  const a = await gerar({ ...SUB, extensoes: ['cities'] });
+  const b = await gerar({ ...SUB, extensoes: ['cities'] });
+  assert.equal(readFileSync(join(a.destino, 'backend/pom.xml'), 'utf8'), readFileSync(join(b.destino, 'backend/pom.xml'), 'utf8'));
+});

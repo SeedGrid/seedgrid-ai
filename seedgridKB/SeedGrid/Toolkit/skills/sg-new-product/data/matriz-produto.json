@@ -363,6 +363,20 @@
           }
         },
         {
+          "id": "cities",
+          "rotulo": "cities (cidades e estados do Brasil, com codigo IBGE)",
+          "efeito": {
+            "extensions": [
+              "cities"
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "cities"
+            ]
+          }
+        },
+        {
           "id": "whatsapp",
           "rotulo": "whatsapp (envio via Evolution API)",
           "efeito": {
@@ -576,6 +590,23 @@
           },
           "disponivel": false,
           "motivo": "ainda nao verificado no modelo modular (boilerplate minimo): falta provar o pom, as migrations e a configuracao desta extension com a base security + audit; peça a inclusao como demanda"
+        },
+        {
+          "id": "cities",
+          "rotulo": "cities (cidades e estados do Brasil)",
+          "efeito": {
+            "extensions": [
+              "cities"
+            ],
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-cities:2026.10.22"
+            ]
+          },
+          "efeito_ausente": {
+            "extensions_remover": [
+              "cities"
+            ]
+          }
         },
         {
           "id": "whatsapp",

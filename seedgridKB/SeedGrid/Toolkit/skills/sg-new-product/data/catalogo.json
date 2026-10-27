@@ -19,6 +19,7 @@
         "ai-pricing",
         "exchange",
         "business-days",
+        "cities",
         "whatsapp",
         "realtime",
         "cache"
@@ -51,6 +52,7 @@
         "ai-pricing",
         "exchange",
         "business-days",
+        "cities",
         "whatsapp",
         "realtime",
         "cache"
@@ -252,6 +254,24 @@
         {
           "artifactId": "seedgrid-business-days",
           "versao": "2026.10.15"
+        }
+      ]
+    },
+    "cities": {
+      "papel": "Cidades e estados do Brasil: paises, 27 estados e 5.571 municipios com codigo IBGE, semeados por migration; API Java (BrazilGeo) e REST de consulta opcional.",
+      "fonte": "Extensions/cities/Visao-geral.md, Configuracao.md",
+      "migrations": "V1200-V1299 (DDL V1200 e seed repetivel R__cities_seed); a extension migra sozinha ao subir",
+      "obrigatorias_para_subir": [],
+      "decisoes_do_produto": [
+        "seedgrid.cities.rest.enabled (consulta autenticada em /cities-api, exige CITY_READ) e seedgrid.cities.public-rest.enabled (consulta publica para cadastro): ambas desligadas por padrao"
+      ],
+      "telas_admin": "nao documentadas na KB",
+      "depende_de": [],
+      "observacao": "A security (Address.city) ja traz a cities como dependencia transitiva e o endereco guarda a cidade por id; a opcao declara a dependencia DIRETA para o codigo do host usar BrazilGeo e as constantes da extension sem depender do transitivo.",
+      "pom": [
+        {
+          "artifactId": "seedgrid-cities",
+          "versao": "2026.10.22"
         }
       ]
     },
