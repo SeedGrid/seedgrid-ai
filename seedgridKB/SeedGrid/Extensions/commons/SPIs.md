@@ -20,7 +20,7 @@ Cada SPI é um ponto de extensão. Para trocar o comportamento padrão, declare 
 
 ## ApiExceptionExtension
 
-Gancho para uma extension ensinar o `ApiExceptionHandler` a responder por exceções dela. O handler do commons consulta todos os beans deste tipo antes do seu tratamento padrão. Cada extension devolve a `Response` (status, código e mensagem) para as exceções que conhece, e `null` para as demais.
+Gancho para uma extension ensinar o `ApiExceptionHandler` a responder por exceções dela. O handler do commons consulta todos os beans deste tipo antes do seu tratamento padrão. Cada extension devolve a `Response` (status, código e mensagem) para as exceções que conhece, e `null` para as demais. **Uso restrito (decisão de 2026-10-27):** é para exception de **terceiros** e saída de emergência; as exceptions nossas estendem `BusinessException` (4xx) ou `SystemSeedGridException` (5xx), declaram o status na classe e **não** precisam de SPI (BE-11, EXT-05). A lista de implementações abaixo encolhe à medida que cada extension é migrada.
 
 **Pacote:** `br.com.seedgrid.commons.web.exceptions.spis`
 

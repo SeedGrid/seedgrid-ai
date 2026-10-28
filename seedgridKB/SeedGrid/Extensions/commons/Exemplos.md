@@ -68,30 +68,45 @@ public class SignupRequest {
 }
 ```
 
-## Exceções de negócio → Problem Details
+## Exceções → Problem Details
+
+Cada exception é **específica** e declara o status nela; o `ApiExceptionHandler` monta o `problem+json` (*não publicado, versão local 2026.10.22*):
 
 ```java
-throw new BusinessException("Nao foi possivel concluir", "detalhe tecnico para devMessage");
-// -> 400, type https://seedgrid.com.br/erro-negocio, application/problem+json
+// 4xx: erro do cliente
+public class QuotaExceededException extends BusinessException {
+    public QuotaExceededException() {
+        super("Cota esgotada.", "empresa 123 estourou o medidor reports", 422);
+    }
+
+    @Override public String code() { return "QUOTA_EXCEEDED"; }
+    @Override public Map<String, Object> extensions() { return Map.of("meter", "reports"); }
+    @Override public Map<String, String> headers() { return Map.of("Retry-After", "30"); }
+}
+
+// 404 e 409: estenda as bases do commons
+public class CidadeNotFoundException extends EntityNotFoundException {
+    public CidadeNotFoundException() { super("Cidade nao encontrada."); }
+}
+
+// 5xx: erro nosso; a mensagem ao cliente é sempre genérica
+public class ProviderUnavailableException extends SystemSeedGridException {
+    public ProviderUnavailableException(Throwable cause) { super("provedor de pagamento fora do ar", 503, cause); }
+}
 ```
 
-`BusinessException` aceita um status 4xx (`Response.Status`, padrão e nulo = 400; status fora de 4xx lança `IllegalArgumentException`). `EntityNotFoundException` responde **404** (`RECURSO_NAO_ENCONTRADO`) e `EntityInUseException` **409** (`ENTIDADE_EM_USO`) — *não publicado, versão local 2026.10.22; antes eram 400*:
+`status()` é `int` (400-499 na `BusinessException`, 500-599 na `SystemSeedGridException`); `problemType()` e `title()` têm padrão pelo status. `new BusinessException("msg", "detalhe")` solta responde 400 `ERRO_NEGOCIO`. Os campos de `extensions()` não sobrescrevem `type`, `title`, `status`, `detail`, `devMessage`, `instance`, `code` nem `violations`. Dado pessoal e id interno só na `devMessage`.
 
-```java
-throw new EntityNotFoundException("Cidade nao encontrada.");                       // 404
-throw new BusinessException("Limite atingido", "detalhe", Response.Status.PAYMENT_REQUIRED); // 402
-```
+## Exception de terceiros → `ApiExceptionExtension`
 
-Para um status que o `Response.Status` não tem (por exemplo 422), use `ApiExceptionExtension`:
+Para uma exception que você **não controla** (JDBC, Jackson...) ou como saída de emergência, use `ApiExceptionExtension`. As nossas (que estendem `SeedGridException`) são tratadas **antes** das extensions:
 
 ```java
 @ApplicationScoped
-public class MyCustomExceptionExtension implements ApiExceptionExtension {
+public class MyThirdPartyExceptionExtension implements ApiExceptionExtension {
     @Override
     public Response tryHandle(Throwable ex) {
-        // atenção: BusinessException e subclasses são tratadas ANTES das extensions,
-        // então este ponto só recebe exceções que o handler não reconhece.
-        if (ex instanceof MyCustomException) {
+        if (ex instanceof SomeVendorException) {
             return Response.status(422)
                 .entity(ProblemDetails.builder()
                     .type(ProblemType.MENSAGEM_INCOMPREENSIVEL.getUri())
