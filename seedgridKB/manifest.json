@@ -102,6 +102,14 @@
       ]
     },
     {
+      "id": "skill:sg-crud-front-flutter",
+      "type": "skill",
+      "name": "sg-crud-front-flutter",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
       "id": "skill:sg-new-screen",
       "type": "skill",
       "name": "sg-new-screen",
