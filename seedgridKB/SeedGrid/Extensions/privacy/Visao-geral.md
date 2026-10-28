@@ -27,7 +27,7 @@ Primitivas de privacidade (LGPD/GDPR) para entidades JPA. **Confirmado** (`READM
 | Versão (pom) | `2026.07.27` |
 | Parent | `br.com.seedgrid:seedgrid-parent:2026.07.02` |
 | Dependências | `quarkus-arc`, `quarkus-hibernate-orm`, `quarkus-jackson`; testes: `quarkus-junit5`, AssertJ, Mockito, PostgreSQL + Testcontainers |
-| Dependências SeedGrid | nenhuma. É usada por `seedgrid-commons` (embeddables `Address`/`Contact`) e por extensions (audit, security, subdomain-tenancy — segundo o README) |
+| Dependências SeedGrid | nenhuma. É usada por `seedgrid-commons` (embeddable `Contact`) e por extensions (audit, security, subdomain-tenancy — segundo o README) |
 
 Fonte: `java/seedgrid-quarkus-lib-privacy/pom.xml`. **Confirmado.**
 

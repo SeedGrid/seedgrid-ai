@@ -141,7 +141,7 @@ public class Empresa {
 }
 ```
 
-Os embeddables `Address`/`Contact` do commons seguem esse padrão — ver [[SeedGrid/Extensions/commons/Visao-geral|Visão geral do commons]].
+Os embeddables `Contact` (commons) e `Address` (cities) seguem esse padrão — ver [[SeedGrid/Extensions/commons/Visao-geral|Visão geral do commons]].
 
 ## Masking de valores soltos
 

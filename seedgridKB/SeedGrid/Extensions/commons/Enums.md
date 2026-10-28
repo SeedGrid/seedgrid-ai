@@ -12,13 +12,13 @@ Voltar: [[SeedGrid/Extensions/commons/Visao-geral|Visão geral do commons]] · [
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| `StateEnum` | `br.com.seedgrid.commons.core.enums.StateEnum` | `Address.state` (coluna), DTOs de cadastro de outras extensions | Sim |
+| `StateEnum` | `br.com.seedgrid.cities.enums.StateEnum` (módulo `cities`) | `Address.state` (coluna), DTOs de cadastro de outras extensions | Sim |
 | `StateEnum.Regiao` | aninhado em `StateEnum.java` | atributo `regiao` de `StateEnum` | Sim |
 | `ProblemType` | `br.com.seedgrid.commons.web.exceptions.ProblemType` | campo `type` do Problem Details | Sim |
 
 ## StateEnum
 
-Arquivo: `java/seedgrid-quarkus-lib-commons/src/main/java/br/com/seedgrid/commons/core/enums/StateEnum.java`.
+Arquivo: `java/seedgrid-quarkus-ext-cities/seedgrid-cities/runtime/src/main/java/br/com/seedgrid/cities/enums/StateEnum.java` (movido do `commons` em 2026-10-28; antes `br.com.seedgrid.commons.core.enums.StateEnum`).
 
 Os 27 valores são as UFs; cada um tem `sigla` (igual ao nome da constante), `nome`, `regiao` e `ibge` (código IBGE). **Confirmado** (código).
 
@@ -59,7 +59,7 @@ Os 27 valores são as UFs; cada um tem `sigla` (igual ao nome da constante), `no
 - **Persistência:** em `Address.state` é `@Enumerated(EnumType.STRING)` (grava o nome da constante, igual à sigla). A lib não traz migrations nem `CHECK`; a coluna e seus valores aceitos são do host. **Confirmado.**
 - **Conversão fora do Jackson:** `valueOf(String)` aceita só a sigla exata (maiúscula); extensions que leem estado de config usam `StateEnum.valueOf(state.toUpperCase())` (security `CompanyService#parseState`, `FirstAdminBootstrapService#parseState`). Nome por extenso **não** funciona nesses pontos.
 
-**Onde é usado:** `Address.state` (embeddable do commons); `InstitutionalSignupRequest.state` (login-tenancy); `TenantSignupRequest` (subdomain-tenancy); security (`CompanyService`, `FirstAdminBootstrapService`).
+**Onde é usado:** `Address.state` (embeddable da `cities`); `InstitutionalSignupRequest.state` (login-tenancy); `TenantSignupRequest` (subdomain-tenancy); security (`CompanyService`, `FirstAdminBootstrapService`).
 
 ### StateEnum.Regiao
 

@@ -43,7 +43,6 @@ Fonte: `java/seedgrid-quarkus-lib-commons/pom.xml`. **Confirmado.**
 | `utils.HashUtils` | utilitário | `sha256Hex(String)` |
 | `utils.JsonAttributeLimits` / `JsonAttributeLimitsSpec` | utilitário + record | `findViolation(Map<String, JsonNode>, spec)` — limites de tamanho (bytes), profundidade e nº de chaves |
 | `utils.JsonAttributeMerger` | utilitário | `merge(target, patch)`, `copyWithoutNulls(source)` |
-| `enums.StateEnum` | enum | UFs com `sigla`, `nome`, `regiao`, `ibge`; `fromSigla`, `fromNome`, `fromJson` |
 | `exceptions.SeedGridException` | `RuntimeException` abstrata | base única: `status()` (`int`), `problemType()`/`title()` (padrão pelo status), `code()`, `extensions()` (campos extras no corpo), `headers()`, `userMessage` e `devMessage` (não publicado, 2026.10.22) |
 | `exceptions.BusinessException` | `SeedGridException` | erro do cliente, `status()` 400-499 (padrão 400 `ERRO_NEGOCIO`); construtores com `Response.Status` ou `int` (não publicado, 2026.10.22) |
 | `exceptions.SystemSeedGridException` | `SeedGridException` | erro nosso, `status()` 500-599 (padrão 500); `userMessage` sempre genérica, detalhe só na `devMessage` com `seedgrid.show-dev-message` (não publicado, 2026.10.22) |
@@ -64,7 +63,7 @@ Fonte: `java/seedgrid-quarkus-lib-commons/pom.xml`. **Confirmado.**
 | `BaseEntityPanache` | idem estendendo `PanacheEntityBase` (sem `active`) |
 | `BaseEntityAuditListener` / `BaseEntityPanacheAuditListener` | preenchem `create/updateUserPublicId` via `CurrentUserProvider`; em erro (sem contexto) gravam `null` |
 | `spi.CurrentUserProvider` + `spi.impl.DefaultCurrentUserProvider` (`@DefaultBean`) | default devolve publicId zero (`00000000-...`), e-mail/nome placeholders |
-| `embeddables.Address`, `embeddables.Contact` (`@Embeddable`) | campos com `@SgPersonalData` e, em `phone`/`cpf`/`whatsapp`/`email`, `@SgEncryptedField` + `@Convert(EncryptedFieldAttributeConverter)` com campo `*Hash` irmão (lib privacy) |
+| `embeddables.Contact` (`@Embeddable`; o `Address` agora é da `cities`, ver nota abaixo) | campos com `@SgPersonalData` e, em `phone`/`cpf`/`whatsapp`/`email`, `@SgEncryptedField` + `@Convert(EncryptedFieldAttributeConverter)` com campo `*Hash` irmão (lib privacy) |
 | `SchemaUtils.schemaReady(EntityManager, historyTable)` | verifica se a última migração Flyway registrada teve sucesso (`to_regclass('public.<tabela>')`) |
 
 Colunas usadas por `BaseEntity`: `public_id`, `active`, `created_at`, `updated_at`, `create_user_public_id`, `update_user_public_id`. A lib **não** traz migrations; cada host/extension cria as colunas. **Confirmado.**
@@ -126,7 +125,7 @@ _Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, nã
 
 ## Testes existentes (não executados)
 
-`src/test/java/...`: `StateEnumTest`, `BusinessTimeZoneTest`, `HashUtilsTest`, `JsonAttributeLimitsTest`, `JsonAttributeMergerTest`, `UUIDv7Test`, `Valid{BirthDate,Email,Name,Password,Phone}ValidatorTest`, `CorsConfigTest`, `CorsFilterTest`, `ApiExceptionHandlerTest` — todos unitários (nenhum `@QuarkusTest`; ~115 anotações `@Test` por grep). **Não executados.**
+`src/test/java/...`: `BusinessTimeZoneTest`, `HashUtilsTest`, `JsonAttributeLimitsTest`, `JsonAttributeMergerTest`, `UUIDv7Test`, `Valid{BirthDate,Email,Name,Password,Phone}ValidatorTest`, `CorsConfigTest`, `CorsFilterTest`, `ApiExceptionHandlerTest` — todos unitários (nenhum `@QuarkusTest`; ~115 anotações `@Test` por grep). **Não executados.**
 
 ## Limitações
 
@@ -134,3 +133,7 @@ _Fonte: código de `seedgrid-quarkus-lib-commons` (versão local 2026.10.22, nã
 - `@ValidBirthDate` tem mensagem default `{br.com.seedgrid.subdomaintenancy.validation.BirthDateIsValid.message}` — chave de bundle de outra extension; não há `ValidationMessages.properties` nesta lib. **Confirmado** (busca de resources vazia).
 - `Address`/`Contact` dependem do modo de criptografia da lib privacy (`seedgrid.privacy.*`) — ver [[SeedGrid/Extensions/privacy/Configuracao|Configuração do privacy]].
 - `CorsFilter` é próprio e convive com o CORS nativo do Quarkus (`quarkus.http.cors.*`); interação não documentada — **Não confirmado**.
+
+## Address e StateEnum saíram daqui
+
+> **Mudança de 2026-10-28 (BREAKING, sem retrocompatibilidade):** `Address` e `StateEnum` saíram do `commons` e vivem na `cities` (`br.com.seedgrid.cities.embeddables.Address` e `br.com.seedgrid.cities.enums.StateEnum`); `Contact` continua no `commons`. A dependência foi invertida: a `cities` depende do `commons`, e o `commons` não depende mais da `cities`. Quem usa `Address`/`StateEnum` precisa da `cities` no classpath (a `security` já a traz).

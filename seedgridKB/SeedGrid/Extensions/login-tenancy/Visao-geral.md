@@ -32,7 +32,7 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. Status `preview`.
 
 | Artefato | Versão | Papel |
 |---|---|---|
-| `seedgrid-commons` | `2026.10.08` | embeddables `Address`/`Contact`, `ApiExceptionExtension` |
+| `seedgrid-commons` | `2026.10.08` | embeddable `Contact`, `SeedGridException`/`BusinessException` (o `Address` agora é da `cities`) |
 | `seedgrid-security` (+ `-deployment`) | `2026.10.14` | `Company`, `User`, `Role`, JWT, `EmailServiceInterface`, SPIs de escopo — ver [[SeedGrid/Extensions/security/Visao-geral|security]] |
 | `seedgrid-audit-core`, `seedgrid-audit-postgresql` (`seedgrid-audit-mongodb` só gerenciado) | `2026.09.25` | auditoria e SPIs `AuditMetadataContributor`/`AuditReadScopeProvider` |
 | `seedgrid-backup` (+ `-deployment`) | `2026.10.09` | backup |

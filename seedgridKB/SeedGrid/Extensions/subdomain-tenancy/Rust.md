@@ -117,7 +117,7 @@ Equivalentes Java em [[SeedGrid/Extensions/subdomain-tenancy/Enums|Enums (Quarku
 | `TenantHealthStatus` | `src/health.rs` | corpo de `GET /internal/health/tenants/{tenantId}` | [[SeedGrid/Extensions/subdomain-tenancy/Enums#TenantHealthStatus\|TenantHealthStatus]] |
 | `TenantHealthCode` | `src/health.rs` | idem | [[SeedGrid/Extensions/subdomain-tenancy/Enums#TenantHealthCode\|TenantHealthCode]] |
 | `SignupOutcome` | `src/service.rs` | resposta de `POST /public/tenants` | [[SeedGrid/Extensions/subdomain-tenancy/Enums#SignupOutcome\|SignupOutcome]] |
-| `StateEnum` | `src/models/embeddables.rs` | `state` do endereço do signup e do tenant | `StateEnum` da lib commons |
+| `StateEnum` | `src/models/embeddables.rs` | `state` do endereço do signup e do tenant | `StateEnum` da `cities` (`br.com.seedgrid.cities.enums.StateEnum`; antes na lib commons) |
 | `TenantAccess` | `src/pool_resolver.rs` | resultado do gate de tenant no middleware | sem equivalente (específico do Rust) |
 | `TenantServiceError`, `ProvisioningError`, `AssemblyError` | `service.rs`, `provisioning.rs`, `platform.rs` | erros | exceções do Java |
 

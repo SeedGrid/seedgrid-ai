@@ -103,7 +103,7 @@ Equivalentes Java em [[SeedGrid/Extensions/login-tenancy/Enums|Enums (Quarkus)]]
 | `SignupRequestStatus` | `src/models.rs` | coluna `signup_request.status`; respostas do signup | [[SeedGrid/Extensions/login-tenancy/Enums#SignupRequestStatus\|SignupRequestStatus]] |
 | `CnpjSignupStatus` | `src/dtos.rs` | `GET /public/signup/cnpj-status` | [[SeedGrid/Extensions/login-tenancy/Enums#CnpjSignupStatus\|CnpjSignupStatus]] |
 | `FoundationModule` | `src/config.rs` | `ModuleRegistry`; `activeModules` do status | [[SeedGrid/Extensions/login-tenancy/Enums#FoundationModule\|FoundationModule]] |
-| `StateEnum` | `src/dtos.rs` | `state` do `AddressDto` do signup | `StateEnum` da lib commons (`br.com.seedgrid.commons.core.enums`) |
+| `StateEnum` | `src/dtos.rs` | `state` do `AddressDto` do signup | `StateEnum` da `cities` (`br.com.seedgrid.cities.enums.StateEnum`; antes na lib commons) |
 | `LoginTenancyError` | `src/error.rs` | erro dos serviços, resposta RFC 7807 | exceções do Java (sem enum) |
 
 ### SignupRequestStatus

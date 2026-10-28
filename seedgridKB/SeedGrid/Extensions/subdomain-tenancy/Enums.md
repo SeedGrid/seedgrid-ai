@@ -110,7 +110,7 @@ stateDiagram-v2
 
 | Enum | Origem | Onde aparece |
 |---|---|---|
-| `StateEnum` | `br.com.seedgrid.commons.core.enums.StateEnum` (lib commons) | `state` do endereço no body de `POST /public/tenants` (`TenantSignupRequest.AddressDTO`); no bootstrap/provisionamento é gravado por `name()` (`RawCompanies`) e lido com `StateEnum.valueOf(s.toUpperCase())` (`AdminUserBootstrapService`). Valores: ver a nota da lib commons |
+| `StateEnum` | `br.com.seedgrid.cities.enums.StateEnum` (módulo `cities`; antes na lib commons) | `state` do endereço no body de `POST /public/tenants` (`TenantSignupRequest.AddressDTO`); no bootstrap/provisionamento é gravado por `name()` (`RawCompanies`) e lido com `StateEnum.valueOf(s.toUpperCase())` (`AdminUserBootstrapService`). Valores: ver a nota da lib commons |
 
 ## Internos
 

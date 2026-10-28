@@ -28,6 +28,15 @@ Países, estados e municípios do Brasil, com código IBGE, semeados por migrati
 
 A `cities` **não** depende do `commons` nem de `BaseEntity`: é o `commons` que depende dela. Ela traz o `quarkus-security` (usa `@PermissionsAllowed`); torná-lo opcional é decisão do dono em aberto.
 
+## Address e StateEnum (moram aqui)
+
+> **Mudança de 2026-10-28 (BREAKING, sem retrocompatibilidade):** `Address` e `StateEnum` saíram do `commons` e vivem na `cities` (`br.com.seedgrid.cities.embeddables.Address` e `br.com.seedgrid.cities.enums.StateEnum`); `Contact` continua no `commons`. A dependência foi invertida: a `cities` depende do `commons`, e o `commons` não depende mais da `cities`. Quem usa `Address`/`StateEnum` precisa da `cities` no classpath (a `security` já a traz).
+
+- `br.com.seedgrid.cities.embeddables.Address`: `@Embeddable` de endereço com `city` (`@ManyToOne City`), `cityName` legado e `state`. As colunas e as migrations não mudaram.
+- `br.com.seedgrid.cities.enums.StateEnum`: as 27 UFs com `sigla`, `nome`, `regiao` e `ibge`.
+- Os hosts enxergam o `Address` pelo Hibernate porque a `cities` é indexada pelo `CitiesProcessor`. O IT de host da `cities` precisa de `quarkus-hibernate-orm-panache` no classpath (o `commons` é indexado).
+- As exceptions `GeoNotFoundException` (404) e `InvalidGeoArgumentException` (400) herdam `BusinessException` (mesmo `type`/`title` de antes); o `CitiesExceptionMappers` foi apagado.
+
 ## Modelo
 
 - Entidades `Country`, `State` e `City` (pacote `br.com.seedgrid.cities.entities`, base `SgReferenceEntity`), nas tabelas `sg_countries`, `sg_states` e `sg_cities`. O nome JPA continua `GeoCountry`, `GeoState` e `GeoCity` (use esse nome em JPQL) para não colidir com entidades do host chamadas `City`, `State` ou `Country`.

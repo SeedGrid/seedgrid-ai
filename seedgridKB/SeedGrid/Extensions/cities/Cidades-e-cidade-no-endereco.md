@@ -26,7 +26,7 @@ Países, estados e municípios do Brasil com código IBGE (5.571 municípios, in
 
 ## Como o endereço guarda a cidade?
 
-`Address` (embeddable do `commons`) tem `city` como `@ManyToOne City` (EAGER). `cityName` é o texto **legado** (coluna `addr_city`) e `state` (UF) continua.
+`Address` (embeddable da própria `cities`, `br.com.seedgrid.cities.embeddables.Address`) tem `city` como `@ManyToOne City` (EAGER). `cityName` é o texto **legado** (coluna `addr_city`) e `state` (UF) continua.
 
 - `Address.setCity(city)` **deriva** a UF e o nome: a cidade manda, e texto e UF ficam coerentes para o calendário e para integrações que leem texto. `setCity(null)` mantém texto e UF.
 - No `Builder`, `city(String)` virou `cityName(String)`; `city(City)` define a cidade.
