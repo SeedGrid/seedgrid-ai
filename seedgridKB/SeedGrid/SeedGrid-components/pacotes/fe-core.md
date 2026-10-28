@@ -34,7 +34,7 @@ Relacionados: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]] · [[
 | `SeedGridProvider`, `SeedGridNavItem`, `SeedGridRoute` | tipos | `src/module.ts` | elementos aceitos pelo `SeedGridRegistry` (`SeedGridNavItem`: `id, labelKey, href, icon?, requiresAuth?, order?`; `SeedGridRoute`: `id, path, requiresAuth?`) |
 | `SeedGridRegistry` | **classe** | `src/registry.ts` | `addProvider`, `addNavItem`, `addRoute`, `getProviders()`, `getNavItems()` (ordenado por `order`, padrão 999), `getRoutes()` |
 
-Segundo o comentário de `cli-module-manifest.ts` (Confirmado): cada pacote exporta um `module` em `src/module.ts`, e um *postbuild* serializa para `dist/module.json`, único artefato lido pela CLI (ADR `seedgrid-cli/docs/adr/0004-module-manifest-contract.md`, **não analisado**). `postAuthResolver` = função `(permissions: Iterable<string>) => Promise<string|null> | string | null` registrada no `navigation.ts` do fe-security.
+Segundo o comentário de `cli-module-manifest.ts` (Confirmado): cada pacote exporta um `module` em `src/module.ts`, e um *postbuild* serializa para `dist/module.json`, único artefato do manifesto de módulo (a CLI `seedgrid-cli`, que o lia, foi abandonada em 2026-10-28; ADR `seedgrid-cli/docs/adr/0004-module-manifest-contract.md`, **não analisado**). `postAuthResolver` = função `(permissions: Iterable<string>) => Promise<string|null> | string | null` registrada no `navigation.ts` do fe-security.
 
 ### i18n
 

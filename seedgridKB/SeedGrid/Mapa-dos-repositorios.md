@@ -9,6 +9,8 @@ analisado-em: 2026-10-14
 
 Raiz analisada: `seedgrid-platform`. A pasta raiz **não** é um repositório Git: cada módulo Java é um repositório próprio; `rust/` e `front/seedgrid-fe-components/` são repositórios únicos (monorepos).
 
+> **Atualização de 2026-10-28:** o `seedgrid-cli` foi abandonado pelo dono e saiu deste mapa; o AIDLC (fluxo de produto novo do `seedgrid-ai`) cobre o que ele fazia.
+
 Estado na análise (2026-10-14): todos na branch `main` e **sem alterações locais não commitadas** (`git status --short` vazio em todos).
 
 ## Repositórios e commits analisados
@@ -37,7 +39,6 @@ Estado na análise (2026-10-14): todos na branch `main` e **sem alterações loc
 | `seedgrid-quarkus-lib-commons` | Library | 2026.10.08 | `fa49c344db` | 2026-10-08 | [[SeedGrid/Extensions/commons/Visao-geral\|commons]] |
 | `seedgrid-quarkus-lib-filemanagement` | Library | 2026.07.08 | `35c89c7cf7` | 2026-07-20 | [[SeedGrid/Extensions/filemanagement/Visao-geral\|filemanagement]] |
 | `seedgrid-quarkus-lib-privacy` | Library | 2026.07.27 | `79f8b03eeb` | 2026-09-25 | [[SeedGrid/Extensions/privacy/Visao-geral\|privacy]] |
-| `seedgrid-cli` | CLI em **Rust** (apesar de estar em `java/`) que gera apps Next.js com módulos `@seedgrid/fe-*` | — | `d3184afc84` | 2026-07-20 | não documentado em detalhe |
 | `seedgrid-components-mcp` | Servidor MCP (TypeScript) que expõe o catálogo de componentes | — | `69fe6a1cf8` | 2026-09-17 | não documentado em detalhe |
 | `seedgrid-platform-examples` (repositório próprio, `examples/*`, 12 apps) | Apps de exemplo públicos, um por extension, com `infra/compose.yml` | — | https://github.com/SeedGrid/platform-examples.git | — | única pasta de exemplos; fonte dos exemplos da KB |
 
@@ -129,6 +130,5 @@ graph TD
   J -- "APIs REST consumidas por" --> M["Módulos front @seedgrid/fe-*<br/>packages/modules"]
   R -- "mesmas rotas/contratos" --> M
   M --> C["@seedgrid/fe-components + fe-core + fe-theme"]
-  CLI["seedgrid-cli"] -- "monta apps Next.js com" --> M
   MCP["seedgrid-components-mcp"] -- "expõe catálogo de" --> C
 ```

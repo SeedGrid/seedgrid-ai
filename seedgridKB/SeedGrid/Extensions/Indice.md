@@ -83,4 +83,4 @@ Mudanças que ainda não existem no Maven Central; cada nota diz a versão e o q
 
 ## Não documentados como extension
 
-`seedgrid-parent` (POM pai), `seedgrid-cli`, `seedgrid-components-mcp` e `platform-examples/examples/*`: ver [[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]].
+`seedgrid-parent` (POM pai), `seedgrid-components-mcp` e `platform-examples/examples/*`: ver [[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]].
