@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.6.0] — 2026-10-29
+
 ### Adicionado
 - `init` e `update` registram o MCP de componentes (`seedgrid-components`, `/mcp/all`) em `.mcp.json` (Claude Code) e `.codex/config.toml` (Codex), de forma aditiva e idempotente, e o bloco do `AGENTS.md`/`CLAUDE.md` manda passar `platform` (`react` ou `flutter`); `SEEDGRID_AI_SKIP_MCP=1` desliga.
 - Skill `sg-release` (versão `YYYY.M.N` em todos os serviços, branch `release/`, commit e tag locais; para antes do merge, push e deploy) e skill `sg-check-secrets`; o `init` cria o hook de pre-commit de credenciais e o CI do produto confere segredos antes de publicar.
