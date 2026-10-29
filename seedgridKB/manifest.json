@@ -45,7 +45,8 @@
       "files": [
         "references/modos-shared-native.md",
         "references/glossario.md",
-        "references/fluxo-de-trabalho.md"
+        "references/fluxo-de-trabalho.md",
+        "references/mock-do-back-com-mockoon.md"
       ]
     },
     {
