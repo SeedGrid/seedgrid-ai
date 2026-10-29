@@ -6,6 +6,7 @@
 //   node scripts/check-secrets.mjs --history     confere as linhas adicionadas em todo o historico
 //   node scripts/check-secrets.mjs --dir <pasta> confere uma pasta fora do git (copia para o toolkit, pacote); repetivel
 //   node scripts/check-secrets.mjs --kb-dir <pasta> igual a --dir, para a base de conhecimento do pacote (ver excecao abaixo); repetivel
+//   --ignore <regex>   caminho a ignorar (repetivel; so em --staged, --dir e na conferencia dos arquivos versionados)
 //   (pasta inexistente em --dir/--kb-dir: aviso e segue; a pasta de boilerplates e criada por outra tarefa)
 //
 // EXCECAO UNICA de --kb-dir: nos arquivos *.md a checagem de ATRIBUICAO (senha=, apiKey: "..." e valor aleatorio longo)
@@ -25,6 +26,9 @@ import path from 'node:path';
 const args = process.argv.slice(2);
 const dirTargets = [];
 args.forEach((a, i) => { if (a === '--dir' || a === '--kb-dir') dirTargets.push({ dir: args[i + 1], kb: a === '--kb-dir' }); });
+// --ignore <regex> (repetivel): caminhos que o toolkit instala e o dono nao escreve (ex.: .ai/brain/) ficam fora da conferencia.
+const ignores = [];
+args.forEach((a, i) => { if (a === '--ignore') ignores.push(new RegExp(args[i + 1])); });
 const mode = args.includes('--staged') ? 'staged' : args.includes('--history') ? 'history' : dirTargets.length ? 'dir' : 'tracked';
 
 // ---- nomes -------------------------------------------------------------------------------------------------
@@ -122,6 +126,7 @@ if (mode === 'history') {
 } else {
   const scan = (files, read, kb = false) => {
     for (const f of files) {
+      if (ignores.some((re) => re.test(f))) continue;
       checkName(f);
       if (SKIP_PATH.test(f) || SKIP_EXT.test(f)) continue;
       let text;

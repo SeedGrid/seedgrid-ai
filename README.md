@@ -37,7 +37,7 @@ Cada pasta de `.ai/` (`rules`, `agents`, `skills`, `templates`, `references`) te
 | `.claude/agents/<id>.md` | Somente `--mode native`: subagentes do Claude Code |
 | `.codex/agents/<id>.toml` | Somente `--mode native`: agentes personalizados do Codex |
 
-Skills: `sg-plan-change`, `sg-code-review`, `sg-validate-change` (genéricas) e `sg-crud-front`, `sg-crud-front-flutter`, `sg-dev-env`, `sg-new-screen`, `sg-review` (padrões SeedGrid). Toda instalação recebe todas as skills.
+Skills: `sg-plan-change`, `sg-code-review`, `sg-validate-change` (genéricas) e `sg-crud-front`, `sg-crud-front-flutter`, `sg-check-secrets`, `sg-dev-env`, `sg-new-screen`, `sg-release`, `sg-review` (padrões SeedGrid). Toda instalação recebe todas as skills.
 
 ## A base de conhecimento (seedgridKB)
 

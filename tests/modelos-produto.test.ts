@@ -59,7 +59,9 @@ test('workflow parseia como YAML e tem um job por servico com secrets por expres
   };
   assert.ok(wf.on);
   const nomes = produto.servicos.map((s) => `publicar-${s.nome}`);
-  assert.deepEqual(Object.keys(wf.jobs).sort(), ['versao', ...nomes].sort());
+  assert.deepEqual(Object.keys(wf.jobs).sort(), ['segredos', 'versao', ...nomes].sort());
+  assert.equal(wf.jobs.versao!.needs, 'segredos', 'nada e publicado antes da conferencia de segredos');
+  assert.ok(wf.jobs.segredos!.steps.some((x) => (x.run ?? '').includes('sg-check-secrets/scripts/check-secrets.mjs')));
   for (const s of produto.servicos) {
     const job = wf.jobs[`publicar-${s.nome}`]!;
     assert.equal(job.needs, 'versao');

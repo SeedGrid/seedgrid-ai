@@ -34,6 +34,21 @@ describe('init: repositório git do produto', () => {
     assert.ok(res.lines.some((l) => l.includes('main e develop')));
   });
 
+  test('o pre-commit versionado barra credencial no commit e deixa passar o que está limpo', async () => {
+    const project = await tempProject();
+    await initCommand({ project });
+    assert.equal(git(project, 'config', 'core.hooksPath'), '.githooks');
+    assert.ok(git(project, 'ls-files').split(/\r?\n/).includes('.githooks/pre-commit'));
+    const ident = ['-c', 'user.name=t', '-c', 'user.email=t@t.t'];
+    await writeFile(path.join(project, 'ok.txt'), 'nada de segredo\n');
+    git(project, 'add', 'ok.txt');
+    git(project, ...ident, 'commit', '-q', '-m', 'limpo');
+    await writeFile(path.join(project, 'dev.env'), 'X=1\n');
+    git(project, 'add', '-f', 'dev.env');
+    assert.throws(() => git(project, ...ident, 'commit', '-q', '-m', 'segredo'), /dev\.env|check-secrets|achado/);
+    assert.equal(git(project, 'log', '-1', '--format=%s'), 'limpo');
+  });
+
   test('o commit inicial não leva arquivo que o init não instalou', async () => {
     const project = await tempProject();
     await writeFile(path.join(project, 'notas.txt'), 'meu arquivo\n');

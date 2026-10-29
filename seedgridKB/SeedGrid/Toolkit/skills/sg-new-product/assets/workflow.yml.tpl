@@ -20,7 +20,17 @@ env:
   PRODUTO_URL: https://{{dominio}}
 
 jobs:
+  # Segunda barreira contra credencial versionada (a primeira e' o hook de pre-commit): reprova antes de publicar.
+  segredos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node .ai/skills/sg-check-secrets/scripts/check-secrets.mjs --ignore '^\.ai/' --ignore '^\.agents/' --ignore '^\.claude/'
   versao:
+    needs: segredos
     runs-on: ubuntu-latest
     outputs:
       versao: ${{ steps.v.outputs.versao }}

@@ -63,6 +63,15 @@
       ]
     },
     {
+      "id": "skill:sg-check-secrets",
+      "type": "skill",
+      "name": "sg-check-secrets",
+      "files": [
+        "SKILL.md",
+        "scripts/check-secrets.mjs"
+      ]
+    },
+    {
       "id": "skill:sg-code-review",
       "type": "skill",
       "name": "sg-code-review",
@@ -136,6 +145,15 @@
       "name": "sg-new-skill",
       "files": [
         "SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:sg-release",
+      "type": "skill",
+      "name": "sg-release",
+      "files": [
+        "SKILL.md",
+        "scripts/release.mjs"
       ]
     },
     {
