@@ -49,6 +49,24 @@ describe('componente boilerplates (conteúdo)', () => {
     }
   });
 
+  test('todo modelo tem o menu do usuário obrigatório (Meu perfil, Temas e Sair)', async () => {
+    for (const m of MODELS) {
+      const shell = await readText(bundledContentDir(), `${BP}${m}/frontend/app/components/Shell.tsx`);
+      for (const label of ['Meu perfil', 'Temas', 'Sair']) assert.ok(shell.includes(`label: "${label}"`), `${m}: menu do usuário sem ${label}`);
+    }
+  });
+
+  test('modular: cada item do menu lateral tem a página e as telas da base vêm no front', async () => {
+    const root = `${BP}modular/frontend/app`;
+    const data = await readText(bundledContentDir(), `${root}/data.ts`);
+    const hrefs = [...data.matchAll(/href: "([^"]+)"/g)].map((x) => x[1]);
+    for (const h of ['/security/users/user_list', '/security/roles/role_list', '/security/apikeys/apikey_list', '/security/audit']) assert.ok(hrefs.includes(h), `menu sem ${h}`);
+    for (const h of [...hrefs, '/perfil', '/temas', '/change-password']) {
+      const pagina = await readText(bundledContentDir(), `${root}${h}/page.tsx`).catch(() => '');
+      assert.ok(pagina.length > 0, `${h} sem page.tsx`);
+    }
+  });
+
   test('o tamanho da cópia fica abaixo de 10 MB (cópia direta, sem .tgz)', async () => {
     const bundle = await loadContent(bundledContentDir());
     assert.ok(bundle.boilerplates!.bytes < 10 * 1024 * 1024, `${bundle.boilerplates!.bytes} bytes`);
