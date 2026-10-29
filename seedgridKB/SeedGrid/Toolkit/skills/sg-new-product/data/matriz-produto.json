@@ -264,6 +264,9 @@
               "security",
               "audit"
             ],
+            "hibernate_packages": [
+              "br.com.seedgrid.cities.embeddables"
+            ],
             "blocos_env": [
               "aplicacao",
               "banco-login-tenancy",
@@ -470,9 +473,6 @@
             ],
             "pom_adicionar": [
               "br.com.seedgrid:seedgrid-apikeys:2026.10.22"
-            ],
-            "flyway_locations": [
-              "apikeys"
             ],
             "hibernate_packages": [
               "br.com.seedgrid.apikeys.entities"

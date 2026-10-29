@@ -113,7 +113,12 @@ test('modelo modular: boilerplate proprio com security + audit de base, apikeys 
   assert.ok(pom.includes('<artifactId>portal-chaves-api</artifactId>'));
   assert.ok(pom.includes('<artifactId>seedgrid-security</artifactId>') && pom.includes('<artifactId>seedgrid-apikeys</artifactId>'));
   for (const x of ['login-tenancy', 'subdomain-tenancy', 'billing', 'backup', 'business-days']) assert.ok(!pom.includes(`<artifactId>seedgrid-${x}`), `modular nao traz ${x}`);
-  assert.match(ler(destino, 'backend/src/main/resources/application.properties'), /quarkus\.flyway\.locations=.*db\/migration\/apikeys,classpath:db\/migration\/app/);
+  // A extension apikeys migra sozinha (historico proprio, ApiKeysFlywayCustomizer); listar a pasta dela no Flyway do host roda a V600 duas vezes ("sg_api_keys already exists", achado do E2E de 2026-10-29).
+  const props = ler(destino, 'backend/src/main/resources/application.properties');
+  assert.match(props, /quarkus\.flyway\.locations=classpath:db\/migration\/app$/m);
+  assert.doesNotMatch(props, /db\/migration\/apikeys/);
+  // O embeddable Address do cities fica fora da unidade de persistencia sem este pacote (WARN "Could not find a suitable persistence unit", que a verificacao de subida trata como defeito).
+  assert.match(props, /quarkus\.hibernate-orm\.packages=.*br\.com\.seedgrid\.cities\.embeddables/);
   assert.ok(existsSync(join(destino, 'frontend/package.json')));
   assert.ok(!existsSync(join(destino, 'admin')), 'o modelo modular nao tem admin web');
   const prod = JSON.parse(ler(destino, 'produto.json'));

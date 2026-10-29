@@ -51,7 +51,8 @@ export function criarGerador() {
     switch (tipo) {
       case 'senha': return alnum(32);
       case 'politica-admin': return senhaPolitica();
-      case 'base64-32': return randomBytes(32).toString('base64');
+      // Nunca comeca com '/': o Git Bash (run.sh no Windows) reescreve valor de variavel que comeca com '/' como caminho ("C:/Program Files/Git/...") e a chave deixa de ser base64 valido.
+      case 'base64-32': { let v; do v = randomBytes(32).toString('base64'); while (v.startsWith('/')); return v; }
       case 'hex-32': return randomBytes(32).toString('hex');
       case 'rsa-privada-b64': return rsa().privateKey.toString('base64');
       case 'rsa-publica-b64': return rsa().publicKey.toString('base64');

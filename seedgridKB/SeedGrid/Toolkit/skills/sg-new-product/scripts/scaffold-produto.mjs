@@ -48,7 +48,8 @@ export function criarGerador(sementes = {}) {
       case 'politica-admin': return senhaPolitica();
       // Valor de preenchimento: o Mailpit local aceita qualquer usuario e senha (smtp-auth-accept-any); so existe no dev.env, que o git ignora.
       case 'smtp-dev': return '12345678';
-      case 'base64-32': return randomBytes(32).toString('base64');
+      // Nunca comeca com '/': o Git Bash (run.sh no Windows) reescreve valor de variavel que comeca com '/' como caminho ("C:/Program Files/Git/...") e a chave deixa de ser base64 valido.
+      case 'base64-32': { let v; do v = randomBytes(32).toString('base64'); while (v.startsWith('/')); return v; }
       case 'hex-32': return randomBytes(32).toString('hex');
       case 'rsa-privada-b64': return rsa().privateKey.toString('base64');
       case 'rsa-publica-b64': return rsa().publicKey.toString('base64');
