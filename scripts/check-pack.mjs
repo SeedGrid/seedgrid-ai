@@ -36,7 +36,7 @@ for (const f of files) {
 }
 
 // 3. Nunca no pacote.
-const forbidden = [/(^|\/)\.ai\/backups\//, /(^|\/)\.env/, /\.seedgrid-tmp-/, /\.tgz$/, /^(src|tests|build-test|node_modules|scripts)\//, /(^|\/)\.npmrc$/, /(^|\/)\.obsidian\//];
+const forbidden = [/(^|\/)\.ai\/backups\//, /(^|\/)\.env(?!.*\.example$)/, /\.seedgrid-tmp-/, /\.tgz$/, /^(src|tests|build-test|node_modules|scripts)\//, /(^|\/)\.npmrc$/, /(^|\/)\.obsidian\//];
 for (const f of files) if (forbidden.some((re) => re.test(f))) errors.push(`não deveria estar no pacote: ${f}`);
 
 const i = process.argv.indexOf('--release');

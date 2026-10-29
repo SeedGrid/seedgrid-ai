@@ -42,7 +42,7 @@ function produto(opts: { remoto?: boolean; versaoAdmin?: string } = {}) {
   if (opts.remoto) {
     const r = mkdtempSync(join(tmpdir(), 'sg-release-origin-'));
     dirs.push(r);
-    execFileSync('git', ['init', '-q', '--bare', r]);
+    execFileSync('git', ['init', '-q', '--bare', '-b', 'main', r]);
     git(d, 'remote', 'add', 'origin', r);
     git(d, 'push', '-q', 'origin', 'develop', 'main');
     return { d, origin: r };
