@@ -3,6 +3,7 @@ import { ADAPTERS, buildDesiredState } from '../adapters/index.js';
 import { ApplyError, applyPlan, newOperationId } from '../core/apply.js';
 import { loadContent } from '../core/content.js';
 import { setupProductRepo } from '../core/git.js';
+import { setupMcp } from '../core/mcp.js';
 import { bundledContentDir, cliVersion, resolveProject } from '../core/env.js';
 import { readLock, type LockSource } from '../core/lock.js';
 import { planInstall } from '../core/plan.js';
@@ -104,15 +105,19 @@ export async function runInstall(kind: 'init' | 'update', opts: CommandOptions):
             { develop: !opts.noDevelop },
           )
         : null;
+    const mcp = await setupMcp(projectRoot, targets);
     return {
       exitCode: EXIT_OK,
-      report: { ...report, applied: true, operationId, result, ...(repo ? { git: repo } : {}) },
+      report: { ...report, applied: true, operationId, result, ...(repo ? { git: repo } : {}), ...(mcp.length ? { mcp } : {}) },
       lines: [
         ...lines,
         '',
         `Concluído (operação ${operationId}).`,
         ...(repo?.status === 'created' ? [`Repositório git criado: ${repo.branches?.join(' e ')} (atual: ${repo.branches?.at(-1)}).${repo.branches?.includes('develop') ? ' A branch de trabalho sai da develop.' : ''}`] : []),
         ...(repo?.status === 'failed' ? [`Aviso: ${repo.reason}. A instalação foi concluída; crie as branches main e develop manualmente.`] : []),
+        ...mcp.filter((m) => m.status === 'added').map((m) => `MCP de componentes registrado em ${m.file}.`),
+        ...(mcp.some((m) => m.file === '.codex/config.toml' && m.status !== 'skipped') ? ['Codex: marque este projeto como confiável (trust_level = "trusted" em ~/.codex/config.toml ou ao abrir o projeto) para ele ler o .codex/config.toml.'] : []),
+        ...mcp.filter((m) => m.status === 'skipped').map((m) => `Aviso: MCP de componentes não registrado em ${m.file}: ${m.reason}.`),
         ...(result.backupDir ? [`Backup dos arquivos alterados: ${result.backupDir}/`] : []),
         'Abra uma nova sessão do Claude Code ou do Codex para carregar as mudanças.',
         'Verifique com: seedgrid-ai doctor',

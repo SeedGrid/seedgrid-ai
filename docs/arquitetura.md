@@ -77,4 +77,4 @@ O lock só é reescrito quando seu conteúdo muda (a última operação e a vers
 O modo shared é o núcleo; native apenas acrescenta arquivos gerados a partir dos mesmos papéis:
 
 - Claude Code: frontmatter `name`, `description` e `tools` (traduzido de `capabilities`: `read-files` → Read, Grep, Glob; `edit-files` → Edit, Write; `run-checks` → Bash; `Skill` quando há `preferred_skills`). Sem `capabilities`, o subagente herda as ferramentas da sessão.
-- Codex: `name`, `description` e `developer_instructions`. `capabilities` não são traduzidas (veja [compatibilidade](compatibilidade.md)). `.codex/config.toml` nunca é alterado.
+- Codex: `name`, `description` e `developer_instructions`. `capabilities` não são traduzidas (veja [compatibilidade](compatibilidade.md)). `.codex/config.toml` só recebe, no `init`, a tabela `[mcp_servers.seedgrid-components]` acrescentada no fim (o resto do arquivo nunca é reescrito; entrada de mesmo nome nunca é sobrescrita). O `.mcp.json` do Claude Code recebe a mesma entrada, mesclada sem tocar nas demais.

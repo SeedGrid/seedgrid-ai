@@ -39,6 +39,7 @@ Regras do conteúdo dos modelos, conferidas pelo `validate` e pelo `npm test`:
 
 - `--target claude`: instala skills só para o Claude Code e cria o bloco do `CLAUDE.md`. O `AGENTS.md` sempre recebe o bloco, porque é a fonte comum das instruções.
 - `--target codex`: instala skills em `.agents/skills/`; não cria `CLAUDE.md`.
+- **MCP de componentes:** o `init` (e o `update`) registra o `seedgrid-components` (`https://components-mcp.seedgrid.com.br/mcp/all`, um servidor só para React e Flutter) em `.mcp.json` (Claude Code) e `.codex/config.toml` (Codex), conforme os `--target`. É aditivo e idempotente: entrada já existente com o mesmo nome não é alterada, arquivo inválido é deixado como está (com aviso). O Codex só lê o `.codex/config.toml` de projeto confiável (veja abaixo). `SEEDGRID_AI_SKIP_MCP=1` desliga. O `remove` não apaga essas entradas.
 - `--mode native`: também gera subagentes nativos. No Codex, marque o projeto como confiável (o Codex pergunta ao abrir o projeto, ou configure `[projects.'<caminho>'] trust_level = "trusted"` em `~/.codex/config.toml`).
 
 `init` repetido sem opções reaproveita as opções do lock. Com opções diferentes, reconfigura a instalação: por exemplo, `init --mode shared` numa instalação native apaga os agentes nativos intactos.

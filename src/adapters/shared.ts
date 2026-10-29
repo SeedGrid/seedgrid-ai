@@ -162,6 +162,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     '- Papéis: `.ai/agents/`.',
     `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,
     '- Templates: `.ai/templates/`. Referências: `.ai/references/`.',
+    '- **MCP de componentes** (`seedgrid-components`, registrado pelo `init` em `.mcp.json` e `.codex/config.toml`): é um servidor só para React e Flutter; **passe sempre `platform`** (`react` no front/Next.js, `flutter` no app Flutter; sem ele a tool dá erro). Antes de recomendar ou escrever um componente SeedGrid, consulte-o ou a KB. Qual endereço registrar: `.ai/references/mcp-de-componentes-react-e-flutter.md`.',
     ...brainLines(bundle),
     '- Personalizações do projeto ficam em `.ai/local/` (se existir) e prevalecem sobre as regras compartilhadas; veja `.ai/rules/personalizacao-local.md`.',
     delegation,

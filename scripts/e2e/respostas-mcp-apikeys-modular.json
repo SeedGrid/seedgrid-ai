@@ -1,0 +1,71 @@
+{
+  "descricao": "Refeitura do seedgrid-mcp-apikeys (plano 24, T3c.3): produto de uso interno no modelo modular: login (security), auditoria e chaves de API por usuario; sem cadastro publico, sem billing e sem admin. Dominios e e-mails sao ficticios (editaveis).",
+  "pedido": "Quero criar um produto SeedGrid novo nesta pasta: o portal de gestão das chaves de API (API keys) do MCP do SeedGrid, de uso interno. O projeto se chama seedgrid-mcp-apikeys. Sem cadastro público, sem cobrança e sem painel admin web; só login, auditoria e chaves de API por usuário.",
+  "respostas": [
+    {
+      "espera": "slug|pacote",
+      "resposta": "Nome: SeedGrid MCP API Keys. Slug: seedgrid-mcp-apikeys. Pacote Java: br.com.seedgrid.mcp.apikeys"
+    },
+    {
+      "espera": "modelo",
+      "resposta": "Modular (opção 4): uso interno, sem tenancy."
+    },
+    {
+      "espera": "opcionais|extensions|extensões",
+      "resposta": "Somente apikeys, além da base (security + audit)."
+    },
+    {
+      "espera": "self-enter",
+      "resposta": "Não, o self-enter fica desligado."
+    },
+    {
+      "espera": "auditoria",
+      "resposta": "PostgreSQL."
+    },
+    {
+      "espera": "avatar",
+      "resposta": "Sistema de arquivos."
+    },
+    {
+      "espera": "backup",
+      "resposta": "Sistema de arquivos."
+    },
+    {
+      "espera": "chaves|apikeys|api keys",
+      "resposta": "O portal permite que desenvolvedores criem, listem e revoguem chaves de API; o servidor MCP do SeedGrid valida essas chaves para autorizar as chamadas dos agentes."
+    },
+    {
+      "espera": "billing|provider|trial",
+      "resposta": "Não se aplica: o produto não tem cobrança. Não incluir billing."
+    },
+    {
+      "espera": "telas|dispens",
+      "resposta": "Nenhuma, manter todas."
+    },
+    {
+      "espera": "dom[ií]nio|dados",
+      "resposta": "Domínio do front: mcp-keys.seedgrid.com.br. E-mail remetente: noreply@seedgrid.com.br. E-mail do primeiro administrador: dono@seedgrid.com.br. Sem admin web."
+    },
+    {
+      "espera": "confirm|posso (gerar|rodar)|pode gerar|gera[çc]",
+      "resposta": "Confirmo, pode gerar."
+    }
+  ],
+  "respostaPadrao": "Siga com o que for necessário e finalize.",
+  "maxTurnosExtras": 3,
+  "esperaArquivos": {
+    "existe": [
+      ".seedgrid/manifesto.json",
+      "frontend/app/security/apikeys"
+    ],
+    "naoExiste": [
+      "frontend/app/security/self-enter",
+      "admin",
+      "frontend/app/billing"
+    ]
+  },
+  "esperaManifesto": {
+    "modelo": "modular",
+    "selfEnter": "nao"
+  }
+}
