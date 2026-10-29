@@ -4,6 +4,11 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.6.1] — 2026-10-29
+
+### Corrigido
+- A tag v0.6.0 não foi publicada no npm: o CI do release falhou nos testes (clone do teste do `sg-release` sem `init.defaultBranch` e `check-pack` reprovando `.env.example` dos boilerplates). O conteúdo é o mesmo da 0.6.0; esta versão traz só as correções.
+
 ## [0.6.0] — 2026-10-29
 
 ### Adicionado
