@@ -27,7 +27,7 @@ Plano de segurança pronto para aplicações Quarkus da plataforma SeedGrid (Con
 - **Bootstrap** de empresa default e primeiro admin no startup.
 - **E-mails** HTML (templates em `runtime/src/main/resources/templates/security-default/`) via mailer nomeado `security`, com alerta operacional de falha de entrega via notification.
 - **Rate-limit** dos endpoints públicos (lib resilience).
-- Erros RFC 7807 (`SecurityApiExceptionExtension`, integra o `ApiExceptionHandler` da commons).
+- Erros RFC 7807: Desde 2026-10-28 (BREAKING, ADR 53) as exceptions da security herdam `BusinessException` (4xx) ou `SystemSeedGridException` (5xx) e **levam o próprio status**; o `ApiExceptionHandler` do `commons` monta o `application/problem+json` (`type` da plataforma, em vez do antigo `about:blank`); nos 5xx o `detail` é sempre genérico. A `SecurityApiExceptionExtension` foi removida.
 
 ## Módulos Maven e coordenadas
 
@@ -43,7 +43,7 @@ Dependências SeedGrid do runtime (versões do `runtime/pom.xml`):
 
 | Artefato | Versão | Uso |
 |---|---|---|
-| `seedgrid-commons` | 2026.08.16 | `CurrentUserProvider`, `BaseEntity`, `ProblemDetails`, `ApiExceptionExtension` — [[SeedGrid/Extensions/commons/Visao-geral\|commons]] |
+| `seedgrid-commons` | 2026.08.16 | `CurrentUserProvider`, `BaseEntity`, `ProblemDetails`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) — [[SeedGrid/Extensions/commons/Visao-geral\|commons]] |
 | `seedgrid-privacy` | 2026.07.27 | Mascaramento e criptografia opcional de PII — [[SeedGrid/Extensions/privacy/Visao-geral\|privacy]] |
 | `seedgrid-filemanagement` | 2026.07.08 | Storage de avatares — [[SeedGrid/Extensions/filemanagement/Visao-geral\|filemanagement]] |
 | `seedgrid-cache-core` | 2026.10.13 | Cache de permissões, sessões 2FA, códigos — [[SeedGrid/Extensions/cache/Visao-geral\|cache]] |

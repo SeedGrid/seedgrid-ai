@@ -47,7 +47,7 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. O host depende só do runt
 
 | Artefato | Versão | Uso |
 |---|---|---|
-| `seedgrid-commons` | 2026.10.08 | `CurrentUserProvider`, `UserContactProvider`, `BaseEntity`, `PageReq`, `SgUserEvent`, `ApiExceptionExtension` |
+| `seedgrid-commons` | 2026.10.08 | `CurrentUserProvider`, `UserContactProvider`, `BaseEntity`, `PageReq`, `SgUserEvent`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
 | `seedgrid-privacy` | 2026.07.08 | fixa convergência de versão (comentário no pom) |
 | `seedgrid-filemanagement` | 2026.07.08 | `FileStorageRegistry`, `FileStorage`, `StorageKey`, `StorageOptions` |
 | `seedgrid-resilience-core` (+ `-deployment` no deployment) | 2026.07.08 | `@SgRateLimit` |

@@ -93,7 +93,7 @@ Abreviações usadas na coluna Origem:
 
 | Propriedade | Dona | Uso no billing | Origem |
 |---|---|---|---|
-| `seedgrid.show-dev-message` (default `false`) | commons/security (mesma chave em `ApiExceptionHandler` do commons) | `BillingApiExceptionExtension` inclui a mensagem de desenvolvedor no problem+json | `core/exceptions/BillingApiExceptionExtension.java` (construtor) |
+| `seedgrid.show-dev-message` (default `false`) | commons/security (mesma chave em `ApiExceptionHandler` do commons) | O `ApiExceptionHandler` do `commons` inclui a `devMessage` no problem+json (a `BillingApiExceptionExtension` e a base `BillingException` foram removidas: as exceptions do billing herdam `BusinessException`/`SystemSeedGridException`) | `commons` (`ApiExceptionHandler`) |
 | `seedgrid.ratelimit.billing-webhook.{enabled,permits,window}` | resilience (`RateLimitService`) | ajusta o rate limit do webhook (default 300/min) | `core/controllers/BillingWebhookController` (`@SgRateLimit(configKey="billing-webhook")`) |
 | `seedgrid.ratelimit.billing-checkout.{enabled,permits,window}` | resilience | checkout (default 30/min) | `core/controllers/MeBillingController` |
 | `seedgrid.ratelimit.billing-portal.{enabled,permits,window}` | resilience | portal (default 30/min) | `core/controllers/MeBillingController` |

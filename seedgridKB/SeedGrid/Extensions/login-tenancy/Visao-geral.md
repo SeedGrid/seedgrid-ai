@@ -107,7 +107,7 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 | `LoginTenancyConfig` / `LoginTenancyFoundationConfig` | `@ConfigMapping` / fachada CDI | ver [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] |
 | `LoginTenancyModuleRegistry` | bean | `isActive(FoundationModule)`, `activeModules()` |
 | `LoginTenancyMongoAuditDatabaseProducer` | producer `@DefaultBean` de `MongoDatabase` | registrado só se `com.mongodb.client.MongoClient` estiver no classpath (`LoginTenancyProcessor#registerMongoAuditDatabaseProducer`) |
-| `LoginTenancyApiExceptionExtension` | `ApiExceptionExtension` | `SignupRequestNotFoundException`→404, `SignupRequestPendingException`→409, `RequiredRoleMissingException`→500 (`application/problem+json`) |
+| Exceptions da extension (`exceptions/`) | `BusinessException` / `SystemSeedGridException` | `SignupRequestNotFoundException`→404, `SignupRequestPendingException`→409, `RequiredRoleMissingException`→500, `MigrationExecutionException` e `TemplateProcessingException`→500 (antes sem mapeamento); todas com `code` e `application/problem+json`; guardião BE-42. A `LoginTenancyApiExceptionExtension` foi removida. |
 
 ## Anotações
 

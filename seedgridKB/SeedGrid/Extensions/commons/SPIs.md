@@ -30,17 +30,7 @@ Gancho para uma extension ensinar o `ApiExceptionHandler` a responder por exceç
 
 O padrão usa `@Default` (não `@DefaultBean`) e não trata nada; as extensions registram as suas implementações e o handler consulta todas, em ordem, até uma devolver uma `Response`.
 
-**Outras implementações no repositório** (para consultar como exemplo):
-
-- `ApiKeyApiExceptionExtension` (`seedgrid-quarkus-ext-apikeys/runtime/src/main/java/br/com/seedgrid/apikeys/exceptions/ApiKeyApiExceptionExtension.java`) — Traduz as exceções desta extension em respostas HTTP.
-- `AuditLogNotFoundExceptionExtension` (`seedgrid-quarkus-ext-audit/seedgrid-quarkus-ext-audit-core/runtime/src/main/java/br/com/seedgrid/audit/core/exceptions/AuditLogNotFoundExceptionExtension.java`) — Traduz as exceções desta extension em respostas HTTP.
-- `BackupExceptionExtension` (`seedgrid-quarkus-ext-backup/runtime/src/main/java/br/com/seedgrid/backup/exceptions/BackupExceptionExtension.java`) — API exception handler for SeedGrid Backup exceptions.
-- `BillingApiExceptionExtension` (`seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src/main/java/br/com/seedgrid/billing/exceptions/BillingApiExceptionExtension.java`) — Traduz as exceptions do billing em problem+json, sempre pelo `BillingProblemBody`.
-- `BusinessDaysApiExceptionExtension` (`seedgrid-quarkus-ext-business-days/runtime/src/main/java/br/com/seedgrid/businessdays/exceptions/BusinessDaysApiExceptionExtension.java`) — Traduz as exceções desta extension em respostas HTTP.
-- `LoginTenancyApiExceptionExtension` (`seedgrid-quarkus-ext-login-tenancy/runtime/src/main/java/br/com/seedgrid/logintenancy/exceptions/LoginTenancyApiExceptionExtension.java`) — Handler global das exceptions tipadas da foundation login-tenancy (SPI `ApiExceptionExtension` do seedgrid-commons). Mantem o mapeamento HTTP num so lugar, como o `SecurityApiExceptionExtension` faz no ext-security.
-- `SecurityApiExceptionExtension` (`seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/seedgrid/security/exceptions/SecurityApiExceptionExtension.java`) — Traduz as exceções desta extension em respostas HTTP.
-- `SubdomainTenancyExceptionExtension` (`seedgrid-quarkus-ext-subdomain-tenancy/runtime/src/main/java/br/com/seedgrid/subdomaintenancy/exceptions/extensions/SubdomainTenancyExceptionExtension.java`) — Exception handler extension for SubdomainTenancy-specific exceptions. Implements the ApiExceptionExtension SPI from seedgrid-commons.
-- `WhatsAppExceptionExtension` (`seedgrid-quarkus-ext-whatsapp/seedgrid-whatsapp-core/src/main/java/br/com/seedgrid/whatsapp/exceptions/WhatsAppExceptionExtension.java`) — Traduz as exceções desta extension em respostas HTTP.
+**Implementações no repositório:** **nenhuma extension da plataforma implementa mais este SPI** (verificado em 2026-10-29: só resta o `DefaultApiExceptionExtension`). Desde 2026-10-28 (ADR 53) as exceptions das extensions herdam `BusinessException`/`SystemSeedGridException` e levam o próprio status; as antigas `ApiKeyApiExceptionExtension`, `AuditLogNotFoundExceptionExtension`, `BackupExceptionExtension`, `BillingApiExceptionExtension`, `BusinessDaysApiExceptionExtension`, `LoginTenancyApiExceptionExtension`, `SecurityApiExceptionExtension`, `SubdomainTenancyExceptionExtension`, `WhatsAppExceptionExtension`, os mappers da `cities` e da `resilience` foram removidos. Use este SPI **só para exception de terceiros** (JDBC, Jackson...) ou como saída de emergência de um host.
 
 **Métodos que você implementa:**
 

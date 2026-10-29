@@ -57,7 +57,7 @@ Unitários extensos em `src/evolution.rs`, `src/cloud.rs`, `src/factory.rs`; `te
 
 ## Notas de comportamento
 
-- `WhatsAppExceptionExtension` (HTTP 422) não existe; o host mapeia os erros.
+- O mapeamento HTTP dos erros (422 e as exceptions específicas do Java) não existe no crate; o host mapeia os erros.
 - O trait tem `provider()` e `is_configured()` extras.
 - A fábrica não tem fallback `isResolvable`.
 

@@ -243,7 +243,7 @@ Todas as chaves de avatar têm no mp-config a variável `SEEDGRID_SECURITY_AVATA
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
-| `seedgrid.show-dev-message` | boolean | `true`/`false` | `false` | Não | Inclui mensagem de desenvolvimento nas respostas RFC 7807 das exceções do security | `SecurityApiExceptionExtension` | Chave **compartilhada**: também lida por `seedgrid-quarkus-lib-commons` (`ApiExceptionHandler`), billing e login-tenancy | Runtime | Decl./consumo: `…/security/exceptions/SecurityApiExceptionExtension#showDevMessage` |
+| `seedgrid.show-dev-message` | boolean | `true`/`false` | `false` | Não | Inclui mensagem de desenvolvimento nas respostas RFC 7807 das exceções do security | `commons` (`ApiExceptionHandler`) | Chave do **`commons`**: o handler comum inclui a `devMessage` nos problem+json de todas as extensions (a `SecurityApiExceptionExtension` foi removida) | Runtime | Decl./consumo: `ApiExceptionHandler` do `commons` |
 | `seedgrid.app.email-alert.window` | Duration | ISO-8601 | `PT15M` | Não | Anti-flood: só a 1ª falha de envio de e-mail em cada janela publica o evento `platform.email-delivery-failed` no notification (com o total acumulado) | `EmailDeliveryAlertService#emailDeliveryFailed` (chamado pelo `DefaultEmailService`) | Requer `NotificationPublisher` (notification-api) | Runtime | Decl./consumo: `…/security/services/EmailDeliveryAlertService#window` |
 
 ### 2.13 Rate-limit dos endpoints (`seedgrid.ratelimit.<configKey>.*`)

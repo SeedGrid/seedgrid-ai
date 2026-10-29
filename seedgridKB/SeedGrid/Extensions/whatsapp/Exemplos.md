@@ -161,7 +161,7 @@ try {
     api.sendTextMessage(canal, new WhatsAppTextMessageDTO("123", "Teste"));
 } catch (WhatsAppException e) {
     // número inválido, channelId vazio, falha lendo arquivo...
-    // em endpoints REST, o seedgrid-commons converte para HTTP 422 (WhatsAppExceptionExtension)
+    // em endpoints REST, o seedgrid-commons converte para HTTP 422 (a exception carrega o status); falha do provedor é WhatsAppProviderException (502)
 } catch (IllegalStateException e) {
     // credencial do provider ausente (api-key / access-token)
 }

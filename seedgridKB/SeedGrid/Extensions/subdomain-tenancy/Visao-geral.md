@@ -41,7 +41,7 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 
 | Artefato | Versão | Uso aqui |
 |---|---|---|
-| `seedgrid-commons` | 2026.10.08 | `BaseEntity`, `commons.spi.TenantProvider`, `SchemaUtils`, `ApiExceptionExtension` |
+| `seedgrid-commons` | 2026.10.08 | `BaseEntity`, `commons.spi.TenantProvider`, `SchemaUtils`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
 | `seedgrid-security` | 2026.10.14 | Usuários/papéis, JWT, `PasswordService`, SPIs `JwtTokenCustomizer`, `JwtTokenValidator`, `SecurityScopeResolverProvider`, `SecurityLinkBuilder` |
 | `seedgrid-privacy` | 2026.07.27 | Mascaramento/criptografia de PII do `Tenant` |
 | `seedgrid-audit-core` | 2026.09.25 | `AuditMetadataContributor`, `AuditReadScopeProvider` (`seedgrid-audit-postgresql` só em teste) |
@@ -93,7 +93,7 @@ flowchart LR
 | `GET /internal/migrations/tenants/{tenantId}/status` | `#migrationStatus` | idem | — |
 | `GET /internal/health/tenants/{tenantId}` | `TenantHealthController#tenantHealth` | idem | Códigos `OK`, `INVALID_TENANT`, `TENANT_NOT_FOUND`, `TENANT_INACTIVE`, `DATABASE_UNREACHABLE`, `MIGRATION_PENDING/RUNNING/FAILED` |
 
-Paths centralizados em `RestControllerPath`. Exceções mapeadas por `SubdomainTenancyExceptionExtension` (`ApiExceptionExtension` do commons): `TenantNotFoundException` → 404, `SubdomainAlreadyExistsException`/`CnpjAlreadyExistsException` → 409, `TenantAlreadyActiveException`/`ValidationCodeExpiredException` → 400.
+Paths centralizados em `RestControllerPath`. As exceptions herdam `BusinessException`/`SystemSeedGridException` e levam o status: `TenantNotFoundException` → 404, `SubdomainAlreadyExistsException`/`CnpjAlreadyExistsException`/`TenantAlreadyActiveException` → 409 (**o `TenantAlreadyActive` mudou de 400 para 409 em 2026-10-28, paridade com o Rust**), `ValidationCodeExpiredException` → 400, `TenantProvisioningException` → 500 (`SystemSeedGridException`, `detail` genérico). A `SubdomainTenancyExceptionExtension` foi removida; guardião BE-42.
 
 ### Anotações
 

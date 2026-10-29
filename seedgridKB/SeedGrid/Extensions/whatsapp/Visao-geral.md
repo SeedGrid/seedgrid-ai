@@ -32,7 +32,7 @@ Todos com `groupId` `br.com.seedgrid` e versão `2026.08.16`.
 
 ## Dependências SeedGrid
 
-- `br.com.seedgrid:seedgrid-commons:2026.08.16` (core) — usado por `WhatsAppExceptionExtension implements ApiExceptionExtension`, que converte `WhatsAppException` em HTTP **422** com `ProblemDetails` (título `WhatsApp Error`).
+- `br.com.seedgrid:seedgrid-commons:2026.08.16` (core) — a `WhatsAppException` é **abstrata** (422, "WhatsApp Error") e base de 4 exceptions de entrada, cada uma com `code`: `WhatsAppRequiredFieldException` (`WHATSAPP_FIELD_REQUIRED`), `WhatsAppInvalidValueException` (`WHATSAPP_INVALID_VALUE`), `WhatsAppInvalidPhoneNumberException` (`WHATSAPP_INVALID_PHONE`) e `WhatsAppInvalidMediaException` (`WHATSAPP_INVALID_MEDIA`); falha do provedor é `WhatsAppProviderException` (`SystemSeedGridException` 502, `WHATSAPP_PROVIDER_FAILURE`, `detail` genérico; ex.: upload de mídia da Cloud API sem `id`, que antes era 422). A `WhatsAppExceptionExtension` foi removida.
 - Providers dependem de `quarkus-rest-client-jackson`.
 - **Observação (Não confirmado o motivo):** o pom do deployment declara `quarkus-hibernate-orm-deployment`, `quarkus-agroal-deployment`, `quarkus-datasource-deployment`, `quarkus-narayana-jta-deployment` etc., embora o core não use persistência; provavelmente herdados das necessidades do `seedgrid-commons`.
 
@@ -67,7 +67,7 @@ flowchart LR
 - Qualificadores CDI: `@EvolutionProvider`, `@OfficialProvider` (`br.com.seedgrid.whatsapp.qualifiers`).
 - **Inferência (CDI):** como `EvolutionWhatsAppApi` declara o qualificador `@EvolutionProvider`, ele não tem `@Default`; para injetar as interfaces exclusivas da Evolution use `@EvolutionProvider WhatsAppInstanceManagementApi` (ou injete a classe `EvolutionWhatsAppApi`, como faz `EvolutionWhatsAppApiIT`). `@LookupIfProperty` só filtra lookup programático (`Instance`), não injeção direta.
 - DTOs (`br.com.seedgrid.whatsapp.dtos`): records Java com construtor curto e campo opcional `WhatsAppMessageOptionsDTO options` (`quotedMessageId`, `linkPreview`, `delayMillis`, `mentioned`, `mentionEveryone`; fábricas `quoting`, `linkPreview`, `delay`). Resultado: `WhatsAppSendMessageResultDTO(messageId, status, recipient, timestamp, providerResponse)`.
-- Exceção: `WhatsAppException` (RuntimeException) → 422 via `WhatsAppExceptionExtension`. Credenciais ausentes → `IllegalStateException`.
+- Exceções: `WhatsAppException` (abstrata, `BusinessException` 422) e suas específicas de entrada (campo obrigatório, valor, telefone e mídia inválidos, cada uma com `code`); falha do provedor → `WhatsAppProviderException` (502). Credenciais ausentes → `IllegalStateException`.
 - Endpoints REST **expostos**: nenhum (a lib só consome APIs externas). Endpoints **consumidos**:
   - Evolution (`EvolutionRestClient`, `@Path("/")`): `/instance/*`, `/message/send*/{name}`, `/call/offer/{name}`, `/webhook/set|find/{name}`, `/settings/set|find/{name}`, `/group/*/{name}`, `/label/*/{name}`, `/chat/*/{name}` — ~65 métodos.
   - Cloud (`CloudRestClient`): `POST /{phoneNumberId}/messages`, `POST /{phoneNumberId}/media` (upload multipart montado por `CloudMultipart`; arquivos de mídia/áudio são subidos e depois enviados por id).

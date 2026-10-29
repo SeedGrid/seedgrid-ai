@@ -33,7 +33,7 @@ O groupId é sempre `br.com.seedgrid`. As features Quarkus são `seedgrid-billin
 | Artefato | Versão no pom | Para quê |
 |---|---|---|
 | `seedgrid-security` | 2026.10.08 | `Company`, `User`, `Permission`, `@SgPlatformScope`, `UserService.deactivateUserInCompany` |
-| `seedgrid-commons` | 2026.10.08 | `ApiExceptionExtension`, `ProblemType`, `BaseEntity` |
+| `seedgrid-commons` | 2026.10.08 | `BusinessException`/`SystemSeedGridException` (base `SeedGridException`), `ProblemType`, `BaseEntity` |
 | `seedgrid-audit-core` | 2026.09.25 | `@SgAudit` em serviços administrativos |
 | `seedgrid-privacy` | 2026.07.27 | dependência declarada (uso específico não investigado) |
 | `seedgrid-resilience-core` | 2026.07.08 | `@SgRateLimit` no webhook, checkout e portal |
