@@ -18,35 +18,35 @@
 
 do $$
 begin
-    if to_regclass('plan_term_meters') is null then
+    if to_regclass('sg_plan_term_meters') is null then
         raise notice 'V3001: billing desligado (sem plan_term_meters); planos de demonstracao ignorados.';
         return;
     end if;
 
     -- Trial: so' requisicoes. O term TRIAL e' semeado pelo billing (billing/V505); aqui so' entra a franquia.
-    insert into plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
+    insert into sg_plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
     select gen_random_uuid()::text, pt.id, 'requests', 20, 0
-    from plan_terms pt
+    from sg_plan_terms pt
     where pt.public_id = '00000000-0000-0000-0000-0000000000a2'
     on conflict (plan_term_id, meter) do nothing;
 
-    insert into plans (public_id, code, name, description, active)
+    insert into sg_plans (public_id, code, name, description, active)
     values
         (gen_random_uuid()::text, 'GRATIS', 'Gratis', 'Uso pessoal com franquia fixa de requisicoes e armazenamento', true),
         (gen_random_uuid()::text, 'PREMIUM', 'Premium', 'Franquia maior e excedente cobrado por uso', true)
     on conflict (code) do nothing;
 
     -- Um term vigente desde hoje para cada plano (so' se o plano ainda nao tiver nenhum).
-    insert into plan_terms (public_id, plan_id, monthly_price, effective_from)
+    insert into sg_plan_terms (public_id, plan_id, monthly_price, effective_from)
     select gen_random_uuid()::text, p.id, v.price, date_trunc('day', current_timestamp)
-    from plans p
+    from sg_plans p
     join (values ('GRATIS', 0.00), ('PREMIUM', 29.90)) as v(code, price) on v.code = p.code
-    where not exists (select 1 from plan_terms t where t.plan_id = p.id);
+    where not exists (select 1 from sg_plan_terms t where t.plan_id = p.id);
 
-    insert into plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
+    insert into sg_plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
     select gen_random_uuid()::text, t.id, v.meter, v.included, v.overage
-    from plan_terms t
-    join plans p on p.id = t.plan_id
+    from sg_plan_terms t
+    join sg_plans p on p.id = t.plan_id
     join (values
             ('GRATIS', 'requests', 100, 0.00),
             ('GRATIS', 'storage-mb', 50, 0.00),
@@ -57,11 +57,11 @@ begin
 
     -- O acesso e' a INTERSECAO entre a permissao da role e a do plano: term sem permissoes nao libera nada.
     -- Os planos de demonstracao liberam o mesmo que o trial: as permissoes de audience 'client'.
-    insert into plan_term_permissions (plan_term_id, permission_id)
+    insert into sg_plan_term_permissions (plan_term_id, permission_id)
     select t.id, perm.id
-    from plan_terms t
-    join plans p on p.id = t.plan_id
-    cross join permissions perm
+    from sg_plan_terms t
+    join sg_plans p on p.id = t.plan_id
+    cross join sg_permissions perm
     where p.code in ('GRATIS', 'PREMIUM')
       and perm.audience = 'client'
     on conflict do nothing;

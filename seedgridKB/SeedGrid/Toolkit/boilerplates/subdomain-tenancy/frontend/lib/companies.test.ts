@@ -6,6 +6,7 @@ import {
   companyErrorFromThrown,
   companyErrorMessage,
   filterCompanies,
+  formFromEntry,
   formatCompanyAddress,
   formatCpfCnpj,
   parseCompanyListQuery,
@@ -91,6 +92,19 @@ describe("formatacao", () => {
     expect(formatCompanyAddress(toCompanyEntry(base[0]))).toBe("Rua A, 10 - Sao Paulo/SP");
     expect(formatCompanyAddress(toCompanyEntry(base[1]))).toBe("");
   });
+
+  it("mostra a cidade pelo objeto city devolvido (nao pelo texto)", () => {
+    const entry = toCompanyEntry({
+      publicId: "x",
+      addrStreet: "Rua A",
+      addrCity: "texto antigo",
+      addrState: "RJ",
+      city: { id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "sp" },
+    });
+    expect(entry.city).toEqual({ id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" });
+    expect(formatCompanyAddress(entry)).toBe("Rua A - Sao Paulo/SP");
+    expect(toCompanyEntry({ publicId: "y", addrCity: "so texto" }).city).toBeNull();
+  });
 });
 
 describe("filtros por estado, situacao e busca", () => {
@@ -162,6 +176,46 @@ describe("corpo enviado ao backend", () => {
     expect(body.addrPostalCode).toBe("01310100");
     expect(body.addrState).toBe("SP");
     expect(body).toHaveProperty("repEmail");
+  });
+
+  it("com cityId envia a FK e NAO envia o texto da cidade nem a UF (a cidade manda)", () => {
+    const body = toCompanyBody({
+      ...EMPTY_COMPANY_FORM,
+      corporateName: "A",
+      tradeName: "A",
+      cityId: 4853,
+      cityName: "Sao Paulo",
+      addrCity: "Sao Paulo",
+      addrState: "RJ",
+    });
+    expect(body.cityId).toBe(4853);
+    expect(body).not.toHaveProperty("addrCity");
+    expect(body).not.toHaveProperty("addrState");
+    expect(body).not.toHaveProperty("cityName");
+  });
+
+  it("sem cityId (empresa legada) segue com o texto da cidade e a UF", () => {
+    const body = toCompanyBody({ ...EMPTY_COMPANY_FORM, corporateName: "A", tradeName: "A", addrCity: " Campinas ", addrState: "sp" });
+    expect(body).not.toHaveProperty("cityId");
+    expect(body.addrCity).toBe("Campinas");
+    expect(body.addrState).toBe("SP");
+  });
+
+  it("a edicao carrega cityId/cityName da empresa e a UF vem da cidade", () => {
+    const form = formFromEntry(
+      toCompanyEntry({
+        publicId: "x",
+        addrCity: "Sao Paulo",
+        addrState: "RJ",
+        city: { id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" },
+      }),
+    );
+    expect(form).toMatchObject({ cityId: 4853, cityName: "Sao Paulo", addrState: "SP" });
+    expect(formFromEntry(toCompanyEntry({ publicId: "y", addrCity: "Campinas", addrState: "SP" }))).toMatchObject({
+      cityId: null,
+      cityName: "",
+      addrCity: "Campinas",
+    });
   });
 
   it("pessoa fisica nao envia representante legal", () => {

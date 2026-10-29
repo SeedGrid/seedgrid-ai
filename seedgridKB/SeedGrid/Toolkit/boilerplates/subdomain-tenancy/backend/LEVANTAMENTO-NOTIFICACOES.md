@@ -18,7 +18,7 @@ de e-mail, recuperação de senha e autenticação continuam em seus fluxos tran
 
 Os dois backends dependem do artefato instalado `seedgrid-notification` e importam o
 BOM `seedgrid-notification-parent`. O host executa a migration embarcada da extensão em um histórico
-dedicado `flyway_schema_history_notification`, separado do histórico das migrations da aplicação.
+dedicado `sg_flyway_schema_history_notification`, separado do histórico das migrations da aplicação.
 No subdomain-tenancy, o bootstrap usa a conexão master e as entidades de notification são incluídas
 na persistence unit master. No login-tenancy, usa-se a datasource única da aplicação.
 

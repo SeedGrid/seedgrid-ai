@@ -48,9 +48,9 @@ class UsersCompaniesAndTermsE2eTest extends E2eBase {
         companyA = firstCompanyPublicId(host, admin);
         companyB = createCompany(sub, admin, cnpj(95), "filial usuarios");
         readerRole = globalRoleId(sub, "E2E_LEITOR");
-        exec(db(sub), "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR', 'gestor de teste', '"
+        exec(db(sub), "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR', 'gestor de teste', '"
                 + UUID.randomUUID() + "', FALSE) ON CONFLICT DO NOTHING");
-        exec(db(sub), "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db(sub), "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'E2E_GESTOR' AND r.company_id IS NULL AND p.name IN ('USER_READ', 'PROBE_READ') ON CONFLICT DO NOTHING");
         managerRole = globalRoleId(sub, "E2E_GESTOR");
     }
@@ -113,7 +113,7 @@ class UsersCompaniesAndTermsE2eTest extends E2eBase {
     void aUserOfAnotherTenantIsNeitherVisibleNorEditableHere() throws Exception {
         ensureTenant(ALFA);
         String alfaAdmin = adminToken(ALFA);
-        String alfaAdminId = text(db(ALFA), "SELECT public_id FROM users WHERE email = '" + adminEmail(ALFA) + "'");
+        String alfaAdminId = text(db(ALFA), "SELECT public_id FROM sg_users WHERE email = '" + adminEmail(ALFA) + "'");
         as(host, admin).get("/users/" + alfaAdminId).then().statusCode(404);
         as(host, admin).body(Map.of("name", "Invasor Do Outro")).patch("/users/" + alfaAdminId).then().statusCode(404);
         // e o mesmo e-mail pode existir nos dois tenants (os bancos sao separados)
@@ -164,7 +164,7 @@ class UsersCompaniesAndTermsE2eTest extends E2eBase {
         assertTrue(wrong >= 400 && wrong < 500, "versao antiga respondeu " + wrong);
         as(host, token).body(Map.of("version", "2026-10")).post("/me/terms/accept").then().statusCode(204);
         as(host, token).body(Map.of("version", "2026-10")).post("/me/terms/accept").then().statusCode(204);
-        assertEquals("1", text(db(sub), "SELECT count(*) FROM terms_acceptance ta JOIN users u ON u.id = ta.user_id "
+        assertEquals("1", text(db(sub), "SELECT count(*) FROM sg_terms_acceptance ta JOIN sg_users u ON u.id = ta.user_id "
                 + "WHERE u.public_id = '" + member.publicId() + "' AND ta.terms_version = '2026-10'"));
         Response again = loginResponse(host, member.email(), PASSWORD);
         assertTrue(again.jsonPath().getObject("termsAcceptanceRequired", Boolean.class) == null

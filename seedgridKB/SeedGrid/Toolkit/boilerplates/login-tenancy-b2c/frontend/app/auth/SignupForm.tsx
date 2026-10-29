@@ -52,6 +52,7 @@ import {
 } from "@/lib/ported/portedApi";
 import type { CnpjSignupStatus } from "@/lib/ported/billingTypes";
 import { readError } from "@/lib/ported/clientError";
+import { cityIdForSignup, lookupCityByIbge, type PublicCity } from "@/lib/public-cities";
 import { AuthCard, AuthMessage } from "./AuthCard";
 
 interface SignupFormProps {
@@ -186,6 +187,7 @@ function toIsoDate(value: string): string {
 function buildPayload(
   form: SignupFormValues,
   terms?: { accepted: boolean; version: string } | null,
+  cityId?: number,
 ): SignupPayload {
   return {
     ...(terms ? { acceptedTerms: terms.accepted, termsVersion: terms.version } : {}),
@@ -203,6 +205,8 @@ function buildPayload(
       state: form.addressState.trim().toUpperCase(),
       district: form.addressDistrict.trim(),
       phone: form.addressPhone.trim(),
+      // Municipio resolvido pelo IBGE (consulta publica da cities); ausente = segue com cidade/UF em texto.
+      ...(cityId ? { cityId } : {}),
     },
     legalRepresentative: {
       firstName: form.legalFirstName.trim(),
@@ -223,6 +227,15 @@ function readLookup(value: unknown, ...path: string[]): string | null {
     current = (current as Record<string, unknown>)[key];
   }
   return typeof current === "string" && current.trim() ? current.trim() : null;
+}
+
+function readLookupRaw(value: unknown, ...path: string[]): unknown {
+  let current: unknown = value;
+  for (const key of path) {
+    if (!current || typeof current !== "object") return null;
+    current = (current as Record<string, unknown>)[key];
+  }
+  return current;
 }
 
 function joinStreet(type: string | null, street: string | null): string | null {
@@ -322,6 +335,10 @@ export function SignupForm({
   // o ref sobrevive a navegacao entre etapas. Ver comentario em `handleCnpjResult`.
   const appliedCnpjRef = useRef<string | null>(null);
   const appliedCepRef = useRef<string | null>(null);
+  // Municipio resolvido pelo codigo IBGE do ViaCEP/CNPJ (consulta publica da cities). A sequencia descarta resposta
+  // atrasada de um CEP anterior; se a consulta falhar, fica null e o cadastro segue com cidade/UF em texto.
+  const resolvedCityRef = useRef<PublicCity | null>(null);
+  const cityLookupSeqRef = useRef(0);
   // Ultimo CNPJ consultado no cnpj-status. Mesma razao do appliedCnpjRef: o "Proximo" do
   // wizard da focus+blur em todos os inputs, entao sem a guarda cada avanco reconsultava o
   // mesmo CNPJ e reabria o whistle que o usuario tinha acabado de fechar.
@@ -333,6 +350,14 @@ export function SignupForm({
   const cnpjNoticeRef = useRef<CnpjNotice>(emptyNotice(""));
   // Consulta de CNPJ em voo, para o "Proximo" do wizard poder esperar por ela.
   const cnpjCheckRef = useRef<Promise<void> | null>(null);
+
+  const resolveCity = useCallback((ibge: unknown) => {
+    const seq = ++cityLookupSeqRef.current;
+    resolvedCityRef.current = null;
+    void lookupCityByIbge(ibge).then((city) => {
+      if (seq === cityLookupSeqRef.current) resolvedCityRef.current = city;
+    });
+  }, []);
 
   /**
    * Escreve num campo por codigo (autopreenchimento de CNPJ/CEP).
@@ -496,6 +521,9 @@ export function SignupForm({
 
       fill("corporateName", readLookup(data, "razao_social"));
       fill("tradeName", readLookup(data, "estabelecimento", "nome_fantasia"));
+      // O endereco informado pelo usuario (CEP ja aplicado pelo ViaCEP) vale mais que o da Receita. A consulta de
+      // CNPJ e' assincrona e pode chegar depois do CEP; sem esta guarda ela trocava rua, cidade e municipio.
+      if (appliedCepRef.current) return;
       fill(
         "addressStreet",
         joinStreet(
@@ -509,8 +537,9 @@ export function SignupForm({
       fill("addressPostalCode", readLookup(data, "estabelecimento", "cep"));
       fill("addressCity", readLookup(data, "estabelecimento", "cidade", "nome"));
       fill("addressState", readLookup(data, "estabelecimento", "estado", "sigla"));
+      resolveCity(readLookupRaw(data, "estabelecimento", "cidade", "ibge_id"));
     },
-    [applyValue, getValues],
+    [applyValue, getValues, resolveCity],
   );
 
   // Autopreenche o endereco a partir da consulta de CEP (ViaCEP, embutida no componente).
@@ -536,8 +565,9 @@ export function SignupForm({
       fill("addressDistrict", data.bairro);
       fill("addressCity", data.localidade);
       fill("addressState", data.uf?.toUpperCase());
+      resolveCity(data.ibge);
     },
-    [applyValue, getValues],
+    [applyValue, getValues, resolveCity],
   );
 
   // Checa, ao sair do campo, se o e-mail ja tem conta. Se tiver, o cadastro vira vinculacao.
@@ -591,7 +621,11 @@ export function SignupForm({
     setInfo(null);
     try {
       const result = await signUp(
-        buildPayload(values, termsConfig?.termsRequired ? { accepted: acceptedTerms, version: termsConfig.termsVersion } : null),
+        buildPayload(
+          values,
+          termsConfig?.termsRequired ? { accepted: acceptedTerms, version: termsConfig.termsVersion } : null,
+          cityIdForSignup(resolvedCityRef.current, values.addressState),
+        ),
       );
       setSignupEmail(values.rootEmail.trim());
       if (result.verificationToken) setConfirmToken(result.verificationToken);
@@ -840,6 +874,8 @@ export function SignupForm({
                 if (!appliedCepRef.current || digits === appliedCepRef.current) return;
                 applyValue("addressCity", "");
                 applyValue("addressState", "");
+                cityLookupSeqRef.current += 1;
+                resolvedCityRef.current = null;
               }}
             />
             <SgGrid minItemWidth={180} gap={12}>
@@ -874,6 +910,9 @@ export function SignupForm({
               required
               validateOnBlur
             />
+            {/* Cidade/UF vindas do CEP (texto, somente leitura). O codigo IBGE do ViaCEP e' resolvido na consulta publica da
+                cities (`/api/signup/city/{ibge}`) e o `cityId` segue no payload; se a consulta falhar, o cadastro segue em
+                texto (`cityId` e' opcional no backend). */}
             <SgGrid minItemWidth={180} gap={12}>
               <SgInputText
                 id={FIELD_ID.addressCity}

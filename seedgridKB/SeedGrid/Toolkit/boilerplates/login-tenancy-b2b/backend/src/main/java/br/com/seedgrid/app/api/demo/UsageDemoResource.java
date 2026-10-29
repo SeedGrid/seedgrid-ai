@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.com.seedgrid.app.api.billing.AppUsageMeters;
+import br.com.seedgrid.app.configs.RestControllerPath;
 import br.com.seedgrid.billing.annotations.SgConsumesUsage;
 import br.com.seedgrid.billing.annotations.SgRequiresPlanFeature;
 import br.com.seedgrid.billing.entities.Account;
@@ -35,7 +36,7 @@ import jakarta.ws.rs.core.MediaType;
  * <p>Acesso: o perfil precisa de {@code USAGE_DEMO_READ} (marcavel no editor de perfis) E o plano da conta
  * precisa liberar a feature ({@code @SgRequiresPlanFeature}, editavel no admin). Seed: V3002.</p>
  */
-@Path("/api/demo")
+@Path(RestControllerPath.DEMO)
 @Authenticated
 @Tag(name = "Demo - contadores de uso")
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,7 +57,7 @@ public class UsageDemoResource {
      * Forma 1, DECLARATIVA: uma chamada vale uma unidade de {@code requests}. Toda a cobranca e' a anotacao.
      */
     @POST
-    @Path("/requests")
+    @Path(RestControllerPath.DEMO_REQUESTS)
     @PermissionsAllowed(USAGE_DEMO_READ)
     @SgRequiresPlanFeature(USAGE_DEMO_READ)
     @SgConsumesUsage(meter = AppUsageMeters.REQUESTS)
@@ -70,7 +71,7 @@ public class UsageDemoResource {
      * anotacao nao resolve. O exemplo nao guarda o arquivo: so' mede e conta.
      */
     @POST
-    @Path("/files")
+    @Path(RestControllerPath.DEMO_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @PermissionsAllowed(USAGE_DEMO_READ)
     @SgRequiresPlanFeature(USAGE_DEMO_READ)

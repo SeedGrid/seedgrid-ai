@@ -54,10 +54,10 @@ class AdminInvariantE2eTest extends E2eBase {
         company = firstCompanyPublicId(host, admin);
         adminRole = globalRoleId(sub, "ADMIN");
         readerRole = globalRoleId(sub, "E2E_LEITOR");
-        adminPublicId = text(db(sub), "SELECT public_id FROM users WHERE email = '" + adminEmail(sub) + "'");
-        exec(db(sub), "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR', 'gestor de teste', '"
+        adminPublicId = text(db(sub), "SELECT public_id FROM sg_users WHERE email = '" + adminEmail(sub) + "'");
+        exec(db(sub), "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR', 'gestor de teste', '"
                 + UUID.randomUUID() + "', FALSE) ON CONFLICT DO NOTHING");
-        exec(db(sub), "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db(sub), "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'E2E_GESTOR' AND r.company_id IS NULL AND p.name IN ('USER_READ', 'USER_UPDATE', 'USER_DELETE') "
                 + "ON CONFLICT DO NOTHING");
         managerMember = newMember(sub, admin, company, List.of(globalRoleId(sub, "E2E_GESTOR")), List.of());
@@ -78,8 +78,8 @@ class AdminInvariantE2eTest extends E2eBase {
         refused(as(host, admin).body(Map.of("active", false)).patch(user), "ADMIN se desativando");
 
         // nada mudou: segue ativo, com vinculo, e entra
-        assertEquals("true", text(db(sub), "SELECT active::text FROM users WHERE public_id = '" + adminPublicId + "'"));
-        assertEquals("1", text(db(sub), "SELECT count(*) FROM user_companies uc JOIN users u ON u.id = uc.user_id "
+        assertEquals("true", text(db(sub), "SELECT active::text FROM sg_users WHERE public_id = '" + adminPublicId + "'"));
+        assertEquals("1", text(db(sub), "SELECT count(*) FROM sg_user_companies uc JOIN sg_users u ON u.id = uc.user_id "
                 + "WHERE u.public_id = '" + adminPublicId + "'"));
         as(host, admin).get("/me/companies").then().statusCode(200);
     }
@@ -102,7 +102,7 @@ class AdminInvariantE2eTest extends E2eBase {
     void theOnlyActiveCompanyOfTheTenantCannotBeInactivated() throws Exception {
         Response r = as(host, admin).body(Map.of("active", false)).patch("/companies/" + company);
         assertTrue(r.statusCode() == 409 || r.statusCode() == 422, r.statusCode() + " " + r.body().asString());
-        assertEquals("true", text(db(sub), "SELECT active::text FROM companies WHERE public_id = '" + company + "'"));
+        assertEquals("true", text(db(sub), "SELECT active::text FROM sg_companies WHERE public_id = '" + company + "'"));
     }
 
     @Test
@@ -110,12 +110,12 @@ class AdminInvariantE2eTest extends E2eBase {
         // B ativa, so' com um membro comum; o unico ADMIN do banco esta em A
         String branch = createCompany(sub, admin, cnpj(41), "filial invariante");
         // quem cria a empresa (root) recebe vinculo nela automaticamente: tira, para o unico ADMIN ficar so' em A
-        exec(db(sub), "DELETE FROM user_companies WHERE company_id = (SELECT id FROM companies WHERE public_id = '" + branch + "')");
+        exec(db(sub), "DELETE FROM sg_user_companies WHERE company_id = (SELECT id FROM sg_companies WHERE public_id = '" + branch + "')");
         newMember(sub, admin, branch, List.of(readerRole), List.of());
 
         refused(as(host, admin).body(Map.of("active", false)).patch("/companies/" + company),
                 "inativar a empresa do unico ADMIN");
-        assertEquals("true", text(db(sub), "SELECT active::text FROM companies WHERE public_id = '" + company + "'"));
+        assertEquals("true", text(db(sub), "SELECT active::text FROM sg_companies WHERE public_id = '" + company + "'"));
 
         // dar o ADMIN a alguem de B: agora A pode ser inativada (o banco segue com ADMIN em empresa ativa)
         newMember(sub, admin, branch, List.of(adminRole), List.of());
@@ -159,7 +159,7 @@ class AdminInvariantE2eTest extends E2eBase {
             Member x = newMember(sub, admin, company, List.of(adminRole), List.of());
             Member y = newMember(sub, admin, company, List.of(adminRole), List.of());
             // so' x e y sao ADMIN ativos nesta rodada (o original e os das rodadas anteriores saem por SQL)
-            exec(db(sub), "UPDATE users SET active = FALSE WHERE public_id NOT IN ('" + x.publicId() + "', '"
+            exec(db(sub), "UPDATE sg_users SET active = FALSE WHERE public_id NOT IN ('" + x.publicId() + "', '"
                     + y.publicId() + "', '" + managerMember.publicId() + "')");
             CountDownLatch go = new CountDownLatch(1);
             ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -169,8 +169,8 @@ class AdminInvariantE2eTest extends E2eBase {
                 go.countDown();
                 int sx = fx.get();
                 int sy = fy.get();
-                String remaining = text(db(sub), "SELECT count(*) FROM users u JOIN user_roles ur ON ur.user_id = u.id "
-                        + "JOIN roles r ON r.id = ur.role_id WHERE r.name = 'ADMIN' AND r.company_id IS NULL AND u.active");
+                String remaining = text(db(sub), "SELECT count(*) FROM sg_users u JOIN sg_user_roles ur ON ur.user_id = u.id "
+                        + "JOIN sg_roles r ON r.id = ur.role_id WHERE r.name = 'ADMIN' AND r.company_id IS NULL AND u.active");
                 log.append("rodada ").append(round).append(": ").append(sx).append("/").append(sy)
                         .append(" ADMIN ativos=").append(remaining).append("; ");
                 assertTrue(!"0".equals(remaining), "o tenant ficou SEM ADMIN ativo (" + log + ")");

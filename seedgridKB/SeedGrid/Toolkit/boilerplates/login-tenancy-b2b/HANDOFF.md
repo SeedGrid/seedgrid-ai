@@ -52,7 +52,7 @@ O trabalho no boilerplate foi pausado para executar a **§12 do PLAN.md** — su
    O checksum foi realinhado pelo dono antes do push.
 
 **A adoção também já foi aplicada AQUI** (§3.6 fechado) e provada em banco limpo: a `V704` consta
-em `flyway_schema_history_login_tenancy` e foi ela quem criou `plan_term_permissions` **e** a coluna
+em `sg_flyway_schema_history_login_tenancy` e foi ela quem criou `plan_term_permissions` **e** a coluna
 `max_users`. O produto não cria mais nenhuma das duas.
 
 > Diferença deliberada em relação ao report: lá o conserto foi `create table **if not exists**` na
@@ -167,7 +167,7 @@ responde 405). Documentado em `backend/README.md`.
 ### 3.1 Verificar a correção do 500 em `/me/subscription`
 Era **corrida** entre o `SignupAccountProvisioner` e o primeiro `/me/subscription` do front: os dois
 chamaram `ensureAccount`, os dois leram "não existe", os dois inseriram, e o perdedor bateu em
-`uk_accounts_cnpj_hash`. Corrigido em `AccountProvisioningService`: criação isolada em
+`uk_sg_accounts_cnpj_hash`. Corrigido em `AccountProvisioningService`: criação isolada em
 `REQUIRES_NEW`, detecção por **SQLSTATE 23505** (não pelo texto da mensagem, que sai em português) e
 releitura. **Falta abrir a tela e confirmar.**
 

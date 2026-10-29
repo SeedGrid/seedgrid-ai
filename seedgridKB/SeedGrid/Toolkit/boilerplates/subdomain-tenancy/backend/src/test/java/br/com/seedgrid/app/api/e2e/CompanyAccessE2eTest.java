@@ -226,22 +226,22 @@ class CompanyAccessE2eTest extends E2eBase {
         // o ADMIN do tenant NAO tem COMPANY_ACCESS_MODE_UPDATE (so' a plataforma/billing mudam o estado)
         as(HOST, admin).body(Map.of("mode", "READ_ONLY")).put("/companies/" + companyB + "/access-mode")
                 .then().statusCode(403);
-        assertEquals("ACTIVE", text(db(GAMA), "SELECT access_mode FROM companies WHERE public_id = '" + companyB + "'"));
+        assertEquals("ACTIVE", text(db(GAMA), "SELECT access_mode FROM sg_companies WHERE public_id = '" + companyB + "'"));
 
         // a permissao e' de audiencia "platform": mesmo um perfil do tenant que a receba (por SQL; o ADMIN nem consegue
         // delegar, ROLE_NOT_DELEGABLE) fica sem ela, porque o plano do tenant so' libera permissoes "client"
-        assertEquals("platform", text(db(GAMA), "SELECT audience FROM permissions WHERE name = 'COMPANY_ACCESS_MODE_UPDATE'"));
-        exec(db(GAMA), "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('E2E_ACESSO', 'muda estado', '"
+        assertEquals("platform", text(db(GAMA), "SELECT audience FROM sg_permissions WHERE name = 'COMPANY_ACCESS_MODE_UPDATE'"));
+        exec(db(GAMA), "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('E2E_ACESSO', 'muda estado', '"
                 + UUID.randomUUID() + "', FALSE) ON CONFLICT DO NOTHING");
-        exec(db(GAMA), "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db(GAMA), "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'E2E_ACESSO' AND r.company_id IS NULL AND p.name = 'COMPANY_ACCESS_MODE_UPDATE' ON CONFLICT DO NOTHING");
         Member holder = newMember(GAMA, admin, companyA, List.of(), List.of());
-        exec(db(GAMA), "INSERT INTO user_roles (user_id, role_id) SELECT u.id, r.id FROM users u, roles r "
+        exec(db(GAMA), "INSERT INTO sg_user_roles (user_id, role_id) SELECT u.id, r.id FROM sg_users u, sg_roles r "
                 + "WHERE u.public_id = '" + holder.publicId() + "' AND r.name = 'E2E_ACESSO' AND r.company_id IS NULL");
         String holderToken = login(HOST, holder.email(), PASSWORD);
         as(HOST, holderToken).body(Map.of("mode", "READ_ONLY", "reason", "plano"))
                 .put("/companies/" + companyB + "/access-mode").then().statusCode(403);
-        assertEquals("ACTIVE", text(db(GAMA), "SELECT access_mode FROM companies WHERE public_id = '" + companyB + "'"));
+        assertEquals("ACTIVE", text(db(GAMA), "SELECT access_mode FROM sg_companies WHERE public_id = '" + companyB + "'"));
     }
 
     // ------------------------------------------------------------------ QUERY

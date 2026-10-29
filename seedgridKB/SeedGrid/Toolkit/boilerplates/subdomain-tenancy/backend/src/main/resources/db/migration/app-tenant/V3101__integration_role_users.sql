@@ -6,15 +6,15 @@
 -- trocar senha, de proposito). Global no banco do tenant (company_id nulo): o tenant tem uma empresa so'.
 -- Ajuste ou remova ao comecar o seu produto.
 
-insert into roles (public_id, name, description, for_integration)
+insert into sg_roles (public_id, name, description, for_integration)
 values (gen_random_uuid()::text, 'INTEGRACAO_USUARIOS',
         'Integracao: sincroniza o cadastro de usuarios (consultar, criar e editar)', true)
 on conflict (name) where company_id is null do nothing;
 
-insert into role_permissions (role_id, permission_id)
+insert into sg_role_permissions (role_id, permission_id)
 select r.id, p.id
-from roles r
-join permissions p on p.name in ('USER_READ', 'USER_CREATE', 'USER_UPDATE')
+from sg_roles r
+join sg_permissions p on p.name in ('USER_READ', 'USER_CREATE', 'USER_UPDATE')
 where r.name = 'INTEGRACAO_USUARIOS'
   and r.company_id is null
 on conflict do nothing;

@@ -35,7 +35,7 @@
         <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
         <!-- Login social (Google/Facebook): modulo opcional, so' no b2c. Fora do BOM do login-tenancy. -->
         <seedgrid.security-social.version>2026.10.22</seedgrid.security-social.version>
-        <seedgrid.notification.version>2026.10.15</seedgrid.notification.version>
+        <seedgrid.notification.version>2026.10.22</seedgrid.notification.version>
         <!-- Concreto do WhatsApp: security so traz a interface (whatsapp-core) desde a 2026.08.01,
              o host escolhe o provider. Mesma versao ja usada internamente pela security. -->
         <seedgrid.whatsapp.version>2026.10.22</seedgrid.whatsapp.version>

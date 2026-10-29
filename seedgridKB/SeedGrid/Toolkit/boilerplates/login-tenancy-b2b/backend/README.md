@@ -87,7 +87,7 @@ O token de confirmação está no banco. Para destravar:
 
 ```bash
 TOKEN=$(psql -h localhost -p 5440 -U postgres -d seedgrid_app -tAc \
-  "select email_confirmation_token from users where email_confirmation_token is not null limit 1" | tr -d '[:space:]')
+  "select email_confirmation_token from sg_users where email_confirmation_token is not null limit 1" | tr -d '[:space:]')
 
 curl "http://127.0.0.1:8080/public/auth/confirm-email?token=$TOKEN"
 ```
@@ -245,7 +245,7 @@ O admin configura a lista dinâmica em `/configuracao/notificacoes`. A API da ex
 `/admin/notifications/events`, `/admin/notifications/events/{code}` e
 `/admin/notifications/deliveries`, protegidos por `NOTIFICATION_READ` e `NOTIFICATION_UPDATE`.
 O `seedgrid-notification` inicializa seu próprio schema em
-`db/migration/notification`, usando `flyway_schema_history_notification` no datasource padrão.
+`db/migration/notification`, usando `sg_flyway_schema_history_notification` no datasource padrão.
 O host não declara entidades, migrations nem bootstrap da extensão. O `seedgrid-notification-api` continua agnóstico:
 extensões produtoras publicam eventos pelo contrato comum, sem dependência do motor.
 

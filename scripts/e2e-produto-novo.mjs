@@ -4,7 +4,7 @@
 // em turnos seguintes (--resume), lendo as respostas de um arquivo. Guarda o JSON de cada turno e confere os criterios.
 // Quem executa NAO conduz o fluxo: so responde como o usuario. Perguntas fora do esperado viram "desvios" no relatorio.
 // Uso: node scripts/e2e-produto-novo.mjs --destino <pasta> [--respostas <json>] [--saida <pasta>] [--modelo <modelo>]
-//        [--sem-build] [--sem-fronts] [--so-conferir] [--vigiar <repo> ...]
+//        [--sem-build] [--sem-fronts] [--so-conferir] [--subir [--runtime docker|podman]] [--vigiar <repo> ...]
 import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
@@ -228,6 +228,16 @@ function conferir(antes) {
       const b = sh('pnpm', ['build'], { cwd: dir, timeout: 20 * 60 * 1000 });
       ok(`${app} compila (pnpm build)`, b.status === 0, saidaDe(b).slice(-600));
     }
+  }
+  // subida de verdade (T3b.5): compose das dependencias, backend (health e log do boot), rota protegida, login e e-mail no Mailpit, fronts
+  if (flag('subir')) {
+    const runtime = arg('runtime') ?? (sh('docker', ['--version']).status === 0 ? 'docker' : 'podman');
+    const v = sh(process.execPath, [join(RAIZ, 'seedgridKB', 'SeedGrid', 'Toolkit', 'skills', 'sg-new-product', 'scripts', 'verificar-subida.mjs'), '--destino', destino, '--runtime', runtime, '--json', ...(flag('sem-fronts') ? ['--sem-front'] : [])], { timeout: 30 * 60 * 1000 });
+    let rel = null;
+    try { rel = JSON.parse(String(v.stdout ?? '')); } catch { /* sem JSON: o script quebrou */ }
+    if (!rel) ok(`subida (${runtime}): verificar-subida produziu relatorio`, false, saidaDe(v).slice(-600));
+    else for (const p of rel.passos) ok(`subida (${runtime}): ${p.id}`, p.estado === 'ok' || p.estado === 'pulado', `${p.estado}: ${p.detalhe ?? ''} ${(p.log ?? []).join(' | ')}`);
+    c.push({ nome: `runtime da subida: ${runtime} (o outro fica "nao verificado")`, passou: true, detalhe: '' });
   }
   return c;
 }

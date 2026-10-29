@@ -86,6 +86,45 @@ describe("BFF /api/security/companies", () => {
   });
 });
 
+describe("BFF /api/security/companies - cidade (FK)", () => {
+  it("POST repassa cityId ao backend (sem texto de cidade) e devolve a cidade pelo objeto city", async () => {
+    fetchWithAdminSession.mockResolvedValue(
+      json({
+        publicId: "co-9",
+        addrCity: "Sao Paulo",
+        addrState: "SP",
+        city: { id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" },
+      }),
+    );
+    const response = await listRoute.POST(
+      req("POST", {
+        personType: "PJ",
+        cpfCnpj: "12345678000195",
+        corporateName: "A",
+        tradeName: "A",
+        cityId: 4853,
+        cityName: "Sao Paulo",
+        addrCity: "texto",
+        addrState: "RJ",
+      }),
+    );
+    const sent = JSON.parse(fetchWithAdminSession.mock.calls[0][1].body);
+    expect(sent.cityId).toBe(4853);
+    expect(sent).not.toHaveProperty("addrCity");
+    expect(sent).not.toHaveProperty("addrState");
+    expect(sent).not.toHaveProperty("cityName");
+    expect(response.status).toBe(201);
+    expect((await response.json()).city).toEqual({ id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" });
+  });
+
+  it("repassa CITY_NOT_FOUND (400) do backend", async () => {
+    fetchWithAdminSession.mockResolvedValue(json({ status: 400, code: "CITY_NOT_FOUND" }, 400));
+    const response = await listRoute.POST(req("POST", { personType: "PJ", corporateName: "A", tradeName: "A", cityId: 99999999 }));
+    expect(response.status).toBe(400);
+    expect((await response.json()).code).toBe("CITY_NOT_FOUND");
+  });
+});
+
 describe("BFF /api/security/companies/[publicId]", () => {
   it("PATCH inativar manda so { active: false } ao PATCH do backend", async () => {
     fetchWithAdminSession.mockResolvedValue(json({ publicId: "co-1", active: false }));
@@ -126,6 +165,15 @@ describe("BFF /api/security/companies/[publicId]", () => {
     expect(path).toBe("/companies/co-1");
     expect(init.method).toBe("PATCH");
     expect(JSON.parse(init.body)).not.toHaveProperty("active");
+  });
+
+  it("PUT manda cityId pelo PATCH e GET devolve city", async () => {
+    fetchWithAdminSession.mockResolvedValue(json({ publicId: "co-1", city: { id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" } }));
+    await itemRoute.PUT(req("PUT", { personType: "PJ", corporateName: "N", tradeName: "N", cityId: 4853 }), context());
+    expect(JSON.parse(fetchWithAdminSession.mock.calls[0][1].body).cityId).toBe(4853);
+    apiFetchSecurity.mockResolvedValue({ publicId: "co-1", addrState: "SP", city: { id: 4853, name: "Sao Paulo", ibgeCode: "3550308", uf: "SP" } });
+    const response = await itemRoute.GET(req("GET"), context());
+    expect((await response.json()).city).toMatchObject({ id: 4853, uf: "SP" });
   });
 
   it("GET devolve a empresa normalizada por publicId", async () => {

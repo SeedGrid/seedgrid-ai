@@ -21,7 +21,7 @@
         <seedgrid.subdomain-tenancy.version>2026.10.22</seedgrid.subdomain-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
         <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
-        <seedgrid.notification.version>2026.10.15</seedgrid.notification.version>
+        <seedgrid.notification.version>2026.10.22</seedgrid.notification.version>
         <seedgrid.whatsapp.version>2026.10.22</seedgrid.whatsapp.version>
         <minio.version>8.5.9</minio.version>
     </properties>

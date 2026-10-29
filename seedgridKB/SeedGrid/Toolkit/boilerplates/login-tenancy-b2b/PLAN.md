@@ -93,7 +93,7 @@ E, da própria extension:
 - **Controllers `/me`**: perfil, usuários e perfis por conta (`LoginTenancyProfileController`,
   `LoginTenancyUserController`, `LoginTenancyRoleController`).
 - **Migrations per-schema** (`security → audit → backup → billing → apikeys → login-tenancy → app`),
-  cada uma com sua `flyway_schema_history_*`. O Flyway nativo do Quarkus fica **desligado**.
+  cada uma com sua `sg_flyway_schema_history_*`. O Flyway nativo do Quarkus fica **desligado**.
 - **Bootstrap**: company default + primeiro admin.
 - **Status/readiness**: `/public/login-tenancy/status` e `/q/health/ready`.
 - **Isolamento lógico por company**: `AllowedCompaniesResolver`, carimbo de company na escrita de
@@ -610,7 +610,7 @@ Cada fase termina em algo **verificável**. Nada de "copiei tudo e depois vejo".
 |---|---|---|
 | 1 | ~~Decisões D1–D5~~ ✅ fechadas em 2026-09-09 (§10). Falta só a nomenclatura (§1) | tokens definidos |
 | 2 | `backend/` esqueleto: pom, application.properties, run.sh, dev.env placeholder, Dockerfile, keys novas, templates, banner | `./run.sh` sobe, `/q/health/ready` verde, `/public/login-tenancy/status` lista os módulos ativos, first-admin criado |
-| 3 | `V1000` recortada + `V1001` de permissões | migrations rodam em banco limpo; `flyway_schema_history_*` por módulo |
+| 3 | `V1000` recortada + `V1001` de permissões | migrations rodam em banco limpo; `sg_flyway_schema_history_*` por módulo |
 | 4 | Java copiado (§3.5) | compila; `/admin/health/readiness` responde; suíte de integração (Testcontainers) verde |
 | 5 | `admin/` copiado (infra + menu podado + rotas) | login com 2FA, treeview de permissões, CRUD de usuário/perfil, auditoria, contas, planos, moedas, backup |
 | 6 | `frontend/`: esqueleto do admin copiado, telas Signup/Assinatura/Settings portadas, i18n do pulse-ui | signup ponta a ponta (e-mail → confirm → Company + ROOT + trial), login, perfil, assinatura, temas, i18n |

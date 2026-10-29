@@ -94,6 +94,8 @@ export interface SignupPayload {
     state: string;
     district: string;
     phone: string;
+    /** Municipio (id em sg_cities); quando enviado, cidade/UF em texto sao derivados dele no backend. */
+    cityId?: number;
   };
   legalRepresentative: {
     firstName: string;

@@ -657,3 +657,7 @@ Plano 4.12 (Fase 5 T5.5/T5.6). A empresa da sessao tem `accessMode` `ACTIVE | RE
 - Backend (HTTP real, Testcontainers): `cd backend && mvn verify` (classes `B2c*E2ETest`).
 - Navegador (Playwright): `cd e2e-web && npx playwright test`, com a pilha de pé; passos no `e2e-web/README.md` e cobertura em `e2e-web/COBERTURA.md`. E-mails de teste via Mailpit.
 - Fora do automatizado: login social com Google/Facebook reais (manual).
+
+## Cidade no cadastro publico (TCI.13)
+
+O signup publico nao tem token, entao nao usa a REST autenticada da cities (`/cities-api`, `CITY_READ`). O backend liga a consulta publica minima (`seedgrid.cities.public-rest.enabled=true`, `client-ip-header=X-Forwarded-For`): `GET /public/cities/by-ibge-code/{codigo}` e `GET /public/cities?uf=&name=` devolvem so `{id, name, uf, ibgeCode}` (busca exige UF, termo de 3+ letras, teto de 20, rate limit por IP e global). O front resolve o `cityId` pelo IBGE do ViaCEP/CNPJ pelo BFF `/api/signup/city/{codigo}` (so' por codigo; o backend nao e' exposto) e o envia em `address.cityId`; se a consulta falhar, o cadastro segue com cidade/UF em texto. Em producao o proxy da frente deve sobrescrever o `X-Forwarded-For` e o backend nao pode ficar exposto direto.

@@ -162,17 +162,17 @@ class TenantIsolationE2eTest extends E2eBase {
         String key = createKey(HOST_ALFA, alfaToken, "PROBE_ROLE");
         given().header("Host", HOST_ALFA).header("x-api-key", key).get("/probe/permission").then().statusCode(200);
 
-        exec(db(ALFA), "UPDATE roles SET for_integration = FALSE WHERE name = 'PROBE_ROLE'");
+        exec(db(ALFA), "UPDATE sg_roles SET for_integration = FALSE WHERE name = 'PROBE_ROLE'");
         try {
             given().header("Host", HOST_ALFA).header("x-api-key", key).get("/probe/permission").then().statusCode(401);
         } finally {
-            exec(db(ALFA), "UPDATE roles SET for_integration = TRUE WHERE name = 'PROBE_ROLE'");
+            exec(db(ALFA), "UPDATE sg_roles SET for_integration = TRUE WHERE name = 'PROBE_ROLE'");
         }
-        exec(db(ALFA), "UPDATE roles SET active = FALSE WHERE name = 'PROBE_ROLE'");
+        exec(db(ALFA), "UPDATE sg_roles SET active = FALSE WHERE name = 'PROBE_ROLE'");
         try {
             given().header("Host", HOST_ALFA).header("x-api-key", key).get("/probe/permission").then().statusCode(401);
         } finally {
-            exec(db(ALFA), "UPDATE roles SET active = TRUE WHERE name = 'PROBE_ROLE'");
+            exec(db(ALFA), "UPDATE sg_roles SET active = TRUE WHERE name = 'PROBE_ROLE'");
         }
         given().header("Host", HOST_ALFA).header("x-api-key", key).get("/probe/permission").then().statusCode(200);
     }

@@ -15,11 +15,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 import { Shell } from "../../../components/Shell";
+import { CityPicker } from "../../../components/CityPicker";
 import { StatusBadge } from "../../../components/StatusBadge";
 import { useAdminAccess } from "../../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import {
-  BRAZIL_STATES,
   COMPANY_ACCESS_MODE_LABELS,
   COMPANY_PERSON_TYPE_LABELS,
   EMPTY_COMPANY_FORM,
@@ -40,8 +40,6 @@ const PERSON_TYPE_ITEMS = (Object.keys(COMPANY_PERSON_TYPE_LABELS) as CompanyPer
   label: COMPANY_PERSON_TYPE_LABELS[type],
   value: type,
 }));
-
-const STATE_ITEMS = BRAZIL_STATES.map((uf) => ({ id: uf, label: uf, value: uf }));
 
 export default function CompanyEditPage() {
   return (
@@ -269,20 +267,25 @@ function CompanyEditPageContent() {
                   inputProps={{ value: form.addrDistrict }}
                   onChange={(value) => setField("addrDistrict", value)}
                 />
-                <SgInputText
-                  id="company-city"
-                  label="Cidade"
-                  inputProps={{ value: form.addrCity }}
-                  onChange={(value) => setField("addrCity", value)}
-                />
-                <SgCombobox
-                  id="company-state"
-                  label="UF"
-                  source={STATE_ITEMS}
-                  value={form.addrState || null}
-                  onValueChange={(value) => setField("addrState", value ? String(value) : "")}
-                />
               </SgGrid>
+              <CityPicker
+                idPrefix="company"
+                uf={form.addrState}
+                cityId={form.cityId}
+                cityName={form.cityName}
+                legacyCityText={form.addrCity}
+                onUfChange={(uf) =>
+                  setForm((current) => ({ ...current, addrState: uf, cityId: null, cityName: "", addrCity: "" }))
+                }
+                onCityChange={(city) =>
+                  setForm((current) => ({
+                    ...current,
+                    cityId: city?.id ?? null,
+                    cityName: city?.name ?? "",
+                    addrCity: city ? city.name : current.addrCity,
+                  }))
+                }
+              />
               <SgInputText
                 id="company-address-phone"
                 label="Telefone"

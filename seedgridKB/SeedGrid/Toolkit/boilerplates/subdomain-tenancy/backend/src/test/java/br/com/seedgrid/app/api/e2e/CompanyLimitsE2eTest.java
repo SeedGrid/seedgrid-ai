@@ -65,9 +65,9 @@ class CompanyLimitsE2eTest extends E2eBase {
     @AfterEach
     void restoreCatalog() throws Exception {
         tenantContext.setCurrentTenant("master");
-        masterExec("UPDATE plan_terms SET max_companies = NULL, max_read_only_companies = NULL WHERE public_id = '" + TRIAL_TERM + "'");
-        masterExec("UPDATE plan_terms SET max_companies = NULL, max_read_only_companies = NULL, provider_price_id = NULL "
-                + "WHERE plan_id IN (SELECT id FROM plans WHERE code = 'BASICO')");
+        masterExec("UPDATE sg_plan_terms SET max_companies = NULL, max_read_only_companies = NULL WHERE public_id = '" + TRIAL_TERM + "'");
+        masterExec("UPDATE sg_plan_terms SET max_companies = NULL, max_read_only_companies = NULL, provider_price_id = NULL "
+                + "WHERE plan_id IN (SELECT id FROM sg_plans WHERE code = 'BASICO')");
     }
 
     private Account accountOf(String subdomain) {
@@ -78,7 +78,7 @@ class CompanyLimitsE2eTest extends E2eBase {
     }
 
     private static void limitTrialTo(Integer maxCompanies) throws Exception {
-        masterExec("UPDATE plan_terms SET max_companies = " + maxCompanies + " WHERE public_id = '" + TRIAL_TERM + "'");
+        masterExec("UPDATE sg_plan_terms SET max_companies = " + maxCompanies + " WHERE public_id = '" + TRIAL_TERM + "'");
     }
 
     // ------------------------------------------------------------------ empresas CRU
@@ -106,7 +106,7 @@ class CompanyLimitsE2eTest extends E2eBase {
         // excluir nao existe: 404/405 e a linha continua la
         int delete = as(host, admin).delete("/companies/" + branch).statusCode();
         assertTrue(delete == 404 || delete == 405, "DELETE /companies/{id} respondeu " + delete);
-        assertEquals("1", text(db(sub), "SELECT count(*) FROM companies WHERE public_id = '" + branch + "'"));
+        assertEquals("1", text(db(sub), "SELECT count(*) FROM sg_companies WHERE public_id = '" + branch + "'"));
 
         // documento invalido e duplicado
         Response invalid = as(host, admin).body(Map.of("personType", "PJ", "cpfCnpj", "11111111111111",
@@ -145,7 +145,7 @@ class CompanyLimitsE2eTest extends E2eBase {
         Response refused = as(host, admin).body(newCompanyBody(cnpj(74))).post("/companies");
         assertEquals(402, refused.statusCode(), refused.body().asString());
         assertEquals("COMPANY_QUOTA_EXCEEDED", refused.jsonPath().getString("code"), refused.body().asString());
-        assertEquals("2", text(db(sub), "SELECT count(*) FROM companies"));
+        assertEquals("2", text(db(sub), "SELECT count(*) FROM sg_companies"));
 
         // inativar libera a vaga (so' contam as ativas) ...
         as(host, admin).body(Map.of("active", false)).patch("/companies/" + second).then().statusCode(200);
@@ -169,7 +169,7 @@ class CompanyLimitsE2eTest extends E2eBase {
         limitTrialTo(1);
         String sub = freshTenant("umaem"); // o cadastro cria a empresa antes da conta: nasce 1 de 1
         String admin = adminToken(sub);
-        assertEquals("1", text(db(sub), "SELECT count(*) FROM companies"));
+        assertEquals("1", text(db(sub), "SELECT count(*) FROM sg_companies"));
         as(host(sub), admin).body(newCompanyBody(cnpj(76))).post("/companies").then().statusCode(402);
     }
 
@@ -181,7 +181,7 @@ class CompanyLimitsE2eTest extends E2eBase {
         String host = host(sub);
         String admin = adminToken(sub);
         String owner = firstCompanyPublicId(host, admin);
-        masterExec("UPDATE plan_terms SET max_users = 2 WHERE public_id = '" + TRIAL_TERM + "'");
+        masterExec("UPDATE sg_plan_terms SET max_users = 2 WHERE public_id = '" + TRIAL_TERM + "'");
         try {
             newMember(sub, admin, owner, List.of(), List.of()); // 2 de 2 (o administrador ocupa a primeira vaga)
 
@@ -194,10 +194,10 @@ class CompanyLimitsE2eTest extends E2eBase {
             assertEquals(402, refused.statusCode(), refused.body().asString());
             assertEquals("USER_QUOTA_EXCEEDED", refused.jsonPath().getString("code"), refused.body().asString());
 
-            masterExec("UPDATE plan_terms SET max_users = 3 WHERE public_id = '" + TRIAL_TERM + "'");
+            masterExec("UPDATE sg_plan_terms SET max_users = 3 WHERE public_id = '" + TRIAL_TERM + "'");
             newMember(sub, admin, owner, List.of(), List.of());
         } finally {
-            masterExec("UPDATE plan_terms SET max_users = NULL WHERE public_id = '" + TRIAL_TERM + "'");
+            masterExec("UPDATE sg_plan_terms SET max_users = NULL WHERE public_id = '" + TRIAL_TERM + "'");
         }
     }
 
@@ -220,9 +220,9 @@ class CompanyLimitsE2eTest extends E2eBase {
 
         // plano de destino: 1 ativa + 1 somente leitura
         // (term criado por SQL nasce sem preco no provider: o "Publicar" da tela poe o id do preco; aqui um id de teste)
-        masterExec("UPDATE plan_terms SET max_companies = 1, max_read_only_companies = 1, provider_price_id = 'price_e2e_basico' "
-                + "WHERE plan_id IN (SELECT id FROM plans WHERE code = 'BASICO')");
-        String planId = masterText("SELECT public_id FROM plans WHERE code = 'BASICO'");
+        masterExec("UPDATE sg_plan_terms SET max_companies = 1, max_read_only_companies = 1, provider_price_id = 'price_e2e_basico' "
+                + "WHERE plan_id IN (SELECT id FROM sg_plans WHERE code = 'BASICO')");
+        String planId = masterText("SELECT public_id FROM sg_plans WHERE code = 'BASICO'");
 
         // o cliente ve que precisa escolher: protegida = a do responsavel; elegiveis = as outras duas
         Response preview = as(host, admin).queryParam("planId", planId).get("/me/billing/checkout/preview");
@@ -241,7 +241,7 @@ class CompanyLimitsE2eTest extends E2eBase {
         as(host, admin).body(Map.of("planId", planId, "companySelection",
                 Map.of("keepActive", List.of(owner), "readOnly", List.of(b), "disable", List.of("nao-e-da-conta"))))
                 .post("/me/billing/checkout").then().statusCode(400).body("code", equalTo("INVALID_COMPANY_SELECTION"));
-        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + c + "'"));
+        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + c + "'"));
 
         // a confirmacao do pagamento aplica a escolha (o que o webhook do provider faz): B somente leitura, C desligada
         Account account = accountOf(sub);
@@ -250,11 +250,11 @@ class CompanyLimitsE2eTest extends E2eBase {
         assertNotNull(chosen);
         seatService.apply(account, chosen, "Basico");
 
-        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + owner + "'"));
-        assertEquals("READ_ONLY", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + b + "'"));
-        assertEquals("DISABLED", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + c + "'"));
+        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + owner + "'"));
+        assertEquals("READ_ONLY", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + b + "'"));
+        assertEquals("DISABLED", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + c + "'"));
         assertEquals("billing-plan-company-limit",
-                text(db(sub), "SELECT access_mode_reason FROM companies WHERE public_id = '" + c + "'"));
+                text(db(sub), "SELECT access_mode_reason FROM sg_companies WHERE public_id = '" + c + "'"));
 
         // efeito para o cliente, de ponta a ponta: a somente leitura le mas nao grava; a desligada nao entra
         pauseForIatResolution();
@@ -294,19 +294,19 @@ class CompanyLimitsE2eTest extends E2eBase {
         Member onlyB = newMember(sub, admin, b, List.of(), List.of());
         Account account = accountOf(sub);
 
-        masterExec("UPDATE tenant_subscriptions SET status = 'PAST_DUE', past_due_since = NULL WHERE tenant_id = "
-                + "(SELECT id FROM accounts WHERE public_id = '" + account.getPublicId() + "')");
+        masterExec("UPDATE sg_tenant_subscriptions SET status = 'PAST_DUE', past_due_since = NULL WHERE tenant_id = "
+                + "(SELECT id FROM sg_accounts WHERE public_id = '" + account.getPublicId() + "')");
 
         Instant now = Instant.now();
         assertEquals(0, pastDueScheduler.run(now), "a primeira rodada so' marca o inicio da inadimplencia");
         assertEquals(0, pastDueScheduler.run(now.plus(6, ChronoUnit.DAYS)), "6 dias: ainda dentro da tolerancia");
-        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + c + "'"));
+        assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + c + "'"));
 
         assertEquals(1, pastDueScheduler.run(now.plus(8, ChronoUnit.DAYS)), "passou dos 7 dias: somente leitura");
         for (String company : List.of(owner, b, c)) {
-            assertEquals("READ_ONLY", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + company + "'"));
+            assertEquals("READ_ONLY", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + company + "'"));
             assertEquals("billing-past-due|prev=ACTIVE",
-                    text(db(sub), "SELECT access_mode_reason FROM companies WHERE public_id = '" + company + "'"));
+                    text(db(sub), "SELECT access_mode_reason FROM sg_companies WHERE public_id = '" + company + "'"));
         }
         pauseForIatResolution();
         String tokenB = login(host, onlyB.email(), PASSWORD);
@@ -316,16 +316,16 @@ class CompanyLimitsE2eTest extends E2eBase {
 
         // 30 dias: as demais saem do ar, mas a conta nunca fica toda desligada (a do responsavel segue lendo e consegue pagar)
         pastDueScheduler.run(now.plus(31, ChronoUnit.DAYS));
-        String ownerMode = text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + owner + "'");
+        String ownerMode = text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + owner + "'");
         assertNotEquals("DISABLED", ownerMode, "a empresa do responsavel nunca e' desligada pelo ciclo");
-        assertEquals("DISABLED", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + c + "'"));
+        assertEquals("DISABLED", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + c + "'"));
         loginResponse(host, onlyB.email(), PASSWORD).then().statusCode(403).body("code", equalTo("COMPANY_DISABLED"));
         as(host, tokenB).get("/probe/me").then().statusCode(401).body("code", equalTo("SESSION_REVOKED"));
 
         // pagar volta cada empresa ao estado de antes
         QuarkusTransaction.requiringNew().run(() -> pastDueService.restoreCompanies(accountOf(sub)));
         for (String company : List.of(owner, b, c)) {
-            assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM companies WHERE public_id = '" + company + "'"), company);
+            assertEquals("ACTIVE", text(db(sub), "SELECT access_mode FROM sg_companies WHERE public_id = '" + company + "'"), company);
         }
         pauseForIatResolution();
         String back = login(host, onlyB.email(), PASSWORD);
@@ -342,8 +342,8 @@ class CompanyLimitsE2eTest extends E2eBase {
         String ownerB = firstCompanyPublicId(host(subB), adminB);
         String extraA = createCompany(subA, adminA, cnpj(93), "extra a");
         Account accountA = accountOf(subA);
-        masterExec("UPDATE tenant_subscriptions SET status = 'PAST_DUE', past_due_since = NULL WHERE tenant_id = "
-                + "(SELECT id FROM accounts WHERE public_id = '" + accountA.getPublicId() + "')");
+        masterExec("UPDATE sg_tenant_subscriptions SET status = 'PAST_DUE', past_due_since = NULL WHERE tenant_id = "
+                + "(SELECT id FROM sg_accounts WHERE public_id = '" + accountA.getPublicId() + "')");
 
         // o administrador ja tinha posto a extraA em somente leitura por conta propria (motivo "e2e")
         setMode(subA, extraA, "READ_ONLY");
@@ -354,9 +354,9 @@ class CompanyLimitsE2eTest extends E2eBase {
         QuarkusTransaction.requiringNew().run(() -> pastDueService.restoreCompanies(accountOf(subA)));
 
         // pagar NAO desfaz o que o administrador fez (so' o que o ciclo de inadimplencia mexeu)
-        assertEquals("READ_ONLY", text(db(subA), "SELECT access_mode FROM companies WHERE public_id = '" + extraA + "'"));
-        assertEquals("ACTIVE", text(db(subA), "SELECT access_mode FROM companies WHERE public_id = '" + ownerA + "'"));
+        assertEquals("READ_ONLY", text(db(subA), "SELECT access_mode FROM sg_companies WHERE public_id = '" + extraA + "'"));
+        assertEquals("ACTIVE", text(db(subA), "SELECT access_mode FROM sg_companies WHERE public_id = '" + ownerA + "'"));
         // o outro tenant nunca saiu de ACTIVE
-        assertEquals("ACTIVE", text(db(subB), "SELECT access_mode FROM companies WHERE public_id = '" + ownerB + "'"));
+        assertEquals("ACTIVE", text(db(subB), "SELECT access_mode FROM sg_companies WHERE public_id = '" + ownerB + "'"));
     }
 }

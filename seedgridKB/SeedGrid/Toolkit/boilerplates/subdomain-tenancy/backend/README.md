@@ -184,7 +184,7 @@ O admin configura a lista dinâmica em `/configuracao/notificacoes`. A API da ex
 `/admin/notifications/events`, `/admin/notifications/events/{code}` e
 `/admin/notifications/deliveries`, protegidos por `NOTIFICATION_READ` e `NOTIFICATION_UPDATE`.
 O `seedgrid-notification` inicializa seu próprio schema em
-`db/migration/notification`, usando `flyway_schema_history_notification` no datasource `master`
+`db/migration/notification`, usando `sg_flyway_schema_history_notification` no datasource `master`
 quando disponível. O host não declara entidades, migrations nem bootstrap da extensão. O `seedgrid-notification-api`
 continua agnóstico: extensões produtoras publicam eventos pelo contrato comum, sem dependência do
 motor.

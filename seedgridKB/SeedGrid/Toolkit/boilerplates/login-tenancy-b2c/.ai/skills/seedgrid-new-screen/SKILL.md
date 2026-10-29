@@ -22,7 +22,7 @@ Nao executar sem o usuario pedir.)
 Detalhes e exemplos de codigo de cada passo em `references/steps.md`.
 
 1. **Permissao (backend)** - migration nova em `backend/src/main/resources/db/migration/app/`
-   (`V3xxx__<assunto>.sql`, nunca editar uma ja aplicada): `insert into permissions` com o `audience` certo,
+   (`V3xxx__<assunto>.sql`, nunca editar uma ja aplicada): `insert into sg_permissions` com o `audience` certo,
    vinculo ao perfil `ADMIN`, e - se vendavel - vinculo aos terms dos planos que a liberam.
 2. **Endpoint (backend)** - `@PermissionsAllowed("XXX_READ")` (e por acao). Se vendavel:
    `@SgRequiresPlanFeature("XXX_READ")`.

@@ -85,7 +85,7 @@ public abstract class E2eBase {
         Response signup = given().header("Host", HOST_MASTER).contentType(ContentType.JSON).body(body)
                 .post("/public/tenants");
         assertEquals(201, signup.statusCode(), "cadastro do tenant " + subdomain + ": " + signup.body().asString());
-        String code = masterText("select t.code from tenant_validation_tokens t join tenants x on x.id = t.tenant_id "
+        String code = masterText("select t.code from sg_tenant_validation_tokens t join sg_tenants x on x.id = t.tenant_id "
                 + "where x.subdomain = '" + subdomain + "' order by t.id desc limit 1");
         assertNotNull(code, "o cadastro deveria gerar o codigo de validacao no master");
         Response validate = given().header("Host", HOST_MASTER).contentType(ContentType.JSON)
@@ -116,17 +116,17 @@ public abstract class E2eBase {
     private void seedProbePermissions(String subdomain) throws Exception {
         String db = db(subdomain);
         for (String permission : List.of("PROBE_READ", "PROBE_ALFA", "PROBE_BETA")) {
-            exec(db, "INSERT INTO permissions (name, description, public_id) VALUES ('" + permission + "', 'probe', '"
+            exec(db, "INSERT INTO sg_permissions (name, description, public_id) VALUES ('" + permission + "', 'probe', '"
                     + UUID.randomUUID() + "') ON CONFLICT DO NOTHING");
         }
-        exec(db, "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('PROBE_ROLE', 'probe', '"
+        exec(db, "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('PROBE_ROLE', 'probe', '"
                 + UUID.randomUUID() + "', TRUE) ON CONFLICT DO NOTHING");
-        exec(db, "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db, "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'PROBE_ROLE' AND p.name = 'PROBE_READ' ON CONFLICT DO NOTHING");
         // perfil comum (nao e' ADMIN nem de integracao): todo usuario precisa de ao menos uma role
-        exec(db, "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('E2E_LEITOR', 'leitor de teste', '"
+        exec(db, "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('E2E_LEITOR', 'leitor de teste', '"
                 + UUID.randomUUID() + "', FALSE) ON CONFLICT DO NOTHING");
-        exec(db, "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db, "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'E2E_LEITOR' AND r.company_id IS NULL AND p.name = 'PROBE_READ' ON CONFLICT DO NOTHING");
         grantToAdmin(db, "PROBE_READ");
         if (E2eWorld.ALFA.equals(subdomain)) {
@@ -138,7 +138,7 @@ public abstract class E2eBase {
     }
 
     private void grantToAdmin(String db, String permission) throws Exception {
-        exec(db, "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db, "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'ADMIN' AND r.company_id IS NULL AND p.name = '" + permission + "' ON CONFLICT DO NOTHING");
     }
 
@@ -162,7 +162,7 @@ public abstract class E2eBase {
      * e-mail de boas-vindas); aqui o link e' seguido pela API, com o token lido do master, e so' depois entra.
      */
     protected static String masterToken() throws Exception {
-        String confirmation = masterText("select email_confirmation_token from users where email = '"
+        String confirmation = masterText("select email_confirmation_token from sg_users where email = '"
                 + E2eWorld.MASTER_EMAIL + "' and email_confirmation_token is not null");
         if (confirmation != null) {
             Response confirm = given().header("Host", HOST_MASTER).queryParam("token", confirmation)
@@ -197,7 +197,7 @@ public abstract class E2eBase {
 
     /** PublicId de uma role GLOBAL do tenant (ex.: ADMIN). */
     protected static String globalRoleId(String subdomain, String name) throws Exception {
-        return text(db(subdomain), "SELECT public_id FROM roles WHERE name = '" + name + "' AND company_id IS NULL");
+        return text(db(subdomain), "SELECT public_id FROM sg_roles WHERE name = '" + name + "' AND company_id IS NULL");
     }
 
     /** Cria um usuario pela API (admin do tenant), com e-mail ja confirmado, vinculado a empresa, e faz o login dele. */

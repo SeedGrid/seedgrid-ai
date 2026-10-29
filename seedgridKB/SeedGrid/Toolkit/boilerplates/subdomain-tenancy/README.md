@@ -117,7 +117,7 @@ Veja [instalacao e validacao](backend/README.md#exchange-pela-extensao).
 Feriados da empresa, semana de trabalho e calendario vem da extension
 [`seedgrid-business-days:2026.10.15`](../../seedgrid-platform/java/seedgrid-quarkus-ext-business-days/README.md).
 Diferente do Exchange, o calendario e de **cada banco**: a tenancy migra o schema no master e em cada tenant
-(historico proprio `flyway_schema_history_business_days`; toggle `seedgrid.subdomain-tenancy.modules.business-days.enabled`,
+(historico proprio `sg_flyway_schema_history_business_days`; toggle `seedgrid.subdomain-tenancy.modules.business-days.enabled`,
 default `true`), entao o master e cada empresa tem o seu calendario. `br.com.seedgrid.businessdays.entities` entra em
 `quarkus.hibernate-orm.packages` (PU default, que no dominio do admin aponta para o master). Em tenants ja migrados,
 mude `seedgrid.subdomain-tenancy.migration.target-version` para o schema novo ser aplicado.
@@ -180,3 +180,7 @@ por empresa marcada, os perfis do vinculo; perfis globais seguem em "Perfis". O 
 `memberships: [{ companyPublicId, rolePublicIds }]` (`lib/security-admin.ts`, `lib/user-memberships.ts`). O backend valida
 (empresas do novo usuario dentro das do cadastrador, permissao em cada empresa); a tela so oferece as do chamador. Na edicao o
 `PATCH` adiciona/atualiza os vinculos marcados; remover vinculo ainda nao tem tela (usar `DELETE /users/{id}/memberships/{company}`).
+
+## Cidade no cadastro publico (TCI.13)
+
+O signup publico nao tem token, entao nao usa a REST autenticada da cities (`/cities-api`, `CITY_READ`). O backend liga a consulta publica minima (`seedgrid.cities.public-rest.enabled=true`, `client-ip-header=X-Forwarded-For`): `GET /public/cities/by-ibge-code/{codigo}` e `GET /public/cities?uf=&name=` devolvem so `{id, name, uf, ibgeCode}` (busca exige UF, termo de 3+ letras, teto de 20, rate limit por IP e global). O front resolve o `cityId` pelo IBGE do ViaCEP/CNPJ pelo BFF `/api/signup/city/{codigo}` (so' por codigo; o backend nao e' exposto) e o envia em `address.cityId`; se a consulta falhar, o cadastro segue com cidade/UF em texto. Em producao o proxy da frente deve sobrescrever o `X-Forwarded-For` e o backend nao pode ficar exposto direto.

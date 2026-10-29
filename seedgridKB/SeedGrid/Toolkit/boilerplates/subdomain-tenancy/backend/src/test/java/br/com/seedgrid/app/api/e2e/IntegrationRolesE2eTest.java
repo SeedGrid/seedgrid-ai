@@ -45,7 +45,7 @@ class IntegrationRolesE2eTest extends E2eBase {
     }
 
     private String permissionId(String name) throws Exception {
-        return text(db(sub), "SELECT public_id FROM permissions WHERE name = '" + name + "'");
+        return text(db(sub), "SELECT public_id FROM sg_permissions WHERE name = '" + name + "'");
     }
 
     private Response createRole(String token, String name, boolean forIntegration, String... permissionNames)
@@ -60,8 +60,8 @@ class IntegrationRolesE2eTest extends E2eBase {
 
     @Test
     void onlyThePermissionsReleasedForIntegrationBuildAnIntegrationRole() throws Exception {
-        assertEquals("true", text(db(sub), "SELECT for_integration::text FROM permissions WHERE name = 'USER_READ'"));
-        assertEquals("false", text(db(sub), "SELECT for_integration::text FROM permissions WHERE name = 'USER_DELETE'"));
+        assertEquals("true", text(db(sub), "SELECT for_integration::text FROM sg_permissions WHERE name = 'USER_READ'"));
+        assertEquals("false", text(db(sub), "SELECT for_integration::text FROM sg_permissions WHERE name = 'USER_DELETE'"));
 
         Response ok = createRole(admin, "INTEGRA_LEITURA", true, "USER_READ");
         assertEquals(201, ok.statusCode(), ok.body().asString());
@@ -77,9 +77,9 @@ class IntegrationRolesE2eTest extends E2eBase {
     @Test
     void whoBuildsTheRoleCannotGrantAPermissionTheyDoNotHold() throws Exception {
         // gestor de perfis que NAO tem USER_CREATE (liberada para integracao, mas ele nao a possui)
-        exec(db(sub), "INSERT INTO roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR_PERFIL', 'g', '"
+        exec(db(sub), "INSERT INTO sg_roles (name, description, public_id, for_integration) VALUES ('E2E_GESTOR_PERFIL', 'g', '"
                 + UUID.randomUUID() + "', FALSE) ON CONFLICT DO NOTHING");
-        exec(db(sub), "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+        exec(db(sub), "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                 + "WHERE r.name = 'E2E_GESTOR_PERFIL' AND r.company_id IS NULL AND p.name IN ('ROLE_CREATE', 'ROLE_READ', 'USER_READ') "
                 + "ON CONFLICT DO NOTHING");
         Member manager = newMember(sub, admin, company, List.of(globalRoleId(sub, "E2E_GESTOR_PERFIL")), List.of());
@@ -100,14 +100,14 @@ class IntegrationRolesE2eTest extends E2eBase {
         assertNotNull(apiKey);
         given().header("Host", host).header("x-api-key", apiKey).get("/users").then().statusCode(200);
 
-        exec(db(sub), "UPDATE permissions SET for_integration = FALSE WHERE name = 'USER_READ'");
+        exec(db(sub), "UPDATE sg_permissions SET for_integration = FALSE WHERE name = 'USER_READ'");
         try {
             given().header("Host", host).header("x-api-key", apiKey).get("/users").then().statusCode(403);
-            assertEquals("0", text(db(sub), "SELECT count(*) FROM role_permissions rp JOIN roles r ON r.id = rp.role_id "
-                    + "JOIN permissions p ON p.id = rp.permission_id WHERE r.name = 'INTEGRACAO_USUARIOS' AND p.name = 'USER_READ'"));
+            assertEquals("0", text(db(sub), "SELECT count(*) FROM sg_role_permissions rp JOIN sg_roles r ON r.id = rp.role_id "
+                    + "JOIN sg_permissions p ON p.id = rp.permission_id WHERE r.name = 'INTEGRACAO_USUARIOS' AND p.name = 'USER_READ'"));
         } finally {
-            exec(db(sub), "UPDATE permissions SET for_integration = TRUE WHERE name = 'USER_READ'");
-            exec(db(sub), "INSERT INTO role_permissions (role_id, permission_id) SELECT r.id, p.id FROM roles r, permissions p "
+            exec(db(sub), "UPDATE sg_permissions SET for_integration = TRUE WHERE name = 'USER_READ'");
+            exec(db(sub), "INSERT INTO sg_role_permissions (role_id, permission_id) SELECT r.id, p.id FROM sg_roles r, sg_permissions p "
                     + "WHERE r.name = 'INTEGRACAO_USUARIOS' AND r.company_id IS NULL AND p.name = 'USER_READ' ON CONFLICT DO NOTHING");
         }
         given().header("Host", host).header("x-api-key", apiKey).get("/users").then().statusCode(200);

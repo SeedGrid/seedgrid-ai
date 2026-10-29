@@ -7,6 +7,7 @@
 // `cpfCnpj`, `accessMode` (ACTIVE|READ_ONLY|DISABLED), `active`, endereco `addr*`. O estado de
 // acesso e' SO' EXIBIDO aqui: quem muda e' `PUT /companies/{publicId}/access-mode` (plataforma/billing).
 import { extractProblemCode } from "./api-error";
+import { formatCityRef, toCityRef, type CityRef } from "./cities";
 import type { PaginatedResult } from "@/lib/seedgrid-app-api";
 
 export type CompanyAccessMode = "ACTIVE" | "READ_ONLY" | "DISABLED";
@@ -26,6 +27,8 @@ export type SecurityCompany = {
   addrComplement?: string | null;
   addrPostalCode?: string | null;
   addrCity?: string | null;
+  /** Cidade do cadastro (FK para a cities): `{id, name, ibgeCode, uf}`; ausente na empresa so' com texto legado. */
+  city?: Partial<CityRef> | null;
   addrState?: string | null;
   addrDistrict?: string | null;
   addrPhone?: string | null;
@@ -53,6 +56,8 @@ export type CompanyEntry = {
   addrComplement: string;
   addrPostalCode: string;
   addrCity: string;
+  /** Cidade escolhida (FK); a UF e o nome em texto sao derivados dela no backend. */
+  city: CityRef | null;
   addrState: string;
   addrDistrict: string;
   addrPhone: string;
@@ -77,7 +82,12 @@ export type CompanyForm = {
   addrNumber: string;
   addrComplement: string;
   addrPostalCode: string;
+  /** Texto legado da cidade: so' segue no corpo enquanto nao ha `cityId`. */
   addrCity: string;
+  /** FK da cidade (sg_cities). Com ele o backend deriva nome e UF; sem ele vale o texto legado. */
+  cityId: number | null;
+  /** Nome da cidade escolhida: so' para exibir no campo; nunca vai no corpo. */
+  cityName: string;
   addrState: string;
   addrDistrict: string;
   addrPhone: string;
@@ -100,6 +110,8 @@ export const EMPTY_COMPANY_FORM: CompanyForm = {
   addrComplement: "",
   addrPostalCode: "",
   addrCity: "",
+  cityId: null,
+  cityName: "",
   addrState: "",
   addrDistrict: "",
   addrPhone: "",
@@ -173,6 +185,7 @@ export function toCompanyEntry(company: SecurityCompany): CompanyEntry {
     addrComplement: text(company.addrComplement),
     addrPostalCode: text(company.addrPostalCode),
     addrCity: text(company.addrCity),
+    city: toCityRef(company.city),
     addrState: text(company.addrState).toUpperCase(),
     addrDistrict: text(company.addrDistrict),
     addrPhone: text(company.addrPhone),
@@ -207,7 +220,9 @@ export function documentLabel(personType: CompanyPersonType): string {
 /** "Rua A, 10 - Centro - Sao Paulo/SP": junta so' o que existe. */
 export function formatCompanyAddress(company: CompanyEntry): string {
   const street = [company.addrStreet, company.addrNumber].filter(Boolean).join(", ");
-  const city = [company.addrCity, company.addrState].filter(Boolean).join("/");
+  const city = company.city
+    ? formatCityRef(company.city)
+    : [company.addrCity, company.addrState].filter(Boolean).join("/");
   return [street, company.addrDistrict, city].filter(Boolean).join(" - ");
 }
 
@@ -333,11 +348,16 @@ export function toCompanyBody(input: Partial<CompanyForm>): Record<string, unkno
     addrNumber: form.addrNumber.trim(),
     addrComplement: form.addrComplement.trim(),
     addrPostalCode: digitsOnly(form.addrPostalCode),
-    addrCity: form.addrCity.trim(),
-    addrState: form.addrState.trim().toUpperCase(),
     addrDistrict: form.addrDistrict.trim(),
     addrPhone: form.addrPhone.trim(),
   };
+  // Cidade: com `cityId` o backend deriva nome e UF da cidade (o texto nao vai); sem ele segue o texto legado.
+  if (form.cityId != null) {
+    body.cityId = form.cityId;
+  } else {
+    body.addrCity = form.addrCity.trim();
+    body.addrState = form.addrState.trim().toUpperCase();
+  }
   // Representante legal e' da pessoa juridica; PF nao o envia.
   if (!isPf) {
     body.repFirstName = form.repFirstName.trim();
@@ -393,7 +413,9 @@ export function formFromEntry(company: CompanyEntry): CompanyForm {
     addrComplement: company.addrComplement,
     addrPostalCode: company.addrPostalCode,
     addrCity: company.addrCity,
-    addrState: company.addrState,
+    cityId: company.city?.id ?? null,
+    cityName: company.city?.name ?? "",
+    addrState: company.city?.uf || company.addrState,
     addrDistrict: company.addrDistrict,
     addrPhone: company.addrPhone,
     repFirstName: company.repFirstName,
