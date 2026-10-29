@@ -829,7 +829,7 @@
         ]
       },
       "pergunta": "Onde gravar a auditoria?",
-      "recomendacao": "PostgreSQL, para nao subir outro banco; MongoDB so se o volume de auditoria justificar.",
+      "recomendacao": "MongoDB (padrao do boilerplate: a auditoria cresce rapido e o boilerplate ja traz o driver e o health do Mongo; o compose gerado sobe o Mongo). PostgreSQL so se nao quiser subir outro banco.",
       "opcoes": [
         {
           "id": "postgres",

@@ -42,7 +42,7 @@ As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, 
   "nome": "Portal de Chaves", "slug": "portal-chaves", "pacote": "br.com.acme.portal",
   "modelo": "login-tenancy-b2b", "extensoes": ["exchange"],
   "selfEnter": "sim", "selfEnterModo": "convite",
-  "auditoria": "postgres", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
+  "auditoria": "mongodb", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
   "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro",
   "dominioFront": "app.acme.com.br", "dominioAdmin": "admin.acme.com.br",
   "emailRemetente": "noreply@acme.com.br", "emailAdmin": "dono@acme.com.br"

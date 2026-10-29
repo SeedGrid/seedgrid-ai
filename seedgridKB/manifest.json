@@ -182,6 +182,15 @@
       ]
     },
     {
+      "id": "skill:sg-dev-env",
+      "type": "skill",
+      "name": "sg-dev-env",
+      "files": [
+        "SKILL.md",
+        "scripts/gerar-dev-env.mjs"
+      ]
+    },
+    {
       "id": "skill:sg-new-product",
       "type": "skill",
       "name": "sg-new-product",
