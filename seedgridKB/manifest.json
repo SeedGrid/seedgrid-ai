@@ -197,7 +197,9 @@
       "type": "skill",
       "name": "sg-plan-goal",
       "files": [
-        "SKILL.md"
+        "SKILL.md",
+        "assets/plano-de-tarefas.md",
+        "scripts/controle.mjs"
       ]
     },
     {

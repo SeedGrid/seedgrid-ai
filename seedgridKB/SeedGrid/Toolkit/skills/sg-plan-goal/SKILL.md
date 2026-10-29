@@ -1,13 +1,13 @@
 ---
 name: sg-plan-goal
-description: Leva uma mudança grande de um pedido solto até um plano pronto para execução autônoma (por exemplo /goal) - princípios, reconhecimento somente leitura, hipóteses provadas por testes, rodadas de perguntas ao dono, contratos, tarefas com critério de aceite, guardiões e governança de execução. Use quando a mudança atravessa vários módulos, tem regras de negócio ou segurança críticas, ou vai ser executada por vários agentes. Para uma mudança pequena use sg-plan-change.
+description: Leva uma tarefa não trivial de um pedido solto até um plano de tarefas pronto para execução autônoma (por exemplo /goal), no formato fixo do toolkit - princípios, reconhecimento somente leitura, hipóteses provadas por testes, perguntas ao dono, contratos, tarefas com depende-de, escreve, aceite e evidência, bloco /goal por fase e execução em paralelo. Use para toda tarefa não trivial; o plano muda de tamanho, não de estrutura.
 metadata:
   toolkit: seedgrid-ai
 ---
 
 # Do pedido ao plano pronto para o /goal
 
-Método de 12 etapas para mudanças grandes. Cada etapa deixa um artefato. O plano e as tarefas ficam em `docs/ai/plans/` (veja `.ai/rules/documentos.md`); as decisões viram ADR com a skill `sg-adr`. Para mudança pequena, use `sg-plan-change`.
+Método de 12 etapas, o mesmo para toda tarefa não trivial: **não há critério de "mudança grande"**. Uma tarefa pequena percorre as mesmas etapas com artefatos curtos (uma fase, poucas tarefas); o que muda é o tamanho do plano, não a estrutura. Cada etapa deixa um artefato. O plano e as tarefas ficam em `docs/ai/plans/` (veja `.ai/rules/documentos.md`); as decisões viram ADR com a skill `sg-adr`. Tarefa trivial (uma linha, correção óbvia) não precisa de plano: o coordenador faz direto. A `sg-plan-change` é a versão curta para tarefas pequenas e usa o mesmo formato de tarefa.
 
 ## Etapas
 
@@ -21,8 +21,38 @@ Método de 12 etapas para mudanças grandes. Cada etapa deixa um artefato. O pla
 8. **Contratos fechados antes de codar:** DTOs, códigos de erro estáveis, chaves de cache, campos novos e inventário do front (arquivo e linha).
 9. **Divisão em tarefas.** Fases com dependência explícita. Paralelo (trilhas por repositório, no máximo 4 agentes) só onde não há dependência e **nunca dois escrevendo no mesmo arquivo**; série onde há. Cada tarefa tem: passos em checklist, **critério de aceite**, testes unitários e de integração, e o repositório. Termine com uma fase de E2E e uma de publicação.
 10. **Testes-guardiões.** O livro de regras vira guardião quando a regra é permanente (a expectativa se inverte no mesmo commit, citando a decisão). Convenção `*GuardianIT`/`*GuardianTest` com aviso no topo (BE-42). Liste os guardiões previstos por fase.
-11. **Governança de execução.** Uma definição de pronto única (testes verdes, commit, registro no controle, documentação e KB). Um script de controle (status, iniciar, registrar, verificar, relatório) que compara o registro com o **git real**; nunca confie só no arquivo. Commits iniciais separando o que era de terceiros do que é da sessão. Push e merge só com autorização do dono.
+11. **Governança de execução.** Uma definição de pronto única (testes verdes, commit, registro no controle, documentação e KB). Use o `controle.mjs` desta skill (status, checklist, proximas); ele só lê o plano, então compare sempre com o **git real**; nunca confie só no arquivo. Commits iniciais separando o que era de terceiros do que é da sessão. Push e merge só com autorização do dono.
 12. **Preparar o /goal.** O avaliador da condição **não lê arquivos**: a condição precisa exigir **evidência visível** na saída. Marque a tarefa como feita só com uma linha `Evidencia:`; use um verificador de checklist cuja saída entra na condição; defina limite de turnos; um comando `/goal` por fase; regras de retomada por limite de uso e de crédito.
+
+## Formato fixo do plano de tarefas
+
+Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha. O formato é o mesmo em todo plano, porque o `controle.mjs` lê esse formato:
+
+- **Fases** (`## Fase N — nome`) com dependência explícita e aceite da fase.
+- **Cada tarefa** é uma linha `- [ ] **T1.1 Título** (`depende-de`: T0.1, T0.2; `escreve`: caminhos)` seguida de `Aceite`, `Testes` e, ao concluir, `Evidencia`.
+- `[ ]` vira `[x]` **somente** com a linha `  - Evidencia: <comando, teste ou hash>` embaixo. Sem evidência, a tarefa não está feita.
+- **`depende-de` e `escreve` são obrigatórios**: sem eles o executor não pode provar o que roda em paralelo. `escreve` lista os arquivos, pastas ou módulos que a tarefa grava.
+- **Um bloco `/goal` por fase**, com limite de turnos e condição que exige evidência visível na saída (etapa 12).
+- **Uma definição de pronto única** no topo do plano.
+
+## Execução em paralelo
+
+Ao começar uma fase, monte o grafo das tarefas e **lance em paralelo tudo o que não depende de tarefa aberta**, em vez de seguir a ordem do documento. O comando `proximas` do `controle.mjs` faz essa conta:
+
+- no máximo **4 agentes** ao mesmo tempo (limite de subagentes e de custo);
+- **nunca dois escrevendo no mesmo caminho**: tarefas com `escreve` em comum esperam;
+- **mais de 4 só em worktrees**: cada agente além do quarto roda no próprio worktree e branch, e os merges voltam **em série** para a branch do plano; o teto acima de 4 é definido no plano da fase;
+- **ao fazer o merge, apague a branch (local e remota), remova o worktree e o diretório** criado; worktree com mudança não mergeada não some sozinho: reporte e pergunte ao dono (`sg-branch-status` lista os sem dono).
+
+## Controle do plano
+
+`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano.md> <comando>`:
+
+- `status`: progresso por fase.
+- `checklist <fase> [--completa]`: toda tarefa `[x]` precisa de `Evidencia:`; com `--completa`, falha se sobrou tarefa aberta. É a saída que entra na condição do `/goal`.
+- `proximas [--max 4] [--json]`: o que pode rodar em paralelo agora, o que espera (conflito de escrita, acima do limite) e o que está bloqueado.
+
+O script só lê o plano; compare sempre com o git real (commits, testes), nunca confie só no arquivo.
 
 ## Regras que nasceram de erros
 

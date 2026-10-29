@@ -73,6 +73,6 @@ Bump de versão do projeto, atualização de configuração e tarefas parecidas 
 
 ## Skills que os papéis usam
 
-- `sg-plan-change` (arquiteto), `sg-validate-change` (qa), `sg-code-review` e `sg-review` (revisor).
+- `sg-plan-goal` e `sg-plan-change` (arquiteto), `sg-validate-change` (qa), `sg-code-review` e `sg-review` (revisor).
 - `sg-crud-back` (backend-java), `sg-crud-front` e `sg-new-screen` (frontend-react), `sg-bump` (versão do projeto).
 - A lista completa, com o que cada skill faz, está em `.ai/skills/index.md`.

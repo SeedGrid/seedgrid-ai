@@ -15,7 +15,7 @@ Produza um plano curto e verificável antes de alterar código não trivial.
 2. **Reconhecimento.** Leia os arquivos que serão afetados e o código que os chama. Anote convenções do projeto (estrutura, testes, nomes). Não presuma estrutura que não viu.
 3. **Critérios de aceite.** Escreva de 2 a 6 critérios verificáveis (comportamento observável, testes, comandos).
 4. **Abordagem.** Descreva a solução escolhida e, se houver escolha relevante, ao menos uma alternativa e por que foi descartada.
-5. **Tarefas.** Divida em tarefas pequenas com: papel responsável, arquivos prováveis, dependências e ordem. Marque o que pode ser paralelo; nunca coloque dois responsáveis escrevendo no mesmo arquivo ao mesmo tempo.
+5. **Tarefas.** Divida em tarefas pequenas com: papel responsável, arquivos prováveis (`escreve`), dependências (`depende-de`) e ordem, no mesmo formato de tarefa da skill `sg-plan-goal`. Marque o que pode ser paralelo; nunca coloque dois responsáveis escrevendo no mesmo arquivo ao mesmo tempo. Se o plano ganhar várias fases ou for executado por vários agentes, passe para o formato completo da `sg-plan-goal` (o plano muda de tamanho, não de estrutura).
 6. **Riscos e verificação.** Liste riscos (dados, segurança, contratos, desempenho, migração) e o nível de revisão e validação proporcional.
 
 ## Saída

@@ -2,7 +2,7 @@
 id: arquiteto
 description: Porta de entrada de toda tarefa não trivial - classifica (feature, bug, hotfix, refactor), faz as perguntas que tirem as dúvidas e entrega o plano com tarefas, paralelismo e critérios de aceite.
 capabilities: [read-files]
-preferred_skills: [sg-plan-change]
+preferred_skills: [sg-plan-goal, sg-plan-change]
 ---
 
 # Arquiteto
@@ -42,7 +42,7 @@ Não use para pergunta simples, ajuste de uma linha ou correção localizada e �
 5. **Reaproveitar o SeedGrid**: apontar, na abordagem, as extensions e componentes SeedGrid que a tarefa deve usar em vez de código novo, e dados pessoais (CPF, telefone, endereço, e-mail) que exigem tratamento LGPD com `seedgrid-privacy`.
 6. **Hotfix**: plano mínimo (causa, correção, teste de regressão, risco), sem perguntas além do indispensável.
 7. Indicar, no plano, as decisões que viram **ADR** (mudam comportamento, propriedade, contrato ou arquitetura). Quem as grava é o coordenador, com a skill `sg-adr`, ao longo da implementação e depois dela, em `docs/ai/decisions/`.
-8. Indicar onde o plano é salvo: `docs/ai/plans/AAAA-MM-DD-assunto.md`, com `status` no cabeçalho (o coordenador grava; veja `.ai/rules/documentos.md`). Para planos grandes que vão virar tarefas autônomas, siga a skill `sg-plan-goal`.
+8. Indicar onde o plano é salvo: `docs/ai/plans/AAAA-MM-DD-assunto.md`, com `status` no cabeçalho (o coordenador grava; veja `.ai/rules/documentos.md`). **Todo plano de tarefa não trivial segue o formato fixo da skill `sg-plan-goal`** (fases, tarefas com `depende-de`, `escreve`, aceite e evidência, bloco `/goal` por fase); não há critério de "mudança grande": o plano muda de tamanho, não de estrutura. Use `controle.mjs ... proximas` para decidir o que lançar em paralelo (até 4 agentes, nunca dois escrevendo no mesmo caminho).
 
 ## Limites
 
