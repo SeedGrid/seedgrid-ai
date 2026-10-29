@@ -39,7 +39,7 @@ Estado na análise (2026-10-14): todos na branch `main` e **sem alterações loc
 | `seedgrid-quarkus-lib-commons` | Library | 2026.10.08 | `fa49c344db` | 2026-10-08 | [[SeedGrid/Extensions/commons/Visao-geral\|commons]] |
 | `seedgrid-quarkus-lib-filemanagement` | Library | 2026.07.08 | `35c89c7cf7` | 2026-07-20 | [[SeedGrid/Extensions/filemanagement/Visao-geral\|filemanagement]] |
 | `seedgrid-quarkus-lib-privacy` | Library | 2026.07.27 | `79f8b03eeb` | 2026-09-25 | [[SeedGrid/Extensions/privacy/Visao-geral\|privacy]] |
-| `seedgrid-components-mcp` | Servidor MCP (TypeScript) que expõe o catálogo de componentes | — | `69fe6a1cf8` | 2026-09-17 | não documentado em detalhe |
+| `seedgrid-components-mcp` | Servidor MCP (TypeScript) que expõe o catálogo de componentes React e Flutter (`/mcp/react`, `/mcp/flutter`, `/mcp/all` no modo misto): ver a referência `.ai/references/mcp-de-componentes-react-e-flutter.md` do toolkit instalado (qual endereço registrar e o custo) | — | `69fe6a1cf8` | 2026-09-17 | não documentado em detalhe |
 | `seedgrid-platform-examples` (repositório próprio, `examples/*`, 12 apps) | Apps de exemplo públicos, um por extension, com `infra/compose.yml` | — | https://github.com/SeedGrid/platform-examples.git | — | única pasta de exemplos; fonte dos exemplos da KB |
 
 ### Rust (`rust/`) — workspace único
