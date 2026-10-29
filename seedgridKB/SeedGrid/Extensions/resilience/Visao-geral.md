@@ -36,7 +36,7 @@ Observações:
 |---|---|---|
 | `io.quarkus:quarkus-arc` | compile | CDI / interceptors |
 | `br.com.seedgrid:seedgrid-cache-core:2026.10.13` | compile | `SeedGridCacheProvider` (`increment`, `getBytes`, `putBytes`, `withLock`) |
-| `jakarta.ws.rs:jakarta.ws.rs-api` | provided | `RateLimitExceptionMapper`, `RateLimitContainerResponseFilter` |
+| `jakarta.ws.rs:jakarta.ws.rs-api` | provided | `RateLimitContainerResponseFilter` |
 | `io.quarkus:quarkus-vertx-http` | provided | `IpIdentityResolver` (injeção opcional de `HttpServerRequest`) |
 | `seedgrid-cache-redis`, `quarkus-redis-client`, testcontainers, mockito | test | Testes |
 
@@ -51,7 +51,7 @@ flowchart LR
     RLS --> IDR["IdentityResolver"]
     RLS --> ALG["Fixed / Sliding / Token bucket"]
     ALG --> CACHE[("SeedGridCacheProvider")]
-    RLI -->|"negado"| EX429["RateLimitExceededException → 429"]
+    RLI -->|"negado"| EX429["RateLimitExceededException (BusinessException 429) → handler comum"]
     RLI --> CBI["CircuitBreakerInterceptor<br/>prioridade LIBRARY_BEFORE+10"]
     CBI --> CBR["CircuitBreakerConfigResolver<br/>(lê seedgrid.circuitbreaker.{name}.*)"]
     CBI --> STORE["CacheBackedCircuitBreakerStore"] --> CACHE
@@ -66,7 +66,7 @@ flowchart LR
    - `FIXED_WINDOW`: `cache.increment(key, window)`. **Não aplica `minSpacing`** (o campo é ignorado nesse algoritmo — **Confirmado**).
    - `SLIDING_WINDOW`: lista de timestamps sob `withLock`; aplica `minSpacing`.
    - `TOKEN_BUCKET`: capacidade = `burstCapacity` (ou `permits` se 0), reposição `permits/window`; aplica `minSpacing`.
-5. Negado → `RateLimitExceededException`; `RateLimitExceptionMapper` (JAX-RS) responde **429** com `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset` e `Retry-After` (segundos, arredondados para cima).
+5. Negado → `RateLimitExceededException`; a `RateLimitExceededException` é uma `BusinessException` **429** (`code` `RATE_LIMIT_EXCEEDED`); o handler comum do `commons` responde `application/problem+json` e leva `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset` e `Retry-After` (segundos, arredondados para cima) pelo gancho `headers()`. O `RateLimitInterceptor` limpa o `RateLimitHeaderCarrier` ao negar, para não vazar header de chamada anterior.
 6. Permitido e `emitHeaders=true` → `RateLimitHeaderCarrier` (ThreadLocal) e `RateLimitContainerResponseFilter` acrescentam `X-RateLimit-Limit/Remaining/Reset` à resposta.
 
 ### Circuit breaker (`@SgCircuitBreaker`)
@@ -76,7 +76,7 @@ flowchart LR
 4. `CacheBackedCircuitBreakerStore` (sob `withLock` de 1 s): estados `CLOSED` → `OPEN` (taxa de falha ≥ `failureRateThreshold` ou, se `slowCallDurationThresholdMs > 0`, taxa de lentas ≥ `slowCallRateThreshold`, após `minimumNumberOfCalls`) → `HALF_OPEN` após `openStateDurationMs` → `CLOSED` quando `permittedCallsInHalfOpen` sondas têm sucesso, ou volta a `OPEN` na primeira falha.
 5. Janela: ring buffer de tamanho `slidingWindowSize`. Em `TIME_BASED`, `slidingWindowSize` é **também** a duração em segundos da janela (e o tamanho máximo do buffer). Alterar `slidingWindowSize` descarta o estado salvo. TTL do estado: `max(openStateDurationMs*2, 1h)`.
 6. Exceções: conta como falha se for subclasse de algum `recordExceptions` e não de `ignoreExceptions` (ignore vence).
-7. Circuito aberto → `CircuitBreakerOpenException(circuitName, retryAfterMs)`; com `fallbackMethod`, chama o fallback. O fallback também é chamado em **qualquer** exceção do método (mesmo as ignoradas). Assinaturas procuradas, em ordem: `(params..., TipoDaExceção ou superclasse)`, `(params...)`, `()`; precisa ser método **público** (`Class#getMethod`).
+7. Circuito aberto → `CircuitBreakerOpenException(circuitName, retryAfterMs)` (uma `SystemSeedGridException` **503**, com `Retry-After` e `extensions.circuit`; antes era 500); com `fallbackMethod`, chama o fallback. O fallback também é chamado em **qualquer** exceção do método (mesmo as ignoradas). Assinaturas procuradas, em ordem: `(params..., TipoDaExceção ou superclasse)`, `(params...)`, `()`; precisa ser método **público** (`Class#getMethod`).
 
 ## APIs públicas e pontos de integração
 
@@ -89,8 +89,8 @@ flowchart LR
 | SPI | `...ratelimiter.algorithm.RateLimitAlgorithmStrategy` | `acquire(SeedGridCacheProvider, RateLimitRequest)` |
 | Contexto | `...core.SeedGridInvocationContext` / `ThreadLocalSeedGridInvocationContext` | `set/clear/runWith/callWith`; atributos `tenantId` e `operation` entram na chave do rate limit. A extension **não** popula esse contexto: o host precisa fazê-lo (senão usa `EmptySeedGridInvocationContext`) |
 | Beans CDI | `RateLimitService`, `RateLimitService.Clock`, `CircuitBreakerConfigResolver`, algoritmos | `@ApplicationScoped` |
-| Exceções | `RateLimitExceededException` (mapeada para 429), `CircuitBreakerOpenException` | `CircuitBreakerOpenException` **não** tem `ExceptionMapper` na extension — **Inferência**: em endpoint REST sem fallback vira erro 500 se o host não mapear |
-| JAX-RS | `RateLimitExceptionMapper`, `RateLimitContainerResponseFilter` (`@Provider`) | Headers `X-RateLimit-*`, `Retry-After` |
+| Exceções | `RateLimitExceededException` (`BusinessException` 429), `CircuitBreakerOpenException` (`SystemSeedGridException` 503) | Ambas viram `application/problem+json` pelo handler comum do `commons`; a `resilience` passou a **depender do `commons`** (mudança de 2026-10-28, plano 42 item 7c) |
+| JAX-RS | `RateLimitContainerResponseFilter` (`@Provider`) | Headers `X-RateLimit-*` nas respostas permitidas (o `RateLimitExceptionMapper` foi apagado) |
 
 Endpoints REST próprios: nenhum no runtime (o `integration-tests` tem só `GET /seedgrid-resilience-core` de template). Migrations: nenhuma. Eventos: nenhum.
 
@@ -138,4 +138,4 @@ public class MeuCircuitBreakerStore implements CircuitBreakerStore {
 - `minSpacing` não tem efeito com `FIXED_WINDOW`.
 - O kill switch do rate limiter (`enabled=false`) ainda emite headers `X-RateLimit-*` (limite = `permits` da anotação), quando `emitHeaders=true`.
 - Valores inválidos de `algorithm`/`window-type` só falham na chamada (`IllegalArgumentException` de `Enum.valueOf`), não no boot.
-- `CircuitBreakerOpenException` sem mapper HTTP.
+- **BREAKING (2026-10-28):** o 429 do rate limit agora é `application/problem+json` (antes o corpo era vazio) e o circuito aberto agora responde **503** com `Retry-After` (antes 500). Os headers `X-RateLimit-*` e `Retry-After` do 429 têm os mesmos valores de antes. No Rust (`seedgrid-rust-crate-resilience`) isso ainda não existe (429 sem corpo 7807 e circuito aberto sem mapeamento HTTP; registrado em `docs/DIVERGENCES.md`).

@@ -48,7 +48,7 @@ public class SignupResource {
 }
 ```
 
-Ao estourar: HTTP 429 com `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset` e `Retry-After` (via `RateLimitExceptionMapper`).
+Ao estourar: HTTP 429 com `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset` e `Retry-After` (resposta `application/problem+json` do handler comum do `commons`; `code` `RATE_LIMIT_EXCEEDED`).
 
 ## 2. Limiters independentes ajustáveis por properties
 
@@ -189,21 +189,7 @@ public class PaymentGateway {
 }
 ```
 
-Sem fallback, circuito aberto lança `CircuitBreakerOpenException` (`circuitName()`, `retryAfterMs()`), que **não** tem `ExceptionMapper` na extension. Exemplo de mapper no host (usa só a API pública da exceção):
-
-```java
-import br.com.seedgrid.resilience.core.runtime.circuitbreaker.exceptions.CircuitBreakerOpenException;
-
-@Provider
-public class CircuitOpenMapper implements ExceptionMapper<CircuitBreakerOpenException> {
-    @Override
-    public Response toResponse(CircuitBreakerOpenException ex) {
-        return Response.status(503)
-                .header("Retry-After", (ex.retryAfterMs() + 999) / 1000)
-                .build();
-    }
-}
-```
+Sem fallback, circuito aberto lança `CircuitBreakerOpenException` (`circuitName()`, `retryAfterMs()`). Ela é uma `SystemSeedGridException`: o handler comum do `commons` responde **503** `application/problem+json`, com `Retry-After` (segundos) e `extensions.circuit` (nome do circuito). **Não é preciso mapper no host.**
 
 ## 9. Circuit breaker com slow calls e exceções filtradas
 
