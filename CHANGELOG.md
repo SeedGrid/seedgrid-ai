@@ -7,6 +7,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ### Alterado
 - `sg-plan-goal`: o fluxo passa a ser único para toda tarefa não trivial (sem critério de "mudança grande"). Ganha o formato fixo do plano de tarefas (template `assets/plano-de-tarefas.md`; `depende-de` e `escreve` por tarefa, aceite, testes, `Evidencia:` e bloco `/goal` por fase), as regras de execução em paralelo (até 4 agentes, nunca dois no mesmo caminho, acima disso só em worktrees com merge em série e limpeza) e o script `scripts/controle.mjs` (`status`, `checklist <fase> [--completa]`, `proximas`). O `arquiteto`, a `sg-plan-change` e o fluxo de trabalho apontam para o mesmo formato.
 
+### Corrigido
+- `sg-new-product` (subdomain-tenancy): o boilerplate passa os pacotes `cities.embeddables`, `commons.persistence.embeddables` e `privacy` às duas unidades de persistência, e o `verificar-subida` deixa de reprovar o aviso do Hibernate quando só lista as bases abstratas do Panache e os listeners do commons (achado do E2E da T3b.6, PUB.2b item 6 do plano 51).
+- KB `filemanagement`: a tabela de SPIs lista `AttachmentRegistry` e `StorageCredentialSource`.
+
 ### Adicionado
 - Regra `documentos`, modelos (ADR, especificação, relatório), plano de tarefas e `sg-plan-goal`: todo documento gerado leva `aidlc: <contentVersion de .ai/toolkit-lock.json>` no cabeçalho, para saber com que versão do AIDLC foi escrito. O `controle.mjs status` avisa quando o plano não tem o campo e o `adr-index.mjs` valida o formato.
 - `sg-new-product`: auditoria em PostgreSQL desliga o health do cliente MongoDB no produto gerado (efeito `props_acrescentar` da matriz), achado do E2E.

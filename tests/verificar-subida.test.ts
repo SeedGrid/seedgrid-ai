@@ -81,3 +81,13 @@ test('verificar-subida: pasta sem produto.json falha no primeiro passo; helpers 
   assert.deepEqual(errosDoLog('INFO a\n2026 ERROR b\nWARN c'), ['2026 ERROR b']);
   assert.deepEqual(lerEnv(join(d, 'nao-existe.env')), {});
 });
+
+test('errosDoLog: aviso de unidade de persistencia so conta para classe de verdade, nao para as bases do Panache e listeners do commons', () => {
+  const aviso = (classes: string[]) => `INFO a\n[WARNING] [io.quarkus.hibernate.orm.deployment.HibernateOrmProcessor] Could not find a suitable persistence unit for model classes:\n${classes.map((c) => `\t- ${c}`).join('\n')}\n[INFO] fim`;
+  const bases = ['br.com.seedgrid.commons.persistence.BaseEntityAuditListener', 'br.com.seedgrid.commons.persistence.BaseEntityPanache', 'br.com.seedgrid.commons.persistence.BaseEntityPanacheAuditListener', 'io.quarkus.hibernate.orm.panache.PanacheEntityBase'];
+  assert.deepEqual(errosDoLog(aviso(bases)), []);
+  const r = errosDoLog(aviso([...bases, 'br.com.seedgrid.cities.embeddables.Address']));
+  assert.equal(r.length, 1);
+  assert.match(r[0]!, /cities\.embeddables\.Address/);
+  assert.doesNotMatch(r[0]!, /PanacheEntityBase/);
+});

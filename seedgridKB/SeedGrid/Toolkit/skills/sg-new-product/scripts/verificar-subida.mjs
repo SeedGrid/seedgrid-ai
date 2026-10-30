@@ -27,12 +27,22 @@ export function lerEnv(arquivo) {
   return env;
 }
 
+/** Classes de infraestrutura que o Quarkus lista no aviso de "unidade de persistencia" mas que nao precisam de unidade. */
+const BASES_SEM_UNIDADE = /^(br\.com\.seedgrid\.commons\.persistence\.(BaseEntity(Panache)?(AuditListener)?|BaseEntityPanacheAuditListener)|io\.quarkus\.hibernate\.orm\.panache\.PanacheEntityBase)$/;
+
 /** Trechos de ERROR do log do boot (ate `max` linhas), para o relato. */
 export function errosDoLog(texto, max = 8) {
   const linhas = String(texto).split(/\r?\n/);
   const erros = linhas.filter((l) => /\bERROR\b/.test(l) && !/^\[ERROR\]\s*$/.test(l) && !/Re-run Maven|For more information|Help 1|To see the full stack/.test(l));
-  // WARN que na pratica e defeito: entidade de extension fora de qualquer unidade de persistencia (a extension sobe, mas nao grava)
-  linhas.forEach((l, i) => { if (/Could not find a suitable persistence unit/.test(l)) erros.push(`${l.trim()} ${linhas.slice(i + 1, i + 4).map((x) => x.trim()).join(' ')}`); });
+  // WARN que na pratica e defeito: entidade, embeddable ou conversor de extension fora de qualquer unidade de persistencia (a extension sobe, mas nao grava).
+  // As bases abstratas do Panache e os listeners do commons nunca pertencem a uma unidade (em multi-PU, anexa-las a duas falha o build), entao nao contam.
+  linhas.forEach((l, i) => {
+    if (!/Could not find a suitable persistence unit/.test(l)) return;
+    const classes = [];
+    for (let j = i + 1; j < linhas.length && /^\s*-\s+\S+/.test(linhas[j]); j++) classes.push(linhas[j].replace(/^\s*-\s+/, '').trim());
+    const reais = classes.filter((c) => !BASES_SEM_UNIDADE.test(c));
+    if (reais.length || !classes.length) erros.push(`${l.trim()} ${(reais.length ? reais : linhas.slice(i + 1, i + 4).map((x) => x.trim())).join(' ')}`);
+  });
   const causas = linhas.filter((l) => /^\s*Caused by:/.test(l)).slice(0, 4);
   return [...erros.slice(0, max), ...causas].map((l) => l.slice(0, 300));
 }
