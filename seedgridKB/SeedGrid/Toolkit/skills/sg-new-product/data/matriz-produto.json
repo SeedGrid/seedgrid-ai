@@ -843,6 +843,10 @@
             },
             "env_remover": [
               "SEEDGRID_AUDIT_MONGODB_URI"
+            ],
+            "props_acrescentar": [
+              "# Auditoria em PostgreSQL (jpa): o health do cliente MongoDB (propriedade de BUILD) esperaria localhost:27017 e o /q/health/ready nunca daria 200.",
+              "quarkus.mongodb.health.enabled=false"
             ]
           }
         },

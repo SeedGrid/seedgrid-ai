@@ -79,6 +79,17 @@ test('auditoria Postgres + filesystem: sem mongodb e sem minio, pom sem o SDK do
   assert.ok(!ler(destino, 'backend/pom.xml').includes('<artifactId>minio</artifactId>'));
 });
 
+test('auditoria Postgres desliga o health do MongoDB (o /q/health/ready nunca daria 200 esperando localhost:27017); com MongoDB nao desliga', async () => {
+  const pg = await gerar(B2B);
+  assert.equal(pg.saida.ok, true, (pg.saida.erros ?? []).join('\n'));
+  const props = ler(pg.destino, 'backend/src/main/resources/application.properties').split(/\r?\n/);
+  assert.equal(props.filter((l) => l === 'quarkus.mongodb.health.enabled=false').length, 1, 'a linha entra uma vez');
+  const mongo = await gerar({ ...B2B, auditoria: 'mongodb' });
+  assert.equal(mongo.saida.ok, true, (mongo.saida.erros ?? []).join('\n'));
+  const propsMongo = ler(mongo.destino, 'backend/src/main/resources/application.properties').split(/\r?\n/);
+  assert.ok(!propsMongo.includes('quarkus.mongodb.health.enabled=false'));
+});
+
 test('self-enter desligado, convite+cadastro (ambos) e cadastro publico', async () => {
   const off = env(ler((await gerar(B2B)).destino, 'backend/dev.env'));
   assert.equal(off.SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');

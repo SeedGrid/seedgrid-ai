@@ -43,7 +43,7 @@ function validar(regra, valor) {
 export const SEGREDO = /\$\{segredo:([A-Z0-9_]+)\}/g;
 const vazio = (e) => !e || Object.keys(e).length === 0;
 const TENANCIES = ['login-tenancy', 'subdomain-tenancy'];
-const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'modulos_front_remover', 'portas', 'servicos', 'pom_remover', 'pom_manter', 'pom_adicionar', 'flyway_locations', 'hibernate_packages', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
+const CHAVES_EFEITO = new Set(['produto', 'boilerplate', 'extensions', 'extensions_remover', 'blocos_env', 'env', 'env_remover', 'env_front', 'compose', 'modulos_front_remover', 'portas', 'servicos', 'pom_remover', 'pom_manter', 'pom_adicionar', 'flyway_locations', 'hibernate_packages', 'props_acrescentar', 'pendencias', 'docs', 'renomeia', 'usado_em', 'publicacao']);
 
 // Confere a matriz contra o catalogo. Retorna a lista de problemas (vazia = valida).
 export function validarMatriz(matriz, catalogo, modulosFront = null) {
