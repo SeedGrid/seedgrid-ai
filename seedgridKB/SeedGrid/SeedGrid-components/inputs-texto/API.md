@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Inputs de texto e documentos (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Inputs de texto: API
+# Inputs de texto: API — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Pacote `@seedgrid/fe-components` versão `2026.7.1` (`packages/seedgrid-fe-components/package.json`). Visão geral: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Visão geral dos inputs de texto]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]].
 

@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/apps/showcase/src/app/components/gadgets
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Exemplos TSX (React) de Gadgets (relógio, calendário, gauges, QR), validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
+plataforma: react
 ---
 
-# Exemplos — gadgets
+# Exemplos — gadgets — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Exemplos copiados 1:1 dos `samples/*.tsx.sample` do showcase (rotas `/components/gadgets/*`, `/components/providers/*`, `/components/hooks/*`), salvo os marcados como **exemplo próprio**. Todos verificados com type-check TypeScript (`strict`) contra `packages/seedgrid-fe-components/src/index.ts` no commit `ad30fc11de` — sem erros. Classes utilitárias são Tailwind do app de exemplo.
 

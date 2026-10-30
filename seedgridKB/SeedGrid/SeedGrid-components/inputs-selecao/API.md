@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Inputs de seleção e valores (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Inputs de seleção: API
+# Inputs de seleção: API — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API|API — Inputs de seleção e valores (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Pacote `@seedgrid/fe-components` v`2026.7.1`. Contexto: [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|Visão geral dos inputs de seleção]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]].
 

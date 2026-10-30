@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Exemplos TSX (React) de Inputs de texto e documentos, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
+plataforma: react
 ---
 
-# Inputs de texto: exemplos
+# Inputs de texto: exemplos — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Todos os exemplos foram conferidos contra os tipos descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API dos inputs de texto]]. Os que vêm do showcase indicam o arquivo de origem, relativo a `front/seedgrid-fe-components/apps/showcase/src/app/components/`. Cada componente também tem página no showcase em `/components/<slug>` (campo `showcase.route` dos `*.meta.ts`). Os exemplos não foram compilados nem executados nesta análise. A conferência foi feita contra os tipos.
 

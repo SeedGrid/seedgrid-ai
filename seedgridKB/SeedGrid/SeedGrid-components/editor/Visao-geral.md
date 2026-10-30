@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/S
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Editor de texto rico em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# SgTextEditor
+# SgTextEditor — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral|Visão geral — Editor de texto rico (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 O `SgTextEditor` é o editor de texto rico (HTML) do pacote `@seedgrid/fe-components` (v`2026.7.1`), construído sobre o **TipTap 2**. Referência: [[SeedGrid/SeedGrid-components/editor/API|API do SgTextEditor]]. Código: [[SeedGrid/SeedGrid-components/editor/Exemplos|Exemplos do SgTextEditor]].
 

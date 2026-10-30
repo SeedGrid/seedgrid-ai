@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Fundamentos (utilitários, i18n, tema) (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API dos utilitários do `@seedgrid/fe-components`
+# API dos utilitários do `@seedgrid/fe-components` — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/fundamentos/API|API — Fundamentos (utilitários, i18n, tema) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral e instalação: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos — visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos]].
 

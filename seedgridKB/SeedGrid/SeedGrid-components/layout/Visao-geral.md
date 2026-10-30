@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/layout
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Layout e containers em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Layout — visão geral
+# Layout — visão geral — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/layout/Visao-geral|Visão geral — Layout e containers (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Componentes de estrutura de tela do `@seedgrid/fe-components` (pasta `src/layout`): primitivas de composição (pilha, grade, painel com docking, tela), containers (card, accordion, abas, painel expansível, carrossel), navegação (breadcrumb, menu, árvore) e o sistema de **docking** de toolbars (`SgDockLayout`/`SgDockZone`/`SgDockScreen`/`SgToolBar`).
 

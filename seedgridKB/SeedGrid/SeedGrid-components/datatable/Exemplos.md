@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatabl
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Exemplos TSX (React) de Tabela de dados, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
+plataforma: react
 ---
 
-# SgDatatable: exemplos
+# SgDatatable: exemplos — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos|Exemplos — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Os exemplos foram conferidos contra [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. As fontes são relativas a `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatable/samples/`. Não foram compilados nem executados.
 

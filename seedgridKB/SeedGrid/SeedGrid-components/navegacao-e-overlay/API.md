@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/menus, f
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Navegação, overlay e wizard (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — navegação e overlay
+# API — navegação e overlay — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API|API — Navegação, overlay e wizard (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · Exemplos: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos|Exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/fundamentos/API|Fundamentos › API]]
 

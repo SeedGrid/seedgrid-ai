@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/digits
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Dígitos animados (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — dígitos animados (`digits`)
+# API — dígitos animados (`digits`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/digits/API|API — Dígitos animados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/digits/Exemplos|Dígitos — exemplos]]
 

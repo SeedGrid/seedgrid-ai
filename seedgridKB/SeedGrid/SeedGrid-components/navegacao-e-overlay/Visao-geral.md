@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/menus, f
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Navegação, overlay e wizard em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Navegação e overlay — visão geral
+# Navegação e overlay — visão geral — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral|Visão geral — Navegação, overlay e wizard (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Grupo de componentes do pacote `@seedgrid/fe-components` que reúne **três pastas pequenas** de `src/` numa só nota, por terem pouco conteúdo cada uma:
 

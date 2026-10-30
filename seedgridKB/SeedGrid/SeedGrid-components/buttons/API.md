@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/buttons
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Botões (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — botões (`src/buttons`)
+# API — botões (`src/buttons`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/buttons/API|API — Botões (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos de botões]]
 

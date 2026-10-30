@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Inputs de texto e documentos em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Inputs de texto (SgInput*)
+# Inputs de texto (SgInput*) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Este grupo reúne os 15 campos de digitação do pacote `@seedgrid/fe-components` (v`2026.7.1`). Todos estão em `src/inputs/` e todos são exportados pela raiz do pacote. Detalhe de props, eventos e ref: [[SeedGrid/SeedGrid-components/inputs-texto/API|API dos inputs de texto]]. Código: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]]. Grupos vizinhos: [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|inputs de seleção]], [[SeedGrid/SeedGrid-components/datatable/Visao-geral|SgDatatable]], [[SeedGrid/SeedGrid-components/editor/Visao-geral|SgTextEditor]].
 

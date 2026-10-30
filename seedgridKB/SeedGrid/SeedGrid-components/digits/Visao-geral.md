@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/digits
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Dígitos animados em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Dígitos animados (`src/digits`)
+# Dígitos animados (`src/digits`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral|Visão geral — Dígitos animados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Oito componentes que exibem **um caractere (ou um texto curto)** com um efeito visual próprio — placar flip, painel LED, display de 7 segmentos, neon, folha de papel descartada etc. São blocos de construção: o relógio [[SeedGrid/SeedGrid-components/gadgets/API|SgClock]] (`digitalStyle`) e o [[SeedGrid/SeedGrid-components/gadgets/API|SgStringAnimator]] compõem vários deles. Não têm eventos nem estado controlado além de `value`.
 
