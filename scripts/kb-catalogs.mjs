@@ -18,7 +18,10 @@
 //               seção `### Nome`, ou a coluna de variantes do índice).
 //   components  SeedGrid-components/<grupo>/Visao-geral.md (tabelas de componentes/símbolos), <grupo>/API.md
 //               (`## Sg...`, tabelas de funções), fundamentos/Visao-geral.md ("Mapa dos utilitários"),
-//               pacotes/Visao-geral.md, modulos/fe-*.md e showcase.md.
+//               pacotes/Visao-geral.md, modulos/fe-*.md e showcase.md. Esses grupos são os de **React**.
+//               O **Flutter** entra pelas notas SeedGrid-components/flutter/<grupo>/Visao-geral.md (mesmos nomes de
+//               grupo): tabela "Para que serve" (Componente | Estado | Para que serve) e tabela de símbolos públicos
+//               (Símbolo | Tipo | Descrição). Índice e Catálogo mostram as duas plataformas em seções separadas.
 //
 // LIMITAÇÕES (derivar só o que a KB diz, sem inventar):
 //   - Enums Rust: as variantes são lidas da prosa/tabelas da nota; quando a nota não lista as variantes de um enum,
@@ -469,6 +472,34 @@ const GROUPS = [
   ['modulos', 'Módulos de tela @seedgrid/fe-*'],
   ['showcase', 'Showcase'],
 ];
+// Grupos Flutter: mesmos nomes de pasta dos grupos React (flutter/<grupo>/); só os que têm componente/símbolo Dart.
+const FLUTTER_GROUPS = GROUPS.map((x) => x[0]).filter((g) => !['pacotes', 'modulos', 'showcase'].includes(g));
+const flutterDir = path.join(compDir, 'flutter');
+const statusOf = (v) => { const n = norm(stripMd(v || '')); return n.startsWith('portado') ? 'portado' : n.startsWith('parcial') ? 'parcial' : n.startsWith('nao portado') ? 'não portado' : stripMd(v || '—') || '—'; };
+
+/** Lê flutter/<grupo>/Visao-geral.md: componentes ("Para que serve") e símbolos públicos (tabela Símbolo | Tipo | Descrição). */
+function flutterGroupRows(g) {
+  const vg = path.join(flutterDir, g, 'Visao-geral.md');
+  if (!exists(vg)) return null;
+  const rows = [];
+  const seen = new Set();
+  for (const t of tables(read(vg))) {
+    const i0 = norm(stripMd(t.header[0] || ''));
+    if (!/^(componente|simbolo)/.test(i0)) continue;
+    const iSum = colIdx(t.header, /^(para que serve|descri)/);
+    if (iSum < 0) continue;
+    const iSt = colIdx(t.header, /^estado/);
+    const isComp = colIdx(t.header, /^para que serve/) >= 0;
+    for (const r of t.rows) {
+      for (const n of nameTokens(r[0] || '')) {
+        if (!n || seen.has(n)) continue;
+        seen.add(n);
+        rows.push({ name: n, exp: isComp ? (iSt >= 0 ? statusOf(r[iSt]) : 'portado') : 'sim', sum: summ(r[iSum]), comp: isComp });
+      }
+    }
+  }
+  return rows;
+}
 const SYMBOL_HEAD = /^(componente|simbolo|funcao|hook|arquivo|use para|nome)/;
 const SG = '[[SeedGrid/SeedGrid-components/';
 
@@ -649,7 +680,31 @@ function buildComponents(detail = false) {
     const sg = rows.filter((r) => /^Sg[A-Z0-9]/.test(r.name)).length;
     groupsOut.push({ g, title, rows, sg, other: rows.length - sg, noteLinks });
   }
-  const known = new Set(GROUPS.map((x) => x[0]));
+  const flutterOut = [];
+  const flutterSources = [];
+  for (const g of FLUTTER_GROUPS) {
+    const rows = flutterGroupRows(g);
+    if (!rows) continue;
+    for (const f of ['Visao-geral', 'API', 'Exemplos']) if (exists(path.join(flutterDir, g, f + '.md'))) flutterSources.push(path.join(flutterDir, g, f + '.md'));
+    const title = GROUPS.find((x) => x[0] === g)[1];
+    const noteLinks = ['Visao-geral', 'API', 'Exemplos'].filter((f) => exists(path.join(flutterDir, g, f + '.md'))).map((f) => link(`SeedGrid/SeedGrid-components/flutter/${g}/${f}`, f === 'Visao-geral' ? 'Visão geral' : f));
+    // Componente do placar de paridade = linha da tabela "Para que serve" com Estado exatamente portado/parcial/não portado.
+    // Linhas de apoio (ex.: "apoio, só no Flutter") e a tabela de símbolos públicos entram em "outros símbolos".
+    const parity = rows.filter((r) => r.comp && ['portado', 'parcial', 'não portado'].includes(r.exp));
+    flutterOut.push({
+      g, title, rows, noteLinks,
+      sg: parity.length,
+      other: rows.length - parity.length,
+      portado: parity.filter((r) => r.exp === 'portado').length,
+      parcial: parity.filter((r) => r.exp === 'parcial').length,
+      nao: parity.filter((r) => r.exp === 'não portado').length,
+    });
+  }
+  sources.push(...flutterSources);
+  const flutterFm = exists(path.join(flutterDir, 'Visao-geral.md')) ? frontmatter(read(path.join(flutterDir, 'Visao-geral.md'))) : {};
+  const fSg = flutterOut.reduce((n, x) => n + x.sg, 0);
+  const fOther = flutterOut.reduce((n, x) => n + x.other, 0);
+  const known = new Set([...GROUPS.map((x) => x[0]), 'flutter']);
   const unknown = dirs(compDir).filter((d) => !known.has(d));
   const totalSg = groupsOut.reduce((n, x) => n + x.sg, 0);
   const totalOther = groupsOut.reduce((n, x) => n + x.other, 0);
@@ -657,29 +712,48 @@ function buildComponents(detail = false) {
   L.push('---', detail ? 'tags: [seedgrid, component, catalogo]' : 'tags: [seedgrid, component, indice]');
   for (const k of ['fonte', 'branch', 'commit']) if (fm[k]) L.push(`${k}: ${fm[k]}`);
   L.push(`analisado-em: ${maxDate(sources)}`, `gerado-por: ${GENERATOR} --only ${detail ? 'catalogo' : 'components'}`, '---', '');
-  L.push(detail ? '# Catálogo dos componentes SeedGrid (resumo de cada símbolo)' : '# Índice dos componentes SeedGrid (front-end)', '');
-  L.push(`Monorepo \`front/seedgrid-fe-components\` (pnpm + Turborepo, React 19). Pacote principal \`@seedgrid/fe-components\` ${version}; importação pública pelo barrel \`src/index.ts\` (\`import { SgButton } from "@seedgrid/fe-components"\`) e CSS em \`@seedgrid/fe-components/style.css\` — detalhes em ${SG}fundamentos/Visao-geral|Fundamentos]].`, '');
+  if (flutterFm.commit) L.splice(L.indexOf(`analisado-em: ${maxDate(sources)}`), 0, `fonte-flutter: ${flutterFm.fonte || ''}`, `commit-flutter: ${flutterFm.commit}`);
+  L.push(detail ? '# Catálogo dos componentes SeedGrid (resumo de cada símbolo, React e Flutter)' : '# Índice dos componentes SeedGrid (React e Flutter)', '');
+  L.push(`> **Duas plataformas, os mesmos nomes de componente.** **React** = \`@seedgrid/fe-components\` (\`front/seedgrid-fe-components\`); **Flutter** = \`seedgrid_components\` (\`front/seedgrid-fe-flutter\`, não publicado). \`SgButton\` existe nas duas, com API quase igual. Antes de escolher ou copiar código, leia ${SG}Plataformas|Plataformas: React × Flutter]] (onde está cada uma, como escolher, placar de paridade). Cada seção abaixo diz a plataforma no título.`, '');
+  L.push(`**React.** Monorepo \`front/seedgrid-fe-components\` (pnpm + Turborepo, React 19). Pacote principal \`@seedgrid/fe-components\` ${version}; importação pública pelo barrel \`src/index.ts\` (\`import { SgButton } from "@seedgrid/fe-components"\`) e CSS em \`@seedgrid/fe-components/style.css\` — detalhes em ${SG}fundamentos/Visao-geral|Fundamentos]].`, '');
+  L.push(`**Flutter.** Monorepo \`front/seedgrid-fe-flutter\` (pub workspaces); pacote \`seedgrid_components\` (importação \`package:seedgrid_components/seedgrid_components.dart\`), com \`seedgrid_theme\` e \`seedgrid_commons\`; notas em ${SG}flutter/Visao-geral|Flutter: visão geral]], ${SG}flutter/Paridade|Paridade]], ${SG}flutter/Divergencias|Divergências]] e ${SG}flutter/Traducao-React-para-Dart|Tradução React → Dart]].`, '');
   L.push('- **Exportado = sim**: disponível no barrel público. **não**: interno (documentado só para referência).');
-  L.push('- Cada grupo tem `Visao-geral` (quando usar), `API` (props completas, eventos, a11y) e `Exemplos` (TSX validado contra a API).');
+  L.push('- Cada grupo tem `Visao-geral` (quando usar), `API` (props completas, eventos, a11y) e `Exemplos` (React: TSX validado contra a API; Flutter: Dart copiado das regiões do showcase), nas duas plataformas.');
   L.push(`- Contratos comuns: react-hook-form e base \`SgInputText\` em ${SG}inputs-texto/API|inputs-texto/API]].`);
   L.push(`- App de vitrine: ${SG}showcase|Showcase]]. Pacotes de tema/core/playground: ${SG}pacotes/Visao-geral|Pacotes]]. Módulos de tela ligados às extensions: ${SG}modulos/Visao-geral|Módulos]].`);
   L.push(`- Esta nota é **gerada** (\`node scripts/kb-catalogs.mjs --only components --write\`) a partir das notas de cada grupo; os resumos são a 1ª frase da coluna "Para que serve"/"Use para" da Visao-geral (≤100 caracteres) — corrija a nota de origem e regenere.`, '');
-  L.push('## Resumo', '', '| Grupo | Componentes `Sg*` | Outros símbolos (hooks, funções, pacotes) | Notas |', '|---|---|---|---|');
+  L.push('## Resumo — React', '', '| Grupo | Componentes `Sg*` | Outros símbolos (hooks, funções, pacotes) | Notas (React) |', '|---|---|---|---|');
   for (const x of groupsOut) L.push(rowOf([x.title, x.sg, x.other, x.noteLinks.join(' · ')]));
-  L.push(rowOf(['**Total**', `**${totalSg}**`, `**${totalOther}**`, '']), '');
+  L.push(rowOf(['**Total React**', `**${totalSg}**`, `**${totalOther}**`, '']), '');
+  if (flutterOut.length) {
+    L.push('## Resumo — Flutter', '', '| Grupo | Componentes (placar de paridade) | Portados | Parciais | Não portados | Outros símbolos (apoio, controllers, enums, funções) | Notas (Flutter) |', '|---|---|---|---|---|---|---|');
+    for (const x of flutterOut) L.push(rowOf([x.title, x.sg, x.portado, x.parcial, x.nao, x.other, x.noteLinks.join(' · ')]));
+    L.push(rowOf(['**Total Flutter**', `**${fSg}**`, `**${flutterOut.reduce((n, x) => n + x.portado, 0)}**`, `**${flutterOut.reduce((n, x) => n + x.parcial, 0)}**`, `**${flutterOut.reduce((n, x) => n + x.nao, 0)}**`, `**${fOther}**`, '']), '');
+  }
   if (detail) {
     for (const x of groupsOut) {
-      L.push(`## ${x.title}`, '', '| Nome | Exportado | Resumo | Nota |', '|---|---|---|---|');
+      L.push(`## ${x.title} — React`, '', '| Nome | Exportado | Resumo | Nota |', '|---|---|---|---|');
       for (const r of x.rows) L.push(rowOf([`\`${r.name}\``, r.exp, r.sum, r.note]));
+      L.push('');
+    }
+    for (const x of flutterOut) {
+      L.push(`## ${x.title} — Flutter`, '', '| Nome | Estado de paridade (componente) / Exportado (símbolo) | Resumo | Nota |', '|---|---|---|---|');
+      for (const r of x.rows) L.push(rowOf([`\`${r.name}\``, r.exp, r.sum, x.noteLinks[1] || x.noteLinks[0] || '']));
       L.push('');
     }
   } else {
     L.push('## Onde está cada símbolo', '', `Procure o nome abaixo e abra só a seção dele: \`Grep "^## NomeDoComponente"\` no \`API.md\` do grupo (props completas) e depois leia essa faixa com \`offset\`/\`limit\`. Para escolher o componente por necessidade ("preciso de X"), leia ${SG}Preciso-de|Preciso de X, use Y]] e valide as props com a skill \`sg-componente\`. O resumo de cada símbolo, e se ele é exportado, está em ${SG}Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).`, '');
-    for (const x of groupsOut) L.push(`- **${x.title}** (\`${x.g}/\`): ${x.rows.map((r) => r.name).join(', ')}`);
+    L.push('### React', '');
+    for (const x of groupsOut) L.push(`- **${x.title}** (\`${x.g}/\`, React): ${x.rows.map((r) => r.name).join(', ')}`);
     L.push('');
+    if (flutterOut.length) {
+      L.push('### Flutter', '', `Só os widgets e símbolos principais; os de apoio ficam no Catálogo. Mesmo critério, nas notas \`flutter/<grupo>/API.md\` (\`Grep "^## NomeDoComponente"\` dentro de \`flutter/<grupo>/API.md\`; sem o prefixo \`flutter/\` o grupo é o React).`, '');
+      for (const x of flutterOut) L.push(`- **${x.title}** (\`flutter/${x.g}/\`, Flutter): ${x.rows.filter((r) => r.comp).map((r) => r.name).join(', ')}${x.other ? ` — mais ${x.other} símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]` : ''}`);
+      L.push('');
+    }
   }
   const extra = unknown.length ? `; grupos não mapeados no script: ${unknown.join(', ')}` : '';
-  return { text: L.join('\n'), summary: `${groupsOut.reduce((n, x) => n + x.rows.length, 0)} símbolos (Sg*: ${totalSg}, outros: ${totalOther}) em ${groupsOut.length} grupos${extra}` };
+  return { text: L.join('\n'), summary: `React: ${groupsOut.reduce((n, x) => n + x.rows.length, 0)} símbolos (Sg*: ${totalSg}, outros: ${totalOther}) em ${groupsOut.length} grupos; Flutter: ${flutterOut.reduce((n, x) => n + x.rows.length, 0)} símbolos (Sg*: ${fSg}, outros: ${fOther}) em ${flutterOut.length} grupos${extra}` };
 }
 
 function noteSet(g) {
