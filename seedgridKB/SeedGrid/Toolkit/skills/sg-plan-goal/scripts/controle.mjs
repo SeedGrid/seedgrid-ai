@@ -5,6 +5,10 @@
 //   node controle.mjs <plano.md> checklist <fase> [--completa]
 //                                                          toda tarefa [x] da fase precisa de uma linha "Evidencia:";
 //                                                          com --completa tambem falha se sobrou tarefa aberta
+//                                                          com --exceto-decisoes, tarefa aberta que depende (direta ou indiretamente) de uma [?]
+//                                                          nao conta como problema: esta parada esperando o dono
+//   node controle.mjs <plano.md> pendencias                perguntas ao dono: cada tarefa [?] (com Pergunta/Recomendacao do corpo)
+//                                                          e as tarefas que ela bloqueia; sai 0 mesmo com pendencias
 //   node controle.mjs <plano.md> proximas [--max 4] [--json]
 //                                                          tarefas abertas cujo depende-de ja esta todo [x], escolhidas
 //                                                          para rodar em paralelo sem dois escrevendo no mesmo caminho
@@ -87,13 +91,45 @@ export function proximas(plano, max = MAX_PADRAO) {
   };
 }
 
-export function checklist(plano, chave, completa) {
+/** Tarefas abertas que dependem, direta ou indiretamente, de uma tarefa [?] (decisao do dono). */
+export function bloqueadasPorDecisao(plano) {
+  const porId = new Map(plano.todas.map((t) => [t.id, t]));
+  const memo = new Map();
+  const depende = (t, visitados = new Set()) => {
+    if (memo.has(t.id)) return memo.get(t.id);
+    if (visitados.has(t.id)) return false;
+    visitados.add(t.id);
+    const r = t.dependeDe.some((d) => { const x = porId.get(d); return x && (x.estado === '?' || depende(x, visitados)); });
+    memo.set(t.id, r);
+    return r;
+  };
+  return new Set(plano.todas.filter((t) => (t.estado === ' ' || t.estado === '~') && depende(t)).map((t) => t.id));
+}
+
+/** Perguntas ao dono: cada tarefa [?], com as linhas do corpo, e as tarefas que ficam esperando por ela. */
+export function pendencias(plano) {
+  const porId = new Map(plano.todas.map((t) => [t.id, t]));
+  const esperaPor = (alvo) => plano.todas.filter((t) => {
+    const vistos = new Set();
+    const alcanca = (x) => x.dependeDe.some((d) => { if (d === alvo) return true; if (vistos.has(d)) return false; vistos.add(d); const y = porId.get(d); return y ? alcanca(y) : false; });
+    return alcanca(t);
+  }).map((t) => t.id);
+  return plano.todas.filter((t) => t.estado === '?').map((t) => ({
+    id: t.id,
+    titulo: t.cabecalho.replace(/^\s*[-*]\s+\[\?\]\s+/, '').replace(/\*\*/g, '').replace(/\s*\(`?depende-de.*$/, '').trim(),
+    detalhe: t.corpo.map((l) => l.trim()).filter(Boolean).slice(0, 8),
+    bloqueia: esperaPor(t.id),
+  }));
+}
+
+export function checklist(plano, chave, completa, exetoDecisoes = false) {
   const fase = plano.fases.find((f) => f.chave === chave || f.titulo === chave);
   if (!fase) return { erros: [`fase "${chave}" nao encontrada`], fase: null };
   const erros = [];
+  const paradas = exetoDecisoes ? bloqueadasPorDecisao(plano) : new Set();
   for (const t of fase.tarefas) {
     if (t.estado === 'x' && !t.temEvidencia) erros.push(`${t.id}: tarefa [x] sem linha "Evidencia:"`);
-    if (completa && (t.estado === ' ' || t.estado === '~')) erros.push(`${t.id}: tarefa ainda aberta`);
+    if (completa && (t.estado === ' ' || t.estado === '~') && !paradas.has(t.id)) erros.push(`${t.id}: tarefa ainda aberta`);
   }
   return { erros, fase };
 }
@@ -101,7 +137,7 @@ export function checklist(plano, chave, completa) {
 function main(argv) {
   const [arquivo, cmd, ...resto] = argv;
   if (!arquivo || !cmd) {
-    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa] | proximas [--max N] [--json]');
+    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa [--exceto-decisoes]] | pendencias | proximas [--max N] [--json]');
     return 2;
   }
   let texto;
@@ -118,10 +154,21 @@ function main(argv) {
   if (cmd === 'checklist') {
     const chave = resto.find((a) => !a.startsWith('--'));
     if (!chave) { console.error('informe a fase'); return 2; }
-    const r = checklist(plano, chave, resto.includes('--completa'));
+    const r = checklist(plano, chave, resto.includes('--completa'), resto.includes('--exceto-decisoes'));
     for (const e of r.erros) console.error('  ' + e);
     console.log(`[controle] fase ${chave}: ${r.erros.length} problema(s).`);
     return r.erros.length ? 1 : 0;
+  }
+  if (cmd === 'pendencias') {
+    const p = pendencias(plano);
+    if (!p.length) { console.log('[controle] pendencias: 0 pergunta(s) ao dono.'); return 0; }
+    for (const x of p) {
+      console.log(`${x.id}: ${x.titulo}`);
+      for (const l of x.detalhe) console.log('    ' + l);
+      console.log(`    bloqueia: ${x.bloqueia.join(', ') || 'nenhuma tarefa'}`);
+    }
+    console.log(`[controle] pendencias: ${p.length} pergunta(s) ao dono.`);
+    return 0;
   }
   if (cmd === 'proximas') {
     const i = resto.indexOf('--max');

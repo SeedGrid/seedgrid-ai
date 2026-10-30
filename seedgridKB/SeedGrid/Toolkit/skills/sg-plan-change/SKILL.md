@@ -20,14 +20,17 @@ Produza um plano curto e verificável antes de alterar código não trivial.
 
 ## Saída
 
-Use o modelo [assets/especificacao-tarefa.md](assets/especificacao-tarefa.md) para cada tarefa delegada. Para o plano geral, responda com:
+Use o modelo [assets/especificacao-tarefa.md](assets/especificacao-tarefa.md) para cada tarefa delegada. O plano segue **sempre o formato fixo de tarefas da `sg-plan-goal`**, para o `controle.mjs` poder lê-lo: copie `.ai/skills/sg-plan-goal/assets/plano-de-tarefas.md` e preencha. Uma tarefa pequena é uma fase com poucas tarefas, não outro formato (nada de tabela de tarefas). Estrutura mínima:
 
 ```markdown
 ## Objetivo
 ## Critérios de aceite
 ## Abordagem
-## Tarefas
-| # | Tarefa | Papel | Arquivos | Depende de | Paralela? |
+## Fase 1 — <nome>
+- [ ] **P<plano>.F1.T1 Título** (`depende-de`: nada; `escreve`: caminhos)
+  - Aceite: ...
+  - Evidencia: <ao concluir>
+(um bloco /goal por fase, como no template)
 ## Riscos e verificação
 ## Dúvidas
 ```

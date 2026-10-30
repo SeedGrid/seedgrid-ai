@@ -7,6 +7,11 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ### Alterado
 - `sg-plan-goal`: o fluxo passa a ser único para toda tarefa não trivial (sem critério de "mudança grande"). Ganha o formato fixo do plano de tarefas (template `assets/plano-de-tarefas.md`; `depende-de` e `escreve` por tarefa, aceite, testes, `Evidencia:` e bloco `/goal` por fase), as regras de execução em paralelo (até 4 agentes, nunca dois no mesmo caminho, acima disso só em worktrees com merge em série e limpeza) e o script `scripts/controle.mjs` (`status`, `checklist <fase> [--completa]`, `proximas`). O `arquiteto`, a `sg-plan-change` e o fluxo de trabalho apontam para o mesmo formato.
 
+### Adicionado
+- `sg-plan-goal` e `sg-plan-change`: **identificador falante** nos planos novos: `P<plano>.F<fase>.T<tarefa>` (tarefa) e `P<plano>.F<fase>.D<n>` (decisão do dono), por exemplo `P24.F3b.T6` e `P111.F2.D1`; `F0` = plano inteiro, `FIM` = fase final. O dono sabe de qual plano e fase é cada item sem perguntar; o template usa `P000.*`, que o `controle.mjs` já lê. Planos antigos mantêm `T3b.6`.
+- Referência `identificadores-de-plano` (e verbete no glossário e na regra `documentos`): formato do identificador, como pesquisar por plano, fase, tarefa e decisão, e como citar para o dono.
+- `sg-plan-goal`: **goal do plano inteiro** no template, com a regra de decisão (o executor não decide pelo dono: marca `[?]` com `Pergunta:` e `Recomendacao:`, faz tudo o que não depende dela e pergunta tudo de uma vez ao final). O `controle.mjs` ganha `pendencias` e `checklist --completa --exceto-decisoes`.
+
 ## [0.6.1] — 2026-10-29
 
 ### Corrigido

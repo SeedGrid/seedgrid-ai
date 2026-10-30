@@ -9,6 +9,7 @@ description: "Glossário dos termos do toolkit (coordenador, papel, skill, catá
 | Papel | Definição de agente em `.ai/agents/<id>.md` (objetivo, entradas, responsabilidades, limites, entrega). |
 | Catálogo | Tabela curta de papéis gerada em `.ai/agents/index.md` para seleção sem carregar todos os prompts. |
 | Skill | Procedimento no padrão Agent Skills (`SKILL.md`), instalado em `.claude/skills/` e `.agents/skills/`. |
+| Identificador de plano | `P<plano>.F<fase>.T<tarefa>` (tarefa) ou `.D<n>` (decisão do dono), por exemplo `P111.F2.T3`; `F0` = plano inteiro, `FIM` = fase final. Veja `references/identificadores-de-plano.md`. |
 | Entrega | Resposta final de um papel: resultado, arquivos alterados, verificações, pendências e contexto. |
 | Critério de aceite | Condição verificável que define quando a tarefa está pronta. |
 | Personalização local | Conteúdo do projeto em `.ai/local/`, nunca alterado pelo toolkit. |

@@ -28,11 +28,13 @@ Método de 12 etapas, o mesmo para toda tarefa não trivial: **não há critéri
 
 Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha. O formato é o mesmo em todo plano, porque o `controle.mjs` lê esse formato:
 
+- **Identificador falante (planos novos):** `P<plano>.F<fase>.T<tarefa>` e, para decisão do dono, `P<plano>.F<fase>.D<n>`. Exemplos: `P24.F3b.T6` = plano 24, fase 3b, tarefa 6; `P111.F2.D1` = decisão 1 da fase 2; `F0` = plano inteiro (`P111.F0.D2`); fase final `P111.FIM.T1`. O dono não precisa perguntar "o que é a T3b.6": o número já diz o plano. Planos antigos mantêm `T3b.6`; ao citar, diga sempre plano, fase, tarefa e o título.
 - **Fases** (`## Fase N — nome`) com dependência explícita e aceite da fase.
-- **Cada tarefa** é uma linha `- [ ] **T1.1 Título** (`depende-de`: T0.1, T0.2; `escreve`: caminhos)` seguida de `Aceite`, `Testes` e, ao concluir, `Evidencia`.
+- **Cada tarefa** é uma linha `- [ ] **P111.F1.T1 Título** (`depende-de`: P111.F0.T1, P111.F0.T2; `escreve`: caminhos)` seguida de `Aceite`, `Testes` e, ao concluir, `Evidencia`.
 - `[ ]` vira `[x]` **somente** com a linha `  - Evidencia: <comando, teste ou hash>` embaixo. Sem evidência, a tarefa não está feita.
 - **`depende-de` e `escreve` são obrigatórios**: sem eles o executor não pode provar o que roda em paralelo. `escreve` lista os arquivos, pastas ou módulos que a tarefa grava.
-- **Um bloco `/goal` por fase**, com limite de turnos e condição que exige evidência visível na saída (etapa 12).
+- **Um bloco `/goal` por fase** e **um `/goal` do plano inteiro** (seção "Goal do plano inteiro" do template), com limite de turnos e condição que exige evidência visível na saída (etapa 12).
+- **Decisão do dono no goal geral:** o executor não decide sozinho. Marca a tarefa `[?]` com `Pergunta:` e `Recomendacao:`, faz todas as tarefas que não dependem dela e, ao final, pergunta tudo de uma vez ao dono. Só é `[?]` o que é decisão do dono (produto, custo, dependência nova, algo irreversível); dúvida técnica se resolve com teste ou spike.
 - **Uma definição de pronto única** no topo do plano.
 
 ## Execução em paralelo
@@ -49,7 +51,8 @@ Ao começar uma fase, monte o grafo das tarefas e **lance em paralelo tudo o que
 `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano.md> <comando>`:
 
 - `status`: progresso por fase.
-- `checklist <fase> [--completa]`: toda tarefa `[x]` precisa de `Evidencia:`; com `--completa`, falha se sobrou tarefa aberta. É a saída que entra na condição do `/goal`.
+- `checklist <fase> [--completa [--exceto-decisoes]]`: toda tarefa `[x]` precisa de `Evidencia:`; com `--completa`, falha se sobrou tarefa aberta; com `--exceto-decisoes`, tarefa aberta que depende (direta ou indiretamente) de uma `[?]` não conta, porque está esperando o dono. É a saída que entra na condição do `/goal`.
+- `pendencias`: lista as perguntas ao dono (cada tarefa `[?]` com `Pergunta:` e `Recomendacao:`) e as tarefas que ela bloqueia; sai 0. Entra na condição do goal geral, para a lista aparecer na saída.
 - `proximas [--max 4] [--json]`: o que pode rodar em paralelo agora, o que espera (conflito de escrita, acima do limite) e o que está bloqueado.
 
 O script só lê o plano; compare sempre com o git real (commits, testes), nunca confie só no arquivo.

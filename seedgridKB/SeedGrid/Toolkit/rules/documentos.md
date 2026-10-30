@@ -25,6 +25,7 @@ Todo documento de trabalho que a IA produzir (plano, handoff, decisão, especifi
 - Crie a pasta quando precisar. O toolkit não a cria nem a altera: o conteúdo é do projeto e sobrevive ao `update` e ao `remove`.
 - Nome do arquivo: `AAAA-MM-DD-assunto-curto.md` (minúsculas, hífens, sem acentos), por exemplo `2026-10-15-crud-clientes.md`.
 - Plano e handoff começam com um cabeçalho de estado (`status`: `proposto`, `em-andamento`, `vigente`, `concluido` ou `abandonado`, e `data`). Ao concluir, marque `concluido`: **plano concluído é histórico e não serve de fonte para decidir nada**; a fonte é o código, a documentação do projeto e as ADRs.
+- Itens de plano novo usam o **identificador falante** `P<plano>.F<fase>.T<tarefa>` (decisão do dono: `.D<n>`); formato e como pesquisar em `.ai/references/identificadores-de-plano.md`. Ao falar com o dono, cite plano, fase, tarefa e título.
 - As **decisões** que nasceram do plano viram ADR (`docs/ai/decisions/`), com índice gerado (`INDEX.md`, da mais nova para a mais antiga).
 - Não grave segredos, tokens nem dados pessoais.
 - Antes de criar, veja se já existe documento do mesmo assunto na pasta e atualize-o em vez de duplicar.

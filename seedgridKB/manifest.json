@@ -45,6 +45,7 @@
       "files": [
         "references/modos-shared-native.md",
         "references/glossario.md",
+        "references/identificadores-de-plano.md",
         "references/fluxo-de-trabalho.md",
         "references/mcp-de-componentes-react-e-flutter.md",
         "references/mock-do-back-com-mockoon.md"

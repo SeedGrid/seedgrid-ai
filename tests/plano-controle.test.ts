@@ -8,9 +8,11 @@ import { test } from 'node:test';
 
 const SCRIPT = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-plan-goal/scripts/controle.mjs');
 const mod = (await import(pathToFileURL(SCRIPT).href)) as {
-  lerPlano: (t: string) => { fases: { chave: string; tarefas: { id: string; estado: string; dependeDe: string[]; escreve: string[]; temEvidencia: boolean }[] }[]; todas: { id: string; escreve: string[] }[] };
+  lerPlano: (t: string) => { fases: { chave: string; tarefas: { id: string; estado: string; dependeDe: string[]; escreve: string[]; temEvidencia: boolean }[] }[]; todas: { id: string; escreve: string[]; dependeDe: string[] }[] };
   proximas: (p: ReturnType<typeof mod.lerPlano>, max?: number) => { paralelo: string[]; semDeclararEscreve: string[]; espera: { id: string; motivo: string }[]; bloqueadas: { id: string; falta: string[] }[]; emAndamento: string[] };
-  checklist: (p: ReturnType<typeof mod.lerPlano>, fase: string, completa: boolean) => { erros: string[] };
+  checklist: (p: ReturnType<typeof mod.lerPlano>, fase: string, completa: boolean, exetoDecisoes?: boolean) => { erros: string[] };
+  pendencias: (p: ReturnType<typeof mod.lerPlano>) => { id: string; titulo: string; detalhe: string[]; bloqueia: string[] }[];
+  bloqueadasPorDecisao: (p: ReturnType<typeof mod.lerPlano>) => Set<string>;
 };
 
 const PLANO = `# Tarefas: exemplo
@@ -113,5 +115,67 @@ test('o template do plano é lido pelo controle sem erro de formato', () => {
   assert.deepEqual(p.fases.map((f) => f.chave), ['1', '2', 'FIM']);
   assert.ok(p.todas.every((t) => t.escreve.length > 0), 'todo exemplo do template declara escreve');
   const r = mod.proximas(p);
-  assert.deepEqual(r.paralelo, ['T1.1']);
+  assert.deepEqual(r.paralelo, ['P000.F1.T1']);
+});
+
+const PLANO_DECISAO = `# Tarefas: com decisao
+
+## Fase 1 — A
+
+- [x] **T1.1 Feita** (\`depende-de\`: nada; \`escreve\`: a/)
+  - Evidencia: abc
+- [?] **T1.2 Escolher banco** (\`depende-de\`: nada; \`escreve\`: este plano)
+  - Pergunta: Postgres ou MySQL?
+  - Recomendacao: Postgres
+- [ ] **T1.3 Migrar** (\`depende-de\`: T1.2; \`escreve\`: db/)
+- [ ] **T1.4 Depois da migracao** (\`depende-de\`: T1.3; \`escreve\`: db2/)
+- [ ] **T1.5 Livre** (\`depende-de\`: T1.1; \`escreve\`: livre/)
+`;
+
+test('decisao do dono: --exceto-decisoes ignora so o que espera a [?]; pendencias lista pergunta e bloqueios', () => {
+  const p = mod.lerPlano(PLANO_DECISAO);
+  assert.deepEqual([...mod.bloqueadasPorDecisao(p)].sort(), ['T1.3', 'T1.4']);
+  assert.deepEqual(mod.checklist(p, '1', true).erros.sort(), ['T1.3: tarefa ainda aberta', 'T1.4: tarefa ainda aberta', 'T1.5: tarefa ainda aberta']);
+  assert.deepEqual(mod.checklist(p, '1', true, true).erros, ['T1.5: tarefa ainda aberta']);
+  const q = mod.pendencias(p);
+  assert.equal(q.length, 1);
+  assert.equal(q[0]!.id, 'T1.2');
+  assert.deepEqual(q[0]!.bloqueia.sort(), ['T1.3', 'T1.4']);
+  assert.ok(q[0]!.detalhe.some((l) => /Recomendacao: Postgres/.test(l)));
+});
+
+test('CLI: pendencias imprime as perguntas e sai 0; --exceto-decisoes zera o checklist quando o resto esta feito', () => {
+  const feito = PLANO_DECISAO.replace('- [ ] **T1.5 Livre** (`depende-de`: T1.1; `escreve`: livre/)', '- [x] **T1.5 Livre** (`depende-de`: T1.1; `escreve`: livre/)\n  - Evidencia: ok');
+  const f = arquivo(feito);
+  const p = roda(f, 'pendencias');
+  assert.equal(p.status, 0);
+  assert.match(p.stdout, /T1\.2: .*Escolher banco/);
+  assert.match(p.stdout, /bloqueia: T1\.3, T1\.4/);
+  assert.match(p.stdout, /1 pergunta\(s\) ao dono/);
+  assert.equal(roda(f, 'checklist', '1', '--completa').status, 1);
+  const ok = roda(f, 'checklist', '1', '--completa', '--exceto-decisoes');
+  assert.equal(ok.status, 0);
+  assert.match(ok.stdout, /fase 1: 0 problema/);
+  assert.match(roda(arquivo(PLANO), 'pendencias').stdout, /0 pergunta/);
+});
+
+test('identificador falante P<plano>.F<fase>.T<tarefa>: lido em fase 3b e FIM, com depende-de e proximas', () => {
+  const p = mod.lerPlano(`# T
+
+## Fase 3b — Algo
+
+- [x] **P24.F3b.T5 Feita** (\`depende-de\`: nada; \`escreve\`: a/)
+  - Evidencia: ok
+- [ ] **P24.F3b.T6 Repetir o E2E** (\`depende-de\`: P24.F3b.T5; \`escreve\`: b/)
+
+## Fase FIM — Fechar
+
+- [ ] **P24.FIM.T1 Fechar** (\`depende-de\`: P24.F3b.T6; \`escreve\`: este plano)
+`);
+  assert.deepEqual(p.fases.map((f) => f.chave), ['3b', 'FIM']);
+  assert.deepEqual(p.todas.map((t) => t.id), ['P24.F3b.T5', 'P24.F3b.T6', 'P24.FIM.T1']);
+  assert.deepEqual(p.todas[1]!.dependeDe, ['P24.F3b.T5']);
+  const r = mod.proximas(p);
+  assert.deepEqual(r.paralelo, ['P24.F3b.T6']);
+  assert.deepEqual(r.bloqueadas, [{ id: 'P24.FIM.T1', falta: ['P24.F3b.T6'] }]);
 });
