@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/gadgets
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Gadgets (relógio, calendário, gauges, QR) em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Gadgets (`src/gadgets`)
+# Gadgets (`src/gadgets`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral|Visão geral — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Widgets visuais autocontidos: calendário, relógio (digital/analógico com temas), medidores linear e radial, QR Code e animador de strings, além do provider de tempo sincronizado com o servidor e do sistema de temas do relógio. `SgCalendar` e `SgClock` já vêm embrulhados num `SgCard` recolhível e arrastável.
 

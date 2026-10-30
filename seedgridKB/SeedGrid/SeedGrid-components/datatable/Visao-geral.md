@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/S
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Tabela de dados em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# SgDatatable
+# SgDatatable — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (v`2026.7.1`). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
 

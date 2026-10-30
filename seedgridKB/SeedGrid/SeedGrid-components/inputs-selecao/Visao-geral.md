@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Inputs de seleção e valores em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Inputs de seleção
+# Inputs de seleção — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral|Visão geral — Inputs de seleção e valores (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 São 15 componentes públicos de escolha (de lista, booleana, numérica ou de período) do pacote `@seedgrid/fe-components` (v`2026.7.1`), mais 2 peças internas (`SgMultiSelectDropdown`, `useSgMultiSelect`). Props completas, eventos e refs: [[SeedGrid/SeedGrid-components/inputs-selecao/API|API dos inputs de seleção]]. Código: [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]]. Base compartilhada: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|inputs de texto]].
 

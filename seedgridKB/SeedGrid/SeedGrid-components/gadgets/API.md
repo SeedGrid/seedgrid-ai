@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/gadgets
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Gadgets (relógio, calendário, gauges, QR) (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — gadgets (`gadgets`)
+# API — gadgets (`gadgets`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Gadgets — exemplos]] · Dígitos usados pelo relógio: [[SeedGrid/SeedGrid-components/digits/API|API dos dígitos]]
 

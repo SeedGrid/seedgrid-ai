@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/S
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Tabela de dados (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# SgDatatable: API
+# SgDatatable: API — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/API|API — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Import: `import { SgDatatable, type SgDatatableColumn } from "@seedgrid/fe-components";` (pacote v`2026.7.1`). Contexto: [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Visão geral do SgDatatable]]. Exemplos: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]]. A metodologia das tabelas está em [[SeedGrid/SeedGrid-components/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]].
 

@@ -1,12 +1,15 @@
 ---
-tags: [seedgrid, front, showcase]
+tags: [seedgrid, front, showcase, plataforma-react]
+plataforma: react
 fonte: front/seedgrid-fe-components/apps/showcase
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
 ---
 
-# Showcase (`apps/showcase`)
+# Showcase React (`apps/showcase`)
+
+> **Plataforma: React** (Next.js). O showcase do **Flutter** é outro app, `apps/seedgrid_showcase` do repositório `front/seedgrid-fe-flutter` (publicado em `components-flutter.seedgrid.com.br`, segundo o `README.md` desse repositório, não acessado); ver [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Flutter: visão geral]] e [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 App Next.js que demonstra todos os componentes do `@seedgrid/fe-components` (páginas com exemplos numerados, `SgPlayground` e "Referência de Props"), além de hooks, providers, tema e créditos.
 

@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/layout
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Layout e containers (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — layout (`@seedgrid/fe-components`)
+# API — layout (`@seedgrid/fe-components`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/layout/API|API — Layout e containers (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral do grupo: [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/layout/Exemplos|Layout — exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
 

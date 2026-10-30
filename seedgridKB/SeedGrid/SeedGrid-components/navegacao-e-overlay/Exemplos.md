@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/apps/showcase/src/app/components (sg-dock-me
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Exemplos TSX (React) de Navegação, overlay e wizard, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
+plataforma: react
 ---
 
-# Exemplos — navegação e overlay
+# Exemplos — navegação e overlay — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos|Exemplos — Navegação, overlay e wizard (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · API: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|API]]
 

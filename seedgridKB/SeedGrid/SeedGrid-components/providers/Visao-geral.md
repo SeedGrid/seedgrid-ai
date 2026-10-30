@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/environm
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "Providers (ambiente/persistência e realtime) em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# Providers de ambiente e realtime — visão geral
+# Providers de ambiente e realtime — visão geral — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral|Visão geral — Providers (ambiente/persistência e realtime) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Este grupo reúne os dois providers "de aplicação" do `@seedgrid/fe-components`, montados uma vez perto da raiz da árvore React:
 

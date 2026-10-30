@@ -1,9 +1,12 @@
 ---
-description: "Índice \"preciso de X, use Y\": para cada necessidade de tela (CPF, tabela, aviso, data, upload…) o componente SeedGrid certo, com sinônimos e o que não usar. Substitui a busca semântica do MCP; leia inteiro (é curto) antes de escolher um componente."
-tags: [seedgrid, component, indice]
+description: "[React; nomes iguais no Flutter] Índice \"preciso de X, use Y\": para cada necessidade de tela (CPF, tabela, aviso, data, upload…) o componente SeedGrid certo, com sinônimos e o que não usar. Substitui a busca semântica do MCP; leia inteiro (é curto) antes de escolher um componente."
+tags: [seedgrid, component, indice, plataforma-react]
+plataforma: react
 gerado-por: seedgrid-components-mcp/scripts/export-kb-data.mjs
 ---
-# Preciso de X, use Y
+# Preciso de X, use Y (React)
+
+> **Plataforma: React.** Os sinônimos, as alternativas ("não serve?") e as seções de hooks, funções, utilitários e factories abaixo vêm do manifesto de IA do **React** (`@seedgrid/fe-components`). Os 89 componentes `Sg*` do **Flutter** (`seedgrid_components`) têm os **mesmos nomes**, então a escolha de componente vale nas duas plataformas; o manifesto Flutter ainda não traz sinônimos nem alternativas (`aiHints` consta em `gaps` de `tools/mcp_manifest`, **não confirmado** se isso mudou depois do commit `e9989b8`). Hooks e funções listados aqui são do React; o equivalente Flutter de cada um está em "Símbolos do React" na `Visao-geral` do grupo em `flutter/`. Detalhe: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]]. **Edição manual:** esta nota é gerada por `seedgrid-components-mcp/scripts/export-kb-data.mjs`, que ainda não conhece as plataformas; o cabeçalho acima foi acrescentado à mão e precisa ser levado para o gerador, senão a próxima exportação o apaga.
 
 > Nota **gerada** dos manifestos de IA (`seedgrid-components-mcp`); não edite à mão. Escolheu? Confira as props com `node .ai/skills/sg-componente/scripts/validate-props.mjs <Componente> ...` e leia só a seção `## Nome` do `API.md` do grupo (ver [[SeedGrid/SeedGrid-components/Indice|Índice]]).
 

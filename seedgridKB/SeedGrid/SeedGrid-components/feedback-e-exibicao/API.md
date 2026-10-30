@@ -4,9 +4,13 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/commons
 branch: main
 commit: ad30fc11de
 analisado-em: 2026-10-14
+description: "API React de Feedback e exibição (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+plataforma: react
 ---
 
-# API — feedback e exibição (`src/commons`)
+# API — feedback e exibição (`src/commons`) — React
+
+> **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API|API — Feedback e exibição (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 Visão geral: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral|Feedback e exibição — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Exemplos|Exemplos de feedback e exibição]]
 

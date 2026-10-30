@@ -1,15 +1,16 @@
 ---
 description: "Tabela de tradução React → Dart dos componentes SeedGrid, em perguntas e respostas: nomes, props, eventos, enums, formulário (SgForm no lugar do react-hook-form), tabela, diálogo, toast e as divergências deliberadas, cada regra com a origem (ADR, arquivo e símbolo)."
-tags: [seedgrid, front, component, flutter, dart, traducao, formulario, perguntas-e-respostas]
+tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, traducao, formulario, perguntas-e-respostas]
+plataforma: flutter
 fonte: front/seedgrid-fe-flutter/docs/TABELA_DE_TRADUCAO.md
 branch: main
-commit: 314cb5a
-analisado-em: 2026-10-25
+commit: e9989b8
+analisado-em: 2026-10-30
 ---
 
 # Tradução React → Dart
 
-> **Status: NÃO PUBLICADO.** Cópia organizada de `docs/TABELA_DE_TRADUCAO.md` do repositório `seedgrid-fe-flutter` (commit `314cb5a`) e de `docs/DIVERGENCIAS_DO_REACT.md`; a regra de cada linha cita a origem. Contexto: [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral]] · API: [[SeedGrid/SeedGrid-components/flutter/API-por-grupo|API por grupo]]. As linhas marcadas **(T8.2)** foram acrescentadas depois de portar três telas reais (formulário, tabela com filtro, diálogo) em `apps/seedgrid_showcase/test/familiarity/`; os "ajustes T8.2" (texto como `String` ou `Widget`, Enter envia o `SgForm`, `SgToaster` solto) mudaram a API depois disso e as linhas abaixo já refletem o estado atual. Caminhos abaixo são relativos a `packages/seedgrid_components/lib/src/`.
+> **Plataforma: Flutter (traduzindo do React).** **Status: NÃO PUBLICADO** no pub.dev. Cópia organizada de `docs/TABELA_DE_TRADUCAO.md` do repositório `seedgrid-fe-flutter` (commit `e9989b8`; o arquivo não mudou desde `314cb5a`, e conferi no código desse commit que os arquivos e símbolos citados abaixo ainda existem: `sg_form.dart`, `sg_toast.dart`, `datatable_types.dart`, `SgToastOptions`, `dismissSgToast`, `SgFieldValidator`, `SgSubmitValid`, `submitOnEnter`, `mergeRequiredRule`, `resolveFieldError`) e de `docs/DIVERGENCIAS_DO_REACT.md`; a regra de cada linha cita a origem. Escolha entre as plataformas: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]]. Contexto: [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral]] · API: [[SeedGrid/SeedGrid-components/flutter/API-por-grupo|API por grupo]]. As linhas marcadas **(T8.2)** foram acrescentadas depois de portar três telas reais (formulário, tabela com filtro, diálogo) em `apps/seedgrid_showcase/test/familiarity/`; os "ajustes T8.2" (texto como `String` ou `Widget`, Enter envia o `SgForm`, `SgToaster` solto) mudaram a API depois disso e as linhas abaixo já refletem o estado atual. Caminhos abaixo são relativos a `packages/seedgrid_components/lib/src/`.
 
 ## Como escrevo em Dart o que escrevo no React?
 
