@@ -1,7 +1,7 @@
 ---
 tags: [seedgrid, extension, filemanagement, quarkus, spis]
 fonte: java/seedgrid-quarkus-ext-filemanagement
-analisado-em: 2026-10-27
+analisado-em: 2026-10-30
 gerado-por: leitura do código (interfaces `spis`), com exemplos escritos a mão
 ---
 
@@ -15,6 +15,8 @@ Cada SPI é um ponto de extensão. Para trocar o comportamento padrão, declare 
 |---|---|---|
 | [[#FileStorage]] | sem padrão | Precisa de implementação do host. |
 | [[#FileStorageFactory]] | sem padrão | Precisa de implementação do host. |
+| [[#AttachmentRegistry]] | `JpaAttachmentRegistry` (só com `seedgrid.filemanagement.registry-table.enabled=true`) ou `NoopAttachmentRegistry` | Grava e apaga a linha de anexo (`sg_attachments`); desligado por padrão, não faz nada. |
+| [[#StorageCredentialSource]] | sem padrão | Só para `auth-mode=consent`: o host entrega a credencial do dono; sem ela a lib falha fechada. |
 
 ## FileStorage
 
