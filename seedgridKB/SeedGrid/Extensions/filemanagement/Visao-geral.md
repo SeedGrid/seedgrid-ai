@@ -1,6 +1,6 @@
 ---
-tags: [seedgrid, library, filemanagement]
-fonte: java/seedgrid-quarkus-lib-filemanagement
+tags: [seedgrid, extension, filemanagement]
+fonte: java/seedgrid-quarkus-ext-filemanagement
 branch: main
 commit: 35c89c7cf7
 analisado-em: 2026-10-14
@@ -9,7 +9,7 @@ analisado-em: 2026-10-14
 # SeedGrid File Management — Visão geral
 
 > [!info] Library, não extension Quarkus
-> `seedgrid-quarkus-lib-filemanagement` é uma **library Java** (jar único com índice Jandex), **não** uma extension Quarkus com `runtime`/`deployment`. Não há `@ConfigRoot`/`@ConfigMapping`: a lib **não lê MicroProfile Config** — recebe a configuração de cada storage num `Map<String, String>` passado pelo chamador. Documentada nesta estrutura por uniformidade.
+> `seedgrid-quarkus-ext-filemanagement` é uma **extension Quarkus** com `runtime` (artefato `seedgrid-filemanagement`, o mesmo de sempre) e `deployment` (`seedgrid-filemanagement-deployment`), desde o plano 111 (2026-10-30; antes era uma library de jar único). O `deployment` só indexa a entidade `Attachment` quando `seedgrid.filemanagement.registry-table.enabled=true` (EXT-19). A configuração de cada storage continua passando num `Map<String, String>` pelo chamador; a extension só lê MicroProfile Config para `registry-table.enabled` (`@ConfigMapping` com o prefixo `seedgrid.filemanagement.registry-table`) e `seedgrid.migrations.host-managed`.
 
 Configuração: [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]] · Exemplos: [[SeedGrid/Extensions/filemanagement/Exemplos|Exemplos do filemanagement]] · [[SeedGrid/Extensions/filemanagement/Rust|Porte Rust]] (crate `seedgrid-rust-crate-filemanagent`)
 
@@ -28,7 +28,7 @@ Uma API única de armazenamento de arquivos (`FileStorage`) com backends plugáv
 | **Optional** (o host precisa declarar para usar o backend) | AWS `s3` 2.21.42; `azure-storage-blob` 12.25.1; `google-api-client` 2.2.0, `google-api-services-drive` v3-rev197-1.25.0, `google-auth-library-oauth2-http` 1.20.0; `google-cloud-storage` 2.29.1; `minio` 8.5.9; `microsoft-graph` 5.80.0 + `azure-identity` 1.11.1; também `quarkus-hibernate-orm`, `quarkus-jdbc-postgresql`, `quarkus-flyway` |
 | Dependências SeedGrid | nenhuma (desde 2026.07.08 não depende mais de `seedgrid-commons`, segundo comentário do exemplo) |
 
-Fonte: `java/seedgrid-quarkus-lib-filemanagement/pom.xml`. **Confirmado.** Que o host precise declarar o SDK do backend escolhido está **Confirmado** (`mvn dependency:tree` de um produto, 2026-10-21: escopo `optional` não é transitivo; a skill `sg-new-product` declara o SDK do provider escolhido).
+Fonte: `java/seedgrid-quarkus-ext-filemanagement/pom.xml`. **Confirmado.** Que o host precise declarar o SDK do backend escolhido está **Confirmado** (`mvn dependency:tree` de um produto, 2026-10-21: escopo `optional` não é transitivo; a skill `sg-new-product` declara o SDK do provider escolhido).
 
 ## Arquitetura
 
@@ -79,7 +79,7 @@ Extensão: o host cria um `@ApplicationScoped FileStorageFactory` com `typeIdent
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão local 2026.10.22, não publicada)._
 
 Nenhuma.
 
@@ -87,7 +87,7 @@ Nenhuma.
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/filemanagement/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão local 2026.10.22, não publicada)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

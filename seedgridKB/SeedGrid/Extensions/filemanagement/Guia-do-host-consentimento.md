@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, filemanagement, consentimento, oauth, host]
-fonte: java/seedgrid-quarkus-lib-filemanagement
+fonte: java/seedgrid-quarkus-ext-filemanagement
 analisado-em: 2026-10-30
 gerado-por: plano 111 do work (decisões D1 a D6, 2026-10-30) e leitura do código da lib; passos nos consoles dos provedores escritos de memória e a confirmar na documentação atual de cada um
 ---

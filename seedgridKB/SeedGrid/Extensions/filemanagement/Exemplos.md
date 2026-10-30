@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, library, filemanagement, exemplos]
-fonte: java/seedgrid-quarkus-lib-filemanagement, platform-examples/examples/seedgrid-filemanagement-example
+fonte: java/seedgrid-quarkus-ext-filemanagement, platform-examples/examples/seedgrid-filemanagement-example
 branch: main
 commit: 35c89c7cf7
 analisado-em: 2026-10-14
@@ -148,25 +148,16 @@ public class DropboxStorageFactory implements FileStorageFactory {
 
 ## Anexos ligados (plano 111, 2026.10.22)
 
-Fonte: `platform-examples/examples/seedgrid-filemanagement-example` (`application.properties`, `AttachmentService`, `AttachmentFlowTest`). Com o recurso ligado, o `store` continua devolvendo o `StorageKey` de sempre e a lib grava uma linha em `sg_attachments`; quem usa guarda o **id do anexo**.
+Fonte: `platform-examples/examples/seedgrid-filemanagement-example` (`application.properties`, `AttachmentService`, `AttachmentFlowTest`, `EntidadeMapeadaSozinhaTest`). Com o recurso ligado, o `store` continua devolvendo o `StorageKey` de sempre e a lib grava uma linha em `sg_attachments`; quem usa guarda o **id do anexo**.
 
 ```properties
-# 1) liga o registro (lido em BUILD para escolher o bean; coloque no application.properties)
+# o host só liga o registro (lido em BUILD; coloque no application.properties)
 seedgrid.filemanagement.registry-table.enabled=true
-# 2) mapeia a entidade que a lib deixa fora do indice (NAO use quarkus.index-dependency: nao funciona, achado A8)
-quarkus.hibernate-orm.mapping-files=META-INF/filemanagement-orm.xml
-quarkus.hibernate-orm.packages=br.com.seedgrid.commons.persistence,br.com.seedgrid.filemanagement.domains
 ```
 
-O `META-INF/filemanagement-orm.xml` tem uma linha de entidade:
+Nada mais: a extension indexa a entidade `Attachment` sozinha (só com o recurso ligado) e traz o `validate-in-dev-mode=false` como padrão. Sem `mapping-files`, sem `packages` e sem `index-dependency` no host.
 
-```xml
-<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="3.0">
-    <entity class="br.com.seedgrid.filemanagement.domains.Attachment"/>
-</entity-mappings>
-```
-
-A migration `V1300` é aplicada pelo *runner* da lib na subida, com histórico próprio. O host com o Flyway do Quarkus lista as próprias `locations`, senão a `V1300` aparece como pendente mesmo com o recurso desligado (achado A4).
+A migration `V1300` é aplicada pelo *runner* da extension na subida, com histórico próprio; o host aponta o `quarkus.flyway.locations` para a **própria** pasta (EXT-10), nunca para o padrão `db/migration`.
 
 ```java
 // o anexo nasce sozinho; "owner-key" identifica o dono (tenant, empresa ou usuario, decisao do host)

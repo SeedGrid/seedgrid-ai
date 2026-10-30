@@ -8,7 +8,7 @@ analisado-em: 2026-10-14
 
 # filemanagement — porte Rust (`seedgrid-rust-crate-filemanagent`)
 
-Porte da lib Java `seedgrid-quarkus-lib-filemanagement`. O nome do pacote Rust tem a grafia `filemanagent` (sem "m"); os crates consumidores o renomeiam para `seedgrid_filemanagement` via `package = ...` (ex.: `rust/seedgrid-rust-crate-backup/Cargo.toml`). Lado Java: [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral do filemanagement (Java)]] · [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement (Java)]]. Configuração Rust: [[SeedGrid/Extensions/filemanagement/Configuracao-Rust|Configuração Rust do filemanagement]].
+Porte da lib Java `seedgrid-quarkus-ext-filemanagement`. O nome do pacote Rust tem a grafia `filemanagent` (sem "m"); os crates consumidores o renomeiam para `seedgrid_filemanagement` via `package = ...` (ex.: `rust/seedgrid-rust-crate-backup/Cargo.toml`). Lado Java: [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral do filemanagement (Java)]] · [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement (Java)]]. Configuração Rust: [[SeedGrid/Extensions/filemanagement/Configuracao-Rust|Configuração Rust do filemanagement]].
 
 Abstração de armazenamento de arquivos com registro extensível de backends: `filesystem` (sempre presente) e, por feature Cargo, `s3`, `minio`, `azure-blob`, `gcs`, `google-drive`, `onedrive`. **Confirmado** (`src/lib.rs`, `src/factories.rs`).
 

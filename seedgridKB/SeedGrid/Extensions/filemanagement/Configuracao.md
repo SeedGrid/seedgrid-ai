@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, library, filemanagement, configuracao]
-fonte: java/seedgrid-quarkus-lib-filemanagement
+fonte: java/seedgrid-quarkus-ext-filemanagement
 branch: main
 commit: 35c89c7cf7
 analisado-em: 2026-10-14
@@ -14,15 +14,15 @@ Voltar: [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral do fileman
 
 | Item | Valor |
 |---|---|
-| Prefixos MicroProfile Config | **Nenhum.** A lib não lê `application.properties`/env |
+| Prefixos MicroProfile Config | **Quase nenhum.** A configuração de cada storage vai por mapa. A extension só lê `seedgrid.filemanagement.registry-table.enabled` (`@ConfigMapping`, prefixo `seedgrid.filemanagement.registry-table`) e `seedgrid.migrations.host-managed`; os padrões vêm em `META-INF/microprofile-config.properties` |
 | Mecanismo | **Mapa de configuração por chamada**: `FileStorageRegistry#get(String type, Map<String,String> config)` → `FileStorageFactory#create(config)`. Cada factory lê chaves fixas do mapa com `config.get(...)`/`getOrDefault(...)` |
 | Quem preenche o mapa | O host/extension consumidora, a partir de onde quiser (MP Config, env, banco, Vault). Ex.: backup mapeia `seedgrid.backup.<tipo>.*`; o exemplo usa `app.storage.*` |
 | Fase | Runtime, **lazy**: validado no primeiro `get(type, config)` com aquele conteúdo de mapa; instâncias cacheadas por (tipo + conteúdo do mapa) |
-| Arquivos de config da lib | `src/main/resources/application.properties` existe e está **vazio** |
+| Arquivos de config da extension | `META-INF/microprofile-config.properties` do `runtime` (`registry-table.enabled=false` e `quarkus.hibernate-orm.validate-in-dev-mode=false`). O `application.properties` vazio foi apagado (EXT-20) |
 
-Investigação (**Confirmado**): nenhum `@ConfigMapping`, `@ConfigRoot`, `@ConfigProperty`, `ConfigProvider`, `System.getenv`/`getProperty` em `src/main`. As únicas leituras de config são `config.get/getOrDefault` nos factories em `java/seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/`.
+Investigação (**Confirmado**, plano 111): o `@ConfigMapping` existe só em `configs/FileManagementConfig` (`registry-table.enabled`) e `seedgrid.migrations.host-managed` é um `@ConfigProperty` do runner de migrations. Fora isso, as leituras de config são `config.get/getOrDefault` nos factories em `java/seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/`.
 
-Como os nomes abaixo são **chaves do mapa**, não propriedades MP, não existem variáveis de ambiente associadas pela lib. A coluna "Propriedade" usa a notação `<type>` → `<chave>`.
+Como os nomes abaixo são **chaves do mapa**, não propriedades MP (exceto as duas acima), não existem variáveis de ambiente associadas pela extension. A coluna "Propriedade" usa a notação `<type>` → `<chave>`.
 
 ## 2. Chaves do mapa por backend
 
@@ -108,11 +108,11 @@ Usa a API HTTP v2 por `java.net.http`, **sem dependência nova**.
 
 | Propriedade | Padrão | Efeito |
 |---|---|---|
-| `seedgrid.filemanagement.registry-table.enabled` | `false` | Liga o registro de anexos. Desligado: sem migration, sem tabela e sem gravação (o comportamento de sempre). Ligado: o runner migra a `V1300` e `store`/`delete` gravam e apagam a linha. **Lida em BUILD para escolher o bean**; coloque no `application.properties`. |
+| `seedgrid.filemanagement.registry-table.enabled` | `false` | Liga o registro de anexos. Desligado: sem migration, sem tabela e sem gravação (o comportamento de sempre). Ligado: o runner migra a `V1300` e `store`/`delete` gravam e apagam a linha. **Lida em BUILD**: escolhe o bean e liga a indexação da entidade `Attachment`; coloque no `application.properties`. **É a única coisa que o host configura** para os anexos. |
 | `seedgrid.migrations.host-managed` | `false` | Quando `true`, o host migra o banco e o runner da lib não age (use nas tenancies). |
 | `owner-key` (chave do mapa de qualquer backend) | vazio | Dono do anexo, opaco; gravado em `sg_attachments.owner_key`. |
 
-Migration: `V1300__filemanagement_ddl.sql` na pasta `db/migration/filemanagement`, faixa 1300–1399, histórico `sg_flyway_schema_history_filemanagement`. **Atenção:** um host com o Flyway no padrão e `migrate-at-start=true` varre `db/migration` e enxerga a `V1300` como pendente mesmo com o recurso desligado; liste as `locations` do Flyway do host explicitamente. Para o host mapear a entidade, use `quarkus.hibernate-orm.mapping-files=META-INF/filemanagement-orm.xml` (um XML de uma linha, `<entity class="br.com.seedgrid.filemanagement.domains.Attachment"/>`) e inclua `br.com.seedgrid.commons.persistence` em `quarkus.hibernate-orm.packages`; a classe `Attachment` fica fora do índice da lib de propósito. **Não use `quarkus.index-dependency` para isso: não funciona** (o Quarkus usa o `jandex.idx` que o jar já traz e não reindexa; achado A8 do plano 111, provado no exemplo da lib).
+Migration: `V1300__filemanagement_ddl.sql` na pasta `db/migration/filemanagement`, faixa 1300–1399, histórico `sg_flyway_schema_history_filemanagement`. A migration é **da extension** (EXT-03 e EXT-10): o host não a copia nem a lista. O host aponta o próprio `quarkus.flyway.locations` para a **sua** pasta (ex.: `classpath:db/migration/app`) e nunca deixa o padrão `db/migration`, que varreria as subpastas das extensions e enxergaria a `V1300` como pendente. A extension não define nenhuma propriedade `quarkus.flyway.*`. **O host também não mapeia a entidade:** a extension indexa a `Attachment` sozinha num build step, e só com `registry-table.enabled=true` (desligado = a entidade não entra na unidade de persistência e não existe tabela, nem com `schema-management=validate`). O `quarkus.hibernate-orm.validate-in-dev-mode=false` (EXT-18) já vem como padrão da extension, porque o runner migra depois do Hibernate; o host pode religá-lo.
 
 ## 3.2 Consentimento (`auth-mode` e `owner-key`)
 
@@ -125,7 +125,7 @@ O cache do registry considera o dono: tokens de donos diferentes não compartilh
 
 ## 3. Propriedades de frameworks
 
-Para os SPIs e as fábricas, nenhuma exigida e não é necessário `quarkus.index-dependency.*`: o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `platform-examples/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
+Nenhuma exigida do host (nem `quarkus.index-dependency.*`, nem `mapping-files`, nem `packages`): o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `platform-examples/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
 
 ## 4. Propriedades só de testes/exemplos
 

@@ -77,7 +77,7 @@ O `EmailExportNotificationService` cria um `io.vertx.ext.mail.MailClient` própr
 
 ### 2.5 Storage (repassado ao `seedgrid-filemanagement`)
 
-Cada chave é copiada para o `Map<String,String>` de config do storage (nome da chave do mapa entre parênteses) em **buildStorageConfig**, somente quando `storage` (ou o tipo do `storageKey`) corresponde ao backend. A validação/uso final é feita pelas factories do filemanagement (`java/seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/*StorageFactory#create`), que lançam `StorageConfigurationException` na primeira gravação/leitura quando falta chave obrigatória — **Confirmado**. Ver [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]].
+Cada chave é copiada para o `Map<String,String>` de config do storage (nome da chave do mapa entre parênteses) em **buildStorageConfig**, somente quando `storage` (ou o tipo do `storageKey`) corresponde ao backend. A validação/uso final é feita pelas factories do filemanagement (`java/seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/*StorageFactory#create`), que lançam `StorageConfigurationException` na primeira gravação/leitura quando falta chave obrigatória — **Confirmado**. Ver [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]].
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|

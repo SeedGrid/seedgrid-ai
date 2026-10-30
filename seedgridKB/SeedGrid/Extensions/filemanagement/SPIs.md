@@ -1,13 +1,13 @@
 ---
 tags: [seedgrid, extension, filemanagement, quarkus, spis]
-fonte: java/seedgrid-quarkus-lib-filemanagement
+fonte: java/seedgrid-quarkus-ext-filemanagement
 analisado-em: 2026-10-27
 gerado-por: leitura do código (interfaces `spis`), com exemplos escritos a mão
 ---
 
 # filemanagement (Quarkus): SPIs
 
-Ver também [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral]]. _Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.22, não publicada)._
+Ver também [[SeedGrid/Extensions/filemanagement/Visao-geral|Visão geral]]. _Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão local 2026.10.22, não publicada)._
 
 Cada SPI é um ponto de extensão. Para trocar o comportamento padrão, declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`: a implementação padrão (`@DefaultBean`) cede. Uma SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar. Os exemplos abaixo são **ilustrativos** e omitem os imports; tipos marcados como "do seu produto" (por exemplo `AdminAuditService`, `TenantContext`) não existem na extension.
 
@@ -26,15 +26,15 @@ Backend de armazenamento de arquivos (sistema de arquivos, S3, Azure Blob, MinIO
 
 **Outras implementações no repositório** (para consultar como exemplo):
 
-- `S3StorageImpl` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/S3StorageFactory.java`)
-- `DropboxStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/spis/FileStorage.java`)
-- `AzureBlobStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/AzureBlobStorage.java`) — Armazenamento em Azure Blob Storage.
-- `FilesystemStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/FilesystemStorage.java`) — Armazenamento no sistema de arquivos local.
-- `GoogleCloudStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/GoogleCloudStorage.java`) — Armazenamento em Google Cloud Storage.
-- `GoogleDriveStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/GoogleDriveStorage.java`) — Armazenamento no Google Drive.
-- `MinIOStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/MinIOStorage.java`) — Armazenamento em MinIO.
-- `OneDriveStorage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/OneDriveStorage.java`) — Armazenamento no Microsoft OneDrive.
-- `S3Storage` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/storages/S3Storage.java`) — Armazenamento em AWS S3.
+- `S3StorageImpl` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/S3StorageFactory.java`)
+- `DropboxStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/spis/FileStorage.java`)
+- `AzureBlobStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/AzureBlobStorage.java`) — Armazenamento em Azure Blob Storage.
+- `FilesystemStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/FilesystemStorage.java`) — Armazenamento no sistema de arquivos local.
+- `GoogleCloudStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/GoogleCloudStorage.java`) — Armazenamento em Google Cloud Storage.
+- `GoogleDriveStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/GoogleDriveStorage.java`) — Armazenamento no Google Drive.
+- `MinIOStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/MinIOStorage.java`) — Armazenamento em MinIO.
+- `OneDriveStorage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/OneDriveStorage.java`) — Armazenamento no Microsoft OneDrive.
+- `S3Storage` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/storages/S3Storage.java`) — Armazenamento em AWS S3.
 
 **Métodos que você implementa:**
 
@@ -108,14 +108,14 @@ Fábrica de `FileStorage` com criação preguiçosa: o armazenamento só é cria
 
 **Outras implementações no repositório** (para consultar como exemplo):
 
-- `AzureBlobStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/AzureBlobStorageFactory.java`)
-- `FilesystemStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/FilesystemStorageFactory.java`) — Factory for creating `FilesystemStorage` instances. This factory validates filesystem configuration and creates storage instances on-demand (lazy loading).
-- `GoogleCloudStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/GoogleCloudStorageFactory.java`)
-- `GoogleDriveStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/GoogleDriveStorageFactory.java`)
-- `MinIOStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/MinIOStorageFactory.java`) — Factory for creating `FileStorage` instances backed by MinIO. Required Configuration
-- `OneDriveStorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/OneDriveStorageFactory.java`)
-- `S3StorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/factories/S3StorageFactory.java`) — Factory for creating `FileStorage` instances for AWS S3. Required Configuration
-- `S3StorageFactory` (`seedgrid-quarkus-lib-filemanagement/src/main/java/br/com/seedgrid/filemanagement/spis/FileStorageFactory.java`)
+- `AzureBlobStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/AzureBlobStorageFactory.java`)
+- `FilesystemStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/FilesystemStorageFactory.java`) — Factory for creating `FilesystemStorage` instances. This factory validates filesystem configuration and creates storage instances on-demand (lazy loading).
+- `GoogleCloudStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/GoogleCloudStorageFactory.java`)
+- `GoogleDriveStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/GoogleDriveStorageFactory.java`)
+- `MinIOStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/MinIOStorageFactory.java`) — Factory for creating `FileStorage` instances backed by MinIO. Required Configuration
+- `OneDriveStorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/OneDriveStorageFactory.java`)
+- `S3StorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/factories/S3StorageFactory.java`) — Factory for creating `FileStorage` instances for AWS S3. Required Configuration
+- `S3StorageFactory` (`seedgrid-quarkus-ext-filemanagement/runtime/src/main/java/br/com/seedgrid/filemanagement/spis/FileStorageFactory.java`)
 
 **Métodos que você implementa:**
 
@@ -163,7 +163,7 @@ Registro dos anexos: grava e apaga a linha da tabela `sg_attachments` que liga u
 
 **Padrão:** duas implementações em `spis/impl`, ambas `@DefaultBean`: `JpaAttachmentRegistry` (JPA puro, `@Transactional`), que só existe com `seedgrid.filemanagement.registry-table.enabled=true`, e `NoopAttachmentRegistry`, que não faz nada. **A escolha é feita em BUILD**: a propriedade precisa estar no `application.properties` no build do host (só o runner de migrations a lê em runtime). Ligar sem Hibernate falha na subida, de propósito.
 
-**Falha ao gravar a linha:** não desfaz o arquivo e não sobe para quem chamou; fica no log como `ERROR` com o marcador `ATTACHMENT_RECORD_FAILED` (ou `ATTACHMENT_REMOVE_FAILED` na remoção) e a chave do arquivo. Se o `delete` do arquivo falha, a linha não é tocada.
+**Falha ao gravar a linha:** o `store` grava o arquivo **primeiro** e só registra a linha se a gravação deu certo; se o registro falhar, a lib lança `AttachmentRecordException` (pacote `exceptions`, é uma `StorageException`, sem HTTP) com a `StorageKey` do arquivo já gravado (`getKey()`) e a causa, para o host decidir o que fazer. A lib **não apaga o arquivo sozinha**. O `delete` apaga o arquivo e depois remove a linha, com a mesma exceção se a remoção da linha falhar. O log `ERROR` com o marcador `ATTACHMENT_RECORD_FAILED` (ou `ATTACHMENT_REMOVE_FAILED`) continua, junto com a exceção. Se o `delete` do arquivo falha, a linha não é tocada.
 
 **Substituir:** declare um bean CDI que implemente `AttachmentRegistry`, sem `@Alternative` nem `@Priority`; o padrão cede.
 
