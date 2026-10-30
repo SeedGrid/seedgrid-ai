@@ -13,6 +13,7 @@ description: Uma linha com a decisão.
 titulo: Título curto da decisão
 numero: 1                 # sequencial, dado na criação (--proximo); nunca muda
 data: AAAA-MM-DD
+aidlc: 0.0.0              # contentVersion de .ai/toolkit-lock.json
 status: proposta          # proposta | aceita | implementada | substituida | rejeitada
 decidido-por: nome ou papel
 consultados: [nomes, quando houver]

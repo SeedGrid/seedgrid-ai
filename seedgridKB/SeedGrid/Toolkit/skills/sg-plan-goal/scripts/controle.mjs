@@ -145,6 +145,9 @@ function main(argv) {
   const plano = lerPlano(texto);
   if (plano.todas.length === 0) { console.error('nenhuma tarefa no formato "- [ ] **ID Titulo**" dentro de "## Fase ..."'); return 2; }
   if (cmd === 'status') {
+    const aidlc = /^aidlc:[ \t]*(\S+)/m.exec(texto.slice(0, 600));
+    if (!aidlc) console.error('[aviso] plano sem "aidlc:" no cabecalho (copie o contentVersion de .ai/toolkit-lock.json)');
+    else console.log(`AIDLC do plano: ${aidlc[1]}`);
     for (const f of plano.fases) {
       const c = (e) => f.tarefas.filter((t) => t.estado === e).length;
       console.log(`Fase ${f.chave}: ${c('x')}/${f.tarefas.length} feitas, ${c('~')} em andamento, ${c(' ')} abertas, ${c('?')} decisao do dono, ${c('>')} adiadas`);

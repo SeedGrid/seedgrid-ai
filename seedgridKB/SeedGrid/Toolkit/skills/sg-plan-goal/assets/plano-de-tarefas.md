@@ -1,6 +1,7 @@
 ---
 status: proposto
 data: AAAA-MM-DD
+aidlc: 0.0.0   # contentVersion de .ai/toolkit-lock.json (regra documentos)
 ---
 
 # Tarefas: <assunto>

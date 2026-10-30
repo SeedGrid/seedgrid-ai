@@ -75,6 +75,7 @@ for (const f of files) {
   if (!/^\d{4}-\d{2}-\d{2}-/.test(f)) errors.push(`${f}: o nome deve começar com AAAA-MM-DD-`);
   for (const k of ['titulo', 'numero', 'data', 'status', 'decidido-por', 'dominio']) if (!h[k] || h[k].length === 0) errors.push(`${f}: falta "${k}"`);
   if (h.numero && !/^[1-9]\d*$/.test(h.numero)) errors.push(`${f}: numero inválido (${h.numero}); use inteiro a partir de 1`);
+  if (h.aidlc && !/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(h.aidlc)) errors.push(`${f}: aidlc inválido (${h.aidlc}); use a versão do .ai/toolkit-lock.json, ex.: 0.6.1`);
   if (h.data && !/^\d{4}-\d{2}-\d{2}$/.test(h.data)) errors.push(`${f}: data inválida (${h.data})`);
   if (h.status && !STATUS.includes(h.status)) errors.push(`${f}: status inválido (${h.status}); use ${STATUS.join(' | ')}`);
   const doms = Array.isArray(h.dominio) ? h.dominio : [h.dominio].filter(Boolean);

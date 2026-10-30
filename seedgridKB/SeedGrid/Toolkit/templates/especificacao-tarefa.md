@@ -5,6 +5,8 @@ description: "Modelo de especificação de tarefa: objetivo, escopo, critérios 
 
 > Modelo do SeedGrid AI Toolkit. Copie para o local de documentação do projeto antes de preencher; não edite o modelo.
 
+- **AIDLC:** <contentVersion de `.ai/toolkit-lock.json`, ex.: 0.6.1>
+
 ## Objetivo
 O que deve estar verdadeiro quando a tarefa terminar.
 

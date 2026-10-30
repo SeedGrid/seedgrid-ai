@@ -6,6 +6,7 @@ description: "Modelo de relatório de validação: o que foi verificado, como, r
 > Modelo do SeedGrid AI Toolkit. Copie para o local de documentação do projeto antes de preencher; não edite o modelo.
 
 - **Data:** AAAA-MM-DD
+- **AIDLC:** <contentVersion de `.ai/toolkit-lock.json`, ex.: 0.6.1>
 - **Versão/commit avaliado:** <identificador>
 - **Ambiente:** <SO, runtime, banco etc.>
 

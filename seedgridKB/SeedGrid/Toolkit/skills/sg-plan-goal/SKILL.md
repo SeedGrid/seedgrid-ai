@@ -26,7 +26,7 @@ Método de 12 etapas, o mesmo para toda tarefa não trivial: **não há critéri
 
 ## Formato fixo do plano de tarefas
 
-Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha. O formato é o mesmo em todo plano, porque o `controle.mjs` lê esse formato:
+Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha, **inclusive o `aidlc:` do cabeçalho com o `contentVersion` de `.ai/toolkit-lock.json`** (o `controle.mjs status` avisa se faltar). O formato é o mesmo em todo plano, porque o `controle.mjs` lê esse formato:
 
 - **Identificador falante (planos novos):** `P<plano>.F<fase>.T<tarefa>` e, para decisão do dono, `P<plano>.F<fase>.D<n>`. Exemplos: `P24.F3b.T6` = plano 24, fase 3b, tarefa 6; `P111.F2.D1` = decisão 1 da fase 2; `F0` = plano inteiro (`P111.F0.D2`); fase final `P111.FIM.T1`. O dono não precisa perguntar "o que é a T3b.6": o número já diz o plano. Planos antigos mantêm `T3b.6`; ao citar, diga sempre plano, fase, tarefa e o título.
 - **Fases** (`## Fase N — nome`) com dependência explícita e aceite da fase.
