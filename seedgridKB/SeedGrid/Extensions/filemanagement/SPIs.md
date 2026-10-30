@@ -146,3 +146,63 @@ public class MeuFileStorageFactory implements FileStorageFactory {
     }
 }
 ```
+
+## AttachmentRegistry
+
+Registro dos anexos: grava e apaga a linha da tabela `sg_attachments` que liga um arquivo ao seu dono. Existe para quem usa a lib guardar o **id do anexo** em vez do caminho do arquivo.
+
+**Pacote:** `br.com.seedgrid.filemanagement.spis`
+
+**Métodos:**
+
+- `Optional<Long> record(AttachmentRecord attachment)`: registra o anexo e devolve o id (vazio quando o registro está desligado).
+- `int remove(StorageKey key)`: apaga a(s) linha(s) do arquivo indicado e devolve quantas removeu.
+- `default boolean enabled()`: diz se o registro age de verdade; o `FileStorageRegistry` só decora o `FileStorage` (para acompanhar `store` e `delete`) quando é `true`. Desligado, devolve o storage puro, o mesmo objeto de antes.
+
+`AttachmentRecord` (pacote `domains`): `storageKey` (tipo, bucket e caminho, exatamente o que o `store` devolveu), `providerFileId` (id no Drive, OneDrive ou Dropbox, opcional), `fileName`, `contentType` (opcional), `sizeBytes` e `ownerKey` (chave opaca do dono; o host decide se é tenant, empresa ou usuário e a passa na chave `owner-key` da configuração do storage). Falhas de validação e de gravação lançam `AttachmentRegistryException` (não verificada).
+
+**Padrão:** duas implementações em `spis/impl`, ambas `@DefaultBean`: `JpaAttachmentRegistry` (JPA puro, `@Transactional`), que só existe com `seedgrid.filemanagement.registry-table.enabled=true`, e `NoopAttachmentRegistry`, que não faz nada. **A escolha é feita em BUILD**: a propriedade precisa estar no `application.properties` no build do host (só o runner de migrations a lê em runtime). Ligar sem Hibernate falha na subida, de propósito.
+
+**Falha ao gravar a linha:** não desfaz o arquivo e não sobe para quem chamou; fica no log como `ERROR` com o marcador `ATTACHMENT_RECORD_FAILED` (ou `ATTACHMENT_REMOVE_FAILED` na remoção) e a chave do arquivo. Se o `delete` do arquivo falha, a linha não é tocada.
+
+**Substituir:** declare um bean CDI que implemente `AttachmentRegistry`, sem `@Alternative` nem `@Priority`; o padrão cede.
+
+```java
+@ApplicationScoped
+public class MeuAttachmentRegistry implements AttachmentRegistry {
+    @Override public Optional<Long> record(AttachmentRecord attachment) { /* grave onde quiser */ return Optional.of(1L); }
+    @Override public int remove(StorageKey key) { return 0; }
+}
+```
+
+## StorageCredentialSource
+
+SPI que o **host** implementa para entregar a credencial que o usuário concedeu (`auth-mode=consent`). A lib não conhece usuário, tenant nem permission (EXT-07): ela só pergunta pela credencial de um `ownerKey` opaco, o mesmo valor da chave `owner-key` da configuração do storage.
+
+**Pacote:** `br.com.seedgrid.filemanagement.spis`
+
+**Métodos:**
+
+- `Optional<StorageCredential> resolve(String provider, String ownerKey)`: devolve a credencial do dono (`google-drive`, `onedrive` ou `dropbox`), ou vazio se ele ainda não concedeu ou desconectou.
+- `default void renewed(String provider, String ownerKey, StorageCredential credential)`: chamado quando a lib renovou a credencial; se o provedor **rotacionou o refresh token**, o host deve gravar o novo no lugar do antigo. Padrão: não faz nada.
+
+`StorageCredential` (pacote `domains`): `refreshToken` (obrigatório para renovar), `accessToken` e `accessTokenExpiresAt` (opcionais; a lib os renova sozinha). O `toString()` nunca mostra os tokens.
+
+**Padrão:** nenhum. Sem um bean do host, `auth-mode=consent` falha fechado com `StorageCredentialSourceMissingException` (erro de configuração do host), e nunca cai no modo de credenciais.
+
+**Exceções** (todas não verificadas, base `StorageConsentException`; as mensagens nunca trazem token): `StorageConsentRequiredException` (o dono não concedeu, desconectou ou o provedor revogou: leve o usuário a conceder de novo) e `StorageCredentialSourceMissingException` (sem fonte de credencial, sem `owner-key` ou provider sem suporte a consentimento). O host as mapeia para o seu `ProblemDetails`.
+
+`TokenRefresher` (interface funcional) é de cada provider: troca o refresh token por um token de acesso novo; a lib decide **quando** renovar (com folga de 60 s antes de vencer).
+
+```java
+@ApplicationScoped
+public class MinhaFonteDeCredencial implements StorageCredentialSource {
+    @Override public Optional<StorageCredential> resolve(String provider, String ownerKey) {
+        // leia do seu banco o refresh token cifrado do dono e decifre
+        return repo.find(provider, ownerKey).map(c -> StorageCredential.ofRefreshToken(cripto.decifrar(c.refreshToken())));
+    }
+    @Override public void renewed(String provider, String ownerKey, StorageCredential cred) {
+        repo.atualizarRefreshToken(provider, ownerKey, cripto.cifrar(cred.refreshToken()));
+    }
+}
+```

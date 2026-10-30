@@ -56,7 +56,8 @@ flowchart LR
 | `azure-blob` | `AzureBlobStorageFactory` | `AzureBlobStorage` (cria o container se não existir) | SAS |
 | `gcs` | `GoogleCloudStorageFactory` | `GoogleCloudStorage` (verifica se o bucket existe no init) | signed URL (TTL em minutos) |
 | `google-drive` | `GoogleDriveStorageFactory` | `GoogleDriveStorage` (escopo `drive.file`) | **cria permissão pública `anyone/reader`** e devolve link; o TTL é ignorado (link precisa ser revogado manualmente) |
-| `onedrive` | `OneDriveStorageFactory` | `OneDriveStorage` (Graph `me().drive()`, client credentials) | devolve `webUrl` do item; TTL ignorado; loga WARN |
+| `onedrive` | `OneDriveStorageFactory` | `OneDriveStorage` (Graph `me().drive()`, client credentials; também `auth-mode=consent`) | devolve `webUrl` do item; TTL ignorado; loga WARN |
+| `dropbox` | `DropboxStorageFactory` | `DropboxStorage` (API HTTP v2 por `java.net.http`, sem dependência nova; `credentials` e `consent`) | link temporário do Dropbox (cerca de 4 horas, não é público permanente); o TTL não se aplica |
 
 Fonte: `factories/*.java`, `storages/*.java`. **Confirmado.**
 
@@ -92,6 +93,8 @@ _Fonte: código de `seedgrid-quarkus-lib-filemanagement` (versão local 2026.10.
 |---|---|---|---|
 | `FileStorage` | `br.com.seedgrid.filemanagement.spis` | sem padrão | Service Provider Interface for file storage backends. |
 | `FileStorageFactory` | `br.com.seedgrid.filemanagement.spis` | sem padrão | Service Provider Interface for creating `FileStorage` instances. |
+| `StorageCredentialSource` | `br.com.seedgrid.filemanagement.spis` | sem padrão | O host entrega a credencial que o usuário concedeu (`auth-mode=consent`); a lib renova o token de acesso. Plano 111, 2026.10.22. |
+| `AttachmentRegistry` | `br.com.seedgrid.filemanagement.spis` | `JpaAttachmentRegistry` (só com `seedgrid.filemanagement.registry-table.enabled=true`) ou `NoopAttachmentRegistry` | Grava e apaga a linha de anexo (`sg_attachments`) que liga um arquivo ao seu dono. Desligado por padrão (plano 111, 2026.10.22). |
 
 **Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar.
 
@@ -105,6 +108,14 @@ public class MeuFileStorage implements FileStorage {
 ## Testes existentes (não executados)
 
 `src/test/java/...`: `StorageKeyTest`, `StorageOptionsTest`, `FileMetadataTest`, `FileStorageRegistryTest` (Mockito), `FileStorageRegistryFilesystemTest` (cache por config), `FilesystemStorageTest`, `StorageExceptionTest`, `FileStorageIntegrationTest` (`@QuarkusTest`, só `filesystem`). ~60 `@Test` por grep. Nenhum teste de backend de nuvem. **Não executados.**
+
+## Anexos (registro opcional em tabela)
+
+Com `seedgrid.filemanagement.registry-table.enabled=true`, cada `store` grava uma linha em `sg_attachments` e cada `delete` a apaga; o retorno do `store` (o `StorageKey`, o caminho) **não muda**. Quem usa a lib pode guardar o **id do anexo** em vez do caminho (por exemplo, o usuário guarda o id do anexo do avatar). Desligado (padrão), não há tabela nem gravação e tudo se comporta como antes. Detalhes e configuração: [[SeedGrid/Extensions/filemanagement/SPIs|SPIs]] (`AttachmentRegistry`) e [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração]] (seção 3.1). Decisão: ADR 56 da KB de plataforma.
+
+## Consentimento do usuário (Google Drive, OneDrive e Dropbox)
+
+Cada um desses três providers aceita `auth-mode=credentials` (padrão, o de sempre) ou `auth-mode=consent`: o arquivo vai para o armazenamento **do usuário que concedeu acesso** (OAuth), e não para uma conta do aplicativo. A lib **não conhece usuário, tenant nem permission** e não depende de `security`: o host implementa o SPI `StorageCredentialSource` e guarda só o *refresh token* cifrado; a lib renova o token de acesso. Sem fonte de credencial, o modo `consent` falha fechado (`StorageCredentialSourceMissingException`). O fluxo completo (início, retorno, URL fixa por produto, o que o front faz) está em [[SeedGrid/Extensions/filemanagement/Guia-do-host-consentimento|Guia do host: consentimento]]; a decisão, na ADR 57 da KB de plataforma.
 
 ## Limitações
 

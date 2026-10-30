@@ -62,6 +62,8 @@ terminarem. `backend/README.md` explica cada um.
 (login, RBAC, 2FA por e-mail/TOTP/WhatsApp, convites, recuperação de senha), audit, backup,
 billing-core, apikeys, filemanagement, privacy (PII cifrada at-rest), resilience, commons.
 
+**Armazenamento do usuário:** para o usuário gravar no próprio Google Drive, OneDrive ou Dropbox (consentimento OAuth), a `filemanagement` oferece `auth-mode=consent`; o fluxo (URL de retorno fixa por produto, `StorageCredentialSource`, endpoints e estados) está no guia da KB `SeedGrid/Extensions/filemanagement/Guia-do-host-consentimento`. Este boilerplate ainda não traz os endpoints.
+
 **Produto**: signup institucional (empresa + usuário root), trial configurável, assinatura
 Stripe com checkout/portal/faturas, cobrança de excedente por *meter*, telas de conta, planos,
 contas e auditoria no admin, robô de preços de IA, alertas internos por WhatsApp.

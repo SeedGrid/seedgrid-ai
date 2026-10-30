@@ -146,6 +146,67 @@ public class DropboxStorageFactory implements FileStorageFactory {
 
 `DropboxStorage` é hipotética (do README); um segundo factory com o mesmo `typeIdentifier` derruba o boot com `DuplicateStorageException`.
 
+## Anexos ligados (plano 111, 2026.10.22)
+
+Fonte: `platform-examples/examples/seedgrid-filemanagement-example` (`application.properties`, `AttachmentService`, `AttachmentFlowTest`). Com o recurso ligado, o `store` continua devolvendo o `StorageKey` de sempre e a lib grava uma linha em `sg_attachments`; quem usa guarda o **id do anexo**.
+
+```properties
+# 1) liga o registro (lido em BUILD para escolher o bean; coloque no application.properties)
+seedgrid.filemanagement.registry-table.enabled=true
+# 2) mapeia a entidade que a lib deixa fora do indice (NAO use quarkus.index-dependency: nao funciona, achado A8)
+quarkus.hibernate-orm.mapping-files=META-INF/filemanagement-orm.xml
+quarkus.hibernate-orm.packages=br.com.seedgrid.commons.persistence,br.com.seedgrid.filemanagement.domains
+```
+
+O `META-INF/filemanagement-orm.xml` tem uma linha de entidade:
+
+```xml
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="3.0">
+    <entity class="br.com.seedgrid.filemanagement.domains.Attachment"/>
+</entity-mappings>
+```
+
+A migration `V1300` é aplicada pelo *runner* da lib na subida, com histórico próprio. O host com o Flyway do Quarkus lista as próprias `locations`, senão a `V1300` aparece como pendente mesmo com o recurso desligado (achado A4).
+
+```java
+// o anexo nasce sozinho; "owner-key" identifica o dono (tenant, empresa ou usuario, decisao do host)
+FileStorage storage = registry.get("filesystem", Map.of("base-path", basePath, "owner-key", "empresa-1"));
+StorageKey key = storage.store("nota.txt", bytes, StorageOptions.builder().prefix("anexos").build());
+```
+
+## Consentimento: gravar no armazenamento do próprio usuário
+
+Fonte: `ExampleCredentialSource`, `ConsentResource` e `FakeProviderResource` do mesmo exemplo (servidor OAuth e provedores **falsos**, sem chave real). O host entrega a credencial; a lib renova o token. O fluxo completo está em [[SeedGrid/Extensions/filemanagement/Guia-do-host-consentimento|Guia do host: consentimento]].
+
+```java
+@ApplicationScoped
+public class ExampleCredentialSource implements StorageCredentialSource {
+    private final Map<String, String> refreshTokens = new ConcurrentHashMap<>(); // num produto: banco, CIFRADO
+
+    @Override
+    public Optional<StorageCredential> resolve(String provider, String ownerKey) {
+        return Optional.ofNullable(refreshTokens.get(provider + "|" + ownerKey)).map(StorageCredential::ofRefreshToken);
+    }
+
+    @Override // o provedor rotaciona o refresh token: o novo substitui o antigo
+    public void renewed(String provider, String ownerKey, StorageCredential credential) {
+        if (credential.hasRefreshToken()) {
+            refreshTokens.put(provider + "|" + ownerKey, credential.refreshToken());
+        }
+    }
+}
+```
+
+Depois da concessão, monte o storage com `auth-mode=consent` e o dono:
+
+```java
+FileStorage drive = registry.get("google-drive", Map.of(
+    "auth-mode", "consent", "owner-key", "empresa-1",
+    "client-id", clientId, "client-secret", clientSecret));
+```
+
+Sem uma `StorageCredentialSource` no host, o modo `consent` falha fechado (`StorageCredentialSourceMissingException`); se o usuário revogar o acesso, a lib lança `StorageConsentRequiredException` e o host leva o usuário a conceder de novo.
+
 ## StorageKey e URIs
 
 ```java

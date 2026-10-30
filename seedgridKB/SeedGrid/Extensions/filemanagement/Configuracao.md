@@ -78,6 +78,8 @@ Como os nomes abaixo são **chaves do mapa**, não propriedades MP, não existem
 | `google-drive` → `credentials-file` 🔒 | `String` (caminho) | JSON de service account | — | Condicional: ela **ou** `credentials-json` (validado no factory) | Prioridade sobre `credentials-json`; escopo `drive.file` | Autenticação | alternativa | Runtime (lazy) | `GoogleDriveStorageFactory#create`; `GoogleDriveStorage` (construtor) |
 | `google-drive` → `credentials-json` 🔒 | `String` (conteúdo JSON) | — | — | Condicional | idem | Autenticação | alternativa | Runtime (lazy) | idem |
 
+**Modo consentimento (`auth-mode=consent`):** o token é do usuário, vindo da `StorageCredentialSource` do host (seção 3.2). Passam a valer `client-id` e `client-secret` do **cliente OAuth do produto**; `root-folder-id` vira opcional (padrão: a raiz do Drive do usuário) e `credentials-file`/`credentials-json` não se aplicam. Nenhum arquivo vira público (`generateSignedUrl` lança `UnsupportedOperationException`).
+
 ### 2.7 `onedrive`
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
@@ -87,9 +89,43 @@ Como os nomes abaixo são **chaves do mapa**, não propriedades MP, não existem
 | `onedrive` → `tenant-id` | `String` | tenant Azure AD (não é tenant da aplicação) | — | Sim | idem | idem | idem | Runtime (lazy) | idem |
 | `onedrive` → `root-folder-path` | `String` | caminho no drive | `/seedgrid/files` | Não | Pasta raiz; vira o `bucket` da `StorageKey` | Uploads | — | Runtime (lazy) | `OneDriveStorageFactory#create` (`getOrDefault`) |
 
+**Modo consentimento (`auth-mode=consent`):** `client-id` e `client-secret` do cliente OAuth do produto; `tenant-id` é opcional (padrão `common`); o token vem da `StorageCredentialSource`.
+
+### 2.8 `dropbox`
+
+| Propriedade | Tipo | Padrão | Obrigatória | Comportamento |
+|---|---|---|---|---|
+| `dropbox` → `auth-mode` | `String` | `credentials` | Não | `credentials` ou `consent` |
+| `dropbox` → `access-token` 🔒 | `String` | — | Condicional (`credentials`) | Token fixo da conta do app; **ou** `refresh-token` + `app-key` + `app-secret` |
+| `dropbox` → `refresh-token` 🔒, `app-key`, `app-secret` 🔒 | `String` | — | Condicional (`credentials`) | Renovação do token da conta do app |
+| `dropbox` → `app-key`, `app-secret` 🔒 | `String` | — | Sim em `consent` | App do produto no console do Dropbox; o token do usuário vem da `StorageCredentialSource` |
+| `dropbox` → `root-folder-path` | `String` | — | Não | Pasta raiz; vira o `bucket` da `StorageKey` |
+| `dropbox` → `api-url`, `content-url`, `token-url` | `String` | endpoints oficiais | Não | Proxy e teste |
+
+Usa a API HTTP v2 por `java.net.http`, **sem dependência nova**.
+
+## 3.1 Anexos (tabela `sg_attachments`)
+
+| Propriedade | Padrão | Efeito |
+|---|---|---|
+| `seedgrid.filemanagement.registry-table.enabled` | `false` | Liga o registro de anexos. Desligado: sem migration, sem tabela e sem gravação (o comportamento de sempre). Ligado: o runner migra a `V1300` e `store`/`delete` gravam e apagam a linha. **Lida em BUILD para escolher o bean**; coloque no `application.properties`. |
+| `seedgrid.migrations.host-managed` | `false` | Quando `true`, o host migra o banco e o runner da lib não age (use nas tenancies). |
+| `owner-key` (chave do mapa de qualquer backend) | vazio | Dono do anexo, opaco; gravado em `sg_attachments.owner_key`. |
+
+Migration: `V1300__filemanagement_ddl.sql` na pasta `db/migration/filemanagement`, faixa 1300–1399, histórico `sg_flyway_schema_history_filemanagement`. **Atenção:** um host com o Flyway no padrão e `migrate-at-start=true` varre `db/migration` e enxerga a `V1300` como pendente mesmo com o recurso desligado; liste as `locations` do Flyway do host explicitamente. Para o host mapear a entidade, use `quarkus.hibernate-orm.mapping-files=META-INF/filemanagement-orm.xml` (um XML de uma linha, `<entity class="br.com.seedgrid.filemanagement.domains.Attachment"/>`) e inclua `br.com.seedgrid.commons.persistence` em `quarkus.hibernate-orm.packages`; a classe `Attachment` fica fora do índice da lib de propósito. **Não use `quarkus.index-dependency` para isso: não funciona** (o Quarkus usa o `jandex.idx` que o jar já traz e não reindexa; achado A8 do plano 111, provado no exemplo da lib).
+
+## 3.2 Consentimento (`auth-mode` e `owner-key`)
+
+| Chave do mapa | Padrão | Efeito |
+|---|---|---|
+| `auth-mode` | `credentials` | `credentials` (o de sempre, inalterado) ou `consent` (token do usuário). Vale em `google-drive`, `onedrive` e `dropbox`. |
+| `owner-key` | vazio | Chave **opaca** do dono do token (tenant, empresa ou usuário, quem decide é o host); obrigatória em `consent`. Também é gravada em `sg_attachments.owner_key`. |
+
+O cache do registry considera o dono: tokens de donos diferentes não compartilham instância, e quando o token renova a instância antiga é descartada. Veja o [[SeedGrid/Extensions/filemanagement/Guia-do-host-consentimento|Guia do host: consentimento]].
+
 ## 3. Propriedades de frameworks
 
-Nenhuma exigida. Não é necessário `quarkus.index-dependency.*`: o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `platform-examples/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
+Para os SPIs e as fábricas, nenhuma exigida e não é necessário `quarkus.index-dependency.*`: o jar empacota `META-INF/jandex.idx` (`jandex-maven-plugin` no pom; confirmado também em comentário de `platform-examples/examples/seedgrid-filemanagement-example/src/main/resources/application.properties`).
 
 ## 4. Propriedades só de testes/exemplos
 

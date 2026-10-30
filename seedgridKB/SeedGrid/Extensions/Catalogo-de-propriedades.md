@@ -29,7 +29,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | cities | 13 |
 | Quarkus | commons | 5 |
 | Quarkus | exchange | 2 |
-| Quarkus | filemanagement | 26 |
+| Quarkus | filemanagement | 32 |
 | Quarkus | login-tenancy | 36 |
 | Quarkus | notification | 9 |
 | Quarkus | privacy | 3 |
@@ -270,6 +270,12 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `onedrive` → `client-secret` 🔒 | onedrive | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `onedrive` → `tenant-id` | onedrive | `String` | — | Runtime (lazy) | idem | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `onedrive` → `root-folder-path` | onedrive | `String` | `/seedgrid/files` | Runtime (lazy) | Pasta raiz; vira o bucket da StorageKey | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `seedgrid.filemanagement.registry-table.enabled` | anexos | `boolean` | `false` | Build (escolha do bean) e runtime (runner) | Liga o registro de anexos em `sg_attachments`; desligado = sem tabela e sem gravação | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
+| `auth-mode` | google-drive, onedrive, dropbox | `String` | `credentials` | Runtime (lazy) | `credentials` ou `consent` (token do usuário, via `StorageCredentialSource` do host) | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
+| `owner-key` | google-drive, onedrive, dropbox (e anexos) | `String` | — | Runtime (lazy) | Chave opaca do dono do token; obrigatória em `consent`; gravada em `sg_attachments.owner_key` | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
+| `dropbox` → `access-token` 🔒 | dropbox | `String` | — | Runtime (lazy) | Token fixo da conta do app (modo `credentials`), ou `refresh-token` + `app-key` + `app-secret` | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
+| `dropbox` → `app-key` / `app-secret` 🔒 | dropbox | `String` | — | Runtime (lazy) | App do produto; obrigatórios em `consent` | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
+| `dropbox` → `root-folder-path` | dropbox | `String` | — | Runtime (lazy) | Pasta raiz; vira o `bucket` da `StorageKey` | [[SeedGrid/Extensions/filemanagement/Configuracao|filemanagement/Configuracao]] |
 
 ### login-tenancy
 
