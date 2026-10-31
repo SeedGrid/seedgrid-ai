@@ -115,6 +115,7 @@ function brainLines(bundle: ContentBundle): string[] {
     '  - Links `[[SeedGrid/...]]` nas notas são caminhos a partir de `.ai/brain/` (acrescente `.md`).',
     '  - O frontmatter (`commit`, `analisado-em`) diz a que versão do código a nota se refere. Se a versão usada no projeto puder diferir, avise o usuário e registre a dúvida como demanda; não abra o jar nem o pacote da extension para conferir.',
     '  - **Extension: só pela KB (HO-08).** O produto usa as extensions publicadas; não tem o fonte delas e não deve ir atrás dele. Se a KB não responde o que a tarefa precisa, é falha da KB: diga que não encontrou, registre a demanda em `docs/ai/demands/AAAA-MM-DD-assunto.md` e siga com o que a extension oferece (configuração, SPI). Não abra fonte, jar nem pacote de extension para descobrir. Antes de concluir “a KB não responde”, esgote a pasta da extension (`Visao-geral`, `SPIs`, `Exemplos`, `Configuracao`) e busque em toda ela, sem cortar a saída.',
+    '  - **Dependências pelo grafo (HO-11).** Antes de listar extensions, leia o grafo de `SeedGrid/Mapa-dos-repositorios.md`: o que uma extension de topo (ex.: `subdomain-tenancy`, `login-tenancy`) já traz transitivamente (security, audit, apikeys, backup, billing, notification...) não se declara nem se lista de novo; escreva “vem junto com X”.',
     '  - Não invente propriedades, valores padrão ou enums que não estejam nas notas; diga que não encontrou.',
     '  - Não edite `.ai/brain/`: ela é atualizada por `seedgrid-ai update`.',
   ];
