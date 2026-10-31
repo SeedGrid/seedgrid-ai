@@ -106,3 +106,21 @@ test('o esqueleto sai ao lado, no formato da sg-plan-goal, sem tocar o original,
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('--novo grava em docs/ai/plans com o proximo numero livre e o numero na primeira linha do cabecalho', () => {
+  const { dir, plano } = projeto();
+  try {
+    mkdirSync(join(dir, '.ai'), { recursive: true });
+    writeFileSync(join(dir, '.ai/toolkit-lock.json'), JSON.stringify({ contentVersion: '9.9.9' }));
+    writeFileSync(join(dir, 'docs/ai/plans/P4-2026-01-01-antigo.md'), '---\nnumero: 4\nstatus: concluido\n---\n');
+    const r = spawnSync(process.execPath, [DIAG, plano, '--novo', 'Alojamentos & Presença'], { encoding: 'utf8', cwd: join(dir, 'docs') });
+    assert.equal(r.status, 0, r.stderr);
+    const nome = /P5-\d{4}-\d{2}-\d{2}-alojamentos-presenca\.md/.exec(r.stdout)?.[0];
+    assert.ok(nome, r.stdout);
+    const t = readFileSync(join(dir, 'docs/ai/plans', nome!), 'utf8');
+    assert.match(t, /^---\nnumero: 5\n/);
+    assert.match(t, /\*\*P5\.F0\.D1 /);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

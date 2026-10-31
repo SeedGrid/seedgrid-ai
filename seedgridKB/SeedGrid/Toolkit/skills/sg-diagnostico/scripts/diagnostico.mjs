@@ -9,12 +9,15 @@
 //        grava o esqueleto no formato da sg-plan-goal: fases da "Ordem de execucao", uma tarefa de prova por hipotese,
 //        decisoes do dono (.D<n>) com Pergunta e Recomendacao, blocos /goal. Aceite, escreve e testes ficam como <definir>
 //        para quem adequa preencher; recusa sobrescrever arquivo existente.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+//   node diagnostico.mjs <plano.md> --novo <assunto>
+//        igual a --saida, mas o destino e calculado: docs/ai/plans/P<n>-AAAA-MM-DD-<assunto>.md na raiz do projeto (a pasta
+//        com .ai/toolkit-lock.json acima da pasta atual), com <n> = proximo numero livre da pasta. Nunca grava fora do projeto.
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
-const arquivo = args.find((a) => !a.startsWith('--') && a !== opt('--saida') && a !== opt('--plano'));
+const arquivo = args.find((a) => !a.startsWith('--') && a !== opt('--saida') && a !== opt('--plano') && a !== opt('--novo'));
 if (!arquivo || !existsSync(arquivo)) {
   console.error('Uso: node diagnostico.mjs <plano.md> [--json] [--saida <novo.md> [--plano <numero>]]');
   process.exit(2);
@@ -103,7 +106,7 @@ function esqueleto(numero) {
   const titulo = /^#\s+(.+)$/m.exec(texto)?.[1].trim() ?? 'Plano';
   const hoje = new Date().toISOString().slice(0, 10);
   const o = [];
-  o.push('---', 'status: proposto', `data: ${hoje}`, `aidlc: ${aidlc}   # contentVersion de .ai/toolkit-lock.json`, `origem: adequado de ${arquivo.replace(/\\/g, '/').split('/').pop()} (original intacto)`, '---', '');
+  o.push('---', `numero: ${numero}`, 'status: proposto', `data: ${hoje}`, `aidlc: ${aidlc}   # contentVersion de .ai/toolkit-lock.json`, `origem: adequado de ${arquivo.replace(/\\/g, '/').split('/').pop()} (original intacto)`, '---', '');
   o.push(`# Tarefas: ${titulo}`, '');
   o.push(`**Identificador (número falante):** \`${P}.F<fase>.T<tarefa>\` para tarefa e \`${P}.F<fase>.D<n>\` para decisão do dono; \`F0\` vale para o plano inteiro e a fase final é \`${P}.FIM.T1\`. Quem fala com o dono cita sempre plano, fase, tarefa **e o título**.`, '');
   o.push('Legenda: `[ ]` aberta · `[~]` em andamento · `[x]` feita (só com linha `Evidencia:`) · `[>]` adiada · `[?]` decisão do dono.', '');
@@ -147,11 +150,29 @@ function esqueleto(numero) {
   return o.join('\n');
 }
 
-if (opt('--saida')) {
-  const saida = resolve(opt('--saida'));
+function destinoNovo(assunto) {
+  let d = resolve(process.cwd());
+  let raiz = null;
+  for (let i = 0; i < 8 && !raiz; i++) { if (existsSync(join(d, '.ai', 'toolkit-lock.json'))) raiz = d; else d = dirname(d); }
+  if (!raiz) { console.error('Nao achei .ai/toolkit-lock.json acima da pasta atual: rode dentro do projeto ou use --saida.'); process.exit(2); }
+  const dir = join(raiz, 'docs', 'ai', 'plans');
+  mkdirSync(dir, { recursive: true });
+  const usados = readdirSync(dir).filter((n) => n.endsWith('.md')).flatMap((n) => {
+    const a = /^P(\d+)-/.exec(n)?.[1];
+    const b = /^numero:\s*(\d+)/m.exec(readFileSync(join(dir, n), 'utf8'))?.[1];
+    return [a, b].filter(Boolean).map(Number);
+  });
+  const n = Math.max(0, ...usados) + 1;
+  const slug = assunto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return { saida: join(dir, `P${n}-${new Date().toISOString().slice(0, 10)}-${slug}.md`), n };
+}
+
+const novo = opt('--novo') ? destinoNovo(opt('--novo')) : null;
+if (opt('--saida') || novo) {
+  const saida = novo ? novo.saida : resolve(opt('--saida'));
   if (saida === resolve(arquivo)) { console.error('A saída não pode ser o próprio plano original.'); process.exit(2); }
   if (existsSync(saida)) { console.error(`Já existe: ${saida}. Escolha outro nome (nunca sobrescrevo).`); process.exit(2); }
-  const num = opt('--plano') ?? /(?:numero|número)\s*:\s*(\d+)/.exec(fm)?.[1] ?? '1';
+  const num = novo ? String(novo.n) : opt('--plano') ??/(?:numero|número)\s*:\s*(\d+)/.exec(fm)?.[1] ?? '1';
   writeFileSync(saida, esqueleto(String(num).replace(/\D/g, '') || '1'));
   console.log(`[diagnostico] esqueleto gravado em ${saida} (${fasesOrdem.length} fase(s), ${hipoteses.length} hipótese(s), ${blocos.bloqueia.length + blocos.confirma.length} pergunta(s) ao dono, ${blocos.resolvidas.length} decisão(ões) já resolvida(s)). Preencha os <definir> e rode: node .ai/skills/sg-plan-goal/scripts/controle.mjs ${saida.replace(/\\/g, '/')} status`);
   process.exit(0);
