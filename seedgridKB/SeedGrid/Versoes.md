@@ -12,7 +12,7 @@ gerado-em: 2026-10-27
 
 - **Documentada**: versão do artefato no commit que as notas da KB declaram descrever (`commit` no frontmatter).
 - **Atual**: versão no repositório de origem hoje.
-- Compare a **Documentada** com a versão que o seu projeto usa (`pom.xml` / `package.json`). Se forem diferentes, as notas podem não refletir o comportamento do projeto: confirme no código, no jar ou no pacote e avise.
+- Compare a **Documentada** com a versão que o seu projeto usa (`pom.xml` / `package.json`). Se forem diferentes, as notas podem não refletir o comportamento do projeto: avise e registre a dúvida como demanda (`docs/ai/demands/`); não abra o jar nem o fonte da extension (HO-08).
 - **Situação** compara o código atual com o commit documentado, ignorando testes, documentação e lockfiles. "Defasada" significa que a nota precisa de revisão; não significa que está errada.
 - Em Java, `groupId` é `br.com.seedgrid`; versões são datas (`yyyy.MM.dd`, com sufixo `-N` a partir da segunda publicação do dia) e **não são sincronizadas entre módulos**.
 

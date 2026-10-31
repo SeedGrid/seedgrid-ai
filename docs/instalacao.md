@@ -21,7 +21,7 @@ Versione no Git: `.ai/` (inclusive `.ai/brain/`, cerca de 2 MB de Markdown, e `.
 
 Toda instalação traz as notas de documentação das extensions e dos componentes SeedGrid em `.ai/brain/SeedGrid/`. O bloco do `AGENTS.md` manda a IA consultá-las pelos índices antes de usar ou configurar qualquer extension ou componente, e responder "não encontrei" em vez de inventar. A pasta é gerenciada: edições locais geram conflito no `update`. Anotações do projeto vão em `.ai/local/`.
 
-As notas indicam, no frontmatter, o `commit` e a data (`analisado-em`) do código que descrevem. Se o projeto usa uma versão diferente das extensions, a IA é instruída a confirmar no código, no jar ou no pacote e a avisar.
+As notas indicam, no frontmatter, o `commit` e a data (`analisado-em`) do código que descrevem. Se o projeto usa uma versão diferente das extensions, a IA é instruída a avisar e registrar a dúvida como demanda; ela não abre o jar nem o fonte da extension (HO-08).
 
 ## Os boilerplates (`.ai/boilerplates/`)
 

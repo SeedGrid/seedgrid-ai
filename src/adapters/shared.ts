@@ -113,7 +113,8 @@ function brainLines(bundle: ContentBundle): string[] {
     `- **Base de conhecimento SeedGrid** (extensions Quarkus, componentes React, propriedades e enums): \`.ai/brain/\` (${bundle.brain.notes} notas, somente leitura). Consulte-a antes de usar ou configurar qualquer extension ou componente SeedGrid.`,
     `  - Comece pelos índices, sem varrer a pasta inteira: ${entries}.`,
     '  - Links `[[SeedGrid/...]]` nas notas são caminhos a partir de `.ai/brain/` (acrescente `.md`).',
-    '  - O frontmatter (`commit`, `analisado-em`) diz a que versão do código a nota se refere. Se a versão usada no projeto puder diferir, confirme no código-fonte, no jar ou no pacote e avise o usuário.',
+    '  - O frontmatter (`commit`, `analisado-em`) diz a que versão do código a nota se refere. Se a versão usada no projeto puder diferir, avise o usuário e registre a dúvida como demanda; não abra o jar nem o pacote da extension para conferir.',
+    '  - **Extension: só pela KB (HO-08).** O produto usa as extensions publicadas; não tem o fonte delas e não deve ir atrás dele. Se a KB não responde o que a tarefa precisa, é falha da KB: diga que não encontrou, registre a demanda em `docs/ai/demands/AAAA-MM-DD-assunto.md` e siga com o que a extension oferece (configuração, SPI). Não abra fonte, jar nem pacote de extension para descobrir. Antes de concluir “a KB não responde”, esgote a pasta da extension (`Visao-geral`, `SPIs`, `Exemplos`, `Configuracao`) e busque em toda ela, sem cortar a saída.',
     '  - Não invente propriedades, valores padrão ou enums que não estejam nas notas; diga que não encontrou.',
     '  - Não edite `.ai/brain/`: ela é atualizada por `seedgrid-ai update`.',
   ];
@@ -146,7 +147,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
   const delegation =
     mode === 'native'
       ? `- Modo \`native\`: os papéis do catálogo também estão registrados como subagentes em ${nativeDirs}, com os mesmos ids. Use-os quando a ferramenta os reconhecer; caso contrário, siga o modo shared e informe a indisponibilidade.`
-      : '- Modo `shared`: para delegar, use o mecanismo de subagentes disponível na ferramenta e passe a definição do papel. Sem subagentes, aplique o papel na sessão principal e informe isso.';
+      : '- Modo `shared`: para delegar, use o mecanismo de subagentes disponível na ferramenta e passe a definição do papel. Sem subagentes, aplique o papel na sessão principal e **avise o usuário antes de começar**.';
   const inner = [
     '## SeedGrid AI Toolkit',
     '',
@@ -158,7 +159,7 @@ export function agentsMdBlock(bundle: ContentBundle, targets: Target[], mode: Mo
     '- Regras: `.ai/rules/`. Antes de tarefas não triviais, leia `coordenacao.md`.',
     '- **Documentos que você gerar** (planos, handoff, decisões, especificações, relatórios) são salvos em `docs/ai/<tipo>/` (planos em `docs/ai/plans/`, decisões/ADR em `docs/ai/decisions/`), nunca em outro lugar do projeto; veja `.ai/rules/documentos.md`.',
     ...standardsLines(bundle),
-    '- **Coordenação:** a sessão principal é o coordenador: siga `.ai/rules/coordenacao.md` (aciona o `arquiteto` primeiro e delega aos papéis em `.ai/agents/`). **Pedido de produto, projeto ou sistema SeedGrid novo: sua PRIMEIRA ação é invocar a skill `sg-new-product`** (antes do `arquiteto` e antes de explorar outras pastas ou escrever código); nunca monte o projeto à mão nem copie outro produto. Host nunca altera extension da plataforma; veja `.ai/rules/limites-do-host.md`. **Siga o combinado; não invente:** o que o pedido, o plano ou as regras não dizem, copie do padrão existente no projeto; sem padrão, pergunte uma coisa por vez; divergência do combinado não é sua para decidir (`.ai/rules/coordenacao.md`).',
+    '- **Coordenação:** a sessão principal é o coordenador: siga `.ai/rules/coordenacao.md` (**para planejar, analisar ou implementar qualquer coisa não trivial, inclusive um pedido só de “crie ou analise um plano”, acione o `arquiteto` como subagente primeiro: o plano é dele, nunca da sessão principal**; depois delega aos papéis em `.ai/agents/`). **Pedido de produto, projeto ou sistema SeedGrid novo: sua PRIMEIRA ação é invocar a skill `sg-new-product`** (antes do `arquiteto` e antes de explorar outras pastas ou escrever código); nunca monte o projeto à mão nem copie outro produto; se o pedido for só o plano de um produto novo, acione a skill ou pergunte antes. Host nunca altera extension da plataforma: **leia `.ai/rules/limites-do-host.md` antes de qualquer dúvida sobre extension**. **Siga o combinado; não invente:** o que o pedido, o plano ou as regras não dizem, copie do padrão existente no projeto; sem padrão, pergunte uma coisa por vez; divergência do combinado não é sua para decidir (`.ai/rules/coordenacao.md`).',
     '- Papéis: `.ai/agents/`.',
     `- Skills: \`.ai/skills/\` (${bundle.skills.length}). Antes de uma tarefa que combine com a descrição, leia o \`SKILL.md\` indicado no índice.`,
     '- Templates: `.ai/templates/`. Referências: `.ai/references/`.',

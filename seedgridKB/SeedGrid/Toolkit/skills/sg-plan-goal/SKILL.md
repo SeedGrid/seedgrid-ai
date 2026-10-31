@@ -1,18 +1,18 @@
 ---
 name: sg-plan-goal
-description: Leva uma tarefa não trivial de um pedido solto até um plano de tarefas pronto para execução autônoma (por exemplo /goal), no formato fixo do toolkit - princípios, reconhecimento somente leitura, hipóteses provadas por testes, perguntas ao dono, contratos, tarefas com depende-de, escreve, aceite e evidência, bloco /goal por fase e execução em paralelo. Use para toda tarefa não trivial; o plano muda de tamanho, não de estrutura.
+description: Leva uma tarefa não trivial de um pedido solto até um plano de tarefas pronto para execução autônoma (por exemplo /goal), no formato fixo do toolkit - princípios, reconhecimento somente leitura, hipóteses provadas por testes, perguntas ao dono, contratos, tarefas com depende-de, escreve, aceite e evidência, bloco /goal por fase e execução em paralelo. Use para toda tarefa não trivial; o plano muda de tamanho, não de estrutura. Use também quando pedirem para criar, analisar ou revisar um plano (quem executa o método é o arquiteto).
 metadata:
   toolkit: seedgrid-ai
 ---
 
 # Do pedido ao plano pronto para o /goal
 
-Método de 12 etapas, o mesmo para toda tarefa não trivial: **não há critério de "mudança grande"**. Uma tarefa pequena percorre as mesmas etapas com artefatos curtos (uma fase, poucas tarefas); o que muda é o tamanho do plano, não a estrutura. Cada etapa deixa um artefato. O plano e as tarefas ficam em `docs/ai/plans/` (veja `.ai/rules/documentos.md`); as decisões viram ADR com a skill `sg-adr`. Tarefa trivial (uma linha, correção óbvia) não precisa de plano: o coordenador faz direto. A `sg-plan-change` é a versão curta para tarefas pequenas e usa o mesmo formato de tarefa.
+**Quem executa o método é o `arquiteto`** (o coordenador não monta o plano: aciona o `arquiteto`, repassa as perguntas dele ao dono e grava o arquivo). Método de 12 etapas, o mesmo para toda tarefa não trivial: **não há critério de "mudança grande"**. Uma tarefa pequena percorre as mesmas etapas com artefatos curtos (uma fase, poucas tarefas); o que muda é o tamanho do plano, não a estrutura. Cada etapa deixa um artefato. O plano e as tarefas ficam em `docs/ai/plans/` (veja `.ai/rules/documentos.md`); as decisões viram ADR com a skill `sg-adr`. Tarefa trivial (uma linha, correção óbvia) não precisa de plano: o coordenador faz direto. A `sg-plan-change` é a versão curta para tarefas pequenas e usa o mesmo formato de tarefa.
 
 ## Etapas
 
 1. **Princípios e restrições do dono**, escritos no topo do plano: fonte da verdade, falhar fechado, o que é agnóstico, KB e documentação atualizadas ao fim de cada passo. Tudo abaixo respeita esses princípios.
-2. **Reconhecimento somente leitura.** Leia código, migrations e documentação; levante o "estado atual" e liste **hipóteses numeradas** (H1..Hn). Não altere nada em produção.
+2. **Reconhecimento somente leitura.** Leia o código e as migrations do próprio produto e a documentação; o contrato das extensions SeedGrid vem só da KB (`.ai/brain/`), e dúvida que a KB não responde vira demanda (HO-08), não leitura do fonte da extension; levante o "estado atual" e liste **hipóteses numeradas** (H1..Hn). Não altere nada em produção.
 3. **Prove as hipóteses com testes reais** (banco real via Testcontainers, HTTP real): um "livro de regras" que descreve como o sistema funciona **hoje**. Isso acha o que a leitura de código não acha. Resultado inesperado é um **achado**, não um teste a consertar.
 4. **Rodadas curtas de perguntas ao dono** (3 a 6 por vez), cada uma com a **sua recomendação** e uma decisão por pergunta. O dono responde, corrige ou diz que não entendeu (explique de novo). Cada decisão entra no plano na hora, com a data, **repetida em uma frase**.
 5. **Investigue antes de perguntar.** Tudo o que dá para verificar (código, documentação oficial, contagem de consumidores, spike descartável fora do projeto, trabalho longo delegado a um agente) você verifica. Só vão ao dono as dúvidas que são decisão dele.

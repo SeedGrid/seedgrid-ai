@@ -130,6 +130,9 @@ describe('instalação', () => {
       assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
     }
     assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((18))\)/);
+    // HO-08: extension so pela KB; o bloco nao pode mandar conferir no fonte, no jar ou no pacote.
+    assert.match(files['AGENTS.md']!, /Extension: só pela KB \(HO-08\)/);
+    assert.doesNotMatch(files['AGENTS.md']!, /confirme no código-fonte|confirme no código, no jar/);
     for (const dir of ['rules', 'agents', 'templates', 'references']) {
       assert.ok(files[`.ai/${dir}/index.md`], `${dir}/index.md gerado`);
       assert.ok(files['AGENTS.md']!.includes(`.ai/${dir}/`), `AGENTS.md aponta para ${dir}/`);

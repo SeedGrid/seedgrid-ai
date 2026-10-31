@@ -2,7 +2,9 @@
 // Testa o arquiteto real (plano 22, entrega 6): um pedido de mudança SEM citar skill, e depois a execução da fase 1.
 // So para quem desenvolve o seedgrid-ai. Custa alguns dolares; --max-budget-usd protege cada passo.
 //
-//   node scripts/e2e-arquiteto-plano.mjs [--base D:/tmp/e2e-arquiteto] [--sem-build] [--sem-execucao]
+//   node scripts/e2e-arquiteto-plano.mjs [--base D:/tmp/e2e-arquiteto] [--sem-build] [--sem-execucao] [--pedido-analise]
+//   --pedido-analise: o pedido e "analise o rascunho e crie um plano para eu validar" (como o do display, 2026-10-31); confere que o
+//   `arquiteto` foi acionado como subagente e que o plano nao foi escrito pela sessao principal.
 //
 // Passo 1 (planejar): sai um plano em docs/ai/plans/ no formato fixo? (fases, depende-de, escreve, aceite, /goal por fase,
 //   controle.mjs lê sem erro e o grafo do plano tem uma fase com >= 2 tarefas independentes para o paralelo).
@@ -24,6 +26,7 @@ const aspas = (a) => (win ? `"${String(a).replace(/"/g, '\\"')}"` : a);
 const FERRAMENTAS = ['Bash(node:*)', 'Bash(git:*)', 'Bash(ls:*)', 'Bash(mkdir:*)', 'Bash(cat:*)', 'Bash(npm:*)', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Skill', 'Agent', 'Task'];
 
 const PEDIDO_PLANO = 'Os módulos de clientes, fornecedores e pedidos (pasta src/) precisam passar a normalizar o e-mail antes de gravar: minúsculas e sem espaços nas pontas, rejeitando e-mail sem "@". Cada módulo tem seu teste em test/. O README também precisa explicar a regra. Planeje essa mudança e salve o plano; não implemente ainda.';
+const PEDIDO_ANALISE = 'Analise o rascunho em docs/ai/rascunho-emails.md e crie um novo plano para eu validar. Não implemente.';
 const PEDIDO_EXECUTAR = 'Aprovado; para as perguntas em aberto vale a sua recomendação. Execute as fases 1 e 2 do plano.';
 
 const falhas = [];
@@ -73,7 +76,12 @@ sh('git', ['add', '-A'], { cwd: base });
 sh('git', ['commit', '-q', '-m', 'toolkit instalado'], { cwd: base });
 
 // Passo 1: planejar
-const p1 = claude(base, PEDIDO_PLANO, 2);
+if (flag('pedido-analise')) { mkdirSync(join(base, 'docs/ai'), { recursive: true }); writeFileSync(join(base, 'docs/ai/rascunho-emails.md'), '# Rascunho\n\nNormalizar o e-mail (minúsculas, sem espaços, exigir @) em clientes, fornecedores e pedidos e explicar a regra no README.\n'); }
+const p1 = claude(base, flag('pedido-analise') ? PEDIDO_ANALISE : PEDIDO_PLANO, 2);
+if (flag('pedido-analise')) {
+  const aciona = p1.eventos.filter((e) => e.type === 'assistant' && Array.isArray(e.message?.content)).flatMap((e) => e.message.content).filter((c) => c.type === 'tool_use' && (c.name === 'Agent' || c.name === 'Task') && /arquiteto/i.test(JSON.stringify(c.input ?? {})));
+  confere(aciona.length >= 1, `o arquiteto foi acionado como subagente (${aciona.length} vez(es))`);
+}
 console.log(`[passo 1] custo US$ ${custo(p1.eventos).toFixed(2)}`);
 const planos = existsSync(join(base, 'docs/ai/plans')) ? readdirSync(join(base, 'docs/ai/plans')).filter((f) => f.endsWith('.md')) : [];
 confere(planos.length >= 1, `plano salvo em docs/ai/plans/ (${planos.join(', ') || 'nenhum'})`);
