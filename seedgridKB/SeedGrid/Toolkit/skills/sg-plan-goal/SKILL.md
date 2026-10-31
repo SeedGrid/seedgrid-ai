@@ -24,6 +24,10 @@ metadata:
 11. **Governança de execução.** Uma definição de pronto única (testes verdes, commit, registro no controle, documentação e KB). Use o `controle.mjs` desta skill (status, checklist, proximas); ele só lê o plano, então compare sempre com o **git real**; nunca confie só no arquivo. Commits iniciais separando o que era de terceiros do que é da sessão. Push e merge só com autorização do dono.
 12. **Preparar o /goal.** O avaliador da condição **não lê arquivos**: a condição precisa exigir **evidência visível** na saída. Marque a tarefa como feita só com uma linha `Evidencia:`; use um verificador de checklist cuja saída entra na condição; defina limite de turnos; um comando `/goal` por fase; regras de retomada por limite de uso e de crédito.
 
+## Modo "adequar plano"
+
+Quando o plano **já existe** em outro formato (briefing, plano de produto em prosa), não replaneje do zero: use a skill `sg-diagnostico` (diagnóstico, esqueleto no formato ao lado do original e conferência com o `controle.mjs`). As decisões do dono que o plano já traz entram como `[x]` com a origem; o original fica intacto.
+
 ## Formato fixo do plano de tarefas
 
 Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha, **inclusive o `aidlc:` do cabeçalho com o `contentVersion` de `.ai/toolkit-lock.json`** (o `controle.mjs status` avisa se faltar). O formato é o mesmo em todo plano, porque o `controle.mjs` lê esse formato:

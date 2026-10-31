@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Adicionado
+- Skill `sg-diagnostico` (modo “adequar plano”, P114.F1.T1): `diagnostico.mjs` diagnostica um plano livre contra o formato da `sg-plan-goal` e grava o esqueleto ao lado do original (ids `P<plano>.F<fase>.T<tarefa>`, `aidlc:` do lock, hipóteses viradas em tarefas de prova, decisões do dono como `.D<n>` com `Pergunta:`/`Recomendacao:`, decisões já resolvidas como `[x]`, blocos `/goal`), sem nunca sobrescrever. A `sg-plan-goal` ganha a seção “Modo adequar plano”. Testes com plano de exemplo. Cobre o caso do briefing escrito em outra ferramenta: o `arquiteto` classifica cada item (ecossistema já oferece, adaptar, domínio, componente novo) citando a nota da KB, e a divergência do briefing vira decisão do dono. `coordenacao.md`: o coordenador lê o plano entregue e roda o `controle.mjs status` antes de apresentá-lo.
 - Atalho `sgr` para o `seedgrid-ai` (mesmo executável; o nome longo continua). Teste do `bin`.
 - `scripts/e2e-goal-geral.mjs`: teste com agente real do goal do plano inteiro (`sg-plan-goal`): plano pronto com 3 tarefas independentes, uma decisão do dono não marcada de antemão e uma tarefa dependente; confere que o executor faz o que dá, marca `[?]` com `Pergunta:`/`Recomendacao:`, não inventa a política e pergunta no fim (P114.F1.T2).
 

@@ -17,7 +17,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 
 after(cleanupAll);
 
-const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-check-secrets', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-crud-front-flutter', 'sg-dev-env', 'sg-new-product', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-release', 'sg-review', 'sg-validate-change'];
+const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-check-secrets', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-crud-front-flutter', 'sg-dev-env', 'sg-diagnostico', 'sg-new-product', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-release', 'sg-review', 'sg-validate-change'];
 const AGENTS = ['arquiteto', 'backend-java', 'backend-rust', 'frontend-react', 'qa', 'revisor'];
 
 /** Gera uma nova versão de conteúdo alterando uma regra. */
@@ -129,7 +129,7 @@ describe('instalação', () => {
       assert.ok(files[`.ai/skills/${name}/SKILL.md`], `${name} tem cópia canônica em .ai/skills`);
       assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
     }
-    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((18))\)/);
+    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((19))\)/);
     // HO-08: extension so pela KB; o bloco nao pode mandar conferir no fonte, no jar ou no pacote.
     assert.match(files['AGENTS.md']!, /Extension: só pela KB \(HO-08\)/);
     assert.doesNotMatch(files['AGENTS.md']!, /confirme no código-fonte|confirme no código, no jar/);

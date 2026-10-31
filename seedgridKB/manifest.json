@@ -204,6 +204,15 @@
       ]
     },
     {
+      "id": "skill:sg-diagnostico",
+      "type": "skill",
+      "name": "sg-diagnostico",
+      "files": [
+        "SKILL.md",
+        "scripts/diagnostico.mjs"
+      ]
+    },
+    {
       "id": "skill:sg-dev-env",
       "type": "skill",
       "name": "sg-dev-env",
