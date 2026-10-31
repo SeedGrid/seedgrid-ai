@@ -8,7 +8,7 @@ Regras **obrigatórias** para telas React que usam `@seedgrid/fe-components`. Ca
 ## Componentes SeedGrid primeiro
 
 - **FE-01.** Use componentes SeedGrid para toda a interface. Só use elemento HTML cru (`<input>`, `<button>`, `<select>`, `<textarea>`, `<table>`) se **não existir** componente SeedGrid equivalente; nesse caso, justifique em comentário curto.
-- **FE-02.** Antes de criar um componente novo, procure no índice da KB se já existe um que atenda. Não reimplemente o que o SeedGrid já oferece.
+- **FE-02.** Antes de criar um componente novo, procure no índice da KB se já existe um que atenda. Não reimplemente o que o SeedGrid já oferece. Se não existir, crie o componente local no padrão SeedGrid (HO-10) e sugira a promoção no fim do plano.
 - **FE-03.** Não invente props. Confirme nome e tipo na nota `API` do grupo; se não achar, diga que não encontrou.
 
 ## Componente certo para cada dado

@@ -1,11 +1,12 @@
 ---
 description: "Limites de quem usa o host: nunca altera extension da plataforma, registra lacunas como demanda em docs/ai/ e mantém documentos do produto separados dos da plataforma. Leia antes de decidir mexer em extension, boilerplate ou em documento que não seja do produto."
 ---
-# Limites do host (HO-08 e HO-09)
+# Limites do host (HO-08 a HO-10)
 
 Quem desenvolve um produto com o toolkit de host **usa** as extensions SeedGrid; não as desenvolve. Não tem o fonte delas, e não deve ter.
 
 - **HO-08. O host nunca altera extension da plataforma** (nem o fonte, nem o `pom.xml` de uma extension, nem uma cópia local dela). Usa as versões publicadas e lê o contrato pela KB (`.ai/brain/`). Se a KB não responde o que a tarefa precisa, isso é **falha da KB**, não motivo para abrir o código da extension. Só conclua que a KB não responde depois de esgotar a pasta da extension (`Visao-geral`, `SPIs`, `Exemplos`, `Configuracao`, pelo `Extensions/Indice.md`) e buscar em toda ela, sem cortar a saída.
 - **Lacuna vira demanda.** Defeito, limitação ou informação que falta numa extension ou na KB é registrado em `docs/ai/demands/AAAA-MM-DD-assunto.md` do produto (o que se esperava, o que acontece, versão usada, como reproduzir), e a tarefa segue com o que a extension oferece (configuração, SPI, ponto de extensão do próprio produto). Nunca com remendo no fonte da extension.
+- **HO-10. Componente SeedGrid que não existe nasce local, no padrão SeedGrid.** O produto cria o componente no próprio código, no formato do ecossistema (React: padrão do `@seedgrid/fe-components`, prefixo `Sg`, props tipadas; Flutter: padrão do `seedgrid_components`), sem esperar a suíte e sem alterar o repositório de componentes. No fim do plano (fase `FIM`) o `arquiteto` inclui a tarefa **"Sugerir a promoção"**: lista cada componente criado e propõe ao dono movê-lo para a suíte, registrando a sugestão em `docs/ai/demands/`. **É só sugestão**: nada é movido automaticamente; quem decide e faz é o dono, no lado da plataforma.
 - **HO-09. Documentos do produto ficam no produto.** Plano, ADR, handoff, especificação e relatório do produto moram em `docs/ai/<tipo>/` do produto (veja [documentos](documentos.md)). Os documentos da plataforma (planos de extension, ADRs da plataforma, KB de plataforma) não são lidos nem gravados a partir de um produto, e o produto não os referencia.
 - O `boilerplate` copiado em `.ai/boilerplates/` é **modelo**: a cópia criada no produto é do produto e pode ser alterada; o modelo em `.ai/boilerplates/` é gerenciado e não se edita.

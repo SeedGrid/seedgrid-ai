@@ -95,7 +95,9 @@ test('o esqueleto sai ao lado, no formato da sg-plan-goal, sem tocar o original,
     assert.match(t, /\*\*P7\.FIM\.T1 /);
     const st = node(CONTROLE, novo, 'status');
     assert.equal(st.status, 0, st.stderr);
-    assert.doesNotMatch(st.stdout + st.stderr, /aviso/i);
+    // o esqueleto tem <definir>: o status avisa, para o coordenador nao apresentar o plano sem preencher
+    assert.match(st.stderr, /\[aviso\] \d+ tarefa\(s\) com "<definir>"/);
+    assert.doesNotMatch(st.stderr, /aidlc/i);
     const pend = node(CONTROLE, novo, 'pendencias');
     assert.match(pend.stdout, /P7\.F0\.D1/);
     assert.match(pend.stdout, /P7\.F0\.D2/);

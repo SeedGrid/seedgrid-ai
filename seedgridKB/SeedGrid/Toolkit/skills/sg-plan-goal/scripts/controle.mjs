@@ -148,6 +148,8 @@ function main(argv) {
     const aidlc = /^aidlc:[ \t]*(\S+)/m.exec(texto.slice(0, 600));
     if (!aidlc) console.error('[aviso] plano sem "aidlc:" no cabecalho (copie o contentVersion de .ai/toolkit-lock.json)');
     else console.log(`AIDLC do plano: ${aidlc[1]}`);
+    const aDefinir = plano.todas.filter((t) => /<definir/i.test(t.cabecalho + '\n' + t.corpo.join('\n'))).map((t) => t.id);
+    if (aDefinir.length) console.error(`[aviso] ${aDefinir.length} tarefa(s) com "<definir>" ainda por preencher (leia o plano e preencha antes de apresentar): ${aDefinir.slice(0, 12).join(', ')}${aDefinir.length > 12 ? ', ...' : ''}`);
     for (const f of plano.fases) {
       const c = (e) => f.tarefas.filter((t) => t.estado === e).length;
       console.log(`Fase ${f.chave}: ${c('x')}/${f.tarefas.length} feitas, ${c('~')} em andamento, ${c(' ')} abertas, ${c('?')} decisao do dono, ${c('>')} adiadas`);
