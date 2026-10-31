@@ -14,7 +14,7 @@ cd /caminho/do/projeto
 seedgrid-ai init                          # instala o toolkit no projeto
 ```
 
-Depois é só `seedgrid-ai update`, `seedgrid-ai status`, `seedgrid-ai doctor`, `seedgrid-ai review` etc. (`seedgrid-ai --help` lista tudo). Sem instalar o comando, qualquer comando também funciona com `npx @seedgrid/ai-toolkit <comando>`. Abra uma **sessão nova** do Claude Code ou do Codex depois de instalar no projeto.
+Depois é só `seedgrid-ai update`, `seedgrid-ai status`, `seedgrid-ai doctor`, `seedgrid-ai review` etc. (`seedgrid-ai --help` lista tudo). O atalho `sgr` é o mesmo comando (`sgr update`, `sgr status`). Sem instalar o comando, qualquer comando também funciona com `npx @seedgrid/ai-toolkit <comando>`. Abra uma **sessão nova** do Claude Code ou do Codex depois de instalar no projeto.
 
 ## O que é instalado
 

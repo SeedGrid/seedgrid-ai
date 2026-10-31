@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Adicionado
+- Atalho `sgr` para o `seedgrid-ai` (mesmo executável; o nome longo continua). Teste do `bin`.
+
 ### Alterado
 - `sg-plan-goal`: o fluxo passa a ser único para toda tarefa não trivial (sem critério de "mudança grande"). Ganha o formato fixo do plano de tarefas (template `assets/plano-de-tarefas.md`; `depende-de` e `escreve` por tarefa, aceite, testes, `Evidencia:` e bloco `/goal` por fase), as regras de execução em paralelo (até 4 agentes, nunca dois no mesmo caminho, acima disso só em worktrees com merge em série e limpeza) e o script `scripts/controle.mjs` (`status`, `checklist <fase> [--completa]`, `proximas`). O `arquiteto`, a `sg-plan-change` e o fluxo de trabalho apontam para o mesmo formato.
 
