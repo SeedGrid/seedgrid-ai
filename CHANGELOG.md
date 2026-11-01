@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.2] — 2026-11-01
+
 ### Alterado
 - KB do `filemanagement` e da `subdomain-tenancy`: o registro de anexos (`registry-table.enabled`) passa a funcionar em tenancy a partir da 2026.11.01 das extensions (plano 120): a `V1300` é migrada por tenant na subdomain-tenancy e no startup da login-tenancy, com a mesma regra do gate (desligado não cria nada). Sai o contorno por configuração. Só o host que reescreve `quarkus.hibernate-orm.packages` precisa do pacote `br.com.seedgrid.filemanagement.domains` (o build falha avisando); tenant existente pede mudar `migration.target-version`. As versões anteriores seguem com a falha documentada.
 - `sg-new-product`: o modelo `login-tenancy-b2c` (pessoa física, uma conta = uma pessoa) deixa de aparecer desligado e passa a ser aceito na matriz, com as mesmas extensions e efeitos do B2B (muda só o boilerplate e o público); a pergunta de extensions opcionais (3) vale também para ele. O boilerplate foi provado antes (backend 39 testes, E2E Playwright 15/15). Guardiões novos em `matriz-produto.test.ts` e `scaffold-produto.test.ts`; os testes de recusa passam a usar uma extension ainda não verificada no modelo modular.
