@@ -14,7 +14,8 @@ Todo documento de trabalho que a IA produzir (plano, handoff, decisão, especifi
 | Tipo | Pasta | Quando |
 | --- | --- | --- |
 | Plano | `docs/ai/plans/` | Plano de uma mudança, antes de implementar e enquanto estiver em execução |
-| Handoff | `docs/ai/handoff/` | Estado e próximos passos para outra sessão, papel ou pessoa continuar |
+| Handoff | `docs/ai/handoffs/` | Estado e próximos passos para outra sessão, papel ou pessoa continuar (a pasta no singular, `handoff/`, também é lida) |
+| Demanda | `docs/ai/demands/` | Pedido do produto à plataforma quando a KB não responde (HO-08); termina quando respondida |
 | Decisão (ADR) | `docs/ai/decisions/` | Decisão que muda comportamento, propriedade, contrato ou arquitetura, e o porquê (skill `sg-adr`, modelo `decisao-arquitetura.md`) |
 | Especificação | `docs/ai/specs/` | Especificação de tarefa (modelo: `especificacao-tarefa.md`) |
 | Validação | `docs/ai/reports/` | Relatórios de validação, revisão e testes (modelo: `relatorio-validacao.md`) |
@@ -29,6 +30,7 @@ Todo documento de trabalho que a IA produzir (plano, handoff, decisão, especifi
 - **Todo documento gerado (plano, handoff, ADR, especificação, relatório) leva no cabeçalho `aidlc: <versão>`**, a versão do AIDLC com que foi escrito: copie o `contentVersion` de `.ai/toolkit-lock.json` (exemplo: `aidlc: 0.6.1`). Quem gera o documento não adivinha nem inventa: lê o lock. Serve para saber, depois, se um documento fora do padrão foi escrito por um toolkit antigo ou não obedeceu a regra. O `update` não reescreve documentos do projeto, então o campo registra a versão **da criação**; ao revisar um plano com um toolkit mais novo, atualize o campo junto com o conteúdo. Documento sem o campo é de antes desta regra. Ao concluir, marque `concluido`: **plano concluído é histórico e não serve de fonte para decidir nada**; a fonte é o código, a documentação do projeto e as ADRs.
 - Itens de plano novo usam o **identificador falante** `P<plano>.F<fase>.T<tarefa>` (decisão do dono: `.D<n>`); formato e como pesquisar em `.ai/references/identificadores-de-plano.md`. Ao falar com o dono, cite plano, fase, tarefa e título.
 - As **decisões** que nasceram do plano viram ADR (`docs/ai/decisions/`), com índice gerado (`INDEX.md`, da mais nova para a mais antiga). Nome do arquivo de **ADR**: `ADR<n>-AAAA-MM-DD-slug.md`, com `<n>` igual ao `numero:` do cabeçalho (o mesmo número com que se fala da ADR); ADRs antigas sem o prefixo migram com `adr-index.mjs --renomear`.
+- **Índice geral:** `docs/ai/INDEX.md` lista todos os documentos, com as demandas abertas no topo, e é **gerado** pela skill `sg-docs-index`. Sempre que criar, renomear, apagar ou mudar o `status:` de um documento em `docs/ai/`, rode o script da skill; nunca edite o `INDEX.md` à mão. O `--check` roda ao fechar uma mudança (`sg-validate-change`).
 - Não grave segredos, tokens nem dados pessoais.
 - Antes de criar, veja se já existe documento do mesmo assunto na pasta e atualize-o em vez de duplicar.
 - Ao citar um documento em outro, use caminho relativo.

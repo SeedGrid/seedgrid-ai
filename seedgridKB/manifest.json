@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.7.2",
+  "contentVersion": "0.7.3",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
@@ -172,6 +172,15 @@
       "files": [
         "SKILL.md",
         "scripts/adr-index.mjs"
+      ]
+    },
+    {
+      "id": "skill:sg-docs-index",
+      "type": "skill",
+      "name": "sg-docs-index",
+      "files": [
+        "SKILL.md",
+        "scripts/docs-index.mjs"
       ]
     },
     {

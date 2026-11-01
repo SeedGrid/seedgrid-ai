@@ -4,6 +4,7 @@
 // Valida as respostas contra a matriz (recusa o que nao estiver nela), copia o boilerplate do modelo, ajusta o pom,
 // gera dev.env (segredos novos por produto), .example, docker-compose.yml, workflow e docs/ai/. Sem dependencias.
 // Determinismo: o que vai para o git (tudo menos dev.env, .env e keys/*.pem) e identico para as mesmas respostas.
+import { spawnSync } from 'node:child_process';
 import { createHash, generateKeyPairSync, randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
@@ -452,6 +453,12 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
 
   // 8. docs/ai
   for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
+  // 8-1. primeiro indice geral de docs/ai (skill irma sg-docs-index; sem ela, o produto fica sem indice ate rodar a skill)
+  const docsIndex = join(AQUI, '..', '..', 'sg-docs-index', 'scripts', 'docs-index.mjs');
+  if (existsSync(docsIndex)) {
+    const r = spawnSync(process.execPath, [docsIndex, '--dir', join(destino, 'docs', 'ai')], { encoding: 'utf8' });
+    if (r.status === 0) criados.push('docs/ai/INDEX.md');
+  }
 
   // 8a. back falso para o front (Mockoon): so autenticacao e perfil quando nao ha tenancy; com tenancy, usuarios e perfis tambem
   const modulosMock = ['security', ...(R.modelo === 'modular' ? [] : ['usuarios-e-perfis'])];
