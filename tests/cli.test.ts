@@ -41,7 +41,7 @@ test('argumentos inválidos retornam erro', () => {
   assert.equal(run(['status', '--mode', 'native']).code, 1);
   assert.equal(run(['desconhecido']).code, 1);
   assert.equal(run(['init', '--opcao-inexistente']).code, 1);
-  assert.match(run(['--version']).out, /^\d+\.\d+\.\d+/);
+  assert.match(run(['--version']).out, /^seedgrid-ai \d+\.\d+\.\d+/);
 });
 
 test('versão mais nova no npm: fora do terminal só avisa, sem perguntar nem delegar', async () => {
@@ -92,4 +92,17 @@ test('sem argumentos, help e --help listam todos os comandos', () => {
       assert.match(r.out, new RegExp(`^  ${c}\\s+\\S`, 'm'), `${c} descrito na ajuda (${args.join(' ') || 'sem argumentos'})`);
     }
   }
+});
+
+test('--version mostra o AIDLC da máquina e, em pasta com o toolkit, o instalado nela', async () => {
+  const vazio = await tempProject();
+  const semToolkit = run(['-v', '--project', vazio]).out;
+  assert.match(semToolkit, /AIDLC nesta máquina: \d+\.\d+\.\d+/);
+  assert.doesNotMatch(semToolkit, /nesta pasta/);
+  const project = await tempProject();
+  assert.equal(run(['init', '--project', project]).code, 0);
+  assert.match(run(['-v', '--project', project]).out, /AIDLC nesta pasta: +\d+\.\d+\.\d+ +\(em dia\)/);
+  const j = JSON.parse(run(['--version', '--json', '--project', project]).out);
+  assert.equal(j.projectInstalled, true);
+  assert.equal(j.updateAvailable, false);
 });

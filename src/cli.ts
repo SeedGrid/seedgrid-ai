@@ -11,7 +11,9 @@ import { selfInstallCommand } from './commands/selfinstall.js';
 import { statusCommand } from './commands/status.js';
 import { updateCommand } from './commands/update.js';
 import { validateCommand } from './commands/validate.js';
-import { cliVersion } from './core/env.js';
+import { bundledContentDir, cliVersion, resolveProject } from './core/env.js';
+import { loadContent } from './core/content.js';
+import { readLock } from './core/lock.js';
 import { TOOL_NAME } from './core/lock.js';
 import { ToolkitError } from './core/types.js';
 import {
@@ -57,7 +59,8 @@ Opções comuns:
                        (padrão: só os arquivos alterados). Chama o modelo da ferramenta com o seu login e consome tokens;
                        roda em modo somente leitura. Código de saída 3 quando há violações.
   --no-update-check    Não consulta o npm por versões mais novas (também: SEEDGRID_AI_NO_UPDATE_CHECK=1)
-  --version, --help
+  --version, -v        Versão do CLI e do AIDLC nesta máquina; numa pasta com o toolkit, também a versão instalada nela
+  --help
 
 Primeira vez: npx @seedgrid/ai-toolkit@latest install  (depois use seedgrid-ai init, update, ... sem npx)
 Padrões do init: --target both --mode shared (ou as opções do lock existente).
@@ -76,6 +79,31 @@ const COMMANDS: Record<string, { handler: Handler; allowed: string[] }> = {
   validate: { handler: validateCommand, allowed: ['source'] },
   review: { handler: reviewCommand, allowed: ['tool', 'full'] },
 };
+
+/** --version: o que há na máquina e, se a pasta já tem o toolkit, o que está instalado nela. */
+async function versionCommand(project: string | undefined, json: boolean): Promise<number> {
+  let bundled: string | null = null;
+  try {
+    bundled = (await loadContent(bundledContentDir())).contentVersion;
+  } catch {
+    bundled = null;
+  }
+  const lockState = await readLock(resolveProject(project));
+  const installed = lockState.status === 'ok' ? lockState.lock.contentVersion : null;
+  const outdated = installed !== null && bundled !== null && installed !== bundled;
+  if (json) {
+    console.log(JSON.stringify({ cliVersion: cliVersion(), aidlcVersion: bundled, projectInstalled: lockState.status !== 'absent', projectAidlcVersion: installed, updateAvailable: outdated }));
+    return 0;
+  }
+  console.log(`seedgrid-ai ${cliVersion()}`);
+  console.log(`  AIDLC nesta máquina: ${bundled ?? 'indisponível'}`);
+  if (lockState.status === 'ok') {
+    console.log(`  AIDLC nesta pasta:   ${installed}${outdated ? `  (desatualizado; rode: seedgrid-ai update)` : '  (em dia)'}`);
+  } else if (lockState.status === 'invalid') {
+    console.log('  AIDLC nesta pasta:   lock inválido (rode: seedgrid-ai doctor)');
+  }
+  return 0;
+}
 
 export async function main(argv: string[]): Promise<number> {
   let parsed;
@@ -106,8 +134,7 @@ export async function main(argv: string[]): Promise<number> {
   }
   const { values, positionals } = parsed;
   if (values.version) {
-    console.log(cliVersion());
-    return 0;
+    return versionCommand(values.project, values.json ?? false);
   }
   const name = positionals[0];
   if (values.help || !name || name === 'help') {
