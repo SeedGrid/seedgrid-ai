@@ -24,6 +24,9 @@
         "realtime",
         "cache"
       ],
+      "transitivas_na_base": {
+        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; a opcao cities so declara a dependencia direta no pom"
+      },
       "chaves_do_modelo": [
         "seedgrid.login-tenancy.app.code",
         "seedgrid.login-tenancy.app.name",
@@ -57,6 +60,9 @@
         "realtime",
         "cache"
       ],
+      "transitivas_na_base": {
+        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; a opcao cities so declara a dependencia direta no pom"
+      },
       "chaves_do_modelo": [
         "seedgrid.subdomain-tenancy.domain-suffix (sem ela todo request cai no tenant master)"
       ],

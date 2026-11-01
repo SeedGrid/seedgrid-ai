@@ -102,4 +102,4 @@ Para o JWT há duas formas: variáveis `*_BASE64` (vencem a outra) ou arquivos `
 
 - O `dev.env` fica no `.gitignore` junto de `*.env`, `*.env.*`, `*.pem` e `keys/`; a trava `check-secrets` reprova qualquer variante (`_dev.env`, `.bak`). Exceção: `*.example`.
 - Valor externo que o dono ainda não forneceu fica como `change-me`; a aplicação sobe, e a funcionalidade que depende dele (checkout, WhatsApp, Pulse) fica inoperante até o preenchimento.
-- Lacuna: o `login-tenancy` B2C ainda não tem boilerplate; esta nota passa a cobri-lo quando o `business-day` entregar.
+- O `login-tenancy` B2C tem boilerplate (`login-tenancy-b2c`) e está liberado no `sg-new-product` desde o toolkit 0.7.2; vale o mesmo que esta nota diz do B2B, com `customer-type=B2C`.

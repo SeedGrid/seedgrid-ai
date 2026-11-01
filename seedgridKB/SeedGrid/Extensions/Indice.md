@@ -72,6 +72,7 @@ Mudanças que ainda não existem no Maven Central; cada nota diz a versão e o q
 - [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]]: `READ_ONLY`, `@SgReadOnlySafe`, `QUERY` e o proxy do front.
 - [[SeedGrid/Extensions/security/Isolamento-spis-e-migracao|Isolamento, spis e migração]]: roteiro para atualizar um host existente.
 - [[SeedGrid/Extensions/login-tenancy/Cadastro-b2b-b2c-e-seletor-de-empresa|Cadastro B2B, B2C e seletor de empresa]]: boilerplates `login-tenancy-b2b` e `-b2c`, Mailpit.
+- [[SeedGrid/Extensions/login-tenancy/Escopo-e-exclusao-no-dominio-do-host|Escopo do domínio do host, exclusão de conta e export]]: como filtrar as tabelas do host por conta, e o que não existe para LGPD.
 - [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]]: feriados prontos, móveis e "vai trabalhar".
 - [[SeedGrid/Extensions/cache/Ciclo-2026-10-22|Cache: ciclo 2026.10.22]]: `tryWithLock`, failover, annotations.
 - [[SeedGrid/Extensions/cities/Cidades-e-cidade-no-endereco|Cidades e cidade no endereço]]: `sg_cities`, `cityId` nas APIs, migração do texto e REST.

@@ -43,6 +43,7 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. Status `preview`.
 | `seedgrid-billing-core` (+ `-deployment`) | `2026.10.14-1` | cobrança agnóstica; `AccountProvisioningService` |
 | `seedgrid-apikeys` (+ `-deployment`) | `2026.10.14` | ver [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]] |
 | `seedgrid-notification` (+ `-deployment`) | `2026.10.15` | catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral|notification]] |
+| `seedgrid-cities` | `2026.10.22` | cidades e estados do Brasil (código IBGE); **vem transitivamente pela `security`** (`Address.city`) e o signup usa o `StateEnum` dela, então o produto login-tenancy já tem a `cities` no classpath e as migrations V1200-V1299 rodam sozinhas. A opção `cities` do `sg-new-product` só declara a dependência **direta** (para o código do host usar `BrazilGeo` sem depender do transitivo) — ver [[SeedGrid/Extensions/cities/Visao-geral|cities]] |
 | `seedgrid-filemanagement` | `2026.07.08` | arquivos |
 | `seedgrid-privacy` | `2026.07.27` | mascaramento/criptografia de PII |
 | `seedgrid-resilience-core` | `2026.10.13` | `@SgRateLimit` |

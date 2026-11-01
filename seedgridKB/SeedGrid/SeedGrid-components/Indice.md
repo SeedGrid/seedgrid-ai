@@ -64,7 +64,7 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 
 ## Onde está cada símbolo
 
-Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` no `API.md` do grupo (props completas) e depois leia essa faixa com `offset`/`limit`. Para escolher o componente por necessidade ("preciso de X"), leia [[SeedGrid/SeedGrid-components/Preciso-de|Preciso de X, use Y]] e valide as props com a skill `sg-componente`. O resumo de cada símbolo, e se ele é exportado, está em [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos).
+Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` no `API.md` do grupo (props completas) e depois leia essa faixa com `offset`/`limit`. Para escolher o componente por necessidade ("preciso de X"), leia [[SeedGrid/SeedGrid-components/Preciso-de|Preciso de X, use Y]] e valide as props com a skill `sg-componente`. O resumo de cada símbolo, e se ele é exportado, está em [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]] (leia só se precisar escolher entre componentes parecidos). O que **não** existe (upload de arquivo, gráficos, abas) e o contorno estão em [[SeedGrid/SeedGrid-components/Nao-existe-no-catalogo|O que não existe no catálogo]].
 
 ### React
 

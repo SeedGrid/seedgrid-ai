@@ -44,7 +44,8 @@ seedgrid.login-tenancy.signup.personal-document-required=false
 
 ## O que o boilerplate b2c tem e não tem?
 
-- **Tem:** perfil, segurança (senha, 2FA, métodos de entrada), assinatura, termos e LGPD (exportar e excluir meus dados), temas, dias úteis, API keys e o admin web da equipe do produto.
+- **Não tem (conferido em 2026-11-01):** tela de "exportar meus dados" nem de "excluir minha conta" (LGPD); veja [[SeedGrid/Extensions/login-tenancy/Escopo-e-exclusao-no-dominio-do-host|Escopo, exclusão de conta e export no domínio do host]].
+- **Tem:** perfil, segurança (senha, 2FA, métodos de entrada), assinatura, aceite de termos, temas, dias úteis, API keys e o admin web da equipe do produto.
 - **Não tem, de propósito:** telas de usuários, convites ("Convidar usuário externo"), perfis e permissões, `select-company` e a rota `/api/self-enter`. Os textos dizem "conta" e "você", não "empresa".
 - **Planos de demonstração** (migration `V3001` do b2c): trial (20 requisições, sem armazenamento; por dias ou consumo), `GRATIS` (R$ 0, 100 requisições e 50 MB, sem excedente) e `PREMIUM` (R$ 29,90, 1.000 requisições e 500 MB, excedente cobrado). Não há limite de empresas.
 - **Login social:** `seedgrid.security.social.providers` (env `SEEDGRID_SOCIAL_PROVIDERS`; vazio = inerte). Provedor listado sem credenciais **derruba o boot**. O módulo exige Quarkus com `quarkus-oidc` (o b2c usa 3.30.8).

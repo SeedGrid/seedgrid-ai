@@ -137,7 +137,7 @@
       "tipo": "escolha",
       "chave": "modelo",
       "pergunta": "Qual o modelo do projeto?",
-      "recomendacao": "1 (login-tenancy B2B) para sistemas com varias empresas no mesmo banco; 3 se cada cliente precisa de banco e subdominio proprios.",
+      "recomendacao": "1 (login-tenancy B2B) para sistemas com varias empresas no mesmo banco; 2 (login-tenancy B2C) quando cada conta e uma pessoa fisica; 3 se cada cliente precisa de banco e subdominio proprios.",
       "opcoes": [
         {
           "id": "login-tenancy-b2b",

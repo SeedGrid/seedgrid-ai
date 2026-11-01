@@ -166,6 +166,17 @@ public class MeuAccountUserActivationMailer implements AccountUserActivationMail
 - `StartupEvent` observado por `FirstAdminBootstrapService`.
 - Job `@Scheduled` `EntryRequestCleanupJob` (multi-tenant).
 
+### Atributos adicionais do usuário (`User.additionalAttributes`)
+
+O `User` também é expansível, como o `PlanTerm` do billing (conferido no código em 2026-11-01). Use para dados do produto que pertencem à pessoa e não justificam coluna própria (ex.: `cargo`, preferências).
+
+- **O que é:** `Map<String, JsonNode>` no `User`, coluna `additional_attributes` (jsonb). Valor livre; sem schema nem rótulos declarados pela extension.
+- **Como se grava:** nas entradas de usuário (`UserDTOReq` na criação; `UserDTOPatch` e `UserWritePatchRequest` na edição; e nos DTOs de gestão pela conta, `AccountDTOs`). **Atenção à diferença:** na criação e na atualização completa (`UserDTOReq`, `updateUser`) o mapa enviado **substitui** o atual (copiado sem `null`); no `PATCH /users/{publicId}` (`UserDTOPatch`, `applyAttributesPatch`) vale o **merge RFC 7386** (`null` remove a chave, objeto faz merge). Para mudar um atributo sem apagar os outros, use o PATCH (a edição pela conta, `AccountUserService`, também é merge). Antes de gravar, vale: limites (`seedgrid.security.user.additional-attributes.max-size-bytes`, `max-depth`, `max-keys`; ver `Configuracao.md`) e o `UserAdditionalFieldsValidator` do host (SPI; o padrão não impõe regra alguma). Violação: `InvalidUserAdditionalAttributesException`.
+- **Como se lê:** nas respostas de usuário (`UserDTORes.additionalAttributes`, `GET /users/{publicId}` e as listas de gestão) e, no servidor, em `user.getAdditionalAttributes()` (`JsonNode`).
+- **Tela:** a edição de usuário do admin do boilerplate b2b usa o campo para um único atributo de exemplo, `cargo` (envia `additionalAttributes: { cargo }`). Não há editor genérico chave/valor; atributos novos pedem UI do host.
+- **Quando usar × coluna própria:** valor sem consulta nem relação no banco e que pode variar por produto → atributo. Dado que o produto filtra, ordena ou relaciona (e portanto indexa) → tabela do host ligada ao usuário por `publicId`.
+- **LGPD:** o campo faz parte do usuário; não grave dado pessoal sensível nele sem marcar o mascaramento de saída (ver [[SeedGrid/Extensions/privacy/Visao-geral|privacy]]). Não verificado: se o export/exclusão de conta cobre esse campo.
+
 ## Migrations
 
 `runtime/src/main/resources/db/migration/security`, faixa **V200–V299**.

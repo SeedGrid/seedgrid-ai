@@ -185,6 +185,18 @@ Rate limit via resilience (**Confirmado**, `@SgRateLimit`):
 - Com chave `sk_test*`, cria customers presos a um Test Clock (desligável).
 - `StripeProductBootstrap` garante o produto base no startup (best-effort).
 
+### Limite ou janela por plano: `PlanTerm.additionalAttributes`
+
+Quando o produto precisa de um valor que muda por plano (ex.: "meses à frente na projeção do fluxo de caixa", Free = 1, Premium = sem limite), use `additionalAttributes` do term em vez de código fixo. O que existe (conferido no código em 2026-11-01):
+
+- **O que é:** `Map<String, JsonNode>` no `PlanTerm`, coluna `additional_attributes` (jsonb). Valor livre por term; sem schema nem rótulos declarados.
+- **Como o host lê, em Java:** `SubscriptionResolutionService#findCurrent(Account, Instant)` devolve a assinatura vigente (`Optional`); então `getPlanTerm().getAdditionalAttributes().get("projectionMonthsAhead")` (um `JsonNode`; `asInt()` etc.). É o mesmo caminho que o `PlanFeatureGate` usa para as features. Não há serviço pronto "me dê o atributo X": o host encapsula a leitura num serviço seu. Sem assinatura vigente o `Optional` vem vazio — decida o padrão do produto (a postura do gate de features é não bloquear).
+- **Como o front lê:** `GET /me/subscription` traz `planTerm.additionalAttributes`; o catálogo de planos (`/me/subscription/catalog`) traz o mesmo campo por plano.
+- **Como se grava:** só pela API admin do billing (`PlanTermRequest` na criação; `PlanTermPatchRequest` no PATCH, que segue o RFC 7386: `null` remove a chave, objetos fazem merge). A tela `plans/plan_terms` do boilerplate b2b **não** edita esse campo (o código diz que ele não é tocado ali): quem quiser editar pela tela precisa construir a UI no host. Os limites e o `PlanTermAdditionalFieldsValidator` do host (ver `Configuracao.md` §2.5 e `SPIs.md`) rodam antes de gravar, e uma violação devolve 400.
+- **Atributo × feature:** feature (`@SgRequiresPlanFeature`, permissão do term) é liga/desliga e o bloqueio já é automático (402 `FEATURE_NOT_IN_PLAN`). Atributo é um valor: nada bloqueia sozinho, quem lê decide e devolve o erro do produto. Para "Free até M+1, Premium sem limite": atributo numérico (ausente = sem limite) e a recusa no código do host. Para "só o Premium tem exportação": feature. Franquia e excedente por uso **não** vão em atributo: são contadores do term (ver Limitações abaixo e `Inadimplencia-e-limites-do-plano.md`).
+
+Não verificado: a validação de tipo dos valores (o validador padrão só aplica os limites de tamanho, profundidade e chaves), a sincronização do atributo com o plano do Stripe (não há; o Stripe só vê preço) e a tela de admin de outro boilerplate além do b2b.
+
 ## Migrations
 
 `db/migration/billing`, faixa **V500–V599** (tabela de histórico default `sg_flyway_schema_history_billing`):

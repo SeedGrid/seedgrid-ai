@@ -171,6 +171,7 @@ Nenhuma.
 
 ## Limitações
 
+- **O export não filtra linhas por empresa nem por pessoa** (conferido no código em 2026-11-01). `ExtractDataService` faz `SELECT * FROM <schema>.<tabela>` para cada entidade (`DOMAIN`) ou tabela (`RAW`); o dono do **job** é isolado por `createUserPublicId`, o **conteúdo** não. Em banco compartilhado (login-tenancy), quem tem `BACKUP_CREATE` exporta as linhas de todas as contas. Não conceda `BACKUP_CREATE` a usuário de cliente e exclua os pacotes de entidades do host em `seedgrid.backup.excluded-domain-entity-packages`. Para "exportar meus dados" o host precisa de endpoint próprio. Ver [[SeedGrid/Extensions/login-tenancy/Escopo-e-exclusao-no-dominio-do-host|Escopo, exclusão de conta e export no domínio do host]].
 - `options` do `ExportRequest` (mapa livre) é serializado no job e repassado ao `ExportContext` (`getOptions()`/`getOption(key, default)`); os exporters embutidos não leem nenhuma opção — só exporters customizados podem usá-lo. **Confirmado** (`ExportService#buildExportContext`).
 - Limpeza por retenção tem cron fixo (`0 1 0 * * ?`), não configurável. **Confirmado**.
 - Banco: PostgreSQL (migrations, `information_schema`, `gen_random_uuid()`).
