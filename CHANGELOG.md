@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- ADR com o número no nome (decisão do dono, 2026-11-01): `docs/ai/decisions/ADR<n>-AAAA-MM-DD-slug.md`, com `<n>` igual ao `numero:` do cabeçalho (a pasta continua `decisions/`). O `adr-index.mjs` confere o prefixo e a data do nome contra o cabeçalho; o nome antigo (`AAAA-MM-DD-slug.md`) ainda é aceito, **só com aviso**, para o `--check` de projetos existentes não quebrar no `update`. Comando novo `--renomear` (junto com `--numerar` quando faltar número): põe o prefixo, acerta `substitui`/`substituida-por` das outras ADRs, refaz o `INDEX.md` e lista os documentos de `docs/ai` que citam o nome antigo. O formato do `INDEX.md` não mudou. Primeiros testes do script (`tests/adr-index.test.ts`). Atualizados `sg-adr`, `rules/documentos.md` e o modelo `decisao-arquitetura.md`.
+
 ### Corrigido
 - KB: três lacunas que o produto display registrou como demanda (`P1.F1.DEM1`, `P1.F1.DEM2`, `P1.F2.DEM4`) e que a KB não respondia. `apikeys`: criar e revogar chave por código Java (`ApiKeyManagementService`, assinaturas, regras e o que não foi verificado fora de uma requisição). `billing`: o contador de uso é por ciclo, só soma e não tem devolução. `Pulse`: a revogação em tempo real é só por chave ou conta, não por `subject`.
 
