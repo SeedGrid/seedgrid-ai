@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.1] — 2026-11-01
+
 ### Adicionado
 - `sgr --version` (`-v`) mostra a versão do CLI e do AIDLC nesta máquina e, numa pasta com o toolkit instalado, a versão do AIDLC instalada nela, avisando quando está desatualizada (`sgr update`). `--project` aponta outra pasta e `--json` serve para scripts.
 - HO-12 (decisão do dono, 2026-11-01): o host não invade o domínio da extension e o teste do host testa o host. Não reimplementa regra, tabela ou endpoint que a extension entrega, e não repete o comportamento interno dela nos testes; falha causada pela extension vira demanda (HO-08). Entra em `limites-do-host`, `arquiteto`, `qa` e no `AGENTS.md` gerado.
