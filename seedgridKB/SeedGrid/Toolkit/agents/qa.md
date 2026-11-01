@@ -28,6 +28,7 @@ Provar, com testes escritos e executados, que a mudança atende aos critérios d
 
 - Mapear cada critério de aceite para pelo menos uma verificação concreta e automatizada quando possível.
 - **Criar os testes que faltam** nos padrões do projeto: unitários, de integração (no back SeedGrid, com Testcontainers e PostgreSQL; veja `.ai/rules/backend-seedgrid.md`) e de regressão. Vários asserts no mesmo teste ficam em `assertAll`. Teste-guardião (`...GuardianIT`/`...GuardianTest`, BE-42) nunca é alterado, enfraquecido nem desabilitado para fazer o build passar: se falhar, o defeito está no código de produção; em dúvida, pergunte ao dono.
+- **Teste o host, não a extension (HO-12):** não repita o comportamento interno de uma extension (ela tem os próprios guardiões); teste as regras do produto e a ligação com as extensions. Falha vinda da extension vira demanda (HO-08).
 - Executar build, lint, testes afetados e a suíte relevante; exercitar o comportamento alterado quando possível.
 - Registrar comandos, resultados e evidências no formato do relatório de validação (`.ai/templates/relatorio-validacao.md`).
 - Diferenciar "passou", "falhou" e "não executado (motivo)". Teste instável é repetido uma vez e relatado, nunca ocultado.

@@ -18,7 +18,7 @@ O dono elabora a ideia numa ferramenta que **não conhece o SeedGrid** e traz o 
 1. **O ecossistema já oferece** (extension, tela, componente): diga qual e a nota.
 2. **Adaptar**: oferece parte; diga a lacuna.
 3. **Domínio do produto**: o que só este produto desenvolve.
-4. **Componente ou extension nova**: o que falta no ecossistema (vira demanda, não implementação).
+4. **Componente ou extension nova**: o que falta no ecossistema (vira demanda (arquivo `docs/ai/demands/P<plano>.F<fase>.DEM<n>-...md`, não só texto no plano), não implementação).
 
 O que o briefing assumiu e **diverge** do ecossistema (por exemplo, modelo de tenancy) vira **decisão do dono** com a recomendação, não é resolvido em silêncio. Só depois siga os passos abaixo. Contrato de extension: só pela KB (HO-08); depois de escrito, o coordenador **lê o plano entregue e roda o `controle.mjs status`** antes de apresentá-lo.
 

@@ -55,7 +55,7 @@ flowchart LR
 | `minio` | `MinIOStorageFactory` | `MinIOStorage` | presigned (expiry em segundos) |
 | `azure-blob` | `AzureBlobStorageFactory` | `AzureBlobStorage` (cria o container se não existir) | SAS |
 | `gcs` | `GoogleCloudStorageFactory` | `GoogleCloudStorage` (verifica se o bucket existe no init) | signed URL (TTL em minutos) |
-| `google-drive` | `GoogleDriveStorageFactory` | `GoogleDriveStorage` (escopo `drive.file`) | **cria permissão pública `anyone/reader`** e devolve link; o TTL é ignorado (link precisa ser revogado manualmente) |
+| `google-drive` | `GoogleDriveStorageFactory` | `GoogleDriveStorage` (escopo `drive.file`) | no modo `credentials` (conta de serviço) **cria permissão pública `anyone/reader`** e devolve link; o TTL é ignorado (link precisa ser revogado manualmente). No modo `auth-mode=consent` o arquivo vai para o Drive do usuário e **nunca é público**: `generateSignedUrl` lança `UnsupportedOperationException` (veja [[SeedGrid/Extensions/filemanagement/Guia-do-host-consentimento|Guia do host: consentimento]]) |
 | `onedrive` | `OneDriveStorageFactory` | `OneDriveStorage` (Graph `me().drive()`, client credentials; também `auth-mode=consent`) | devolve `webUrl` do item; TTL ignorado; loga WARN |
 | `dropbox` | `DropboxStorageFactory` | `DropboxStorage` (API HTTP v2 por `java.net.http`, sem dependência nova; `credentials` e `consent`) | link temporário do Dropbox (cerca de 4 horas, não é público permanente); o TTL não se aplica |
 
@@ -73,7 +73,7 @@ Fonte: `factories/*.java`, `storages/*.java`. **Confirmado.**
 | Domínio | `domains.FileMetadata` | `storageKey`, `filename`, `sizeBytes`, `contentType`, `createdAt`, `lastModifiedAt`, `metadata` (preenchidos conforme o backend) |
 | Exceções | `StorageException` (checked), `StorageNotFoundException` (checked, estende `StorageException`), `StorageConfigurationException`, `StorageInitializationException`, `DuplicateStorageException` | — |
 
-Extensão: o host cria um `@ApplicationScoped FileStorageFactory` com `typeIdentifier` novo; o registry o descobre. Sem endpoints REST, eventos ou migrations (apesar das deps optional de ORM/Flyway, não há entidades nem SQL no `src/main`).
+Extensão: o host cria um `@ApplicationScoped FileStorageFactory` com `typeIdentifier` novo; o registry o descobre. Sem endpoints REST nem eventos. Migration e entidade existem **só se você ligar** `seedgrid.filemanagement.registry-table.enabled=true`: o runner migra a `V1300` (`sg_*`, faixa 1300–1399) e o `JpaAttachmentRegistry` grava o registro de anexos (SPI `AttachmentRegistry`); desligado (padrão), não há tabela nem SQL. Veja [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração]].
 
 **Consumidores no monorepo** (**Confirmado** por busca): `seedgrid-quarkus-ext-backup` (`ExportService#buildStorageConfig`, mapeia `seedgrid.backup.*` → chaves do mapa) — ver [[SeedGrid/Extensions/backup/Visao-geral|Visão geral do backup]]; `seedgrid-quarkus-ext-security` (`UserAvatarService#buildStorageConfig`) — ver [[SeedGrid/Extensions/security/Visao-geral|Visão geral do security]]; dependência declarada em `seedgrid-quarkus-ext-login-tenancy`.
 

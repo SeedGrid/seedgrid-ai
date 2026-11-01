@@ -8,6 +8,10 @@ analisado-em: 2026-10-27
 
 # API Keys (Quarkus) — visão geral
 
+> **Todo tenant sempre tem um ADMIN.** A extension `security` não deixa remover nem rebaixar o último ADMIN ativo (invariante "mínimo 1 ADMIN ativo"): a resposta é HTTP 409 `LAST_ADMIN_PROTECTED` (escopo `seedgrid.security.admin-guard.scope`: `company` em `shared-database`, `database` em `dedicated-database`). O host não precisa reimplementar essa regra. Detalhes em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+>
+> **Atenção com API keys:** a chave pertence a quem a emitiu. O guarda só impede remover o ÚLTIMO admin; remover qualquer outro admin (ou tirá-lo da empresa) derruba as chaves dele: o dono fora da empresa da chave dá falha de autenticação (fail closed), e apagar o usuário apaga as chaves (`ON DELETE CASCADE`). Prática recomendada (decisão do dono): a chave é emitida por um admin do tenant; antes de remover um admin que emitiu chaves, avisar quem administra e reemitir as chaves por outro admin. Veja [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]].
+
 Autenticação por **API key** para integrações máquina-a-máquina. A chave é atrelada a uma **role de integração** (`for_integration`) e herda as permissões dela pelo mesmo RBAC do login JWT; o banco guarda só **hash + prefixo**, com expiração e revogação por chave. A extension também emite, lista e revoga chaves e oferece introspecção (`GET /apikeys/me`).
 
 - Configuração: [[SeedGrid/Extensions/apikeys/Configuracao|Configuração do apikeys]]

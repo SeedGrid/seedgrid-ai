@@ -15,6 +15,10 @@ Configuração: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuraç
 
 > **Publicado na 2026.10.22:** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
+> **Todo tenant sempre tem um ADMIN.** A extension `security` não deixa remover nem rebaixar o último ADMIN ativo (invariante "mínimo 1 ADMIN ativo"): a resposta é HTTP 409 `LAST_ADMIN_PROTECTED` (escopo `seedgrid.security.admin-guard.scope`: `company` em `shared-database`, `database` em `dedicated-database`). O host não precisa reimplementar essa regra. Detalhes em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+>
+> **Atenção com API keys:** a chave pertence a quem a emitiu. O guarda só impede remover o ÚLTIMO admin; remover qualquer outro admin (ou tirá-lo da empresa) derruba as chaves dele: o dono fora da empresa da chave dá falha de autenticação (fail closed), e apagar o usuário apaga as chaves (`ON DELETE CASCADE`). Prática recomendada (decisão do dono): a chave é emitida por um admin do tenant; antes de remover um admin que emitiu chaves, avisar quem administra e reemitir as chaves por outro admin. Veja [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]].
+
 ## Objetivo
 
 Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo **subdomínio** do host (`cliente1.crm.example.com` → tenant `cliente1`). Inclui:

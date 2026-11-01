@@ -32,7 +32,7 @@ Leia `data/matriz-produto.json` e percorra `perguntas` na ordem de `ordem`.
 2. **Só pergunte o que se aplica.** Uma pergunta com `se` só aparece quando a condição vale: `modelo` (a resposta da pergunta 2 está na lista), `extensao` (alguma das extensions está presente: as que o modelo traz, as escolhidas e as trazidas por dependência) e `resposta` (uma resposta anterior tem o valor indicado). Para saber o que o modelo traz, use `efeito.extensions` da opção escolhida na pergunta 2.
 3. **Opção desligada** (`disponivel: false`, como o B2C) aparece na lista com o `motivo`; não pode ser escolhida.
 4. **Modelo "modular" (3b):** quem escolhe as extensions uma a uma recebe também as dependências (`depende_de` no catálogo). Diga isso: "escolher `apikeys` traz o `security` junto".
-5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa) e siga; não prometa nem improvise.
+5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/P<plano>.F<fase>.DEM<n>-AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa; `F0` quando é do plano todo) e siga; não prometa nem improvise.
 6. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
 
 As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, ou o `id` de cada campo). Exemplo para o modelo `login-tenancy-b2b`:

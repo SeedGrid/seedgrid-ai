@@ -4,7 +4,14 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Adicionado
+- HO-12 (decisão do dono, 2026-11-01): o host não invade o domínio da extension e o teste do host testa o host. Não reimplementa regra, tabela ou endpoint que a extension entrega, e não repete o comportamento interno dela nos testes; falha causada pela extension vira demanda (HO-08). Entra em `limites-do-host`, `arquiteto`, `qa` e no `AGENTS.md` gerado.
+
+### Alterado
+- Demanda leva o plano e a fase no nome: `docs/ai/demands/P<plano>.F<fase>.DEM<n>-AAAA-MM-DD-assunto.md` (`F0` = do plano todo), com `plano:` e `fase:` no cabeçalho; vale também para os demais arquivos que a IA grava em `docs/ai/` a partir de um plano (HO-08, `sg-new-product`, `documentos.md`, `identificadores-de-plano`, `AGENTS.md` gerado). A demanda identificada no plano vira arquivo na hora (o plano só cita o id), em HO-08, `arquiteto` e `sg-diagnostico`. Decisão do dono em 2026-11-01.
+
 ### Corrigido
+- Visão geral do `filemanagement`: a tabela de registry (`registry-table.enabled`, `V1300`) e o modo `consent` do Google Drive (arquivo privado, sem link público) deixam de ser negados; só o modo `credentials` cria `anyone/reader`.
 - KB de host conferida contra o código 2026.10.22 (P51/TP.4): pacotes `spi` → `spis` nas páginas que ainda citavam o singular; marcas "não publicado" retiradas das extensions (estão no Maven Central); login social ganha `apple` e os padrões de `social-login.*`; chave de rate limit `signup-document-status` (era `signup-cnpj-status`) e `signup-personal`; `/public/signup/config` completo; notas de termos e isolamento explicam que `V239`/`V704`/`V705` hoje estão dentro de `V200`/`V700`; catálogo de propriedades regenerado.
 
 ## [0.7.0] — 2026-10-31

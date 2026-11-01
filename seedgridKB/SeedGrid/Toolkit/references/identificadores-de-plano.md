@@ -9,6 +9,7 @@ Todo item de um plano novo tem um **identificador falante**: dá para saber de q
 | --- | --- | --- | --- |
 | Tarefa | `P<plano>.F<fase>.T<tarefa>` | `P111.F2.T3` | plano 111, fase 2, tarefa 3 |
 | Decisão do dono | `P<plano>.F<fase>.D<n>` | `P111.F2.D1` | plano 111, fase 2, decisão 1 |
+| Demanda (lacuna da plataforma ou da KB) | `P<plano>.F<fase>.DEM<n>` | `P3.F2.DEM1` | plano 3, fase 2, demanda 1 (`F0` = do plano todo) |
 | Fase com letra | idem | `P24.F3b.T6` | plano 24, fase 3b, tarefa 6 |
 | Plano inteiro | `F0` | `P111.F0.T1`, `P111.F0.D2` | tarefa ou decisão que vale para o plano todo |
 | Fase final | `FIM` | `P111.FIM.T1` | tarefa da fase de E2E e fechamento |
