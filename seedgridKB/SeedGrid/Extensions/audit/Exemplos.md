@@ -125,8 +125,8 @@ Todas as implementações são mescladas (`AuditEnricher`); contribuidor que lan
 ## 7. Forçar escopo de leitura (SPI)
 
 ```java
-import br.com.seedgrid.audit.core.spi.AuditReadScope;
-import br.com.seedgrid.audit.core.spi.AuditReadScopeProvider;
+import br.com.seedgrid.audit.core.spis.AuditReadScope;
+import br.com.seedgrid.audit.core.spis.AuditReadScopeProvider;
 
 @ApplicationScoped // sem @DefaultBean: vence DefaultAuditReadScopeProvider
 public class TenantAuditReadScope implements AuditReadScopeProvider {

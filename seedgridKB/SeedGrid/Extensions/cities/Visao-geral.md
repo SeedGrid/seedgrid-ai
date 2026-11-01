@@ -9,7 +9,7 @@ analisado-em: 2026-10-27
 
 # Cities (Quarkus): visão geral
 
-> **Status: NÃO PUBLICADO.** Versão de trabalho **2026.10.22** (nunca publicada; sem compatibilidade com a 2026.10.0).
+> **Status: publicado no Maven Central em 2026-10-31.** Versão de trabalho **2026.10.22** (nunca publicada; sem compatibilidade com a 2026.10.0).
 
 Países, estados e municípios do Brasil, com código IBGE, semeados por migration (5.571 municípios, 27 estados e 5 países; Fernando de Noronha, `2605459`, entra no `R__cities_seed.sql`). É dado de referência **somente leitura**: o host consulta, não altera. O endereço guarda a cidade por id (`Address.city`, no `commons`): veja [[SeedGrid/Extensions/cities/Cidades-e-cidade-no-endereco|Cidades e a cidade no endereço]].
 
@@ -45,13 +45,13 @@ A `cities` **não** depende do `commons` nem de `BaseEntity`: é o `commons` que
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-cities` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-cities` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma. A `cities` não define anotações próprias.
 
 ## SPIs
 
-_Fonte: código de `seedgrid-quarkus-ext-cities` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-cities` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma. Não há pacote `spis`; o host usa a API concreta abaixo.
 

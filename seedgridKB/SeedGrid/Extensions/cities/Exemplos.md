@@ -9,7 +9,7 @@ analisado-em: 2026-10-27
 
 # Cities: exemplos
 
-> **Status: NÃO PUBLICADO.** Versão de trabalho **2026.10.22**. Os nomes de classes e métodos vêm do código da extension.
+> **Status: publicado no Maven Central em 2026-10-31.** Versão de trabalho **2026.10.22**. Os nomes de classes e métodos vêm do código da extension.
 
 ## Consultar municípios em código
 

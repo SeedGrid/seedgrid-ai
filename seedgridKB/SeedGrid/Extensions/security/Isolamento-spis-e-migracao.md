@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Atualizar um host existente: isolation, `spis`, `cpf_cnpj` e demais quebras
 
-> **Status: NÃO PUBLICADO.** Todas as extensions e libs foram alinhadas em **2026.10.22** (`notification` em 2026.10.15, sem mudança de código) e ainda não estão no Maven Central ([[SeedGrid/Versoes|Versões]]); a última versão publicada de cada uma segue valendo. Vem dos insumos das Fases R, 1, 1b, 2, 3, 4 e 5 e do addendum do E2E. Os itens marcados **[não verificado]** não passaram por teste. Faça a atualização primeiro numa cópia do banco.
+> **Status: publicado no Maven Central em 2026-10-31.** Todas as extensions e libs foram alinhadas em **2026.10.22** (`notification` em 2026.10.15, sem mudança de código) e ainda não estão no Maven Central ([[SeedGrid/Versoes|Versões]]); a última versão publicada de cada uma segue valendo. Vem dos insumos das Fases R, 1, 1b, 2, 3, 4 e 5 e do addendum do E2E. Os itens marcados **[não verificado]** não passaram por teste. Faça a atualização primeiro numa cópia do banco.
 
 ## Meu import de SPI parou de compilar. O que mudou?
 
@@ -84,7 +84,7 @@ Para aceitar **pessoa física** (B2C). Sem alias:
 | Erro sem `code` | `ProblemDetails` ganhou o campo opcional `code` |
 
 4. **Permissões de integração.** A `V255` zera os vínculos não liberados das roles de integração. A software house **libera por migration do host**, idempotente: `UPDATE sg_permissions SET for_integration = true WHERE name IN (...)`, e refaz o vínculo da role de integração (exemplo: `INTEGRACAO_USUARIOS` com `USER_READ`, `USER_CREATE`, `USER_UPDATE`). Sem isso não se cria chave de API. O cliente nunca libera. Detalhes: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 4.
-5. **Banco.** As migrations das extensions rodam sozinhas. Números que entram, por módulo: security `V236`, `V237`, `V238`, `V239` (termos), `V255` (integração), `V260` e `V261` (estado de acesso), `V270` (login social); billing `V514`, `V515`, `V516`; login-tenancy `V704`, `V705`; business-days `V1102` a `V1104` (a `V1100` não foi reescrita, para preservar o checksum). As migrations do **host** devem evitar estes números (as faixas são reservadas às extensions).
+5. **Banco.** As migrations das extensions rodam sozinhas. Na 2026.10.22 tudo está consolidado em `V200` (security, mais `R__security_seed.sql`), `V500` (billing), `V700` (login-tenancy) e `V1100` (business-days); a lista abaixo é o histórico dos números que entraram em cada ciclo, para quem atualiza de versão antiga. Números que entraram, por módulo: security `V236`, `V237`, `V238`, `V239` (termos), `V255` (integração), `V260` e `V261` (estado de acesso), `V270` (login social); billing `V514`, `V515`, `V516`; login-tenancy `V704`, `V705`; business-days `V1102` a `V1104` (a `V1100` não foi reescrita, para preservar o checksum). As migrations do **host** devem evitar estes números (as faixas são reservadas às extensions).
 6. **`BaseEntity.createdAt` e `updatedAt`** passaram de `LocalDateTime` para **`java.time.Instant`** (coluna `timestamptz`; no JSON saem com `Z`). Quem usava `getCreatedAt()` como `LocalDateTime` ajusta (ex.: `LocalDateTime.ofInstant(i, ZoneId.of("America/Sao_Paulo"))`). No Postgres converta as colunas **com o `USING`**:
 
 ```sql

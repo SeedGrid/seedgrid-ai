@@ -56,18 +56,18 @@ Conteúdo do ZIP `CSV_ZIP` (fonte: `CsvZipExporter#createZipArchive`): `data/<ta
 
 ## 3. Exporter customizado (SPI `BackupExporter`)
 
-Fonte: `spi/BackupExporter.java`, `spi/ExportContext.java`, `spi/ExportResult.java`; adaptado do `README.md` ("Implementar um BackupExporter"). Atenção: a extensão já registra exporters para `CSV_ZIP` e `SQL_DUMP_ZIP`; o `BackupExporterRegistry` lança `IllegalStateException` no startup se houver dois beans para o mesmo `BackupFormat`. Portanto um exporter próprio só pode coexistir se o default do mesmo formato for removido (ex. `quarkus.arc.exclude-types`) — **Inferência**; não há novos valores de `BackupFormat` além dos dois existentes.
+Fonte: `spis/BackupExporter.java`, `spis/ExportContext.java`, `spis/ExportResult.java`; adaptado do `README.md` ("Implementar um BackupExporter"). Atenção: a extensão já registra exporters para `CSV_ZIP` e `SQL_DUMP_ZIP`; o `BackupExporterRegistry` lança `IllegalStateException` no startup se houver dois beans para o mesmo `BackupFormat`. Portanto um exporter próprio só pode coexistir se o default do mesmo formato for removido (ex. `quarkus.arc.exclude-types`) — **Inferência**; não há novos valores de `BackupFormat` além dos dois existentes.
 
 ```java
 import java.util.List;
 
 import br.com.seedgrid.backup.domains.BackupFormat;
 import br.com.seedgrid.backup.domains.ExportScope;
-import br.com.seedgrid.backup.spi.BackupExporter;
-import br.com.seedgrid.backup.spi.ExportContext;
-import br.com.seedgrid.backup.spi.ExportException;
-import br.com.seedgrid.backup.spi.ExportResult;
-import br.com.seedgrid.backup.spi.ExportValidationException;
+import br.com.seedgrid.backup.spis.BackupExporter;
+import br.com.seedgrid.backup.spis.ExportContext;
+import br.com.seedgrid.backup.spis.ExportException;
+import br.com.seedgrid.backup.spis.ExportResult;
+import br.com.seedgrid.backup.spis.ExportValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -114,13 +114,13 @@ public class MySqlDumpExporter implements BackupExporter {
 
 ## 4. `TenantProvider` para host multitenant
 
-Fonte: `spi/TenantProvider.java`; default `configs/SingleTenantBackupProvider` (`@DefaultBean`, tenant `"public"`). O valor do tenant é usado como **schema PostgreSQL** (filtro de `information_schema`) e como prefixo do storage. Schedulers iteram `getAllTenants()` e não fazem nada se a lista vier vazia.
+Fonte: `spis/TenantProvider.java`; default `configs/SingleTenantBackupProvider` (`@DefaultBean`, tenant `"public"`). O valor do tenant é usado como **schema PostgreSQL** (filtro de `information_schema`) e como prefixo do storage. Schedulers iteram `getAllTenants()` e não fazem nada se a lista vier vazia.
 
 ```java
 import java.util.List;
 import java.util.Optional;
 
-import br.com.seedgrid.backup.spi.TenantProvider;
+import br.com.seedgrid.backup.spis.TenantProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -180,11 +180,11 @@ public class BackupFinishedListener {
 
 ## 6. Trocar o canal de notificação (`ExportNotificationService`)
 
-Fonte: `spi/ExportNotificationService.java`; default `EmailExportNotificationService` é `@DefaultBean`, então basta declarar outro bean. O `NotificationSchedulerService` só chama `notifyReady` quando `isEnabled()` e `seedgrid.backup.notification.enabled` são `true`; exceção → `notificationError` gravado e nova tentativa após `retry-delay`, até `max-retries`.
+Fonte: `spis/ExportNotificationService.java`; default `EmailExportNotificationService` é `@DefaultBean`, então basta declarar outro bean. O `NotificationSchedulerService` só chama `notifyReady` quando `isEnabled()` e `seedgrid.backup.notification.enabled` são `true`; exceção → `notificationError` gravado e nova tentativa após `retry-delay`, até `max-retries`.
 
 ```java
 import br.com.seedgrid.backup.entities.ExportJob;
-import br.com.seedgrid.backup.spi.ExportNotificationService;
+import br.com.seedgrid.backup.spis.ExportNotificationService;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -201,7 +201,7 @@ public class WebhookExportNotificationService implements ExportNotificationServi
 
 ## 7. Template do e-mail
 
-Fonte: `spi/impl/DefaultTemplateBackupProvider.java`. Sem código: coloque no classpath do host `templates/backup/ready-notification.html` (tem prioridade sobre `templates/backup-default/html/ready-notification.html`). Placeholders substituídos por `String.replace`: `{{jobId}}`, `{{format}}`, `{{scope}}`, `{{sizeBytes}}`, `{{finishedAt}}`.
+Fonte: `spis/impl/DefaultTemplateBackupProvider.java`. Sem código: coloque no classpath do host `templates/backup/ready-notification.html` (tem prioridade sobre `templates/backup-default/html/ready-notification.html`). Placeholders substituídos por `String.replace`: `{{jobId}}`, `{{format}}`, `{{scope}}`, `{{sizeBytes}}`, `{{finishedAt}}`.
 
 Ou implemente `TemplateBackupProvider#readyNotification(ExportJob)` em um bean próprio.
 

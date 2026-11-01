@@ -101,9 +101,9 @@ Abreviações usadas na coluna Origem:
 
 Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]] e [[SeedGrid/Extensions/security/Configuracao|Configuração do security]].
 
-### 2.8 Propriedades do ciclo 2026.10.22 (NÃO PUBLICADAS): inadimplência e escolha no checkout
+### 2.8 Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout
 
-> **Não publicado.** Entram com `seedgrid-billing-core` 2026.10.22. Receitas e contratos: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano e inadimplência]].
+> **Publicado no Maven Central (2026.10.22).** Entram com `seedgrid-billing-core` 2026.10.22. Receitas e contratos: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Limites do plano e inadimplência]].
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
@@ -112,8 +112,8 @@ Ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]
 | `seedgrid.billing.quota.companies.enabled` | boolean | `true`, `false` | `false` | Não | Liga o `PlanCompanyQuotaValidator` (limite `maxCompanies`). Desligada, o bean não existe (`@IfBuildProperty`, resolvido no build) e vale o "sem limite" da security. | `PlanUserQuotaValidator`/`PlanCompanyQuotaValidator` | Host com regra própria: deixar desligada e declarar o próprio validador, sem `@Alternative`/`@Priority` | Build | — |
 | `seedgrid.billing.past-due.read-only-after-days` | int | `0` ou mais | `7` | Não | Dias `PAST_DUE` até as empresas da conta virarem `READ_ONLY`. `0` não aplica o passo. `PlanTerm.pastDueReadOnlyAfterDays` sobrepõe (nulo usa este). | `PastDueService` | — | Runtime | `BillingPastDueConfig` |
 | `seedgrid.billing.past-due.disable-after-days` | int | `0` ou mais | `30` | Não | Dias `PAST_DUE` até desligar as empresas (menos a do responsável). `0` não aplica o passo. `PlanTerm.pastDueDisableAfterDays` sobrepõe. | `PastDueService` | — | Runtime | `BillingPastDueConfig` |
-| `seedgrid.billing.past-due.interval` | String | intervalo do `@Scheduled every` | `1h` | Não | Intervalo do agendador de inadimplência. | `PastDueScheduler` | — | Runtime | Insumo Fase 5 (não publicado) |
-| `seedgrid.billing.checkout.selection-ttl` | Duration | ex.: `48h` | `48h` | Não | Validade da referência (`selectionRef`) da escolha de usuários e empresas feita no checkout. Vencida, inexistente ou de outra conta: a assinatura é ativada sem perdas e o evento `CheckoutSelectionEvent` avisa o host. | `CheckoutSelectionService` | — | Runtime | Insumo Fase 5 (não publicado) |
+| `seedgrid.billing.past-due.interval` | String | intervalo do `@Scheduled every` | `1h` | Não | Intervalo do agendador de inadimplência. | `PastDueScheduler` | — | Runtime | Insumo Fase 5 |
+| `seedgrid.billing.checkout.selection-ttl` | Duration | ex.: `48h` | `48h` | Não | Validade da referência (`selectionRef`) da escolha de usuários e empresas feita no checkout. Vencida, inexistente ou de outra conta: a assinatura é ativada sem perdas e o evento `CheckoutSelectionEvent` avisa o host. | `CheckoutSelectionService` | — | Runtime | Insumo Fase 5 |
 
 ## 3. Propriedades de frameworks (definidas no `core-mp`, ordinal 100)
 

@@ -10,7 +10,7 @@ analisado-em: 2026-10-27
 
 Notas relacionadas: [[SeedGrid/Extensions/security/Enums|Enums do security]] · [[SeedGrid/Extensions/security/Configuracao|Configuração do security]] · [[SeedGrid/Extensions/security/Exemplos|Exemplos do security]] · [[SeedGrid/Extensions/security/Rust|Porte Rust]]
 
-> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Publicado na 2026.10.22:** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Objetivo e funcionalidades
 
@@ -84,7 +84,7 @@ Filtros JAX-RS: `SelfEnterDisabledFilter` (`@PreMatching`, 404 quando self-enter
 
 ### Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-security` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -105,7 +105,7 @@ _Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, n�
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/security/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-security` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-security` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

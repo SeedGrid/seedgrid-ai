@@ -110,7 +110,7 @@ Observação (Confirmado): mesmo com `async-enabled=true`, o scheduler de fila t
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/backup/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-backup` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-backup` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
@@ -137,8 +137,8 @@ public class MeuBackupExporter implements BackupExporter {
 | `spi.TenantProvider` | `configs.SingleTenantBackupProvider` (`@DefaultBean`, tenant fixo `"public"`) | bean próprio (hosts multitenant) |
 | `spi.ExportNotificationService` | `services.EmailExportNotificationService` (`@DefaultBean`) | bean próprio |
 | `spi.TemplateBackupProvider` | `spi.impl.DefaultTemplateBackupProvider` (`@DefaultBean`; usa `templates/backup/ready-notification.html` do host, senão `templates/backup-default/html/ready-notification.html`; placeholders `{{jobId}}`, `{{format}}`, `{{scope}}`, `{{sizeBytes}}`, `{{finishedAt}}`) | bean próprio ou template no classpath do host |
-| `commons.persistence.spi.CurrentUserProvider` | nenhum na extensão | **o host deve fornecer** |
-| `commons.spi.UserContactProvider` | nenhum na extensão | necessário para o e-mail (destinatário via `provideByPublicId`) — Inferência: o host/commons fornece |
+| `commons.persistence.spis.CurrentUserProvider` | nenhum na extensão | **o host deve fornecer** |
+| `commons.spis.UserContactProvider` | nenhum na extensão | necessário para o e-mail (destinatário via `provideByPublicId`) — Inferência: o host/commons fornece |
 
 ### Eventos
 - `SgUserEvent(userPublicId, "backup", "backup.finished.success" | "backup.finished.error", {exportPublicId, status})` — só quando o job tem `createUserPublicId`.
@@ -156,7 +156,7 @@ public class MeuBackupExporter implements BackupExporter {
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-backup` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-backup` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 

@@ -12,11 +12,11 @@ Voltar: [[SeedGrid/Extensions/cache/Visao-geral|Visão geral do cache]] · [[See
 
 | Enum | Pacote/arquivo | Usado em | Público? |
 |---|---|---|---|
-| `CacheProviderFailSoft.Level` | `br.com.seedgrid.cache.core.commons.spi.CacheProviderFailSoft` | tipo lógico da propriedade `seedgrid.cache.if-provider-is-down` | Sim (enum aninhado `public`) |
+| `CacheProviderFailSoft.Level` | `br.com.seedgrid.cache.core.commons.spis.CacheProviderFailSoft` | tipo lógico da propriedade `seedgrid.cache.if-provider-is-down` | Sim (enum aninhado `public`) |
 
 ## Level
 
-Arquivo: `java/seedgrid-quarkus-lib-cache/seedgrid-cache-core/src/main/java/br/com/seedgrid/cache/core/commons/spi/CacheProviderFailSoft.java` — FQN `br.com.seedgrid.cache.core.commons.spi.CacheProviderFailSoft.Level`.
+Arquivo: `java/seedgrid-quarkus-lib-cache/seedgrid-cache-core/src/main/java/br/com/seedgrid/cache/core/commons/spis/CacheProviderFailSoft.java` — FQN `br.com.seedgrid.cache.core.commons.spis.CacheProviderFailSoft.Level`.
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|

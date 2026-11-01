@@ -20,7 +20,7 @@ Nenhum enum desta extensão é tipo de propriedade de configuração (`BackupCon
 | [[SeedGrid/Extensions/backup/Enums#ExportScope\|ExportScope]] | `domains/ExportScope.java` | `ExportRequest.scope`, `ExportResponse.scope`, `ExportJob.scope` (`sg_export_jobs.scope`), `ExportContext.getScope()` (SPI) | Sim |
 | [[SeedGrid/Extensions/backup/Enums#BackupFormat\|BackupFormat]] | `domains/BackupFormat.java` | `ExportRequest.format`, `ExportResponse.format`, `ExportJob.format` (`sg_export_jobs.format`), SPI `BackupExporter#format()` | Sim |
 | [[SeedGrid/Extensions/backup/Enums#ExportArtifact.ArtifactType\|ExportArtifact.ArtifactType]] | `entities/ExportArtifact.java` | `ExportArtifact.artifactType` (`sg_export_artifacts.artifact_type`), `ExportResponse.artifacts[].type` | Sim |
-| [[SeedGrid/Extensions/backup/Enums#ExportResult.ArtifactType\|ExportResult.ArtifactType]] | `spi/ExportResult.java` | `ExportResult.ArtifactData.type` (retorno do SPI `BackupExporter#export`) | Sim |
+| [[SeedGrid/Extensions/backup/Enums#ExportResult.ArtifactType\|ExportResult.ArtifactType]] | `spis/ExportResult.java` | `ExportResult.ArtifactData.type` (retorno do SPI `BackupExporter#export`) | Sim |
 
 ## ExportStatus
 
@@ -122,7 +122,7 @@ Sem campos. Serialização: JSON pelo nome (`ExportResponse.ArtifactInfo.type`);
 
 ## ExportResult.ArtifactType
 
-Arquivo: `spi/ExportResult.java` (enum aninhado) — FQN `br.com.seedgrid.backup.spi.ExportResult.ArtifactType`.
+Arquivo: `spis/ExportResult.java` (enum aninhado) — FQN `br.com.seedgrid.backup.spis.ExportResult.ArtifactType`.
 
 Valores: `ZIP`, `MANIFEST`, `CHECKSUMS`, `LOG` — espelho exato do enum de entidade; `ExportService#mapArtifactType` converte 1:1 por `switch` exaustivo (**Confirmado**). Usado por quem implementa `BackupExporter` (campo `type` de `ExportResult.ArtifactData`). Não é serializado nem persistido diretamente. Para o efeito de cada valor veja a seção anterior.
 

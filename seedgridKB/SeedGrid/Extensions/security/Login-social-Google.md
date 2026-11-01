@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Login com Google: como ligar, passo a passo
 
-> **Status: NÃO PUBLICADO.** O módulo `seedgrid-security-social` e as versões de `security` e `login-tenancy` que o usam (todas **2026.10.22**) ainda não estão no Maven Central ([[SeedGrid/Versoes|Versões]]). Os nomes das propriedades abaixo foram conferidos no `microprofile-config.properties` e no README do módulo. O que é **procedimento do Google** (telas do Cloud Console) não foi executado aqui e pode mudar: confira na documentação do Google. Isso está marcado como **[procedimento do fornecedor]**.
+> **Status: publicado no Maven Central em 2026-10-31.** O módulo `seedgrid-security-social` e as versões de `security` e `login-tenancy` que o usam (todas **2026.10.22**) ainda não estão no Maven Central ([[SeedGrid/Versoes|Versões]]). Os nomes das propriedades abaixo foram conferidos no `microprofile-config.properties` e no README do módulo. O que é **procedimento do Google** (telas do Cloud Console) não foi executado aqui e pode mudar: confira na documentação do Google. Isso está marcado como **[procedimento do fornecedor]**.
 
 Contexto: o login social é um módulo **opcional** (`seedgrid-security-social`, sobre o `quarkus-oidc`). Quem não o adiciona não carrega OIDC. As regras de segurança (vínculo de conta, 2FA, termos) estão em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]], Fase 2b. Esta nota é só o **como fazer**.
 
@@ -57,7 +57,7 @@ SEEDGRID_SECURITY_SOCIAL_GOOGLE_REDIRECT_URI=https://api.exemplo.com.br/public/a
 
 | Propriedade | Efeito |
 |---|---|
-| `seedgrid.security.social.providers` | Lista de provedores ligados (`google`, `facebook`). Use `google`, **não** `gmail`. Ausente ou vazia = módulo inerte (nenhum botão, nenhuma rota ativa). Não existe chave "enabled" por provedor: quem liga é só a lista. |
+| `seedgrid.security.social.providers` | Lista de provedores ligados (`google`, `facebook`, `apple`). Use `google`, **não** `gmail`. Ausente ou vazia = módulo inerte (nenhum botão, nenhuma rota ativa). Não existe chave "enabled" por provedor: quem liga é só a lista. |
 | `seedgrid.security.social.google.client-id` / `.client-secret` | Credenciais do cliente OAuth. |
 | `seedgrid.security.social.google.state-secret` | Cifra o estado do fluxo (proteção contra CSRF). |
 | `seedgrid.security.social.google.encryption-secret` | Cifra o cookie de sessão do fluxo OIDC. |

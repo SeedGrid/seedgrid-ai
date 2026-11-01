@@ -86,13 +86,13 @@ O deployment (`SeedgridRealtimeProcessor`) registra a feature `seedgrid-realtime
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 
 ## SPIs
 
-_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-realtime` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 

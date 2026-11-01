@@ -81,7 +81,7 @@ Modelo: `Plan` 1:N `PlanTerm` 1:N `PlanTermMeter`. `Account` 1:N `Subscription` 
 
 ### Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-billing` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -97,7 +97,7 @@ _Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, nã
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/billing/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-billing` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-billing` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

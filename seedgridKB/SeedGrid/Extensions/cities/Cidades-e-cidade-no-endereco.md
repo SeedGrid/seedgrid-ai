@@ -1,12 +1,12 @@
 ---
-description: "Como usar países, estados e cidades (com código IBGE) no produto e guardar a cidade do endereço como id de município (Address.city é @ManyToOne para a cities), em perguntas e respostas: dependência, pacotes do Hibernate, API de empresa e cadastro (cityId), migração do texto antigo, REST (inclusive a consulta pública) e armadilhas (2026.10.22, não publicado)."
+description: "Como usar países, estados e cidades (com código IBGE) no produto e guardar a cidade do endereço como id de município (Address.city é @ManyToOne para a cities), em perguntas e respostas: dependência, pacotes do Hibernate, API de empresa e cadastro (cityId), migração do texto antigo, REST (inclusive a consulta pública) e armadilhas (2026.10.22, publicado)."
 tags: [seedgrid, extension, cities, endereco, ibge, commons, security, host, perguntas-e-respostas]
 analisado-em: 2026-10-24
 ---
 
 # Cidades e a cidade no endereço
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-cities`, `seedgrid-commons`, `seedgrid-security`, `seedgrid-business-days`, `seedgrid-login-tenancy` e `seedgrid-subdomain-tenancy` na versão de trabalho **2026.10.22**, sem compatibilidade com a 2026.10.0. Fonte: insumos do time de plataforma, que informou testes verdes (Postgres real). Conferi no código só os códigos de erro e as propriedades da REST; o resto está em "Não verificado". Veja também [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-cities`, `seedgrid-commons`, `seedgrid-security`, `seedgrid-business-days`, `seedgrid-login-tenancy` e `seedgrid-subdomain-tenancy` na versão de trabalho **2026.10.22**, sem compatibilidade com a 2026.10.0. Fonte: insumos do time de plataforma, que informou testes verdes (Postgres real). Conferi no código só os códigos de erro e as propriedades da REST; o resto está em "Não verificado". Veja também [[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## O que a extension `cities` entrega?
 
@@ -79,4 +79,4 @@ Testes informados pelo time de plataforma: `cities` 116 verdes; Playwright b2b 1
 
 - O código e os testes (98 da `cities`, mais os de empresa, cadastro e tenant): vêm dos insumos do time de plataforma.
 - A consulta pública foi conferida só na existência da rota, da propriedade e do filtro no código; os números de teste vêm do time de plataforma.
-- Versões ainda não publicadas no Maven Central: produto gerado só compila onde as extensions estão instaladas localmente.
+- As versões 2026.10.22 das extensions estão no Maven Central desde 2026-10-31: o produto gerado resolve tudo do Central, sem instalação local.

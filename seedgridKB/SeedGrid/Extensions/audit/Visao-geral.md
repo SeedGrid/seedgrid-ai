@@ -74,9 +74,9 @@ sequenceDiagram
 | Anotação | `SgAuditLookup` | `field()` |
 | Enum | `AuditOperationEnum` | `CREATE, UPDATE, DELETE, READ, OTHER` |
 | Enum | `AuditPersistenceStrategy` | `MONGODB, JPA` |
-| SPI | `core.spi.AuditPersistenceProvider` | liga strategy aos repositórios (fornecido pelos módulos de store) |
+| SPI | `core.spis.AuditPersistenceProvider` | liga strategy aos repositórios (fornecido pelos módulos de store) |
 | SPI | `core.services.AuditMetadataContributor` | `Map<String,String> contribute()` mesclado em `AuditLog.metadata` |
-| SPI | `core.spi.AuditReadScopeProvider` | força filtro `metaKey/metaValue` na leitura; default `DefaultAuditReadScopeProvider` (`@DefaultBean`, irrestrito) |
+| SPI | `core.spis.AuditReadScopeProvider` | força filtro `metaKey/metaValue` na leitura; default `DefaultAuditReadScopeProvider` (`@DefaultBean`, irrestrito) |
 | SPI | `core.services.AuditRequestContextProvider` | origin/IP/UA; default `HttpAuditRequestContextProvider` (`@DefaultBean`; usa `Origin`→`Referer`→`Host`, `X-Forwarded-For`) |
 | Bean | `core.services.AuditGateway` / `AuditGatewayImpl` (`@DefaultBean`) | `persist(AuditLog)` para auditoria programática (enriquece e persiste) |
 | Utilitário | `core.services.AuditEmitter#emit(AuditLog)` | estático, best-effort (nunca lança) via `AuditGateway` |
@@ -94,7 +94,7 @@ sequenceDiagram
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-audit` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -105,7 +105,7 @@ _Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não 
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/audit/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-audit` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-audit` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

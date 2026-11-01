@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Corrigido
+- KB de host conferida contra o código 2026.10.22 (P51/TP.4): pacotes `spi` → `spis` nas páginas que ainda citavam o singular; marcas "não publicado" retiradas das extensions (estão no Maven Central); login social ganha `apple` e os padrões de `social-login.*`; chave de rate limit `signup-document-status` (era `signup-cnpj-status`) e `signup-personal`; `/public/signup/config` completo; notas de termos e isolamento explicam que `V239`/`V704`/`V705` hoje estão dentro de `V200`/`V700`; catálogo de propriedades regenerado.
+
 ## [0.7.0] — 2026-10-31
 
 ### Adicionado

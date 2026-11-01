@@ -110,7 +110,7 @@ public void sendResetEmail(...) { ... }
 Fonte: Javadoc de `SgRateLimit#identity` e `README.adoc`.
 
 ```java
-import br.com.seedgrid.resilience.core.runtime.ratelimiter.spi.AnonymousIdentityResolver;
+import br.com.seedgrid.resilience.core.runtime.ratelimiter.spis.AnonymousIdentityResolver;
 
 @SgRateLimit(permits = 10, window = 1, windowUnit = ChronoUnit.MINUTES,
                    identity = AnonymousIdentityResolver.class)
@@ -123,7 +123,7 @@ Fonte: `README.md`. Assinatura real: `String resolve(SeedGridInvocationContext c
 
 ```java
 import br.com.seedgrid.resilience.core.runtime.core.SeedGridInvocationContext;
-import br.com.seedgrid.resilience.core.runtime.ratelimiter.spi.IdentityResolver;
+import br.com.seedgrid.resilience.core.runtime.ratelimiter.spis.IdentityResolver;
 
 @ApplicationScoped
 public class TenantIdentityResolver implements IdentityResolver {

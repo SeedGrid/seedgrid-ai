@@ -13,7 +13,7 @@ Configuração: [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuraç
 > [!note] Fontes
 > Lido no código do commit `fe62530a29`. O `README.md` e os `docs/` da extension foram revisados contra o código em 2026-10-14. Os relatórios `AJUSTES_REALIZADOS.md`, `AUDITORIA_FINAL_CONFORMIDADE.md`, `CORRECOES_FINALIZADAS.md`, `IMPLEMENTATION_SUMMARY.md`, `RELATORIO_CONFORMIDADE.md`, `REVISAO_FINAL_CONFORMIDADE.md` e `SETUP_ENVIRONMENT.md` (raiz do repo) são históricos.
 
-> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Publicado na 2026.10.22:** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Objetivo
 
@@ -41,11 +41,11 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 
 | Artefato | Versão | Uso aqui |
 |---|---|---|
-| `seedgrid-commons` | 2026.10.08 | `BaseEntity`, `commons.spi.TenantProvider`, `SchemaUtils`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
+| `seedgrid-commons` | 2026.10.08 | `BaseEntity`, `commons.spis.TenantProvider`, `SchemaUtils`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
 | `seedgrid-security` | 2026.10.14 | Usuários/papéis, JWT, `PasswordService`, SPIs `JwtTokenCustomizer`, `JwtTokenValidator`, `SecurityScopeResolverProvider`, `SecurityLinkBuilder` |
 | `seedgrid-privacy` | 2026.07.27 | Mascaramento/criptografia de PII do `Tenant` |
 | `seedgrid-audit-core` | 2026.09.25 | `AuditMetadataContributor`, `AuditReadScopeProvider` (`seedgrid-audit-postgresql` só em teste) |
-| `seedgrid-backup` | 2026.10.09 | `backup.spi.TenantProvider` |
+| `seedgrid-backup` | 2026.10.09 | `backup.spis.TenantProvider` |
 | `seedgrid-billing-core` | 2026.10.14-1 | Conta/trial por tenant, SPIs `CurrentAccountResolver`, `AccountMembersGateway` (`seedgrid-billing-stripe` só em `dependencyManagement`) |
 | `seedgrid-apikeys` | 2026.10.14 | Schema de API keys no master e nos tenants |
 | `seedgrid-notification` (+ `-deployment`) | 2026.10.15 | Catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
@@ -97,7 +97,7 @@ Paths centralizados em `RestControllerPath`. As exceptions herdam `BusinessExcep
 
 ### Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -112,7 +112,7 @@ _Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/subdomain-tenancy/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-subdomain-tenancy` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

@@ -16,7 +16,7 @@ Foundation **orquestradora** para aplicações **banco único, multi-empresa (po
 - Porte Rust (crate `seedgrid-rust-crate-login-tenancy`): [[SeedGrid/Extensions/login-tenancy/Rust|Porte Rust]]
 - Alternativa com isolamento físico por tenant: [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|subdomain-tenancy]] (mutuamente exclusivas, segundo o README).
 
-> **Em andamento (não publicado):** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Publicado na 2026.10.22:** mudanças de escopo e acesso (isolamento de RBAC entre tenants, `isolation`, permissões somente leitura, cadastro por `publicId`, `@QUERY`) em [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Módulos Maven e coordenadas (Confirmado — `pom.xml`)
 
@@ -111,7 +111,7 @@ O código de verificação **não** volta na resposta do signup (`SignupResponse
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 
@@ -119,7 +119,7 @@ Nenhuma.
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/login-tenancy/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-login-tenancy` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

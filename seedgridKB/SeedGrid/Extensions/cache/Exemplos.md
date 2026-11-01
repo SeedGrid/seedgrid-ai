@@ -145,5 +145,5 @@ Com `src/test/resources/application.properties`:
 
 ```properties
 quarkus.redis.devservices.enabled=false
-quarkus.arc.selected-alternatives=br.com.seedgrid.cache.redis.commons.spi.SeedGridCacheRedis
+quarkus.arc.selected-alternatives=br.com.seedgrid.cache.redis.commons.spis.SeedGridCacheRedis
 ```

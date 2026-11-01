@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Ver também: [[SeedGrid/Extensions/security/Visao-geral|Visão geral do security]] · [[SeedGrid/Extensions/security/Configuracao|Configuração do security]] · [[SeedGrid/Extensions/security/Rust|Porte Rust]]
 
-Fontes: assinaturas lidas em `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/seedgrid/security/spi/*.java`; testes em `runtime/src/test/java/br/com/seedgrid/security/`; `README.md` da extension; exemplo `platform-examples/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`, depende de `seedgrid-security:2026.09.25`). Exemplos marcados *ilustrativo* combinam a API real com lógica de negócio fictícia.
+Fontes: assinaturas lidas em `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/seedgrid/security/spis/*.java`; testes em `runtime/src/test/java/br/com/seedgrid/security/`; `README.md` da extension; exemplo `platform-examples/examples/seedgrid-security-example` (repo próprio, commit `86cfc37`, depende de `seedgrid-security:2026.09.25`). Exemplos marcados *ilustrativo* combinam a API real com lógica de negócio fictícia.
 
 ## 1. Dependência
 
@@ -95,7 +95,7 @@ Assinatura: `void validate(User user, Map<String, JsonNode> additionalAttributes
 ```java
 import br.com.seedgrid.security.entities.User;
 import br.com.seedgrid.security.exceptions.InvalidUserAdditionalAttributesException;
-import br.com.seedgrid.security.spi.UserAdditionalFieldsValidator;
+import br.com.seedgrid.security.spis.UserAdditionalFieldsValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Map;

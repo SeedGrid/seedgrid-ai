@@ -91,13 +91,13 @@ Modelo de regra (runtime): `NotificationRule(enabled, channels, emails, phones, 
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-notification` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-notification` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 
 ## SPIs
 
-_Fonte: código de `seedgrid-quarkus-ext-notification` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-notification` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 

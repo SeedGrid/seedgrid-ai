@@ -75,7 +75,7 @@ flowchart LR
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -84,7 +84,7 @@ _Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, n�
 
 ## SPIs
 
-_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-whatsapp` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

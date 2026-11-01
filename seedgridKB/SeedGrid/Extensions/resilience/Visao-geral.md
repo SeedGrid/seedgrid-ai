@@ -84,8 +84,8 @@ flowchart LR
 |---|---|---|
 | Anotação (InterceptorBinding) | `...ratelimiter.annotations.SgRateLimit` | `permits`, `window`, `windowUnit`, `algorithm`, `burstCapacity`, `minSpacing`, `minSpacingUnit`, `identity`, `group`, `scope`, `emitHeaders`, `configKey` (detalhes em [[SeedGrid/Extensions/resilience/Configuracao\|Configuração]]) |
 | Anotação (InterceptorBinding) | `...circuitbreaker.annotations.SgCircuitBreaker` | `name`, `slidingWindowSize`, `windowType`, `failureRateThreshold`, `slowCallDurationThresholdMs`, `slowCallRateThreshold`, `minimumNumberOfCalls`, `openStateDurationMs`, `permittedCallsInHalfOpen`, `recordExceptions`, `ignoreExceptions`, `fallbackMethod` |
-| SPI | `...ratelimiter.spi.IdentityResolver` | `String resolve(SeedGridInvocationContext ctx)`; prontos: `IpIdentityResolver` (X-Forwarded-For → X-Real-IP → remote address → `anonymous`), `AnonymousIdentityResolver` |
-| SPI | `...circuitbreaker.spi.CircuitBreakerStore` | `allowCall`, `onSuccess`, `onError`; implementação `CacheBackedCircuitBreakerStore` (`@ApplicationScoped`, sem `@DefaultBean`) |
+| SPI | `...ratelimiter.spis.IdentityResolver` | `String resolve(SeedGridInvocationContext ctx)`; prontos: `IpIdentityResolver` (X-Forwarded-For → X-Real-IP → remote address → `anonymous`), `AnonymousIdentityResolver` |
+| SPI | `...circuitbreaker.spis.CircuitBreakerStore` | `allowCall`, `onSuccess`, `onError`; implementação `CacheBackedCircuitBreakerStore` (`@ApplicationScoped`, sem `@DefaultBean`) |
 | SPI | `...ratelimiter.algorithm.RateLimitAlgorithmStrategy` | `acquire(SeedGridCacheProvider, RateLimitRequest)` |
 | Contexto | `...core.SeedGridInvocationContext` / `ThreadLocalSeedGridInvocationContext` | `set/clear/runWith/callWith`; atributos `tenantId` e `operation` entram na chave do rate limit. A extension **não** popula esse contexto: o host precisa fazê-lo (senão usa `EmptySeedGridInvocationContext`) |
 | Beans CDI | `RateLimitService`, `RateLimitService.Clock`, `CircuitBreakerConfigResolver`, algoritmos | `@ApplicationScoped` |
@@ -96,7 +96,7 @@ Endpoints REST próprios: nenhum no runtime (o `integration-tests` tem só `GET 
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -107,7 +107,7 @@ _Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, 
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/resilience/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-resilience` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|
@@ -131,7 +131,7 @@ public class MeuCircuitBreakerStore implements CircuitBreakerStore {
 | `runtime/src/test/.../circuitbreaker/CircuitBreakerStoreIT.java` | IT com Redis | Transições de estado, slow calls, record/ignore, janela por tempo, persistência |
 | `runtime/src/test/.../ratelimiter/services/RateLimitServiceConfigOverrideTest.java` | Unitário (Mockito `Config`) | Overrides `seedgrid.ratelimit.checkout.*`, kebab-case em `algorithm`, sem `configKey` ignora config |
 | `runtime/src/test/.../circuitbreaker/configs/CircuitBreakerConfigResolverTest.java` | Unitário | Overrides `seedgrid.circuitbreaker.payments.*`, sem `name` ignora config, `enabled` |
-| `runtime/src/test/.../ratelimiter/spi/IpIdentityResolverTest.java`, `AnonymousIdentityResolverTest.java` | Unitário | Resolução de identidade |
+| `runtime/src/test/.../ratelimiter/spis/IpIdentityResolverTest.java`, `AnonymousIdentityResolverTest.java` | Unitário | Resolução de identidade |
 | `deployment/src/test/.../SeedgridResilienceCoreTest.java`, `SeedgridResilienceCoreDevModeTest.java` | QuarkusUnitTest / DevModeTest | Boot sem camada HTTP e sem config |
 
 ## Limitações

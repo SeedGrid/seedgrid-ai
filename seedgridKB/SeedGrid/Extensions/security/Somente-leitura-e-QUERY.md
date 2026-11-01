@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Somente leitura (`READ_ONLY`), `QUERY` e `@SgReadOnlySafe`
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-security` e `seedgrid-quarkus-lib-commons` **2026.10.22** ([[SeedGrid/Versoes|Versões]]). Conferido contra `microprofile-config.properties` do security e os guardiões `CompanyAccessGuardianIT` e `ReadOnlyAdminResourcesIT`. Quem muda o estado por inadimplência ou por plano é o billing: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Inadimplência e limites do plano]]. Resumo por fase: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-security` e `seedgrid-quarkus-lib-commons` **2026.10.22** ([[SeedGrid/Versoes|Versões]]). Conferido contra `microprofile-config.properties` do security e os guardiões `CompanyAccessGuardianIT` e `ReadOnlyAdminResourcesIT`. Quem muda o estado por inadimplência ou por plano é o billing: [[SeedGrid/Extensions/billing/Inadimplencia-e-limites-do-plano|Inadimplência e limites do plano]]. Resumo por fase: [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Como bloqueio a escrita de uma empresa sem apagar nada?
 

@@ -70,7 +70,7 @@ public class SignupRequest {
 
 ## Exceções → Problem Details
 
-Cada exception é **específica** e declara o status nela; o `ApiExceptionHandler` monta o `problem+json` (*não publicado, versão local 2026.10.22*):
+Cada exception é **específica** e declara o status nela; o `ApiExceptionHandler` monta o `problem+json` (versão 2026.10.22):
 
 ```java
 // 4xx: erro do cliente

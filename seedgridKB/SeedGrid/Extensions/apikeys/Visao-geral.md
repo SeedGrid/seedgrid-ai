@@ -92,7 +92,7 @@ Os endpoints de gestão chamam `ensureManagementEnabled()` (`ApiKeyActivationPol
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 
@@ -100,7 +100,7 @@ Nenhuma.
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/apikeys/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-apikeys` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

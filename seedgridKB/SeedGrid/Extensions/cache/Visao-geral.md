@@ -62,8 +62,8 @@ flowchart LR
 
 | Tipo | Símbolo | Observação |
 |---|---|---|
-| Interface SPI | `br.com.seedgrid.cache.core.commons.spi.SeedGridCacheProvider` | `getString/putString`, `getBytes/putBytes`, `getLong/putLong`, `increment(key)`, `increment(key, ttl)`, `delete`, `<T> withLock(key, ttl, Supplier<T>)` |
-| Bean CDI default | `...core.commons.spi.impl.DefaultSeedGridCache` | in-memory, `@DefaultBean` |
+| Interface SPI | `br.com.seedgrid.cache.core.commons.spis.SeedGridCacheProvider` | `getString/putString`, `getBytes/putBytes`, `getLong/putLong`, `increment(key)`, `increment(key, ttl)`, `delete`, `<T> withLock(key, ttl, Supplier<T>)` |
+| Bean CDI default | `...core.commons.spis.impl.DefaultSeedGridCache` | in-memory, `@DefaultBean` |
 | Beans CDI alternativos | `SeedGridCacheRedis`, `SeedGridCacheValkey`, `SeedGridCacheDragonfly` | injetam `RedisDataSource` padrão (`@Default`) |
 | Utilitário público | `CacheProviderFailSoft` (`get`, `run`, `Level.parse`, constante `PROP`) | usado pelos providers; reutilizável por quem implementar outro provider |
 | SmallRye `ConfigSourceInterceptor` | `...core.config.SeedGridCacheConfigRelocateInterceptor` | registrado via ServiceLoader |
@@ -72,7 +72,7 @@ Não há endpoints REST, eventos CDI, migrations nem anotações próprias.
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-lib-cache` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -87,7 +87,7 @@ _Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não 
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/cache/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-lib-cache` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

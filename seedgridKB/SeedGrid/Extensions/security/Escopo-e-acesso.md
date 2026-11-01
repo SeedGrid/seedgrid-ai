@@ -5,7 +5,7 @@ tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, es
 
 # security — Escopo e acesso (ciclo em andamento)
 
-> **Status: NÃO PUBLICADO.** O ciclo ainda está aberto; as extensions só serão publicadas quando ele terminar. Até lá, estas mudanças **não existem** nas versões do Maven Central (`Versoes.md`). Não use nada daqui em um host que dependa das versões atuais. Quando a publicação sair, esta nota recebe a versão e seu conteúdo passa para a [[SeedGrid/Extensions/security/Configuracao|Configuração]] e a [[SeedGrid/Extensions/security/Visao-geral|Visão geral]].
+> **Status: publicado no Maven Central em 2026-10-31.** O ciclo ainda está aberto; as extensions só serão publicadas quando ele terminar. Até lá, estas mudanças **não existem** nas versões do Maven Central (`Versoes.md`). Não use nada daqui em um host que dependa das versões atuais. Quando a publicação sair, esta nota recebe a versão e seu conteúdo passa para a [[SeedGrid/Extensions/security/Configuracao|Configuração]] e a [[SeedGrid/Extensions/security/Visao-geral|Visão geral]].
 
 Cobre `seedgrid-quarkus-ext-security`, `-login-tenancy`, `-subdomain-tenancy` e `-lib-commons`. Cada item tem `CHANGELOG.md` no repositório da extension.
 
@@ -74,7 +74,7 @@ Cobre security, billing-core, login-tenancy e subdomain-tenancy. B2C vale **só 
   - `POST /public/signup` (empresa): campo `cpfCnpj` (CNPJ) no lugar de `cnpj`.
   - `POST /public/signup/personal` (PF): `name`, `email`, `password`, `whatsapp`, `cpf` (opcional), `acceptedTerms`, `termsVersion`. E-mail que já tem conta: **409** (PF nunca vincula).
   - `GET /public/signup/document-status?cpfCnpj=` substitui `cnpj-status`.
-  - `GET /public/signup/config` devolve `{customerType, termsRequired, termsVersion, termsDocuments}` (o front monta PF, PJ ou o seletor).
+  - `GET /public/signup/config` devolve `{customerType, termsRequired, termsVersion, termsDocuments, socialProviders, personalDocumentRequired}` (o front monta PF, PJ ou o seletor).
   - `SignupConfirmedEvent(personType, cpfCnpj, ...)`.
 - **Termos** (security, V239): tabela `sg_terms_acceptance` (um registro por usuário e versão, com instante, IP e user-agent); `GET /public/terms`; `POST /me/terms/accept` (`{version}`; versão diferente da vigente: 409 `TERMS_VERSION_MISMATCH`); o login devolve `termsAcceptanceRequired`; cadastro sem aceite da versão vigente: 400 `TERMS_NOT_ACCEPTED`.
 - **Login social (decisão para a Fase 2b, 2026-10-19):** o e-mail do provedor é opcional (o Facebook nem sempre devolve); a identidade é `(provider, subject)`, sem coluna por rede; sem e-mail verificado o fluxo pede e confirma o e-mail antes de criar ou vincular; CPF não é pedido no login social. Implementado na Fase 2b abaixo.
@@ -289,7 +289,7 @@ Feriados nacionais e o de SP semeados, móveis que o tenant desmarca e "vai trab
 
 ## Correções vindas do E2E (2026-10-22 e 23)
 
-Origem: baterias E2E dos boilerplates (backend + Playwright) e testes de integração com Postgres real. Ainda em "Não publicado" nos CHANGELOGs (versão 2026.10.22).
+Origem: baterias E2E dos boilerplates (backend + Playwright) e testes de integração com Postgres real. Publicado na versão 2026.10.22 (Maven Central, 2026-10-31).
 
 - **READ_ONLY barra a administração** (`@SgReadOnlyEnforced` em `UserController`, `RoleController`, `PermissionController` e `CompanyController`). Quebra leve: ver [[SeedGrid/Extensions/security/Somente-leitura-e-QUERY|Somente leitura e QUERY]].
 - **`LastAdminGuard` perde menos ADMIN e vale entre servidores.** `PATCH /users/{id} {rolePublicIds}` que tira o perfil `ADMIN` do **único** ADMIN dá **409 `LAST_ADMIN_PROTECTED`** (antes 200: o vínculo repetia a role e escondia a perda). Duas desativações simultâneas dos dois únicos ADMIN deixavam o tenant com zero ADMIN. A invariante agora é protegida por **lock no banco**, que vale **entre nós** (vários servidores): em transação JTA, `PESSIMISTIC_WRITE` (`SELECT ... FOR UPDATE`) na linha da empresa; no tenant em *autocommit* (subdomain-tenancy, cujo datasource não participa da JTA), uma conexão dedicada com `pg_advisory_xact_lock` por empresa. Um dos dois pedidos leva 409. Se o lock não sair a tempo (`seedgrid.security.admin-guard.lock-timeout`, padrão `PT5S`) ou o banco desfizer por *deadlock*, a resposta é **503 `ADMIN_GUARD_LOCK_TIMEOUT` com `Retry-After`**, nunca 500; nada foi gravado e o cliente pode repetir. O `AdminGuardMutex` (trava por JVM) foi removido. Commits do security `60e197a` e `12ad92b`; versão 2026.10.22, não publicado.

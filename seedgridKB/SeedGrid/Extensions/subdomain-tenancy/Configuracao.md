@@ -119,7 +119,7 @@ Executado por `MigrationService#masterMigrate` → `AdminUserBootstrapService#se
 
 ### 2.7 E-mail (mailer nomeado `subdomaintenancy`)
 
-As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."subdomaintenancy".*`, usado por `RT/spi/impl/MailerNotificationService` (`@MailerName("subdomaintenancy")`, `@DefaultBean`) para enviar o OTP. Nenhum código lê as chaves `seedgrid.subdomain-tenancy.mailer.*` diretamente.
+As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."subdomaintenancy".*`, usado por `RT/spis/impl/MailerNotificationService` (`@MailerName("subdomaintenancy")`, `@DefaultBean`) para enviar o OTP. Nenhum código lê as chaves `seedgrid.subdomain-tenancy.mailer.*` diretamente.
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|

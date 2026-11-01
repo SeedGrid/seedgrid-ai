@@ -9,7 +9,7 @@ analisado-em: 2026-10-27
 
 # Cities: configuração
 
-> **Status: NÃO PUBLICADO.** Versão de trabalho **2026.10.22**. Os padrões vêm do `microprofile-config.properties` e do `@ConfigMapping` `CitiesConfig` da extension.
+> **Status: publicado no Maven Central em 2026-10-31.** Versão de trabalho **2026.10.22**. Os padrões vêm do `microprofile-config.properties` e do `@ConfigMapping` `CitiesConfig` da extension.
 
 ## Propriedades
 

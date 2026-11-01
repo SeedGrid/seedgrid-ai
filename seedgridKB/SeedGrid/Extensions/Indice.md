@@ -61,7 +61,7 @@ Contagens de propriedades por extension e plataforma: [[SeedGrid/Extensions/Cata
 - [[SeedGrid/Extensions/Servicos-de-apoio|Serviços de apoio]]: imagem, porta e variáveis de cada serviço do `docker-compose.yml`.
 - [[SeedGrid/Extensions/Mailpit-uso|Usar o Mailpit]]: ver o e-mail do produto, apontar o SMTP, consultar a API em teste (Awaitility) e diagnosticar e-mail que não chega.
 
-## Ciclo 2026.10.22 (não publicado): perguntas e respostas
+## Ciclo 2026.10.22: perguntas e respostas
 
 Mudanças que ainda não existem no Maven Central; cada nota diz a versão e o que não foi verificado.
 

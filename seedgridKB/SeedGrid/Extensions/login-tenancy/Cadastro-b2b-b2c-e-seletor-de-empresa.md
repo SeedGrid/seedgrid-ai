@@ -1,12 +1,12 @@
 ---
-description: "Como configurar o cadastro B2B, B2C ou os dois no login-tenancy (2026.10.22, não publicado), em perguntas e respostas: signup.customer-type, CPF opcional, login social, planos de demonstração do b2c, o seletor de empresa dos boilerplates (companySelectionRequired, accessMode, cookies e armadilhas) e o Mailpit no lugar do Mailhog."
+description: "Como configurar o cadastro B2B, B2C ou os dois no login-tenancy (2026.10.22, publicado), em perguntas e respostas: signup.customer-type, CPF opcional, login social, planos de demonstração do b2c, o seletor de empresa dos boilerplates (companySelectionRequired, accessMode, cookies e armadilhas) e o Mailpit no lugar do Mailhog."
 tags: [seedgrid, extension, login-tenancy, b2b, b2c, signup, seletor-de-empresa, boilerplate, host, perguntas-e-respostas]
 analisado-em: 2026-10-23
 ---
 
 # Cadastro B2B e B2C, seletor de empresa e e-mail local
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (com `security` e `business-days` 2026.10.22) e para os boilerplates `login-tenancy-b2b` e `login-tenancy-b2c`. O b2c segue **indisponível** na matriz do `sg-new-product` até a subida ser provada. Veja também [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral]], [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (com `security` e `business-days` 2026.10.22) e para os boilerplates `login-tenancy-b2b` e `login-tenancy-b2c`. O b2c segue **indisponível** na matriz do `sg-new-product` até a subida ser provada. Veja também [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral]], [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Qual boilerplate eu escolho?
 
@@ -40,7 +40,7 @@ seedgrid.login-tenancy.signup.personal-document-required=false
 - `POST /public/signup/personal` (pessoa física): `name` (2 a 120), `email`, `password`, `whatsapp` (10 a 20), `cpf` (opcional, validado), `acceptedTerms`, `termsVersion`. **E-mail que já tem conta: 409** (pessoa física nunca vincula a conta existente).
 - `GET /public/signup/document-status?cpfCnpj=` → `{ status: AVAILABLE | REGISTERED | PENDING_CONFIRMATION, pendingEmailMasked }` (substitui `cnpj-status`, removido).
 - Termos: [[SeedGrid/Extensions/security/Termos-de-uso|Termos de uso]]. Login social: [[SeedGrid/Extensions/security/Login-social-Google|Login com Google]].
-- Quebras: `SignupStatus` virou `DocumentSignupStatus`; `SignupConfirmedEvent(personType, cpfCnpj, ...)` e `InstitutionalSignupRequest` ganharam campos (tipo de pessoa, termos). Host que observa o evento ou chama o signup institucional ajusta. Migrations `V704` e `V705`.
+- Quebras: `SignupStatus` virou `DocumentSignupStatus`; `SignupConfirmedEvent(personType, cpfCnpj, ...)` e `InstitutionalSignupRequest` ganharam campos (tipo de pessoa, termos). Host que observa o evento ou chama o signup institucional ajusta. Migrations `V704` e `V705` no ciclo em que entraram (hoje dentro da `V700`).
 
 ## O que o boilerplate b2c tem e não tem?
 

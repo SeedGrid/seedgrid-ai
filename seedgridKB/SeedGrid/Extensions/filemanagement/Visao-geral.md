@@ -65,8 +65,8 @@ Fonte: `factories/*.java`, `storages/*.java`. **Confirmado.**
 
 | Tipo | Símbolo | Observação |
 |---|---|---|
-| SPI | `spi.FileStorage` | `typeIdentifier()`, `store(filename, byte[], StorageOptions)`, `store(filename, InputStream, StorageOptions)` (default lê tudo em memória), `retrieve`, `stream`, `delete`, `exists`, `getMetadata`, `generateSignedUrl(key, ttl)` (default unsupported), `canHandle(key)` |
-| SPI | `spi.FileStorageFactory` | `typeIdentifier()`, `create(Map<String,String>)` |
+| SPI | `spis.FileStorage` | `typeIdentifier()`, `store(filename, byte[], StorageOptions)`, `store(filename, InputStream, StorageOptions)` (default lê tudo em memória), `retrieve`, `stream`, `delete`, `exists`, `getMetadata`, `generateSignedUrl(key, ttl)` (default unsupported), `canHandle(key)` |
+| SPI | `spis.FileStorageFactory` | `typeIdentifier()`, `create(Map<String,String>)` |
 | Bean | `services.FileStorageRegistry` | `get(type, config)`, `get(StorageKey, config)`, `has(type)`, `getAvailableTypes()`, `getCreatedStorages()`, `clearCache()` |
 | Domínio | `domains.StorageKey` | `type`, `bucket`, `path`; `toUri()`/`fromUri()`, fábricas `filesystem`, `s3`, `azureBlob`, `minio`, `of(...)` |
 | Domínio | `domains.StorageOptions` | `prefix`, `contentType`, `publicRead` (false; só tem efeito no S3), `metadata` (gravado por Azure, GCS, Google Drive e MinIO); `defaults()`, `withPrefix()`, `fullPath()` |
@@ -79,7 +79,7 @@ Extensão: o host cria um `@ApplicationScoped FileStorageFactory` com `typeIdent
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 
@@ -87,7 +87,7 @@ Nenhuma.
 
 Detalhes de cada SPI (assinaturas, o que o padrão faz, implementações reais e exemplos): [[SeedGrid/Extensions/filemanagement/SPIs|SPIs]].
 
-_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-ext-filemanagement` (versão 2026.10.22, publicada no Maven Central)._
 
 | SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
 |---|---|---|---|

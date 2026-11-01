@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Aceite de termos de uso e política de privacidade
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-security` e `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (migration `V239` do security, `V704`/`V705` do login-tenancy). Não existe nas versões do Maven Central ([[SeedGrid/Versoes|Versões]]). Os nomes foram conferidos em `SecurityTermsConfig` e nos contratos entregues pela Fase 1b; o comportamento "quando a versão sobe" vem dos guardiões `TermsAcceptanceGuardianIT` e `SignupTermsGuardianIT`.
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-security` e `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (a tabela de aceite está na `V200` do security e a de cadastro na `V700` do login-tenancy; `V239`, `V704` e `V705` são os números do ciclo em que a mudança entrou, hoje absorvidos). Versões em [[SeedGrid/Versoes|Versões]]. Os nomes foram conferidos em `SecurityTermsConfig` e nos contratos entregues pela Fase 1b; o comportamento "quando a versão sobe" vem dos guardiões `TermsAcceptanceGuardianIT` e `SignupTermsGuardianIT`.
 
 ## O que o produto ganha ao ligar?
 

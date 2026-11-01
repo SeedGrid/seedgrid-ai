@@ -26,7 +26,7 @@ Security e audit-core vêm do host.
 
 ## 2. Ligar o robô: implementar `AiPriceExtractor`
 
-O contrato vem do javadoc de `runtime/.../spi/AiPriceExtractor.java`, e a forma da implementação segue o `ExtratorFalso` de `AiPricingRobotTest`. O cliente de LLM (`MeuClienteLlm`) é do host e meramente ilustrativo: a extension não fornece cliente.
+O contrato vem do javadoc de `runtime/.../spis/AiPriceExtractor.java`, e a forma da implementação segue o `ExtratorFalso` de `AiPricingRobotTest`. O cliente de LLM (`MeuClienteLlm`) é do host e meramente ilustrativo: a extension não fornece cliente.
 
 ```java
 @ApplicationScoped

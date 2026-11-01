@@ -79,7 +79,7 @@ Sem endpoints REST, eventos CDI ou migrations (as colunas cifradas/hash são do 
 
 ## Anotações
 
-_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão 2026.10.22, publicada no Maven Central)._
 
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
@@ -89,7 +89,7 @@ _Fonte: código de `seedgrid-quarkus-lib-privacy` (versão local 2026.10.22, nã
 
 ## SPIs
 
-_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão local 2026.10.22, não publicada)._
+_Fonte: código de `seedgrid-quarkus-lib-privacy` (versão 2026.10.22, publicada no Maven Central)._
 
 Nenhuma.
 

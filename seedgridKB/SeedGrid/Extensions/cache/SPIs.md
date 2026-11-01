@@ -7,7 +7,7 @@ gerado-por: leitura do código (interfaces `spis`), com exemplos escritos a mão
 
 # cache (Quarkus): SPIs
 
-Ver também [[SeedGrid/Extensions/cache/Visao-geral|Visão geral]]. _Fonte: código de `seedgrid-quarkus-lib-cache` (versão local 2026.10.22, não publicada)._
+Ver também [[SeedGrid/Extensions/cache/Visao-geral|Visão geral]]. _Fonte: código de `seedgrid-quarkus-lib-cache` (versão 2026.10.22, publicada no Maven Central)._
 
 Cada SPI é um ponto de extensão. Para trocar o comportamento padrão, declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`: a implementação padrão (`@DefaultBean`) cede. Uma SPI "sem padrão" precisa de uma implementação do host (ou de outro módulo) para o recurso funcionar. Os exemplos abaixo são **ilustrativos** e omitem os imports; tipos marcados como "do seu produto" (por exemplo `AdminAuditService`, `TenantContext`) não existem na extension.
 

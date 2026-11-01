@@ -1,12 +1,12 @@
 ---
-description: "O calendário do business-days em camadas (2026.10.22, não publicado), em perguntas e respostas: feriados nacionais prontos e o estadual de SP já semeados com base legal, feriados móveis (Carnaval, Sexta-feira Santa, Corpus Christi) que o tenant ou a empresa desmarca, 'vai trabalhar', UF por empresa (BusinessDaysRegionProvider), company-required e o 403 COMPANY_REQUIRED, rotas e as telas do front."
+description: "O calendário do business-days em camadas (2026.10.22, publicado), em perguntas e respostas: feriados nacionais prontos e o estadual de SP já semeados com base legal, feriados móveis (Carnaval, Sexta-feira Santa, Corpus Christi) que o tenant ou a empresa desmarca, 'vai trabalhar', UF por empresa (BusinessDaysRegionProvider), company-required e o 403 COMPANY_REQUIRED, rotas e as telas do front."
 tags: [seedgrid, extension, business-days, feriados, calendario, host, front, perguntas-e-respostas]
 analisado-em: 2026-10-23
 ---
 
 # Calendário em camadas: feriados prontos, móveis e "vai trabalhar"
 
-> **Status: NÃO PUBLICADO.** Vale para `seedgrid-quarkus-ext-business-days` **2026.10.22** (tabelas do calendário em camadas na `V1100`); exige `seedgrid-security` 2026.10.22 para o 403 `COMPANY_REQUIRED` com várias empresas. A extension ainda não tem repositório publicado ([[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]]). Base: [[SeedGrid/Extensions/business-days/Visao-geral|Visão geral]] e [[SeedGrid/Extensions/business-days/Configuracao|Configuração]].
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-business-days` **2026.10.22** (tabelas do calendário em camadas na `V1100`); exige `seedgrid-security` 2026.10.22 para o 403 `COMPANY_REQUIRED` com várias empresas. A extension ainda não tem repositório publicado ([[SeedGrid/Mapa-dos-repositorios|Mapa dos repositórios]]). Base: [[SeedGrid/Extensions/business-days/Visao-geral|Visão geral]] e [[SeedGrid/Extensions/business-days/Configuracao|Configuração]].
 
 ## O calendário já traz os feriados do Brasil?
 
