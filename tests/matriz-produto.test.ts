@@ -51,12 +51,24 @@ test('validarMatriz acusa opcao sem efeito, extension fora do catalogo e opciona
   assert.ok(erros.some((e) => /fora do catalogo: inexistente/.test(e)));
 });
 
-test('B2C aparece desligada e e recusada', () => {
+test('B2C esta liberada e traz o mesmo conjunto de extensions e de efeitos do B2B (so o boilerplate e o publico mudam)', () => {
   const modelo = matriz.perguntas.find((p) => p.id === 'modelo')!;
-  const b2c = modelo.opcoes!.find((o) => o.id === 'login-tenancy-b2c')!;
-  assert.equal(b2c.disponivel, false);
+  const b2c = modelo.opcoes!.find((o) => o.id === 'login-tenancy-b2c')! as { disponivel?: boolean; efeito: Record<string, unknown> };
+  const b2b = modelo.opcoes!.find((o) => o.id === 'login-tenancy-b2b')! as { efeito: Record<string, unknown> };
+  assert.notEqual(b2c.disponivel, false);
+  assert.deepEqual(b2c.efeito.produto, { modelo: 'login-tenancy', publico: 'b2c' });
+  assert.equal(b2c.efeito.boilerplate, 'login-tenancy-b2c');
+  const { produto: _p1, boilerplate: _b1, ...restoB2c } = b2c.efeito;
+  const { produto: _p2, boilerplate: _b2, ...restoB2b } = b2b.efeito;
+  assert.deepEqual(restoB2c, restoB2b);
   const r = lib.resolver(matriz, catalogo, { ...B2B, modelo: 'login-tenancy-b2c' });
-  assert.ok(r.erros.some((e) => /indisponivel/.test(e)), r.erros.join('\n'));
+  assert.deepEqual(r.erros, []);
+  assert.deepEqual([...r.extensoes].sort(), [...lib.resolver(matriz, catalogo, B2B).extensoes].sort());
+});
+
+test('opcao desligada na matriz e recusada com o motivo (extension ainda nao verificada no modular)', () => {
+  const r = lib.resolver(matriz, catalogo, { ...BASE, ...DADOS, modelo: 'modular', selfEnter: 'nao', extensoes: ['billing'] });
+  assert.ok(r.erros.some((e) => /billing/.test(e)), r.erros.join('\n'));
 });
 
 test('login-tenancy B2B valido: perguntas condicionais e extensions que o modelo traz', () => {

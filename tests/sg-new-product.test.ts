@@ -84,10 +84,10 @@ describe('skill sg-new-product (T2.3)', () => {
     const project = await tempProject();
     await initCommand({ project });
     const respostas = path.join(project, 'respostas.json');
-    await writeFile(respostas, JSON.stringify({ ...RESPOSTAS, modelo: 'login-tenancy-b2c' }));
+    await writeFile(respostas, JSON.stringify({ ...RESPOSTAS, modelo: 'modular', extensoes: ['billing'] }));
     const r = spawnSync(process.execPath, [path.join(project, '.ai/skills/sg-new-product/scripts/scaffold-produto.mjs'), '--respostas', respostas], { cwd: project, encoding: 'utf8' });
     assert.equal(r.status, 1);
-    assert.match(r.stderr, /indisponivel/);
+    assert.match(r.stderr, /nao se aplica as respostas anteriores/);
     assert.ok(!existsSync(path.join(project, 'produto.json')));
     assert.ok(!existsSync(path.join(project, 'backend')));
   });

@@ -190,15 +190,51 @@
         },
         {
           "id": "login-tenancy-b2c",
-          "rotulo": "Login-tenancy B2C",
-          "disponivel": false,
-          "motivo": "indisponivel ate o business-day entregar o boilerplate login-tenancy-b2c",
+          "rotulo": "Login-tenancy B2C (pessoa fisica, uma conta = uma pessoa)",
           "efeito": {
             "produto": {
               "modelo": "login-tenancy",
               "publico": "b2c"
             },
-            "boilerplate": "login-tenancy-b2c"
+            "boilerplate": "login-tenancy-b2c",
+            "extensions": [
+              "security",
+              "audit",
+              "backup",
+              "billing",
+              "apikeys",
+              "notification",
+              "filemanagement",
+              "privacy",
+              "resilience"
+            ],
+            "blocos_env": [
+              "aplicacao",
+              "banco-login-tenancy",
+              "security",
+              "privacy",
+              "primeiro-admin",
+              "frontend-login-tenancy",
+              "backup-mailer"
+            ],
+            "compose": [
+              "postgres",
+              "mailpit"
+            ],
+            "portas": {
+              "postgres": 5440,
+              "smtp": 1025,
+              "mailpit-ui": 8025
+            },
+            "servicos": {
+              "backend": 8080,
+              "frontend": 3000,
+              "admin": 3001
+            },
+            "env_front": {
+              "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
+              "OTEL_SDK_DISABLED": "true"
+            }
           }
         },
         {
@@ -303,6 +339,7 @@
       "se": {
         "modelo": [
           "login-tenancy-b2b",
+          "login-tenancy-b2c",
           "subdomain-tenancy"
         ]
       },

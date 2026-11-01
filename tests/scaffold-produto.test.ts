@@ -150,10 +150,23 @@ test('modelo modular: sem opcionais fica so com security + audit; opcional nao v
   assert.ok((s2.erros ?? []).some((x) => /billing/.test(x)), (s2.erros ?? []).join('\n'));
 });
 
-test('B2C e recusado e nada e gravado', async () => {
+test('login-tenancy B2C: copia o boilerplate b2c, publico b2c e as mesmas extensions do B2B', async () => {
   const { destino, saida } = await gerar({ ...B2B, modelo: 'login-tenancy-b2c' });
+  assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
+  const b2b = await gerar(B2B);
+  assert.deepEqual([...saida.extensoes].sort(), [...b2b.saida.extensoes].sort());
+  const prod = JSON.parse(ler(destino, 'produto.json'));
+  assert.equal(prod.publico, 'b2c');
+  for (const f of ['backend/pom.xml', 'frontend/package.json', 'admin/package.json']) assert.ok(existsSync(join(destino, f)), f);
+  // so o b2c traz o login social: a diferenca prova que o scaffold copiou o boilerplate certo
+  assert.ok(ler(destino, 'backend/pom.xml').includes('seedgrid-security-social'), 'o b2c traz o login social');
+  assert.ok(!ler(b2b.destino, 'backend/pom.xml').includes('seedgrid-security-social'), 'o b2b nao traz o login social');
+});
+
+test('opcao desligada na matriz (billing no modular) e recusada e nada e gravado', async () => {
+  const { destino, saida } = await gerar({ ...MODULAR, extensoes: ['billing'], apikeysUso: undefined });
   assert.equal(saida.ok, false);
-  assert.ok(saida.erros!.some((e) => /indisponivel/.test(e)));
+  assert.ok(saida.erros!.some((e) => /billing/.test(e)), (saida.erros ?? []).join('\n'));
   assert.deepEqual(readdirSync(destino), []);
 });
 

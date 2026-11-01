@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- `sg-new-product`: o modelo `login-tenancy-b2c` (pessoa física, uma conta = uma pessoa) deixa de aparecer desligado e passa a ser aceito na matriz, com as mesmas extensions e efeitos do B2B (muda só o boilerplate e o público); a pergunta de extensions opcionais (3) vale também para ele. O boilerplate foi provado antes (backend 39 testes, E2E Playwright 15/15). Guardiões novos em `matriz-produto.test.ts` e `scaffold-produto.test.ts`; os testes de recusa passam a usar uma extension ainda não verificada no modelo modular.
+
 ## [0.7.1] — 2026-11-01
 
 ### Adicionado
