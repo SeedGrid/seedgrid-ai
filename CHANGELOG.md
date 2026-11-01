@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Corrigido
+- KB: três lacunas que o produto display registrou como demanda (`P1.F1.DEM1`, `P1.F1.DEM2`, `P1.F2.DEM4`) e que a KB não respondia. `apikeys`: criar e revogar chave por código Java (`ApiKeyManagementService`, assinaturas, regras e o que não foi verificado fora de uma requisição). `billing`: o contador de uso é por ciclo, só soma e não tem devolução. `Pulse`: a revogação em tempo real é só por chave ou conta, não por `subject`.
+
 ## [0.7.2] — 2026-11-01
 
 ### Alterado

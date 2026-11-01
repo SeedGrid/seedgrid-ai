@@ -26,6 +26,7 @@ Regras que mordem:
 
 - O `kind` da chave (`project` \| `client`) é **obrigatório na emissão** e preservado na rotação. Chave `project` não tem `subject` (422).
 - Quem publica é decidido pelo **`kind`**, não pelo `subject`.
+- **Não existe corte de conexão por `subject`.** A revogação em tempo real é só por **chave** ou por **conta** (**Confirmado** em `backend/src/revocation.rs`: `Revocation::Key` e `Revocation::Account`, fechamento `4403`). Um token curto `pct_` vale só para **conectar**: a conexão aberta segue até cair ou até a chave `client` ou a conta ser revogada. Quem precisa derrubar um dispositivo específico hoje só tem rotacionar a chave `client` dele, e isso exige uma chave `client` por dispositivo; como a chave de servidor não vai para produto nenhum, o backend de um produto não consegue emitir essas chaves sozinho. Pedido em aberto no produto display, `P1.F1.DEM2`.
 - A chave de servidor **não vai para produto nenhum**.
 - Chave `project` **nunca no navegador** nem em app distribuído.
 

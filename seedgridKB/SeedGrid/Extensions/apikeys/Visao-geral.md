@@ -90,6 +90,22 @@ Os endpoints de gestão chamam `ensureManagementEnabled()` (`ApiKeyActivationPol
 | `ApiKeyPrincipal` | `Principal` | obtido em `identity.getPrincipal()` |
 | `ApiKeyPermissionService#hasPermission` | bean | utilitário |
 
+### Criar e revogar chave por código Java (sem REST)
+
+`br.com.seedgrid.apikeys.services.ApiKeyManagementService` é `@ApplicationScoped` e público; o controller REST só o chama. **Confirmado no código** (leitura de 2026-11-01, `7ec6da1`):
+
+| Método | Retorno | Observação |
+|---|---|---|
+| `createKey(User currentUser, String name, Integer expiresDays, String roleNameFixed)` | `ApiKeyCreateResponse` (`publicId`, `name`, `prefix`, `masked`, `apiKey`, `expiresAt`, `createdAt`) | `@Transactional`. O `apiKey` cru só vem aqui, uma vez; no banco fica só o hash. `expiresDays` nulo ou ≤ 0 = sem expiração. |
+| `revokeKey(User currentUser, String apiKeyPublicId)` | `ApiKeyRevokeResponse` (`publicId`, `revokedAt`) | `@Transactional`. Idempotente: revogar de novo devolve a data original. |
+| `listEligibleRoles()` | `List<Role>` | perfis de integração que a empresa corrente pode usar |
+
+- **O dono da chave é o `User` passado.** `null` lança `ApiKeyUnauthorizedException`. Só esse `User` revoga a chave (`findByPublicIdAndOwner`); outro dono ou outra empresa recebe `ApiKeyNotFoundException`. A KB já dizia que, se o dono sair da empresa, a chave deixa de funcionar (fail closed); isso vem da leitura anterior e não foi reconferido agora.
+- **O perfil** precisa estar entre os elegíveis da empresa corrente; um perfil que existe mas não é de integração dá 403 (`ApiKeyRoleNotFoundException` quando não existe).
+- **A empresa da chave** vem de `CompanyRequestContext#getCurrentCompanyId()`, que é `@RequestScoped`. **Não verificado:** o uso fora de uma requisição HTTP (job, consumer, startup), onde esse contexto pode não existir. Teste antes de depender disso.
+- **Não há JWT no momento da emissão** no sentido de que o método não lê token: ele recebe o `User` já resolvido pelo host. Quem chama precisa obter esse `User`.
+- **Não confirmado:** se a plataforma considera isso contrato suportado e estável (o REST é o contrato documentado). Pedido em aberto no produto display, `P1.F1.DEM1`.
+
 ### Permissões (migrations)
 
 `APIKEY_CREATE`, `APIKEY_READ`, `APIKEY_REVOKE` (`R__apikeys_seed.sql`), com `audience` nula (visível nos dois escopos).
