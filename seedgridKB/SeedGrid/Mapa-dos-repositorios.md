@@ -85,7 +85,7 @@ Modelos de produto que o `sg-new-product` copia para o produto novo (cópia embu
 | `subdomain-tenancy` | empresas, um tenant por subdomínio | `subdomain-tenancy` com `security`, `audit`, `backup`, `billing`, `apikeys`, `notification`, `privacy`, `resilience` | nunca terá versão pessoa física (regra do dono) |
 | `modular` (antigo `outro`) | sem tenancy | `security` e `audit` (PostgreSQL); opcionais conforme a escolha | sem billing e sem admin web; criado pelo seedgrid-ai |
 
-A extension `login-tenancy` é uma só, compartilhada por B2B e B2C: a diferença está na configuração e nas telas. A escolha do modelo e os opcionais de cada um são conduzidos pela skill `sg-new-product` (`data/catalogo.json` e `data/matriz-produto.json`); o b2c segue indisponível na matriz até provar a subida.
+A extension `login-tenancy` é uma só, compartilhada por B2B e B2C: a diferença está na configuração e nas telas. A escolha do modelo e os opcionais de cada um são conduzidos pela skill `sg-new-product` (`data/catalogo.json` e `data/matriz-produto.json`); o b2c está liberado na matriz desde o toolkit 0.7.2 (subida provada).
 
 ## Dependências entre módulos Java
 

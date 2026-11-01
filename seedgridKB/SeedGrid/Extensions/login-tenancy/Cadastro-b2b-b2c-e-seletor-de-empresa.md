@@ -6,7 +6,7 @@ analisado-em: 2026-10-23
 
 # Cadastro B2B e B2C, seletor de empresa e e-mail local
 
-> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (com `security` e `business-days` 2026.10.22) e para os boilerplates `login-tenancy-b2b` e `login-tenancy-b2c`. O b2c segue **indisponível** na matriz do `sg-new-product` até a subida ser provada. Veja também [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral]], [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
+> **Status: publicado no Maven Central em 2026-10-31.** Vale para `seedgrid-quarkus-ext-login-tenancy` **2026.10.22** (com `security` e `business-days` 2026.10.22) e para os boilerplates `login-tenancy-b2b` e `login-tenancy-b2c`. O b2c está **liberado** na matriz do `sg-new-product` desde o toolkit 0.7.2 (subida provada: backend 39 testes e E2E Playwright 15/15). Veja também [[SeedGrid/Extensions/login-tenancy/Visao-geral|Visão geral]], [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]] e [[SeedGrid/Extensions/security/Escopo-e-acesso|Escopo e acesso]].
 
 ## Qual boilerplate eu escolho?
 
