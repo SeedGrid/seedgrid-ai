@@ -3,7 +3,7 @@ tags: [seedgrid, extension, subdomain-tenancy, configuracao]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
 commit: fe62530a29
-analisado-em: 2026-10-14
+analisado-em: 2026-11-02
 ---
 
 # subdomain-tenancy — Configuração (Quarkus)
@@ -116,6 +116,8 @@ Executado por `MigrationService#masterMigrate` → `AdminUserBootstrapService#se
 | `seedgrid.subdomain-tenancy.admin-user.name` | `Optional<String>` | texto | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME`) | Condicional: obrigatória quando `sg_users` do master está vazia — senão `IllegalStateException("Missing required property: …")` derruba o startup | Nome do admin global | `AdminUserBootstrapService#seedAdminUserIfNeeded` | `email` | runtime | Decl.: `RT/configs/SubdomainTenancyAdminUserConfig#name()`, `SubdomainTenancyBridgeConfig.AdminUser#name()`, `MPC` |
 | `seedgrid.subdomain-tenancy.admin-user.email` | `Optional<String>` | e-mail | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL`) | Condicional (idem) | Normalizado (`trim().toLowerCase()`) | idem | — | runtime | idem (`#email()`) |
 | 🔒 `seedgrid.subdomain-tenancy.admin-user.initial-password` | `Optional<String>` | senha que passe em `PasswordService#validate` (security) | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD`) | Não | Vazia → senha gerada por `PasswordGenerator` e enviada por e-mail de boas-vindas (se o e-mail falhar, o admin fica sem a senha) | `AdminUserBootstrapService#resolvePassword` | Política de senha do `seedgrid-security` | runtime | idem (`#initialPassword()`) |
+
+> **O admin criado aqui nasce com troca de senha obrigatória e e-mail não confirmado** (mesmo com `initial-password`): o login funciona, mas toda rota autenticada responde 401 `PASSWORD_CHANGE_REQUIRED` até a senha ser trocada (`PUT /users/change-password` ou `PUT /me/profile/password`, que derrubam a sessão). Detalhes e fonte em [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|Visão geral]] (bullet "Admin do master").
 
 ### 2.7 E-mail (mailer nomeado `subdomaintenancy`)
 
