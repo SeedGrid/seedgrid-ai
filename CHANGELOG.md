@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Alterado
+- KB do `audit`: como o lookup do `@SgAudit` funciona de fato (repository sempre derivado de `entityFqcn`; `lookupMethod` por posição e tipo, devolvendo `Optional`; `lookups` usa campo da entidade e exige `findBy<Campo>` ou `find(String,...)` do Panache; falha silenciosa; quando há before/after), exemplo para repositório por conta e para a auditoria manual com `AuditGateway`/`AuditEmitter` (o que ela não preenche nem mascara). Corrigido o texto de `@SgAuditLookup`, que repetia o Javadoc impreciso, e a limitação do `REQUIRES_NEW` (pedido do Finanças, P1.F3.DEM1).
 - KB do `billing`: campos e regras do term (obrigatório só `monthlyPrice`; `effectiveFrom` e o dia civil; sem `effectiveFrom` o term já nasce vigente; só term agendado muda, senão 409; PATCH parcial; formato do `GET /admin/plans`), a pedido da P2.F0.DEM9 do display (plano P125.F1.T1).
 - KB da `subdomain-tenancy`: o admin do master nasce com `change_password_required = true` e e-mail não confirmado; 401 `PASSWORD_CHANGE_REQUIRED` em toda rota autenticada; troca por `PUT /users/change-password` ou `PUT /me/profile/password`, que revoga a sessão (P2.F0.DEM10 do display, plano P125.F1.T2).
 

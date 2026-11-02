@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, audit]
 fonte: java/seedgrid-quarkus-ext-audit
 branch: main
-commit: 786786a
-analisado-em: 2026-10-27
+commit: b55e97c
+analisado-em: 2026-11-02
 ---
 
 # SeedGrid Audit (Quarkus) — Visão geral
@@ -99,7 +99,7 @@ _Fonte: código de `seedgrid-quarkus-ext-audit` (versão 2026.10.22, publicada n
 | Anotação | Pacote | Onde se aplica | Atributos (padrão) | Para que serve |
 |---|---|---|---|---|
 | `@SgAudit` | `br.com.seedgrid.audit.core.annotations` | `METHOD`, `TYPE` | `operation` (`AuditOperationEnum.OTHER`), `description` (`""`), `entityFqcn` (`""`), `lookupMethod` (`""`), `lookups` (`{}`), `options` (`{}`) | Audita a operação do método (ou de todos os métodos da classe) quando ele termina. |
-| `@SgAuditLookup` | `br.com.seedgrid.audit.core.annotations` | `` | `field` | Um argumento da busca da entidade auditada: `#field()` nomeia o campo do parâmetro do método anotado cujo valor é passado, na ordem em que aparece em `SgAudit#lookups()`, ao método de `SgAudit#lookupMethod()`. |
+| `@SgAuditLookup` | `br.com.seedgrid.audit.core.annotations` | `` | `field` | Um argumento da busca da entidade auditada: `field` é o nome de um **campo da entidade** e os valores são os primeiros argumentos do método anotado, por posição (o texto do Javadoc da classe, que fala em "campo do parâmetro" e em `lookupMethod`, não descreve o que o código faz; `lookups` e `lookupMethod` são excludentes). Ver Exemplos §3 e §9. |
 
 ## SPIs
 
@@ -142,4 +142,6 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 ## Limitações
 - O standalone JPA só aceita URL `jdbc:postgresql:` (`IllegalArgumentException` caso contrário).
 - Se ambos os módulos (postgresql e mongodb) estiverem no classpath, os dois `microprofile-config.properties` definem `seedgrid.audit.persistence.strategy` com mesmo ordinal — resultado não determinado. **Não confirmado**.
-- Persistência em `REQUIRES_NEW`: o log é gravado mesmo que a transação principal falhe. Lookup que falha resulta em log sem before/after (warn/debug).
+- Persistência em `REQUIRES_NEW`: o log não é desfeito se a transação principal der rollback **depois** do método, mas só é gravado se o método terminar sem exceção (a gravação é após o `proceed`). Lookup que falha resulta em log sem before/after, **sem erro** (só log `debug`/`warn`); com repository por conta, use `lookupMethod` (Exemplos §9).
+- O repository do lookup é sempre o derivado de `entityFqcn`; não dá para escolher outro. `lookups` com mais de um campo ou sem `findBy<Campo>` exige repository Panache (`find(String, Object...)`).
+- Não há API pronta de auditoria manual além de montar o `AuditLog` e chamar `AuditGateway#persist` ou `AuditEmitter#emit`; a gravação manual não preenche usuário/data nem mascara (Exemplos §9.2).
