@@ -110,8 +110,10 @@ for (const tipo of ['plano', 'demanda', 'adr']) {
 }
 const idsDemanda = new Set(docs.filter((d) => d.tipo === 'demanda').map((d) => d.id));
 const idsPlano = new Set(docs.filter((d) => d.tipo === 'plano').map((d) => d.id));
+// O que uma tarefa AINDA NÃO feita (`- [ ]`, `[~]`, `[?]`, `[>]`) vai escrever (`escreve`: ...) é saída planejada, não citação de arquivo que falta.
+const semPlanejado = (texto) => texto.split(/\r?\n/).map((l) => (/^\s*- \[[ ~?>]\]/.test(l) ? l.replace(/`escreve`:.*$/, '') : l)).join('\n');
 for (const p of docs.filter((d) => d.tipo === 'plano')) {
-  for (const c of new Set(p.texto.match(/\bP\d+\.F\d+\.DEM\d+\b/g) || [])) {
+  for (const c of new Set(semPlanejado(p.texto).match(/\bP\d+\.F\d+\.DEM\d+\b/g) || [])) {
     if (!idsDemanda.has(c)) avisos.push(`${p.rel} cita a demanda ${c}, que não tem arquivo em demands/`);
   }
 }

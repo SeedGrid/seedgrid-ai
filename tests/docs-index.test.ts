@@ -127,3 +127,14 @@ test('pasta vazia gera índice vazio e passa no --check', () => {
   assert.match(readFileSync(join(ai, 'INDEX.md'), 'utf8'), /Nenhum documento ainda/);
   assert.equal(rodar(ai, '--check').status, 0);
 });
+
+test('demanda que uma tarefa ainda não feita vai escrever (`escreve`) não é citação sem arquivo; depois de feita sem arquivo, avisa', () => {
+  const ai = docsAi();
+  const tarefa = (marca: string) => `- [${marca}] **P1.F6.T2 Registrar** (\`depende-de\`: P1.F5.T4; \`escreve\`: docs/ai/demands/P1.F6.DEM1-importacao.md)\n`;
+  doc(ai, 'plans/P1-2026-11-01-produto.md', { aidlc: '0.7.3' }, 'Plano', tarefa(' '));
+  const r = rodar(ai);
+  assert.equal(r.status, 0, r.err);
+  assert.ok(!/P1\.F6\.DEM1/.test(r.err), 'tarefa pendente: sem aviso');
+  doc(ai, 'plans/P1-2026-11-01-produto.md', { aidlc: '0.7.3' }, 'Plano', tarefa('x'));
+  assert.match(rodar(ai).err, /cita a demanda P1\.F6\.DEM1/);
+});

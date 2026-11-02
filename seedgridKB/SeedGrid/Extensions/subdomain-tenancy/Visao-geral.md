@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
-commit: 08b1934
-analisado-em: 2026-10-27
+commit: b2abc1e
+analisado-em: 2026-11-01
 ---
 
 # subdomain-tenancy — Visão geral (Quarkus)
@@ -35,9 +35,9 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 
 | Módulo | Coordenada | Observação |
 |---|---|---|
-| parent | `br.com.seedgrid:seedgrid-subdomain-tenancy-parent:2026.10.14-1` (pom) | Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02` (Quarkus 3.30.8). Centraliza as versões da foundation em `<properties>` e `dependencyManagement` |
-| runtime | `br.com.seedgrid:seedgrid-subdomain-tenancy:2026.10.14-1` | O que o host declara |
-| deployment | `br.com.seedgrid:seedgrid-subdomain-tenancy-deployment:2026.10.14-1` | `SubdomainTenancyProcessor` |
+| parent | `br.com.seedgrid:seedgrid-subdomain-tenancy-parent:2026.11.02` (pom) | Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02` (Quarkus 3.30.8). Centraliza as versões da foundation em `<properties>` e `dependencyManagement` |
+| runtime | `br.com.seedgrid:seedgrid-subdomain-tenancy:2026.11.02` | O que o host declara |
+| deployment | `br.com.seedgrid:seedgrid-subdomain-tenancy-deployment:2026.11.02` | `SubdomainTenancyProcessor` |
 
 **Confirmado** em `pom.xml`, `runtime/pom.xml`, `deployment/pom.xml`.
 
@@ -175,7 +175,8 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 ## Limitações
 
 - **Somente PostgreSQL** (`CREATE DATABASE`, `pg_try_advisory_lock`, `pg_terminate_backend`); o usuário de tenant precisa de `CREATE DATABASE`.
-- **Subdomínios com `_`**: o signup aceita `^[a-z0-9_]{5,50}$`, mas o extractor só aceita `^[a-z0-9-]+$` → esses tenants caem em `master` pelo host (**Confirmado**; ver Dúvidas na Configuração).
+- **Subdomínio com `_` (até a 2026.10.22):** o signup aceitava `^[a-z0-9_]{5,50}$`, mas o extractor só aceitava `^[a-z0-9-]+$`, e o tenant era provisionado mas caía em `master` pelo host. **Corrigido na 2026.11.02** (ver o próximo item); quem está na 2026.10.22 ou antes deve recusar `_` no próprio front.
+- **Um padrão só de subdomínio (2026.11.02, Confirmado em `SubdomainRules`, commit `b2abc1e`):** cadastro, extractor do host e links de segurança usam a mesma regra, a de um label de hostname (RFC 1123): minúsculas, dígitos e hífen; sem hífen no começo nem no fim; sem `--` nas posições 3 e 4 (`xn--` é de IDN); no máximo 50 caracteres, e o cadastro exige 5 a 50 (`^(?!-)(?![a-z0-9-]{2}--)[a-z0-9-]{5,50}(?<!-)$`). **`_` não é aceito.** O cadastro normaliza para minúsculas e tira espaços. Para resolver o host aceita-se 1 a 50 (`isValidFormat`). **Nomes reservados** recusados no cadastro com 400 (`ReservedSubdomainException`): `master`, `www`, `api`, `admin`, `app`, `mail`, `smtp`, `ftp`, `root`, `static`, `assets`, `cdn`, `auth`, `login`, `billing`, `support`, `status`, `docs`, `blog`. O `master` deixou de ser cadastrável. O host que quiser outros reservados precisa checar por conta própria (a lista não é configurável).
 - Teto de `max-active-datasources` sem pool ocioso → `TenantProvisioningException` na resolução.
 - `TenantCleanupScheduler` remove só o registro em `sg_tenants`, não o banco físico (contradiz o Javadoc). Se houver banco criado para cadastro não validado, ele fica órfão (o provisionamento só ocorre após validação, então na prática isso só acontece em cenários de falha — **Inferência**).
 - Vários literais `"master"` fixos: `default-tenant` diferente de `master` não é consistente.

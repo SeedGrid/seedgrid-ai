@@ -1,7 +1,7 @@
 ---
 tags: [seedgrid, versoes, gerado]
 gerado-por: scripts/kb-versions.mjs
-gerado-em: 2026-11-01
+gerado-em: 2026-11-02
 ---
 
 # Versões documentadas × atuais

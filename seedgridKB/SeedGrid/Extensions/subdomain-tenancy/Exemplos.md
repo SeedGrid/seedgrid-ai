@@ -147,7 +147,7 @@ src/main/resources/db/migration/
 
 ## 8. Ciclo de vida de um tenant (HTTP)
 
-Body conforme `TenantSignupRequest` (`subdomain` `^[a-z0-9_]{5,50}$`, `cnpj` com `@CNPJ`, `rootEmail` `@Email`, representante legal com nome/sobrenome/telefone obrigatórios). Fonte: README da extension, conferido com o DTO.
+Body conforme `TenantSignupRequest` (`subdomain` `^(?!-)(?![a-z0-9-]{2}--)[a-z0-9-]{5,50}(?<!-)$`, sem `_` desde a 2026.11.02; nomes reservados como `master`, `www`, `api` e `admin` dão 400; `cnpj` com `@CNPJ`, `rootEmail` `@Email`, representante legal com nome/sobrenome/telefone obrigatórios). Fonte: README da extension, conferido com o DTO.
 
 ```bash
 # 1) signup (público, 100/min por IP)
@@ -176,7 +176,7 @@ curl -X POST "https://crm.example.com/public/tenants/resend-email?subdomain=clie
 curl https://clientea.crm.example.com/api/persons -H "Authorization: Bearer <token>"
 ```
 
-> Atenção: com `domain-suffix=crm.example.com`, um subdomínio com `_` passa no signup mas não é extraído do host (o extractor aceita só `[a-z0-9-]`). Prefira nomes sem `_`.
+> Atenção: até a 2026.10.22, com `domain-suffix=crm.example.com`, um subdomínio com `_` passava no signup mas não era extraído do host. Desde a 2026.11.02 o signup recusa `_` (mesma regra do extractor); nas versões anteriores, recuse `_` no front.
 
 ## 9. Operação (contexto master)
 
