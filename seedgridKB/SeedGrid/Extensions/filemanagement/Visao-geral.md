@@ -3,7 +3,7 @@ tags: [seedgrid, extension, filemanagement]
 fonte: java/seedgrid-quarkus-ext-filemanagement
 branch: main
 commit: 35c89c7cf7
-analisado-em: 2026-10-14
+analisado-em: 2026-11-02
 ---
 
 # SeedGrid File Management — Visão geral
@@ -123,3 +123,4 @@ Cada um desses três providers aceita `auth-mode=credentials` (padrão, o de sem
 - S3 (`S3StorageImpl`) devolve `StorageKey.of("s3", key)` **sem bucket**; `toUri()` vira `s3://<prefixo>/<arquivo>` e um `fromUri()` posterior interpretaria o primeiro segmento como bucket, mudando o `path`. Risco de round-trip ao persistir a URI — **Inferência** (não testado).
 - `FilesystemStorage` monta caminhos com `Paths.get(basePath, ...)` sem normalizar nem barrar `..` — risco de path traversal se `filename`/`prefix` vierem do usuário. **Inferência.**
 - `GoogleDriveStorage#generateSignedUrl` torna o arquivo público permanentemente.
+- **`StorageOptions.encrypt` não faz nada hoje (Confirmado):** o campo existe (Javadoc: "Implementation-specific"), mas nenhum storage (`S3`, `MinIO`, `Azure`, `GoogleCloudStorage`, `Filesystem`, Drive, OneDrive, Dropbox) lê o valor; o S3, por exemplo, usa só `contentType`, `prefix` e `publicRead`. Para foto ou documento sensível, a cifra em repouso é do **storage/infraestrutura** (SSE do bucket, disco cifrado, política do provedor), ou do produto, que cifra os bytes antes de chamar `store` (e decifra depois de ler).

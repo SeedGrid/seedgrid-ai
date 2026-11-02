@@ -3,7 +3,7 @@ tags: [seedgrid, component, frontend, react, datatable]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx
 branch: main
 commit: ad30fc11de
-analisado-em: 2026-10-14
+analisado-em: 2026-11-02
 description: "Tabela de dados em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -78,3 +78,4 @@ Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-compo
 - `rows` só define o valor inicial de linhas por página; não existe prop controlada para isso. **Confirmado**.
 - O `id` serve também de chave de persistência: duas tabelas com o mesmo `id` dentro do mesmo `SgEnvironmentProvider` compartilham o layout de colunas. **Inferência**, pela chave `datatable:<id>:columns`.
 - Para o gerenciador de colunas e a persistência, dê `columnId` ou `field` estáveis. Colunas sem nenhum dos dois usam o índice como chave. **Confirmado**.
+- **Responsividade do React (Confirmado em `SgDatatable.tsx`):** a tabela fica num contêiner com `overflow-x-auto` (rolagem horizontal em tela estreita); não há modo de celular (cartões ou colunas que se escondem) nem consulta de largura. A paginação ajusta a quantidade de botões. Se o produto exige tabela adaptativa no celular, é componente local do produto (HO-10).

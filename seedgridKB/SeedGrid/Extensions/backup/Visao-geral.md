@@ -3,7 +3,7 @@ tags: [seedgrid, extension, backup]
 fonte: java/seedgrid-quarkus-ext-backup
 branch: main
 commit: 20dd0be
-analisado-em: 2026-10-27
+analisado-em: 2026-11-02
 ---
 
 # Backup (extension Quarkus)
@@ -178,3 +178,4 @@ Nenhuma.
 - `generateDownloadUrl` (URL assinada) lança `UnsupportedOperationException` no adapter padrão; download passa os bytes pela API.
 - Notificação por e-mail fica **ativa por padrão** apontando para `smtp.gmail.com` sem credenciais (fallbacks do `microprofile-config.properties`) — ver [[SeedGrid/Extensions/backup/Configuracao|Configuração]].
 - `appVersion("1.0.0")` fixo no manifest (TODO no código).
+- **Não é exportação de relatório:** o export do backup é um ZIP de dados do tenant (CSV/SQL) para portabilidade, sem filtro, totais nem fuso. Não existe extension ou lib de relatório CSV/XLSX/PDF na plataforma (Confirmado: nenhuma extension da lista e nenhum `pom.xml` do repositório Java depende de biblioteca de planilha ou PDF); o produto implementa a exportação ou usa o produto seedgrid-report.

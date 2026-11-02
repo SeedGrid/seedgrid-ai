@@ -1,7 +1,7 @@
 ---
 description: "Como limitar empresas e usuários por plano e tratar a inadimplência no billing, em perguntas e respostas: campos do PlanTerm (maxCompanies, maxReadOnlyCompanies, maxUsers, pastDue*Days), propriedades seedgrid.billing.past-due.* (padrão 7 e 30 dias), erros 402, escolha de empresas no downgrade e no checkout, eventos para o host avisar o cliente e a tela de condição comercial."
 tags: [seedgrid, extension, billing, inadimplencia, plano, planterm, downgrade, cota, host, perguntas-e-respostas]
-analisado-em: 2026-10-23
+analisado-em: 2026-11-02
 ---
 
 # Limites do plano e inadimplência (empresas, usuários e prazos)
@@ -25,7 +25,7 @@ No **`PlanTerm`** (a condição comercial do plano), em quatro campos de empresa
 
 ## Quero a cota do plano (ou meu host não cobra por usuário/empresa): o que ligo?
 
-As duas cotas são **opt-in**, ambas com padrão `false` (decisão do dono em 2026-10-26: limite por usuário ou por empresa é regra do host). **BREAKING** (nada publicado; versão local 2026.10.22): antes os validadores eram beans sempre ativos.
+As duas cotas são **opt-in**, ambas com padrão `false` (decisão do dono em 2026-10-26: limite por usuário ou por empresa é regra do host). **BREAKING na 2026.10.22:** antes os validadores eram beans sempre ativos.
 
 | Propriedade | Padrão | Efeito quando `true` |
 |---|---|---|

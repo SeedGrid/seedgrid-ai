@@ -5,7 +5,7 @@ tags: [seedgrid, extension, security, subdomain-tenancy, login-tenancy, rbac, es
 
 # security — Escopo e acesso (ciclo em andamento)
 
-> **Status: publicado no Maven Central em 2026-10-31.** O ciclo ainda está aberto; as extensions só serão publicadas quando ele terminar. Até lá, estas mudanças **não existem** nas versões do Maven Central (`Versoes.md`). Não use nada daqui em um host que dependa das versões atuais. Quando a publicação sair, esta nota recebe a versão e seu conteúdo passa para a [[SeedGrid/Extensions/security/Configuracao|Configuração]] e a [[SeedGrid/Extensions/security/Visao-geral|Visão geral]].
+> **Status: publicado no Maven Central em 2026-10-31.** Estas mudanças valem a partir da **2026.10.22** (security e subdomain-tenancy); hosts em versão anterior não as têm (`Versoes.md`). O conteúdo também está na [[SeedGrid/Extensions/security/Configuracao|Configuração]] e na [[SeedGrid/Extensions/security/Visao-geral|Visão geral]].
 
 Cobre `seedgrid-quarkus-ext-security`, `-login-tenancy`, `-subdomain-tenancy` e `-lib-commons`. Cada item tem `CHANGELOG.md` no repositório da extension.
 

@@ -3,7 +3,7 @@ tags: [seedgrid, extension, apikeys]
 fonte: java/seedgrid-quarkus-ext-apikeys
 branch: main
 commit: 651ee2b
-analisado-em: 2026-10-27
+analisado-em: 2026-11-02
 ---
 
 # API Keys (Quarkus) — visão geral
@@ -162,3 +162,4 @@ Depende da security (`sg_users`, `sg_roles`, `sg_companies`): a `ApiKeysMigratio
 
 - Nenhuma propriedade liga/desliga a autenticação ou a gestão; isso é feito via bean `ApiKeyActivationPolicy` (Confirmado).
 - Cada request autenticada por API key grava uso em transação `REQUIRES_NEW` (`ApiKeyUsageService#registerUsage`) — custo de escrita por request (Inferência).
+- **Credencial de aparelho (pareamento, offline):** a extension não tem conceito de dispositivo nem de pareamento (Confirmado: sem entidade nem endpoint). O que existe para montar isso no produto: o administrador cria uma chave por aparelho (`POST /apikeys/role/{roleName}` com `name` = identificador do aparelho; `expiresDays` ausente, nulo ou 0 = **não expira**) e entrega a chave crua uma única vez; a chave pertence a uma role de integração, com as permissões dela e a empresa de quem a criou; revogar é `POST /apikeys/{publicId}/revoke` (idempotente) e vale **na próxima chamada online** do aparelho, porque cada requisição é validada no servidor (prefixo → hash → revogada/expirada → role ativa). Não há validação offline nem token que o aparelho verifique sozinho: o que o aparelho guarda é a chave. Fluxo de pareamento (código de uso único, tela do admin, listagem por aparelho) é do produto.

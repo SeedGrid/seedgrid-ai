@@ -3,7 +3,7 @@ tags: [seedgrid, library, privacy]
 fonte: java/seedgrid-quarkus-lib-privacy
 branch: main
 commit: 79f8b03eeb
-analisado-em: 2026-10-14
+analisado-em: 2026-11-02
 ---
 
 # SeedGrid Privacy — Visão geral
@@ -104,3 +104,4 @@ Nenhuma.
 - Estado global estático em `CryptoProvider` (não é bean CDI) — compartilhado por toda a JVM.
 - Para e-mail use `SearchNormalization.EMAIL`; `CANONICAL` remove a pontuação e faria e-mails diferentes colidirem (Javadoc de `SearchNormalization`).
 - Trocar de modo com dados existentes exige migração: desligado→ligado deixa registros antigos crus e sem hash; ligado→desligado exige a chave para ler valores `v1:`.
+- **Dado binário (vetor biométrico, embedding, arquivo pequeno):** o `@SgEncryptedField`/`EncryptedFieldAttributeConverter` só cifra `String` (Confirmado). Para binário, grave o conteúdo em **Base64 num campo `String`** cifrado. O texto cifrado sai como `v1:<iv em Base64>:<texto cifrado em Base64>` (IV de 12 bytes, tag GCM de 16): para um valor de *n* caracteres ocupa `3 + 16 + 1 + 4*ceil((n+16)/3)` caracteres. Exemplos (Base64 do vetor → coluna): 128 floats de 32 bits (512 bytes → 684 caracteres) → ~956 caracteres; 512 floats (2048 bytes → 2732 caracteres) → ~3684 caracteres. **O `length = 512` dos exemplos não serve:** use `columnDefinition = "text"` (ou `length` calculado com folga). Não existe hash de busca útil para vetor (o hash HMAC é de igualdade exata); a comparação de vetores é feita em memória, depois de decifrar. Custo: cifra e decifra são AES-GCM por valor, a cada leitura e escrita da entidade; **não medi** o custo para centenas de registros por vez (carregar 600 vetores de ~1 KB decifra 600 strings; carregue só o que precisa e considere cache em memória decifrado, com a chave fora do log).
