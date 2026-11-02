@@ -50,7 +50,7 @@ const hashArvore = (raiz: string) => {
 test('login-tenancy B2B completo: arquivos, auditoria Mongo, MinIO e self-enter por convite', async () => {
   const { destino, saida } = await gerar({ ...B2B, extensoes: ['exchange'], selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite', auditoria: 'mongodb', armazenamentoAvatar: 'minio', armazenamentoBackup: 'minio' });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/decisions/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep', 'docs/ai/demands/.gitkeep', 'docs/ai/INDEX.md']) assert.ok(existsSync(join(destino, f)), f);
+  for (const f of ['produto.json', 'docker-compose.yml', '.env', '.env.example', '.gitignore', 'backend/pom.xml', 'backend/dev.env', 'backend/dev.env.example', 'frontend/.env.example', 'admin/.env.example', '.github/workflows/publicar.yml', 'docs/ai/plans/.gitkeep', 'docs/ai/adrs/.gitkeep', 'docs/ai/handoffs/.gitkeep', 'docs/ai/reports/.gitkeep', 'docs/ai/demands/.gitkeep', 'docs/ai/INDEX.md']) assert.ok(existsSync(join(destino, f)), f);
   const conferirIndice = spawnSync(process.execPath, [join(TOOLKIT, 'skills/sg-docs-index/scripts/docs-index.mjs'), '--dir', join(destino, 'docs/ai'), '--check'], { encoding: 'utf8' });
   assert.equal(conferirIndice.status, 0, `o produto novo nasce com o docs/ai/INDEX.md em dia: ${conferirIndice.stderr}`);
   const e = env(ler(destino, 'backend/dev.env'));

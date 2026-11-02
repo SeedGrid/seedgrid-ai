@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Gera docs/ai/decisions/INDEX.md a partir do cabeçalho das ADRs, da mais nova para a mais antiga.
-// Uso: node .ai/skills/sg-adr/scripts/adr-index.mjs [--dir docs/ai/decisions] [--check]
+// Gera docs/ai/adrs/INDEX.md a partir do cabeçalho das ADRs, da mais nova para a mais antiga.
+// Uso: node .ai/skills/sg-adr/scripts/adr-index.mjs [--dir docs/ai/adrs] [--check]
+//   --migrar-pasta move a pasta antiga docs/ai/decisions para docs/ai/adrs e acerta os links "decisions/" nos documentos de docs/ai
+//                  (a pasta antiga não é mais lida)
 //   --check    só valida e falha se o INDEX.md estiver desatualizado (sem escrever)
 //   --proximo  imprime o próximo número livre para uma ADR nova
 //   --numerar  dá número, em ordem de data e nome, SÓ às ADRs sem "numero"; nunca renumera
@@ -14,9 +16,37 @@ import path from 'node:path';
 
 const args = process.argv.slice(2);
 const di = args.indexOf('--dir');
-const dir = path.resolve(di >= 0 && args[di + 1] ? args[di + 1] : 'docs/ai/decisions');
 const check = args.includes('--check');
 const STATUS = ['proposta', 'aceita', 'implementada', 'substituida', 'rejeitada'];
+// Pasta das ADRs: docs/ai/adrs. A antiga docs/ai/decisions não é mais lida: migre com --migrar-pasta.
+let dir = path.resolve(di >= 0 && args[di + 1] ? args[di + 1] : 'docs/ai/adrs');
+if (args.includes('--migrar-pasta')) {
+  // decisions/ -> adrs/, com os links dos outros documentos de docs/ai acertados
+  const velha = path.join(path.dirname(dir), 'decisions');
+  const nova = path.join(path.dirname(velha), 'adrs');
+  if (!existsSync(velha)) { console.error(`Nada a migrar: ${velha} não existe`); process.exit(1); }
+  if (existsSync(nova)) { console.error(`${nova} já existe; junte as duas pastas à mão antes de migrar`); process.exit(1); }
+  renameSync(velha, nova);
+  const raiz = path.dirname(nova);
+  const mudou = [];
+  const varrer = (d) => {
+    for (const n of readdirSync(d)) {
+      const p = path.join(d, n);
+      if (n === 'node_modules' || n.startsWith('.')) continue;
+      if (statSync(p).isDirectory()) { varrer(p); continue; }
+      if (!n.endsWith('.md')) continue;
+      const raw = readFileSync(p, 'utf8');
+      // só o caminho da pasta: "decisions/" depois de "/", de "(" ou de "ai/" e no começo; "decisions" solta na prosa fica
+      const out = raw.replace(/(^|[\s(\[`'"/])decisions\//g, '$1adrs/');
+      if (out !== raw) { writeFileSync(p, out, 'utf8'); mudou.push(path.relative(raiz, p)); }
+    }
+  };
+  varrer(raiz);
+  console.log(`decisions/ -> adrs/ (${mudou.length} documento(s) com link acertado)`);
+  for (const m of mudou) console.log(`  ${m}`);
+  console.log('Rode o sg-docs-index para refazer o docs/ai/INDEX.md.');
+  dir = nova;
+}
 
 if (!existsSync(dir)) {
   console.error(`Pasta não encontrada: ${dir}`);

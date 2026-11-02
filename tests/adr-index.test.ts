@@ -10,11 +10,11 @@ const SCRIPT = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-adr
 const dirs: string[] = [];
 process.on('exit', () => { for (const d of dirs) rmSync(d, { recursive: true, force: true }); });
 
-/** Cria docs/ai/{decisions,plans} num diretório temporário; devolve a raiz. */
+/** Cria docs/ai/{adrs,plans} num diretório temporário; devolve a raiz. */
 function projeto(): { raiz: string; decisions: string } {
   const raiz = mkdtempSync(join(tmpdir(), 'sg-adr-'));
   dirs.push(raiz);
-  const decisions = join(raiz, 'docs/ai/decisions');
+  const decisions = join(raiz, 'docs/ai/adrs');
   mkdirSync(decisions, { recursive: true });
   mkdirSync(join(raiz, 'docs/ai/plans'), { recursive: true });
   return { raiz, decisions };
@@ -84,7 +84,7 @@ test('--renomear põe o prefixo, acerta substitui/substituida-por, refaz o índi
   const { raiz, decisions } = projeto();
   adr(decisions, '2026-10-01-antiga.md', { numero: 1, titulo: 'Antiga', data: '2026-10-01', extra: 'substituida-por: [2026-11-01-nova.md]' });
   adr(decisions, '2026-11-01-nova.md', { numero: 2, titulo: 'Nova', extra: 'substitui: [2026-10-01-antiga.md]' });
-  writeFileSync(join(raiz, 'docs/ai/plans/P1-2026-11-01-plano.md'), 'Veja ../decisions/2026-11-01-nova.md\n', 'utf8');
+  writeFileSync(join(raiz, 'docs/ai/plans/P1-2026-11-01-plano.md'), 'Veja ../adrs/2026-11-01-nova.md\n', 'utf8');
 
   const r = rodar(decisions, '--renomear');
   assert.equal(r.status, 0, r.err);
@@ -127,4 +127,25 @@ test('--numerar --renomear juntos migram ADRs sem numero, numerando por data e n
   assert.equal(r.status, 0, r.err);
   assert.deepEqual(readdirSync(decisions).filter((n) => n !== 'INDEX.md').sort(), ['ADR1-2026-10-01-a.md', 'ADR2-2026-11-01-b.md']);
   assert.equal(rodar(decisions, '--check').status, 0);
+});
+
+test('--migrar-pasta move decisions/ para adrs/, acerta os links e a pasta antiga deixa de existir', () => {
+  const { raiz, decisions } = projeto();
+  const antiga = join(raiz, 'docs/ai/decisions');
+  const nova = join(raiz, 'docs/ai/adrs');
+  rmSync(nova, { recursive: true, force: true });
+  mkdirSync(antiga, { recursive: true });
+  adr(antiga, 'ADR1-2026-11-01-primeira.md', { numero: 1 });
+  writeFileSync(join(raiz, 'docs/ai/plans/P1-2026-11-01-plano.md'), 'Veja [ADR](../decisions/ADR1-2026-11-01-primeira.md) e as decisions de arquitetura.\n', 'utf8');
+  const r = rodar(nova, '--migrar-pasta');
+  assert.equal(r.status, 0, r.err);
+  assert.ok(!existsSync(antiga));
+  assert.ok(existsSync(join(nova, 'ADR1-2026-11-01-primeira.md')));
+  assert.ok(existsSync(join(nova, 'INDEX.md')));
+  const plano = readFileSync(join(raiz, 'docs/ai/plans/P1-2026-11-01-plano.md'), 'utf8');
+  assert.match(plano, /\.\.\/adrs\/ADR1-2026-11-01-primeira\.md/);
+  assert.match(plano, /as decisions de arquitetura/, 'prosa solta não muda');
+  assert.equal(rodar(nova, '--check').status, 0);
+  assert.equal(rodar(nova, '--migrar-pasta').status, 1, 'sem a pasta antiga não há o que migrar');
+  void decisions;
 });

@@ -3,7 +3,7 @@ description: "Modelo de ADR (registro de decisão): cabeçalho com quem decidiu,
 ---
 # <título da decisão>
 
-> Modelo do SeedGrid AI Toolkit. Use a skill `sg-adr`: ela copia este modelo para `docs/ai/decisions/ADR<n>-AAAA-MM-DD-slug.md` (`<n>` = `numero:` do cabeçalho) e atualiza o índice. ADR aceita **não se edita**: se a decisão mudar, crie outra e marque a antiga como `substituida`.
+> Modelo do SeedGrid AI Toolkit. Use a skill `sg-adr`: ela copia este modelo para `docs/ai/adrs/ADR<n>-AAAA-MM-DD-slug.md` (`<n>` = `numero:` do cabeçalho) e atualiza o índice. ADR aceita **não se edita**: se a decisão mudar, crie outra e marque a antiga como `substituida`.
 
 Cabeçalho (obrigatório, no topo do arquivo, entre `---`):
 
@@ -17,7 +17,7 @@ aidlc: 0.0.0              # contentVersion de .ai/toolkit-lock.json
 status: proposta          # proposta | aceita | implementada | substituida | rejeitada
 decidido-por: nome ou papel
 consultados: [nomes, quando houver]
-dominio: [seguranca]      # lista do projeto (docs/ai/decisions/dominios.txt)
+dominio: [seguranca]      # lista do projeto (docs/ai/adrs/dominios.txt)
 modulos: [modulo-a, modulo-b]
 substitui: []             # arquivos de ADR que esta substitui
 substituida-por:          # preencha na ADR antiga quando houver outra

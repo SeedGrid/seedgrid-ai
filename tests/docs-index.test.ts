@@ -34,7 +34,7 @@ function rodar(ai: string, ...args: string[]) {
 test('lista todos os tipos de documento e linka o arquivo', () => {
   const ai = docsAi();
   doc(ai, 'plans/P1-2026-11-01-produto.md', { numero: '1', status: 'em-andamento', data: '2026-11-01', aidlc: '0.7.3' }, 'Plano do produto');
-  doc(ai, 'decisions/ADR1-2026-11-01-tenancy.md', { numero: '1', status: 'aceita', data: '2026-11-01', aidlc: '0.7.3' }, 'Tenancy por subdomínio');
+  doc(ai, 'adrs/ADR1-2026-11-01-tenancy.md', { numero: '1', status: 'aceita', data: '2026-11-01', aidlc: '0.7.3' }, 'Tenancy por subdomínio');
   doc(ai, 'handoffs/H1-2026-11-01-passagem.md', { status: 'vigente', data: '2026-11-01', aidlc: '0.7.3' }, 'Passagem');
   doc(ai, 'reports/P1.F1.T1-validacao.md', { data: '2026-11-01', aidlc: '0.7.3' }, 'Validação');
   doc(ai, 'analises/P1.F0.T1-inventario.md', { data: '2026-11-01', aidlc: '0.7.3' }, 'Inventário');
@@ -43,7 +43,7 @@ test('lista todos os tipos de documento e linka o arquivo', () => {
   const indice = readFileSync(join(ai, 'INDEX.md'), 'utf8');
   for (const t of ['## Planos', '## Decisões (ADR)', '## Handoffs', '## Relatórios', '## Análises']) assert.ok(indice.includes(t), t);
   assert.match(indice, /\[Plano do produto\]\(plans\/P1-2026-11-01-produto\.md\)/);
-  assert.match(indice, /\| ADR1 \| \[Tenancy por subdomínio\]\(decisions\/ADR1-2026-11-01-tenancy\.md\)/);
+  assert.match(indice, /\| ADR1 \| \[Tenancy por subdomínio\]\(adrs\/ADR1-2026-11-01-tenancy\.md\)/);
 });
 
 test('demandas abertas ficam no topo e as respondidas no fim', () => {

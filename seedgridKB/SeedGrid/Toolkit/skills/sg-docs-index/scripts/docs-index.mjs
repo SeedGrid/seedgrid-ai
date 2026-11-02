@@ -6,7 +6,7 @@
 //   --stdout   imprime o índice em vez de gravar (para conferir)
 // Erros (saem 1): INDEX.md desatualizado (só com --check); id repetido entre planos, entre demandas ou entre ADRs.
 // Avisos (saem 0): demanda citada num plano sem arquivo; demanda cujo plano não existe; documento sem "aidlc:".
-// O índice de decisões (decisions/INDEX.md, do adr-index.mjs) continua existindo; aqui as ADRs entram só como lista.
+// O índice de decisões (adrs/INDEX.md, do adr-index.mjs) continua existindo; aqui as ADRs entram só como lista.
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -23,7 +23,7 @@ if (!existsSync(raiz)) {
 
 const TIPOS = [
   { pastas: ['plans'], titulo: 'Planos', chave: 'plano' },
-  { pastas: ['decisions'], titulo: 'Decisões (ADR)', chave: 'adr' },
+  { pastas: ['adrs'], titulo: 'Decisões (ADR)', chave: 'adr' },
   { pastas: ['handoff', 'handoffs'], titulo: 'Handoffs', chave: 'handoff' },
   { pastas: ['reports'], titulo: 'Relatórios', chave: 'relatorio' },
   { pastas: ['specs'], titulo: 'Especificações', chave: 'spec' },
@@ -148,7 +148,7 @@ for (const pasta of [...new Set(outros.map((d) => d.pasta || '(raiz de docs/ai)'
 
 const corpo = `# Documentos de docs/ai
 
-> Gerado pela skill \`sg-docs-index\` (script \`docs-index.mjs\`) a partir dos nomes e dos cabeçalhos. **Não edite à mão**; rode o script sempre que criar, renomear ou mudar o status de um documento (\`--check\` confere se está em dia). As decisões têm também o índice próprio em \`decisions/INDEX.md\`.
+> Gerado pela skill \`sg-docs-index\` (script \`docs-index.mjs\`) a partir dos nomes e dos cabeçalhos. **Não edite à mão**; rode o script sempre que criar, renomear ou mudar o status de um documento (\`--check\` confere se está em dia). As decisões têm também o índice próprio em \`adrs/INDEX.md\`.
 
 ${secoes.length ? secoes.join('\n\n') : '_Nenhum documento ainda._'}
 `;

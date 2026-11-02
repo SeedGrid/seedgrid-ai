@@ -1,6 +1,6 @@
 ---
 name: sg-adr
-description: Registra uma decisão de arquitetura ou de comportamento como ADR em docs/ai/decisions/, com cabeçalho (quem decidiu, data, consultados, domínio) e índice gerado da mais nova para a mais antiga. Use quando uma decisão mudar comportamento, propriedade de configuração, contrato ou arquitetura, durante ou depois de executar um plano, ou quando o usuário pedir para registrar ou consultar o porquê de algo.
+description: Registra uma decisão de arquitetura ou de comportamento como ADR em docs/ai/adrs/, com cabeçalho (quem decidiu, data, consultados, domínio) e índice gerado da mais nova para a mais antiga. Use quando uma decisão mudar comportamento, propriedade de configuração, contrato ou arquitetura, durante ou depois de executar um plano, ou quando o usuário pedir para registrar ou consultar o porquê de algo.
 metadata:
   toolkit: seedgrid-ai
 ---
@@ -16,19 +16,19 @@ Crie uma ADR quando a decisão: muda um comportamento observável; cria, remove 
 ## Passos
 
 1. **Listar as decisões.** Escreva cada uma em uma frase e **mostre ao usuário** para confirmar: você propõe, quem decide é o usuário. Ao registrar, repita a decisão em uma frase (decisão registrada errada só aparece quando alguém relê).
-2. **Domínio.** Escolha na lista `docs/ai/decisions/dominios.txt` (um domínio por linha). Se o arquivo não existir, proponha 5 a 10 domínios do projeto (por exemplo `seguranca`, `dados`, `api`, `configuracao`, `processo`), confirme e crie. Domínio novo só com confirmação do usuário.
+2. **Domínio.** Escolha na lista `docs/ai/adrs/dominios.txt` (um domínio por linha). Se o arquivo não existir, proponha 5 a 10 domínios do projeto (por exemplo `seguranca`, `dados`, `api`, `configuracao`, `processo`), confirme e crie. Domínio novo só com confirmação do usuário.
 3. **Número.** `node .ai/skills/sg-adr/scripts/adr-index.mjs --proximo` dá o próximo número livre; ele é sequencial, vai em `numero:` e **nunca muda** (dá para conversar sobre "a ADR #7"). Para ADRs antigas sem número, `--numerar` numera só as que não têm.
-4. **Criar o arquivo** `docs/ai/decisions/ADR<n>-AAAA-MM-DD-slug.md` (`<n>` = o número do passo 3, o mesmo de `numero:` no cabeçalho; por exemplo `ADR3-2026-11-01-armazenamento-minio-no-mvp.md`) a partir do modelo `.ai/templates/decisao-arquitetura.md`: cabeçalho completo (`titulo`, `numero`, `data`, `status`, `decidido-por`, `consultados`, `dominio`, `modulos`, `origem`) e as seções Contexto, Decisão, Alternativas e Consequências. Comece com `status: proposta` e mude para `aceita` quando o usuário confirmar.
+4. **Criar o arquivo** `docs/ai/adrs/ADR<n>-AAAA-MM-DD-slug.md` (`<n>` = o número do passo 3, o mesmo de `numero:` no cabeçalho; por exemplo `ADR3-2026-11-01-armazenamento-minio-no-mvp.md`) a partir do modelo `.ai/templates/decisao-arquitetura.md`: cabeçalho completo (`titulo`, `numero`, `data`, `status`, `decidido-por`, `consultados`, `dominio`, `modulos`, `origem`) e as seções Contexto, Decisão, Alternativas e Consequências. Comece com `status: proposta` e mude para `aceita` quando o usuário confirmar.
 5. **Substituição.** Se a decisão troca outra, não edite a antiga: crie a nova com `substitui: [arquivo-antigo.md]` e apenas marque a antiga como `status: substituida` e `substituida-por`.
-6. **Índice.** Se a pasta tiver ADRs com o nome antigo (`AAAA-MM-DD-slug.md`, sem `ADR<n>-`), o script avisa; rode uma vez `node .ai/skills/sg-adr/scripts/adr-index.mjs --renomear` (use `--numerar` antes se alguma não tiver `numero:`). Ele acerta `substitui` e `substituida-por` das outras ADRs e lista os documentos de `docs/ai` que citam o nome antigo, para você atualizar o link. Rode `node .ai/skills/sg-adr/scripts/adr-index.mjs`. Ele valida o cabeçalho e gera `docs/ai/decisions/INDEX.md` em ordem decrescente de data. Nunca edite o `INDEX.md` à mão; use `--check` para conferir se está em dia.
+6. **Índice.** Se o projeto ainda tem a pasta antiga `docs/ai/decisions/`, rode uma vez `node .ai/skills/sg-adr/scripts/adr-index.mjs --migrar-pasta` (move para `adrs/` e acerta os links). Se a pasta tiver ADRs com o nome antigo (`AAAA-MM-DD-slug.md`, sem `ADR<n>-`), o script avisa; rode uma vez `node .ai/skills/sg-adr/scripts/adr-index.mjs --renomear` (use `--numerar` antes se alguma não tiver `numero:`). Ele acerta `substitui` e `substituida-por` das outras ADRs e lista os documentos de `docs/ai` que citam o nome antigo, para você atualizar o link. Rode `node .ai/skills/sg-adr/scripts/adr-index.mjs`. Ele valida o cabeçalho e gera `docs/ai/adrs/INDEX.md` em ordem decrescente de data. Nunca edite o `INDEX.md` à mão; use `--check` para conferir se está em dia.
 7. **Entregar** listando as ADRs criadas e o que ficou como `proposta` (o que o dono confirmou e já está no código é `implementada`).
 
 ## Consultar
 
-Para saber por que algo foi feito: leia `docs/ai/decisions/INDEX.md`, filtre pelo domínio ou pelo módulo e abra só as ADRs relevantes (`grep -l "dominio: .*seguranca" docs/ai/decisions/*.md`). Se a ADR estiver `substituida`, siga o `substituida-por`. Não use planos concluídos para responder "por quê".
+Para saber por que algo foi feito: leia `docs/ai/adrs/INDEX.md`, filtre pelo domínio ou pelo módulo e abra só as ADRs relevantes (`grep -l "dominio: .*seguranca" docs/ai/adrs/*.md`). Se a ADR estiver `substituida`, siga o `substituida-por`. Não use planos concluídos para responder "por quê".
 
 ## Regras
 
 - ADR aceita não se edita; erro de digitação óbvio pode ser corrigido, mudança de decisão gera outra ADR.
 - Uma decisão por ADR. Nada de segredo, token ou dado pessoal.
-- `docs/ai/decisions/` é sempre versionada.
+- `docs/ai/adrs/` é sempre versionada.

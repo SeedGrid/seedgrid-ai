@@ -29,7 +29,7 @@ node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --stdout   # mostra
 
 - **Id** pelo nome do arquivo: `P<plano>-...` (plano), `P<plano>.F<fase>.DEM<n>-...` (demanda), `ADR<n>-...` (decisão; sem o prefixo, usa o `numero:` do cabeçalho), `P<plano>.F<fase>.T<n>-...` (análise e afins).
 - **Título** do `titulo:` do cabeçalho ou, na falta, do primeiro `# ` do corpo. **Status**, **data**, **plano** e **fase** do cabeçalho; a data cai para a do nome do arquivo.
-- **Pastas:** `plans`, `demands`, `decisions`, `handoffs` (ou `handoff`), `reports`, `specs`, `analises`; qualquer outra pasta entra como "Outros". Todas as subpastas são lidas.
+- **Pastas:** `plans`, `demands`, `adrs`, `handoffs` (ou `handoff`), `reports`, `specs`, `analises`; qualquer outra pasta entra como "Outros". Todas as subpastas são lidas.
 - **Demanda aberta:** `status` começando por `aberta`, `pendente` ou `em-andamento`. Fechada: `respondida`, `fechada`, `recusada`, `cancelada`, `concluída`, `confirmada`, `atendida`. Status fora disso conta como aberta, com aviso.
 
 ## O que reprova (`exit 1`)
@@ -45,5 +45,5 @@ node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --stdout   # mostra
 
 ## Relação com as outras skills
 
-- `sg-adr` continua mantendo `decisions/INDEX.md` (índice só das decisões, com `--numerar` e `--renomear`); o índice geral lista as ADRs ao lado dos demais documentos.
+- `sg-adr` continua mantendo `adrs/INDEX.md` (índice só das decisões, com `--numerar` e `--renomear`); o índice geral lista as ADRs ao lado dos demais documentos.
 - `sg-validate-change` roda o `--check` deste índice ao fechar uma mudança.

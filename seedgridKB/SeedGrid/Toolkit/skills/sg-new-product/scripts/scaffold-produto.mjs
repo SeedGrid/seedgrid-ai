@@ -452,7 +452,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
   gravar(destino, 'produto.json', JSON.stringify(JSON.parse(JSON.stringify(produto)), null, 2) + '\n', criados);
 
   // 8. docs/ai
-  for (const d of ['plans', 'decisions', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
+  for (const d of ['plans', 'adrs', 'handoffs', 'reports', 'demands']) gravar(destino, `docs/ai/${d}/.gitkeep`, '', criados);
   // 8-1. primeiro indice geral de docs/ai (skill irma sg-docs-index; sem ela, o produto fica sem indice ate rodar a skill)
   const docsIndex = join(AQUI, '..', '..', 'sg-docs-index', 'scripts', 'docs-index.mjs');
   if (existsSync(docsIndex)) {

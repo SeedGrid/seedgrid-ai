@@ -168,7 +168,7 @@ function conferir(antes) {
   }
   ok('produto gerado (produto.json, backend, frontend, admin)', ['produto.json', 'backend/pom.xml', 'frontend/package.json', 'admin/package.json', 'docker-compose.yml', 'backend/dev.env', 'backend/dev.env.example'].every((f) => lista.includes(f)));
   ok('plano em docs/ai/plans/', md('docs/ai/plans').length >= 1, md('docs/ai/plans').join(', '));
-  ok('ADRs em docs/ai/decisions/', md('docs/ai/decisions').length >= 1, `${md('docs/ai/decisions').length} arquivo(s)`);
+  ok('ADRs em docs/ai/adrs/', md('docs/ai/adrs').length >= 1, `${md('docs/ai/adrs').length} arquivo(s)`);
   ok('handoff em docs/ai/handoffs/', md('docs/ai/handoffs').length >= 1, md('docs/ai/handoffs').join(', '));
   // nada fora da pasta do produto: os repositorios vigiados nao podem ter mudado
   let slugProduto = '';

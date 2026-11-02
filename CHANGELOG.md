@@ -8,6 +8,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 - Regras BE-70 (fuso `America/Sao_Paulo`, UTC no banco, "hoje" no servidor), BE-71 (plano que não inclui o recurso responde 402 `FEATURE_NOT_IN_PLAN`, nunca 403) e BE-72 (em `login-tenancy`, a conta vem só do contexto autenticado; `account_public_id` em toda tabela; filtro manual; 404 para outra conta; teste de isolamento) em `backend-seedgrid.md` e `backend-java-seedgrid.md` (decisão do dono, P123.F3.D1).
 
 ### Alterado
+- A pasta das ADRs passa de `docs/ai/decisions/` para `docs/ai/adrs/` (decisão do dono, plano P124); o arquivo continua `ADR<n>-AAAA-MM-DD-slug.md`. `sg-new-product`, `sg-adr`, `sg-docs-index`, a regra `documentos.md`, o modelo de ADR, os agentes e o `AGENTS.md` gerado passam a dizer `adrs/`. **Sem retrocompatibilidade:** a pasta antiga deixa de ser lida; produto existente migra com `node .ai/skills/sg-adr/scripts/adr-index.mjs --migrar-pasta` (move a pasta e acerta os links `decisions/` nos documentos de `docs/ai`). Teste novo da migração.
 - BE-61: valor monetário e descrição livre de lançamento não são dado pessoal por si e não se cifram nem se mascaram por LGPD; só os campos que identificam a pessoa (CPF, CNPJ, endereço etc.).
 
 ## [0.7.3] — 2026-11-01
