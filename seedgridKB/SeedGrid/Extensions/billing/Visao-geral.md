@@ -3,7 +3,7 @@ tags: [seedgrid, extension, billing, quarkus]
 fonte: java/seedgrid-quarkus-ext-billing
 branch: main
 commit: e00008e
-analisado-em: 2026-10-27
+analisado-em: 2026-11-02
 ---
 
 # Billing (Quarkus): visão geral
@@ -161,6 +161,15 @@ public class MeuAccountCompaniesGateway implements AccountCompaniesGateway {
 | GET | `/me/billing/change-preview`, `/invoices`, `/upcoming` | autenticado |
 | GET/PUT | `/me/billing/downgrade-user-selection` | autenticado |
 | POST | `/public/billing/webhook` | pública (assinatura do provider) |
+
+#### Term (condição comercial): campos e regras (Confirmado em `PlanTermRequest`, `PlanTermPatchRequest`, `PlanTermService` e `AdminPlanController`, 2026.10.22; P2.F0.DEM9 do display)
+
+- **Criar** (`POST /admin/plans/{planId}/terms`, `PLAN_TERM_CREATE`): só `monthlyPrice` é obrigatório (decimal ≥ 0). Opcionais: `maxUsers`, `maxCompanies`, `maxReadOnlyCompanies`, `pastDueReadOnlyAfterDays`, `pastDueDisableAfterDays` (inteiros ≥ 0), `featuresJson` (texto; os admins guardam um array JSON de strings), `effectiveFrom`, `permissionPublicIds` (lista; id desconhecido = 400), `additionalAttributes` (mapa) e `meters` (lista de `{meter, includedUnits ≥ 0, overagePrice ≥ 0}`, os três obrigatórios; ausente = nenhum contador). Não vale para o plano de trial (use `PATCH /admin/plans/trial`). Resposta 201 com o term; o sistema **já tenta publicar no provider**: se falhar, o term fica salvo e a resposta traz `publishError`; retente com `POST .../terms/{termId}/publish`.
+- **`effectiveFrom`**: data-hora com offset (ISO-8601, ex.: `2026-12-01T00:00:00-03:00`). A vigência começa às 00:00 do **dia civil** no fuso do negócio (`America/Sao_Paulo`), seja qual for a hora enviada. **Ausente = hoje 00:00, ou seja, o term já nasce vigente e não pode mais ser editado.** Para ter um term editável, envie uma data futura.
+- **Só term AGENDADO muda.** `PATCH` e `DELETE` em `/admin/plans/{planId}/terms/{termId}` só valem se `effectiveFrom` ainda está no futuro; term vigente ou encerrado responde **409** (`OPERACAO_NAO_PERMITIDA`, "Apenas condicoes comerciais agendadas podem ser alteradas."). O vigente e os encerrados são histórico de cobrança. Para encerrar um vigente: `POST .../archive` (arquiva o preço no provider e fecha a vigência agora).
+- **`PATCH`** (`PLAN_TERM_UPDATE`) é parcial: campo ausente não muda. `meters` e `permissionPublicIds` presentes **substituem a lista inteira**. `additionalAttributes` segue JSON Merge Patch (RFC 7386): chave ausente preserva, objeto mescla, array substitui, `null` remove. Em `maxCompanies`/`maxReadOnlyCompanies`, `0` = sem limite; em `pastDue*AfterDays`, `0` = não aplica o passo e ausente (no criar) = usa a propriedade `seedgrid.billing.past-due.*`. O validador do host (`PlanTermAdditionalFieldsValidator`) roda sobre o term montado e uma rejeição não deixa nada salvo.
+- **Status** na resposta: `SCHEDULED` (editável), `CURRENT` (vigente), `ENDED`; mais `published` (preço criado no provider) e `providerPriceId`. O front deve mostrar editar/excluir só em `SCHEDULED`.
+- **`GET /admin/plans`** (`PLAN_READ`; sem o trial) devolve uma página `{items, totalRecords, page, size, sortField, sortOrder, query}` (parâmetros `q`, `page` base 0, `size` até 100, `sortField` padrão `name`, `sortOrder` `asc`/`desc`). Cada item: `publicId`, `code`, `name`, `description`, `active`, `upgradePromptThresholdPercent`, `quotaWarningRemainingPercent`, `quotaCriticalRemainingPercent`, `trialDays`, `createdAt` e `currentTerm` (resumo do term vigente: `publicId`, `monthlyPrice`, `meters`, limites, `featuresJson`, `effectiveFrom/To`, `published`, `additionalAttributes`; `null` se não houver). `GET .../{planId}/terms` devolve a mesma página de `PlanTermResponse`, vigência mais recente primeiro, com `size` padrão 10.
 
 Os caminhos são **Confirmados** em `RestControllerPath`. As permissões vêm do README. Com `seedgrid.billing.api.enabled=false`, todos os prefixos exceto o webhook respondem 404 e somem do OpenAPI (`RestControllerPath.API_PREFIXES`).
 

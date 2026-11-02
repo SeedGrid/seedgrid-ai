@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- KB do `billing`: campos e regras do term (obrigatório só `monthlyPrice`; `effectiveFrom` e o dia civil; sem `effectiveFrom` o term já nasce vigente; só term agendado muda, senão 409; PATCH parcial; formato do `GET /admin/plans`), a pedido da P2.F0.DEM9 do display (plano P125.F1.T1).
+- KB da `subdomain-tenancy`: o admin do master nasce com `change_password_required = true` e e-mail não confirmado; 401 `PASSWORD_CHANGE_REQUIRED` em toda rota autenticada; troca por `PUT /users/change-password` ou `PUT /me/profile/password`, que revoga a sessão (P2.F0.DEM10 do display, plano P125.F1.T2).
+
 ## [0.7.4] — 2026-11-01
 
 ### Adicionado

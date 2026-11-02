@@ -3,7 +3,7 @@ tags: [seedgrid, extension, billing, quarkus, exemplos]
 fonte: java/seedgrid-quarkus-ext-billing
 branch: main
 commit: ba38efc347
-analisado-em: 2026-10-14
+analisado-em: 2026-11-02
 ---
 
 # Billing (Quarkus): exemplos
@@ -171,6 +171,16 @@ Content-Type: application/json
 
 - `overagePrice > 0`: cada unidade além da franquia é cobrada no meter do contador.
 - `overagePrice = 0`: esgotar a franquia bloqueia com 402.
+- Sem `effectiveFrom` o term vale desde hoje 00:00 e **não pode mais ser editado** (PATCH/DELETE = 409). Para um term editável, agende: `"effectiveFrom": "2026-12-01T00:00:00-03:00"`. Campos e regras completos em [[SeedGrid/Extensions/billing/Visao-geral|Visão geral]] (Term: campos e regras).
+
+Editar um term agendado (só os campos enviados mudam; `additionalAttributes` por merge patch):
+
+```http
+PATCH /admin/plans/{planId}/terms/{termId}
+Content-Type: application/json
+
+{ "monthlyPrice": 179.90, "additionalAttributes": { "supportLevel": null } }
+```
 
 ## 8. Configuração mínima com Stripe
 
