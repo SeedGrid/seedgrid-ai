@@ -81,5 +81,8 @@ public record ClienteDTORes(
   | E-mail | estratégia `MaskingStrategy.EMAIL` (sem gabarito) | `luck*******@gm***.com` (`luck*******@gm***.com.br`) |
   | Logradouro | `######**************` | `AV. E.**************` |
   O gabarito é posicional: IE e logradouro têm tamanho variável, então só o **começo** pode ser mostrado (um "últimos N" cairia em posição errada). O e-mail não usa gabarito, porque o `@` muda de posição: `EMAIL` mostra 4 caracteres do usuário e 2 do domínio, com asteriscos fixos. O logradouro mostra no máximo 6 caracteres para o número não aparecer em endereço curto ("AV. E. 293"). Se o valor for guardado **com** pontuação, use o gabarito com os mesmos literais (CPF `###.***.###-**`).
+- **BE-70.** Em Java: `ZoneId.of("America/Sao_Paulo")` numa constante do host, `Instant` para instantes, `LocalDate`/`YearMonth` para dia e mês; o mês corrente sai de um endpoint do servidor.
+- **BE-71.** Em Java: `@SgRequiresPlanFeature` para liga/desliga; para limite do plano, leia `SubscriptionResolutionService#findCurrent(...)` → `getPlanTerm().getAdditionalAttributes()` e lance exception tipada (BE-11) com `status()` 402 e `code()` `FEATURE_NOT_IN_PLAN`.
+- **BE-72.** Em Java: um único bean do host lê `CompanyRequestContext#getCurrentCompanyId()` (devolve `Long`) e converte com `CompanyPublicIdResolver#publicIdOf(Long)`; os repositórios recebem o `publicId` da conta em todo método (sem `findById` solto nem `findAll`), no padrão do `ApiKeyRepository.COMPANY_FILTER`.
 - **BE-65.** Endpoints protegidos com as anotações de segurança do Quarkus (`@Authenticated`, `@RolesAllowed`, `@PermissionsAllowed`) e permissões registradas conforme a extension `security`.
 - **BE-66.** Cadastros novos seguem a skill `sg-crud-back`.

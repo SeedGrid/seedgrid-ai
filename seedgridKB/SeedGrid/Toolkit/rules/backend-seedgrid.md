@@ -35,10 +35,17 @@ Para as extensions (propriedades, enums, exemplos), consulte a KB: comece por `.
 
 - **BE-60.** Use as extensions (Java) ou os crates (Rust) SeedGrid antes de escrever código próprio de autenticação/permissões (`security`), auditoria (`audit`), notificação, billing, cache, storage, rate limit etc. Consulte `.ai/brain/SeedGrid/Extensions/Indice.md` e configure pelas propriedades documentadas. Código próprio só quando nenhum cobre, com a justificativa na entrega.
 - **BE-61.** Dado pessoal (CPF, CNPJ, inscrição estadual, e-mail, telefone, WhatsApp, logradouro; nome quando identifica a pessoa e data de nascimento também) usa o `privacy` do SeedGrid, **pelo que o campo representa**: cifrado em repouso e com hash de busca em todo campo cifrado. Anotações e colunas na rule da linguagem.
+  - **O que NÃO é dado pessoal por si:** valor monetário, quantia, descrição ou observação livre de lançamento. Não se cifra nem se mascara por LGPD; o que protege é o escopo da conta (BE-72). Só entra na regra se o campo identificar a pessoa (a lista acima).
 - **BE-62.** A cifra de campo é opt-in: o projeto liga a cifra e fornece as chaves por segredo/variável de ambiente, nunca em arquivo versionado.
 - **BE-63.** Dado pessoal **não** vai em claro para auditoria, log, exportação ou resposta de erro: use o mascaramento do `privacy` (e remoção total para senha e segredos).
 - **BE-64.** Todo método de service é auditado pela extension/crate `audit`, inclusive a leitura (para saber quem leu).
 - **BE-65.** Endpoints protegidos pelo mecanismo de segurança da extension `security`; a UI esconder um botão não substitui a checagem no back.
+
+## Tempo, plano e conta
+
+- **BE-70.** Fuso padrão `America/Sao_Paulo` (público brasileiro). Instantes são guardados em UTC (`timestamptz`); mês, dia e ciclo "de hoje" são calculados **no servidor** neste fuso, nunca pelo relógio do cliente. Outro fuso só se o dono do produto pedir.
+- **BE-71.** Recurso que o plano não inclui responde **402** (`FEATURE_NOT_IN_PLAN`; `TRIAL_EXPIRED` para trial vencido), nunca 403. O cliente trata o 402 (cadeado, convite para o upgrade). Liga/desliga simples: feature do plano; limite ou janela numérica: atributo do `PlanTerm` (`Extensions/billing/Visao-geral`).
+- **BE-72.** Em produto com `login-tenancy`, a conta vem **só** do contexto autenticado, nunca de parâmetro, corpo, header ou path. Toda tabela de domínio grava o `publicId` da conta (`account_public_id`, indexado e dentro das unique constraints); o filtro por conta é manual no repositório (a plataforma não filtra sozinha) e nenhum método consulta sem a conta; objeto de outra conta responde 404; há teste de isolamento com duas contas. Detalhes: `Extensions/login-tenancy/Escopo-e-exclusao-no-dominio-do-host`.
 
 ## Ao terminar
 
