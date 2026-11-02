@@ -84,6 +84,21 @@ flowchart LR
 
 O deployment (`SeedgridRealtimeProcessor`) registra a feature `seedgrid-realtime`, o `ConfigMappingBuildItem` e torna `RealtimePublisher`, `ConnectRateLimiter` e `SgUserEventObserver` unremovable.
 
+## Usuário desconectado: o Pulse guarda e entrega na volta (Confirmado)
+
+_Fonte: `seedgrid-products/seedgrid-pulse` (`backend/PROTOCOL.md`, `backend/env.md`, `backend/src/delivery/model.rs`), commit `a41f519`, analisado em 2026-11-02._
+
+O aviso a um usuário que **não está conectado** não se perde: o Pulse grava a mensagem como `pending` e a entrega quando uma conexão desse usuário assina o canal (replay de pendências).
+
+- **Modo de entrega:** a extension não escolhe `deliveryMode` nem `deliveryPolicy`, então vale o padrão `notification`: o write bem-sucedido no WebSocket é o evento terminal (`completed`); sem conexão, a mensagem segue `pending`, sem consumir tentativa e sem ir à DLQ.
+- **Replay:** ao conectar e assinar, o Pulse carrega as pendências **da conta** cujo endereço a conexão cobre: o eixo `user` casa pelo `subject` da conexão (o `publicId` do token de conexão), mais o grupo implícito `user:<publicId>`. A conta é sempre a fronteira.
+- **Validade:** a mensagem pendente expira (`expired`, terminal) após o TTL: padrão `DELIVERY_TTL_SECONDS=86400` (1 dia), com teto igual por padrão (`DELIVERY_TTL_SECONDS_CAP`). Passado o TTL, o aviso não chega mais.
+- **Armazenamento:** `DELIVERY_STORE_BACKEND` vale `memory` por padrão; em produção o operador do Pulse precisa de `postgres`, senão as pendências somem quando o Pulse reinicia.
+- **Garantia:** *at-most-once best-effort* no modo `notification` (se o socket cair sem o servidor perceber depois do write, o aviso não volta). Por isso a mensagem é **sinal, não conteúdo** ("mensagem ao client é sinal, não conteúdo"): o front busca o dado pela API. Para exigir confirmação existem `acknowledged` e `processed`, mas `RealtimePublisher.publishToUser` não expõe o modo; hoje só o SDK `PulsePublisher` direto aceita `deliveryMode` e `deliveryPolicy`.
+- **Conta e publicador:** o publicador usa a chave `project` da conta (`x-api-key`); a conexão do front usa o token curto de `POST /realtime/connect`.
+
+Consequência para o desenho de um produto: para "avise o usuário quando terminar" o Pulse basta, inclusive se ele estiver fora do ar na hora (até 1 dia). Já uma **lista que o usuário consulta e apaga quando quiser** (como um sino de notificações) precisa de tabela própria: o Pulse não é histórico nem caixa de entrada de longa duração, e a mensagem some depois de entregue.
+
 ## Anotações
 
 _Fonte: código de `seedgrid-quarkus-ext-realtime` (versão 2026.10.22, publicada no Maven Central)._
@@ -113,5 +128,6 @@ Nenhuma (a extension não tem banco). (Confirmado)
 
 - O rate limit é **em memória e por instância**: com N réplicas o limite efetivo por usuário é até N × `connect-rate-per-minute` (Inferência a partir de `ConnectRateLimiter`, que usa `ConcurrentHashMap` local). As janelas antigas não são removidas do mapa (Inferência: não há limpeza no código).
 - A configuração é lida uma vez na construção do `RealtimePublisher` (bean `@ApplicationScoped`); mudar config exige reinício (Inferência).
+- O TTL das pendências (padrão 1 dia) e o armazenamento (`memory` por padrão) são do **Pulse**, não desta extension; `publishToUser` usa o padrão do servidor e não permite mudar o modo nem o TTL de uma mensagem.
 - `data` deve carregar apenas identificadores, nunca conteúdo (recomendação do README; não há validação no código).
 - O `NO_USER` (UUID zerado) é uma convenção do `DefaultCurrentUserProvider` do commons; outros providers que devolvam outro sentinela não são tratados (Inferência).
