@@ -56,4 +56,5 @@ seedgrid.user-notifications.enabled=false
 
 - **`realtime`:** se o host preenche `seedgrid.realtime.channels` (os canais que o token do Pulse permite), inclua `user-notifications`; vazio = sem restrição.
 - **Migrations:** faixa V1400–V1499, `db/migration/user-notifications`, histórico `sg_flyway_schema_history_user_notifications`. Só mudança de estrutura; nunca edite migrations antigas.
+- **Audit (P136, ainda não publicada):** sem propriedade nova. Se o host tem a extension `audit` (`seedgrid-audit-postgresql` ou `seedgrid-audit-mongodb`), a criação e a exclusão de notificações passam a ir para a trilha; sem ela, nada muda. O `seedgrid-audit-core` é `provided`, então **não vem transitivo**: o host que quer a trilha adiciona o provider da `audit`. Ver [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]], seção Auditoria.
 - **Security:** sem propriedade e sem permissão; as rotas pedem apenas usuário logado.

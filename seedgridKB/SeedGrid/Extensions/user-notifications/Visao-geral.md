@@ -11,6 +11,8 @@ analisado-em: 2026-11-03
 
 > **Status: publicada no Maven Central em 2026-11-03**, versão **2026.11.01** (`seedgrid-user-notifications`), repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `6a192a3` na `main` (sem tag no GitHub). Plano P130 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
 
+> **Auditoria (P136), ainda não publicada:** o código está no working tree do `dev-2` (versão `2026.11.02` no `pom.xml`), sem commit nem publicação. As notas abaixo descrevem o que foi implementado e **precisa ser reconfirmado** no commit publicado.
+
 ## Para que serve
 
 Guarda no banco as notificações **de cada usuário** ("seu relatório ficou pronto", "backup concluído") e avisa em tempo real que há uma nova. Serve a qualquer aviso ao usuário: a extension **não conhece relatório nem backup**; o `type` é livre (`report.ready`, `backup.finished`, ...). O sino de notificações do front (plano P129) lê esta API.
@@ -72,7 +74,27 @@ Depois de gravar, a extension dispara `SgUserEvent` no canal `user-notifications
 
 - Padrão 30 dias e 200 por usuário. Ao passar do teto saem as mais antigas, **as lidas primeiro** (com só não lidas, a mais antiga não lida).
 - Limpeza por usuário a cada nova notificação, mais uma **varredura diária** (cron configurável, desligável) que apaga as vencidas de todos. Não precisa ser exata no dia; o usuário também exclui à mão. Detalhes em [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
-- Exclusão **física** (sem lixeira).
+- Exclusão **física** (sem lixeira). Com a extension `audit` no projeto, a criação e a exclusão **pelo usuário** deixam registro na trilha (ver [Auditoria](#auditoria-opcional-p136)).
+
+## Auditoria (opcional, P136)
+
+Pergunta que ela responde: o usuário diz "pedi o relatório e não veio"; o aviso **nunca foi criado** ou **foi criado e o usuário o excluiu**? A linha continua sendo apagada de verdade; o que fica é o registro na trilha da extension [[SeedGrid/Extensions/audit/Visao-geral|audit]].
+
+- **Opcional:** `seedgrid-audit-core` é dependência `provided` da `user-notifications`. O host escolhe o provider (`audit-postgresql` ou `audit-mongodb`). Sem a `audit` no projeto, nada muda e nenhuma propriedade nova existe. O adaptador (`AuditNotificationTrail`) só vira bean quando o `AuditGateway` está no índice da aplicação (registro condicional no processor).
+- **O que é auditado** (decisão do dono, P136.F0.D2):
+
+| Fato | Registro na `audit` | Estado gravado |
+|---|---|---|
+| Criação de cada notificação (`UserNotifier.notify`) | `CREATE`, entidade `UserNotification`, usuário `system` (quem notifica é código do host) | `afterState`: `publicId`, `type`, `userPublicId` |
+| Exclusão pelo usuário (`DELETE /user-notifications/{id}`) | `DELETE`, um por `publicId`, usuário = quem excluiu | `beforeState`: `publicId`, `type`, `userPublicId` |
+| Exclusão em lote (`DELETE /user-notifications`, com ou sem `?onlyRead=true`) | `DELETE`, **um registro-resumo** por chamada | `beforeState`: `userPublicId`, `onlyRead`, `count` |
+
+- **Não é auditado:** a varredura diária (cron), a poda automática por retenção e por limite por usuário, e marcar como lida (a linha já guarda `readAt`).
+- **Nunca vai para a trilha:** `title`, `message` e `payload` (podem ter dado pessoal). O próprio evento interno (`NotificationAuditEvent`) nem carrega esses campos.
+- **Segurança da trilha:** o registro só é gravado **depois do commit** (`AFTER_SUCCESS`): não registra criação ou exclusão desfeita, e falha da `audit` só vira log (com o tipo da exceção) e **nunca derruba** a notificação nem a exclusão.
+- **Consultar:** `GET /audit-logs?entity=UserNotification` (e `operation=CREATE|DELETE`). Exemplo em [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]], seção 6.
+
+**Confirmado** no código do working tree (`AuditNotificationTrail`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); falta o commit e a publicação.
 
 ## Quem usa hoje
 
@@ -86,3 +108,4 @@ Depois de gravar, a extension dispara `SgUserEvent` no canal `user-notifications
 - Para aparecer no índice combinado a extension precisa de `IndexDependencyBuildItem` (a `user-notifications` tem desde `58743b0`).
 - `POST` sem corpo com `@Consumes(JSON)` responde 415 (a extension não declara `@Consumes` nos POST sem corpo).
 - Crate Rust equivalente: plano P131 (ainda não feito).
+- **Auditoria só cobre criação e exclusão pelo usuário:** a poda automática e a varredura diária não deixam trilha (decisão do dono). Se o aviso sumir por limite por usuário (200), não haverá registro; o limite apaga primeiro as lidas.

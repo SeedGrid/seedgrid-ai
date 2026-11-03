@@ -107,3 +107,22 @@ public interface ExportInboxNotifier {
 ```
 
 Sem a `user-notifications` no projeto o backup funciona igual; falha da caixa só vira log e nunca derruba o job. **Confirmado** (plano P130.F2.T4).
+
+## 6. Consultar a trilha (com a `audit` no projeto; P136, ainda não publicada)
+
+O usuário diz que o relatório não chegou. Procure o que aconteceu com as notificações dele:
+
+```bash
+# criações e exclusões de notificações (entidade UserNotification)
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/audit-logs?entity=UserNotification&page=0&size=20"
+# só exclusões
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/audit-logs?entity=UserNotification&operation=DELETE"
+```
+
+Como ler:
+
+- Há `CREATE` do `type` esperado (por exemplo `backup.finished`) para o `userPublicId`, e depois um `DELETE` com o mesmo `publicId` feito pelo próprio usuário: **o aviso chegou e ele o excluiu** (`DELETE` em lote traz só `count` e `onlyRead`, sem `publicId`).
+- **Não há `CREATE`**: o aviso nunca foi criado; o problema está no job (backup/relatório) ou na extension que notifica, não na caixa.
+- Não há registro de poda automática nem da varredura diária (decisão do dono); sumiço por limite de 200 por usuário não aparece.
+
+A trilha leva só `publicId`, `type`, `userPublicId` (e `onlyRead`/`count` no lote), nunca `title`, `message` nem `payload`.
