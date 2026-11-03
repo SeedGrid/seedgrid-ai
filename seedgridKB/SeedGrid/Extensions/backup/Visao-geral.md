@@ -154,6 +154,10 @@ public class MeuBackupExporter implements BackupExporter {
 
 **Compressão das migrations (2026-10-27):** o histórico anterior (V400 a V403) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
+## Notificação ao terminar o export (alteração de 2026-11-03, ainda não publicada)
+
+> Commits locais do plano P130 (`backup` 2026.11.02, `af3e93c` e `7928d89`). Ao terminar o export, com sucesso ou erro, o backup deixa uma notificação na caixa de quem pediu, pelo SPI opcional `ExportInboxNotifier` (tipos `backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`; o download continua pela rota do backup). A dependência da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]] é `provided`: sem ela o backup funciona igual, e falha da caixa só vira log. A conta de quem pediu fica na coluna nova `sg_export_jobs.inbox_account_public_id` (migration V401), então sobrevive a reinício do servidor. **Confirmado** (relato do dev-2; revisar quando publicada).
+
 ## Anotações
 
 _Fonte: código de `seedgrid-quarkus-ext-backup` (versão 2026.10.22, publicada no Maven Central)._

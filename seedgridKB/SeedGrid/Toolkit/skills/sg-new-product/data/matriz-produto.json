@@ -298,7 +298,8 @@
             "boilerplate": "modular",
             "extensions": [
               "security",
-              "audit"
+              "audit",
+              "user-notifications"
             ],
             "hibernate_packages": [
               "br.com.seedgrid.cities.embeddables"

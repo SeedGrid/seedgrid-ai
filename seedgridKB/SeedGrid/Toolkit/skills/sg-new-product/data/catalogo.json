@@ -13,7 +13,8 @@
         "notification",
         "filemanagement",
         "privacy",
-        "resilience"
+        "resilience",
+        "user-notifications"
       ],
       "nao_traz": [
         "ai-pricing",
@@ -49,7 +50,8 @@
         "apikeys",
         "notification",
         "privacy",
-        "resilience"
+        "resilience",
+        "user-notifications"
       ],
       "nao_traz": [
         "ai-pricing",
@@ -373,6 +375,25 @@
         "com encryption.enabled=true: seedgrid.privacy.crypto.key (Base64, 32 bytes) e seedgrid.privacy.search.key (Base64, >= 32 bytes)"
       ],
       "depende_de": []
+    },
+    "user-notifications": {
+      "papel": "Caixa de notificacoes por usuario (tabela, rotas /user-notifications, UserNotifier, aviso em tempo real). Agnostica: so a dependencia ja funciona; basta usuario logado, sem permissoes.",
+      "fonte": "Extensions/user-notifications/Visao-geral.md, Configuracao.md",
+      "migrations": "V1400-V1499 (db/migration/user-notifications, historico proprio sg_flyway_schema_history_user_notifications)",
+      "decisoes_do_produto": [
+        "seedgrid.user-notifications.retention (padrao P30D) e max-per-user (padrao 200)",
+        "seedgrid.realtime.channels, se preenchida, deve incluir user-notifications"
+      ],
+      "obrigatorias_para_subir": [],
+      "observacao": "Vem com os dois modelos de tenancy (login-tenancy e subdomain-tenancy dependem dela) e esta na base do modular. Nao semeia permissoes. Extension ainda nao publicada (2026.11.01, plano P130); sem o jar no Maven Central o projeto gerado so compila com ela instalada no ~/.m2.",
+      "depende_de": [],
+      "verificado": false,
+      "pom": [
+        {
+          "artifactId": "seedgrid-user-notifications",
+          "versao": "${seedgrid.user-notifications.version}"
+        }
+      ]
     }
   },
   "sempre_no_produto": {

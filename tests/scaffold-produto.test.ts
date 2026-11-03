@@ -121,7 +121,7 @@ test('modelo modular: boilerplate proprio com security + audit de base, apikeys 
   const { destino, saida } = await gerar(MODULAR);
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
   assert.deepEqual(saida.adicionadas, []);
-  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'security']);
+  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'security', 'user-notifications']);
   const pom = ler(destino, 'backend/pom.xml');
   assert.ok(pom.includes('<artifactId>portal-chaves-api</artifactId>'));
   assert.ok(pom.includes('<artifactId>seedgrid-security</artifactId>') && pom.includes('<artifactId>seedgrid-apikeys</artifactId>'));
@@ -146,7 +146,7 @@ test('modelo modular: boilerplate proprio com security + audit de base, apikeys 
 test('modelo modular: sem opcionais fica so com security + audit; opcional nao verificado e recusado', async () => {
   const { saida } = await gerar({ ...MODULAR, extensoes: [], apikeysUso: undefined });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  assert.deepEqual([...saida.extensoes].sort(), ['audit', 'security']);
+  assert.deepEqual([...saida.extensoes].sort(), ['audit', 'security', 'user-notifications']);
   const { saida: s2 } = await gerar({ ...MODULAR, extensoes: ['billing'], apikeysUso: undefined });
   assert.equal(s2.ok, false);
   assert.ok((s2.erros ?? []).some((x) => /billing/.test(x)), (s2.erros ?? []).join('\n'));
@@ -525,7 +525,7 @@ test('o guardiao do README reprova README sem secao, sem diagrama ou com marcado
 test('modelo modular: privacy e resilience liberados (vem pela security); privacy traz as chaves no dev.env', async () => {
   const { destino, saida } = await gerar({ ...MODULAR, extensoes: ['apikeys', 'privacy', 'resilience'] });
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'privacy', 'resilience', 'security']);
+  assert.deepEqual([...saida.extensoes].sort(), ['apikeys', 'audit', 'privacy', 'resilience', 'security', 'user-notifications']);
   const e = env(ler(destino, 'backend/dev.env'));
   assert.equal(e.SEEDGRID_PRIVACY_ENCRYPTION_ENABLED, 'true');
   assert.ok(e.SEEDGRID_PRIVACY_CRYPTO_KEY && !e.SEEDGRID_PRIVACY_CRYPTO_KEY.startsWith('GERE'));
