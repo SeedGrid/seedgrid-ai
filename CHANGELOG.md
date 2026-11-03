@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.5] — 2026-11-03
+
 ### Alterado
 - `sg-new-product`: a pergunta de billing da matriz agora pergunta o que diferencia um plano do outro (`diferencaPlanos`) e recomenda um plano de assinatura mais o trial, com os limites padrão de empresas e usuários. `planos` passa a ter padrão `Assinatura`; sem diferença declarada (padrão `nenhuma`) o `produto.json` mantém só o primeiro plano e a saída traz a pendência. Decisão do dono em 2026-11-02 (plano P125.F1.T5).
 - KB do `realtime`: como o Pulse trata o usuário desconectado (mensagem `pending` gravada, replay na conexão pelo `subject`, TTL padrão de 1 dia, `DELIVERY_STORE_BACKEND` `memory` por padrão, modo `notification` at-most-once; o aviso é sinal e não histórico, então caixa de notificações precisa de tabela própria). Plano P128.

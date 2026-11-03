@@ -1,7 +1,7 @@
 ---
 tags: [seedgrid, versoes, gerado]
 gerado-por: scripts/kb-versions.mjs
-gerado-em: 2026-11-02
+gerado-em: 2026-11-03
 ---
 
 # Versões documentadas × atuais
@@ -54,7 +54,7 @@ gerado-em: 2026-11-02
 | `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 35 arquivo(s) de código mudaram em 5 commit(s) |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 35 arquivo(s) de código mudaram em 5 commit(s); alterações locais não commitadas |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
 | `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | em dia |
 | `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | em dia |

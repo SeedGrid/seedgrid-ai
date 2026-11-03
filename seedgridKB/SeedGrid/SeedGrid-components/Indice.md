@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-10-30
+analisado-em: 2026-11-02
 gerado-por: scripts/kb-catalogs.mjs --only components
 ---
 
