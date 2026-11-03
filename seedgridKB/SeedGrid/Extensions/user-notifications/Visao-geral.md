@@ -80,7 +80,8 @@ Depois de gravar, a extension dispara `SgUserEvent` no canal `user-notifications
 
 Pergunta que ela responde: o usuário diz "pedi o relatório e não veio"; o aviso **nunca foi criado** ou **foi criado e o usuário o excluiu**? A linha continua sendo apagada de verdade; o que fica é o registro na trilha da extension [[SeedGrid/Extensions/audit/Visao-geral|audit]].
 
-- **Opcional:** `seedgrid-audit-core` é dependência `provided` da `user-notifications`. O host escolhe o provider (`audit-postgresql` ou `audit-mongodb`). Sem a `audit` no projeto, nada muda e nenhuma propriedade nova existe. O adaptador (`AuditNotificationTrail`) só vira bean quando o `AuditGateway` está no índice da aplicação (registro condicional no processor).
+- **Opcional:** `seedgrid-audit-core` é dependência `provided` da `user-notifications`. O host escolhe o provider (`audit-postgresql` ou `audit-mongodb`). Sem a `audit` no projeto, nada muda e nenhuma propriedade nova existe. A extension dispara um evento neutro (`NotificationAuditEvent`); o `NotificationAuditDispatcher` o entrega, **depois do commit**, aos destinos `NotificationAuditSink` que existirem. O destino da `audit` (`AuditNotificationTrail`, que chama `AuditGateway.persist`) só vira bean quando o `AuditGateway` está no índice da aplicação (registro condicional no processor). O host também pode registrar o seu próprio `NotificationAuditSink`.
+- **Por que não `@SgAudit`:** a decisão do dono (P136.F0.D3) foi usar a `audit`; o `dev-2` implementou pelo caminho programático (`AuditGateway`) porque, por relato dele, o interceptor `@SgAudit` grava o **estado inteiro da entidade** (incluiria `message` e `payload`) e **não captura falha da audit**. Com o evento neutro só saem identificadores e tipo, e falha da audit só vira log. O resultado (registros na trilha da `audit`) é o combinado.
 - **O que é auditado** (decisão do dono, P136.F0.D2):
 
 | Fato | Registro na `audit` | Estado gravado |
@@ -91,10 +92,10 @@ Pergunta que ela responde: o usuário diz "pedi o relatório e não veio"; o avi
 
 - **Não é auditado:** a varredura diária (cron), a poda automática por retenção e por limite por usuário, e marcar como lida (a linha já guarda `readAt`).
 - **Nunca vai para a trilha:** `title`, `message` e `payload` (podem ter dado pessoal). O próprio evento interno (`NotificationAuditEvent`) nem carrega esses campos.
-- **Segurança da trilha:** o registro só é gravado **depois do commit** (`AFTER_SUCCESS`): não registra criação ou exclusão desfeita, e falha da `audit` só vira log (com o tipo da exceção) e **nunca derruba** a notificação nem a exclusão.
+- **Segurança da trilha:** o registro só é gravado **depois do commit** (`AFTER_SUCCESS`): não registra criação ou exclusão desfeita. Falha de um destino da trilha só vira log (com o tipo da exceção) e **nunca derruba** a notificação nem a exclusão.
 - **Consultar:** `GET /audit-logs?entity=UserNotification` (e `operation=CREATE|DELETE`). Exemplo em [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]], seção 6.
 
-**Confirmado** no código do working tree (`AuditNotificationTrail`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); falta o commit e a publicação.
+**Confirmado** no código do working tree e nos testes relatados pelo `dev-2` (23 unitários, 19 IT sem a `audit`, 8 IT com a `audit`) (`AuditNotificationTrail`, `NotificationAuditDispatcher`, `NotificationAuditSink`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); falta o commit e a publicação.
 
 ## Quem usa hoje
 
