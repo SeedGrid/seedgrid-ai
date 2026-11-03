@@ -599,3 +599,28 @@ test('cities (cidades e estados do Brasil): dependencia direta no pom em cada mo
   const b = await gerar({ ...SUB, extensoes: ['cities'] });
   assert.equal(readFileSync(join(a.destino, 'backend/pom.xml'), 'utf8'), readFileSync(join(b.destino, 'backend/pom.xml'), 'utf8'));
 });
+
+test('planos: sem diferenca declarada gera um plano so, com pendencia (P125.F1.T5)', async () => {
+  const { destino, saida } = await gerar({ ...B2B }); // planos 'Basico,Pro', sem diferencaPlanos
+  assert.ok(saida.ok, (saida.erros ?? []).join('\n'));
+  const billing = JSON.parse(ler(destino, 'produto.json')).billing;
+  assert.deepEqual(billing.planos, ['Basico']);
+  assert.equal(billing.diferencaPlanos, 'nenhuma');
+  assert.ok(saida.pendencias.some((p) => /sem diferenca declarada entre os planos/.test(p) && /Pro/.test(p)), saida.pendencias.join('\n'));
+});
+
+test('planos: com diferenca declarada mantem todos os planos e a diferenca (P125.F1.T5)', async () => {
+  const { destino, saida } = await gerar({ ...B2B, diferencaPlanos: 'Pro libera mais usuarios' });
+  assert.ok(saida.ok, (saida.erros ?? []).join('\n'));
+  const billing = JSON.parse(ler(destino, 'produto.json')).billing;
+  assert.deepEqual(billing.planos, ['Basico', 'Pro']);
+  assert.equal(billing.diferencaPlanos, 'Pro libera mais usuarios');
+  assert.ok(!saida.pendencias.some((p) => /sem diferenca declarada entre os planos/.test(p)));
+});
+
+test('planos: omitidos, o padrao e um plano de assinatura (P125.F1.T5)', async () => {
+  const { planos: _p, ...semPlanos } = B2B as Record<string, unknown>;
+  const { destino, saida } = await gerar(semPlanos);
+  assert.ok(saida.ok, (saida.erros ?? []).join('\n'));
+  assert.deepEqual(JSON.parse(ler(destino, 'produto.json')).billing.planos, ['Assinatura']);
+});

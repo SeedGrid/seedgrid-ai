@@ -43,7 +43,7 @@ As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, 
   "modelo": "login-tenancy-b2b", "extensoes": ["exchange"],
   "selfEnter": "sim", "selfEnterModo": "convite",
   "auditoria": "mongodb", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
-  "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro",
+  "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro", "diferencaPlanos": "Pro libera mais usuários",
   "dominioFront": "app.acme.com.br", "dominioAdmin": "admin.acme.com.br",
   "emailRemetente": "noreply@acme.com.br", "emailAdmin": "dono@acme.com.br"
 }
@@ -70,7 +70,7 @@ node .ai/skills/sg-new-product/scripts/scaffold-produto.mjs --respostas docs/ai/
 
 Depois do script, siga `sg-plan-goal` para o plano do produto e escreva **apenas dentro de `docs/ai/`**:
 
-1. **Plano** em `docs/ai/plans/`: objetivo do produto (pelo `nome`), modelo e extensions escolhidos (`produto.json`), como as chaves de API serão usadas (`apikeysUso`), billing (provider, trial e planos de `produto.json`; o prazo e a cota do trial são dados do plano, num seed/migration do produto), telas do admin a criar, e as **Pendências** da saída do script.
+1. **Plano** em `docs/ai/plans/`: objetivo do produto (pelo `nome`), modelo e extensions escolhidos (`produto.json`), como as chaves de API serão usadas (`apikeysUso`), billing (provider, trial e planos de `produto.json`; a entrevista pergunta o que diferencia um plano do outro e recomenda um plano de assinatura mais o trial, sem limite por plano além do padrão de empresas e usuários; sem diferença declarada, só o primeiro plano é mantido; o prazo e a cota do trial são dados do plano, num seed/migration do produto), telas do admin a criar, e as **Pendências** da saída do script.
 2. **ADRs** em `docs/ai/adrs/` com `sg-adr`: modelo do projeto, onde gravar a auditoria, armazenamento, self-enter (e como se entra) e billing. Uma decisão por ADR, com a data e a alternativa descartada.
 3. **Handoff** em `docs/ai/handoffs/`: como subir (`docker compose up -d`, depois o backend com `backend/run.sh`, depois `frontend` e `admin` com `pnpm install && pnpm dev`), o que está pronto, o que falta e quem fornece cada pendência.
 4. **Demandas** em `docs/ai/demands/`: o que o produto precisa e a extension ou a KB não entrega (nunca alterar a extension).

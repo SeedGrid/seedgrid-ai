@@ -425,6 +425,13 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
     r.pendencias.push(`Tenants de exemplo (${tenantsExemplo.join(', ')}): crie cada um pelo cadastro do produto (http://localhost:${portaFront}/signup) escolhendo esse subdominio e depois acesse ${enderecos}. Navegadores modernos resolvem *.localhost sozinhos; para curl e outros programas, acrescente tenants-exemplo.hosts ao arquivo hosts do sistema (precisa de administrador; a skill nao altera arquivos fora da pasta do produto).`);
   }
   const servicos = Object.entries(r.servicos).map(([nomeSvc, porta]) => ({ nome: nomeSvc, tipo: nomeSvc, porta }));
+  // Planos: sem diferenca declarada entre eles, o produto tem um plano so (mais o trial), com os limites padrao de empresas e usuarios.
+  const nomesPlanos = R.billingProvider ? (Array.isArray(R.planos) ? R.planos : String(R.planos ?? '').split(',')).map((x) => String(x).trim()).filter(Boolean) : [];
+  const semDiferenca = !R.diferencaPlanos || /^nenhum/i.test(String(R.diferencaPlanos).trim());
+  const planosFinais = semDiferenca ? nomesPlanos.slice(0, 1) : nomesPlanos;
+  if (R.billingProvider && semDiferenca && nomesPlanos.length > 1) {
+    r.pendencias.push(`Billing: sem diferenca declarada entre os planos (diferencaPlanos), so o plano "${nomesPlanos[0]}" foi mantido (${nomesPlanos.slice(1).join(', ')} ignorados). Se os planos tem de diferir, informe em diferencaPlanos o que muda de um para o outro.`);
+  }
   const produto = {
     schema: 1,
     slug,
@@ -438,7 +445,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
     banco: 'postgres',
     extensoes: res.extensoes,
     servicos,
-    billing: R.billingProvider ? { provider: R.billingProvider, trialDias: R.trialDias, planos: Array.isArray(R.planos) ? R.planos : String(R.planos).split(',').map((x) => x.trim()).filter(Boolean) } : undefined,
+    billing: R.billingProvider ? { provider: R.billingProvider, trialDias: R.trialDias, planos: planosFinais, diferencaPlanos: semDiferenca ? 'nenhuma' : R.diferencaPlanos } : undefined,
     apikeysUso: R.apikeysUso,
     ...(tenantsExemplo.length ? { tenantsExemplo } : {}),
     pendencias: [...new Set(r.pendencias)],

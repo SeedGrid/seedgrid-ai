@@ -1564,8 +1564,8 @@
           "billing"
         ]
       },
-      "pergunta": "Qual o provider de billing, ha trial (quantos dias) e quais os planos?",
-      "recomendacao": "Stripe e o unico provider hoje. Trial de 14 dias e comum; informe 0 para nao ter trial.",
+      "pergunta": "Qual o provider de billing, ha trial (quantos dias), quais os planos e o que diferencia um plano do outro?",
+      "recomendacao": "Stripe e o unico provider hoje. Trial de 14 dias e comum; informe 0 para nao ter trial. Recomendado: UM plano de assinatura (mais o trial), sem limite por plano alem do padrao de empresas e de usuarios; so crie mais de um plano se o produto os diferenciar por algo concreto (ex.: numero de usuarios, de registros, de modulos). Em diferencaPlanos, descreva essa diferenca; \"nenhuma\" (o padrao) gera um plano so, mesmo que haja mais nomes em planos.",
       "campos": [
         {
           "id": "billingProvider",
@@ -1606,14 +1606,29 @@
         },
         {
           "id": "planos",
-          "rotulo": "Planos (nomes separados por virgula)",
+          "rotulo": "Planos (nomes separados por virgula; padrao: Assinatura)",
           "validacao": "lista",
+          "padrao": "Assinatura",
           "efeito": {
             "docs": [
               "seed de planos e telas entram no plano do produto"
             ],
             "usado_em": [
               "produto.json:billing.planos"
+            ]
+          }
+        },
+        {
+          "id": "diferencaPlanos",
+          "rotulo": "O que diferencia um plano do outro (\"nenhuma\" = um plano so, com os limites padrao de empresas e de usuarios)",
+          "validacao": "nao-vazio",
+          "padrao": "nenhuma",
+          "efeito": {
+            "docs": [
+              "a diferenca entre os planos define o seed de planos: limites por plano (atributos do term, regra BE-71) so existem se esta resposta os pedir"
+            ],
+            "usado_em": [
+              "produto.json:billing.diferencaPlanos"
             ]
           }
         }
