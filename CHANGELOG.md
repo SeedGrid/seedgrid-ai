@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Adicionado
+- KB da extension `user-notifications` (P130.F3.T1): visão geral, configuração (6 propriedades) e exemplos; caixa de notificações por usuário, rotas, `UserNotifier`, retenção, isolamento entre usuários e regra "só login → `@Authenticated`, sem seed de permissão". Extension ainda não publicada (2026.11.01, commits locais).
+
 ### Alterado
 - KB do `SgDatatable` (P127.F5.T1): modo cartões no celular (`mobileMode="cards"`, corte de 600 px medido no contêiner, `cardTitle`/`cardHidden`, ordenação em "Ordenar por", filtros em painel), em React e Flutter (visão geral, API, exemplo, chaves de i18n); `sg-crud-front` e `sg-crud-front-flutter` passam a mandar usar o modo cartões em listas de celular; `props.json` e `Preciso-de.md` atualizados só no SgDatatable. Código: componentes `055aa39` e `4da4e3c` (não publicado).
 

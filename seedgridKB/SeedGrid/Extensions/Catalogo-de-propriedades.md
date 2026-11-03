@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-10-27
+analisado-em: 2026-11-03
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -37,6 +37,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | resilience | 15 |
 | Quarkus | security | 158 |
 | Quarkus | subdomain-tenancy | 53 |
+| Quarkus | user-notifications | 7 |
 | Quarkus | whatsapp | 5 |
 | Rust | apikeys | 2 |
 | Rust | audit | 5 |
@@ -60,7 +61,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **778** |
+| **Total** | | **785** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -594,6 +595,18 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.otp-expiry-minutes` | Signup, OTP e limpeza | `int` | `10` | Escopo e acesso]]) | Validade do código OTP de 6 dígitos (TenantValidationToken.expiresAt) e valor passado no… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-ttl` | Signup, OTP e limpeza | `String` | `48H` (env `SEEDGRID_SUBDOMAIN_TENANCY_CLEANUP_NOT_VALIDATED_TTL`) | runtime | Tenants não validados criados antes de now - ttl têm o registro removido do master | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.cleanup.not-validated-cron` | Signup, OTP e limpeza | `String` | `0 0 * * * ?` (env `…_CLEANUP_NOT_VALIDATED_CRON`) | runtime | Agenda cleanupExpiredTenants (só roda se sg_flyway_schema_history_subdomain_tenancy existir) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+
+### user-notifications
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.user-notifications.enabled` | Propriedades | — | `true` | — | Liga/desliga a extension | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.persistence-unit` | Propriedades | — | unidade default | — | Unidade de persistência da tabela sg_user_notification | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.retention` | Propriedades | — | `P30D` | — | Notificações mais velhas que isto são apagadas (duração ISO-8601) | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.max-per-user` | Propriedades | — | `200` | — | Máximo por usuário; ao passar saem as mais antigas (as lidas primeiro) | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.max-payload-bytes` | Propriedades | — | `4096` | — | Tamanho máximo do payload JSON, em bytes; maior que isso lança InvalidNotificationException | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.cleanup.cron` | Propriedades | — | `0 30 3 * * ?` (03:30 todo dia) | — | Cron do Quarkus Scheduler (6 campos) da varredura diária que apaga as vencidas de todos os usuários. off desliga | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Propriedades | — | `false` | — | Definido pelas tenancy: o runner da extension não age, a tenancy migra cada banco | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 
 ### whatsapp
 
