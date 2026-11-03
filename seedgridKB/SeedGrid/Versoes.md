@@ -55,7 +55,7 @@ gerado-em: 2026-11-03
 | `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 39 arquivo(s) de código mudaram em 7 commit(s) |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 39 arquivo(s) de código mudaram em 7 commit(s); alterações locais não commitadas |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
 | `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 7 commit(s) |
 | `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | em dia |
@@ -64,4 +64,4 @@ gerado-em: 2026-11-03
 
 | Crates | Documentada | Atual | Situação |
 |---|---|---|---|
-| seedgrid-rust-crate-* (workspace) | `2026.7.27` | `2026.10.17` | **defasada**: 205 arquivo(s) de código mudaram em 51 commit(s); versão mudou 2026.7.27 → 2026.10.17 |
+| seedgrid-rust-crate-* (workspace) | `2026.7.27` | `2026.10.17` | **defasada**: 206 arquivo(s) de código mudaram em 52 commit(s); versão mudou 2026.7.27 → 2026.10.17; alterações locais não commitadas |

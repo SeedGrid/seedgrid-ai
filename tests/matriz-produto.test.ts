@@ -90,10 +90,10 @@ test('modelo modular: security + audit sao a base; apikeys e opcional; sem opcio
   const outro = { ...BASE, ...dados, modelo: 'modular', selfEnter: 'nao' };
   const a = lib.resolver(matriz, catalogo, { ...outro, extensoes: ['apikeys'], apikeysUso: 'x' });
   assert.deepEqual(a.erros, []);
-  assert.deepEqual([...a.extensoes].sort(), ['apikeys', 'audit', 'security']);
+  assert.deepEqual([...a.extensoes].sort(), ['apikeys', 'audit', 'security', 'user-notifications']);
   const s = lib.resolver(matriz, catalogo, { ...outro, extensoes: [] });
   assert.deepEqual(s.erros, []);
-  assert.deepEqual([...s.extensoes].sort(), ['audit', 'security']);
+  assert.deepEqual([...s.extensoes].sort(), ['audit', 'security', 'user-notifications']);
   const ruim = lib.resolver(matriz, catalogo, { ...outro, extensoes: [], selfEnter: 'sim', selfEnterModo: 'convite', selfEnterEscopo: 'ambos' });
   assert.ok(ruim.erros.some((e) => /selfEnterEscopo/.test(e)), ruim.erros.join('\n'));
   const semSe = lib.resolver(matriz, catalogo, { ...BASE, ...dados, modelo: 'modular', extensoes: [] });

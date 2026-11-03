@@ -97,6 +97,21 @@ Pergunta que ela responde: o usuário diz "pedi o relatório e não veio"; o avi
 
 **Confirmado** no commit `bd80a8a` (conferido contra o código) e nos testes relatados pelo `dev-2` (23 unitários, 19 IT sem a `audit`, 8 IT com a `audit`) (`AuditNotificationTrail`, `NotificationAuditDispatcher`, `NotificationAuditSink`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); publicado no Maven Central.
 
+## Anotações
+
+Nenhuma. A extension não define anotações próprias: a caixa se usa pelo bean `UserNotifier` (veja acima) e a auditoria é opcional, pelo evento neutro (não há `@SgAudit`).
+
+## SPIs
+
+_Fonte: código de `seedgrid-quarkus-ext-user-notifications` (versão 2026.11.02, publicada no Maven Central)._
+
+| SPI | Pacote | Implementação padrão (`@DefaultBean`) | Para que serve |
+|---|---|---|---|
+| `NotificationAccountProvider` | `br.com.seedgrid.usernotifications.spis` | `GlobalNotificationAccountProvider` | Entrega o identificador público da conta (`currentAccountPublicId()`, `Optional<String>`) para o escopo por conta (BE-72); o padrão é global, sem conta. |
+| `NotificationAuditSink` | `br.com.seedgrid.usernotifications.spis` | sem padrão (a extension traz o adaptador `AuditNotificationTrail`, registrado só se a `audit` está na aplicação) | Destino da trilha de criação e exclusão de notificações (`record(NotificationAuditEvent)`); chamado só depois do commit, e uma exceção aqui vira log e nunca desfaz a notificação nem a exclusão. O evento leva só identificadores e tipo. |
+
+**Como substituir:** declare um bean CDI (`@ApplicationScoped`) que implemente a interface, **sem** `@Alternative` nem `@Priority`; a implementação padrão (`@DefaultBean`) cede. Detalhes da auditoria: seção "Auditoria" acima.
+
 ## Quem usa hoje
 
 - **`backup`**: ao terminar o export, sucesso ou erro, notifica quem pediu (`backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`). Dependência `provided` no backup: sem a user-notifications ele funciona igual (SPI `ExportInboxNotifier`). A conta de quem pediu é gravada na linha do job (`sg_export_jobs`, coluna `inbox_account_public_id`, V401), então sobrevive a reinício do servidor.

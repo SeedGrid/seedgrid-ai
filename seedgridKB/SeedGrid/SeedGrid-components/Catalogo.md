@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-02
+analisado-em: 2026-11-03
 gerado-por: scripts/kb-catalogs.mjs --only catalogo
 ---
 
@@ -105,7 +105,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 
 | Nome | Exportado | Resumo | Nota |
 |---|---|---|---|
-| `SgDatatable` | sim | O SgDatatable é a tabela de dados do pacote @seedgrid/fe-components (v2026.7.1) | [[SeedGrid/SeedGrid-components/datatable/API\|API]] |
+| `SgDatatable` | sim | O SgDatatable é a tabela de dados do pacote @seedgrid/fe-components (v2026.11.1) | [[SeedGrid/SeedGrid-components/datatable/API\|API]] |
 
 ## Editor de texto rico — React
 

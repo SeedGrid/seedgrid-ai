@@ -22,6 +22,12 @@ O dono elabora a ideia numa ferramenta que **não conhece o SeedGrid** e traz o 
 
 O que o briefing assumiu e **diverge** do ecossistema (por exemplo, modelo de tenancy) vira **decisão do dono** com a recomendação, não é resolvido em silêncio. Só depois siga os passos abaixo. Contrato de extension: só pela KB (HO-08); depois de escrito, o coordenador **lê o plano entregue e roda o `controle.mjs status`** antes de apresentá-lo.
 
+## Decida sozinho antes de perguntar (P123.F3.T1)
+
+- **Pasta do diagnóstico:** se o `init` já rodou (existe `.ai/` na pasta atual), o diagnóstico e o plano novo vão para `docs/ai/plans/` **desta pasta**; não pergunte o diretório. Só pergunte se não houver `.ai/` na pasta atual nem em pasta acima.
+- **Acesso ao repositório legado:** antes de pedir ao dono o código ou o caminho do legado, **teste o acesso**: `git ls-remote <url>` (ou `gh repo view <dono>/<repo>`) e, se for pasta local, `ls`. Se funcionar, leia direto; se falhar, relate o comando e o erro e só então peça o acesso.
+- **O que a KB já responde não é pergunta ao dono:** consulte a nota citada na classificação do briefing antes de abrir uma decisão.
+
 ## Passos
 
 1. **Diagnosticar** (só leitura): `node .ai/skills/sg-diagnostico/scripts/diagnostico.mjs <plano.md>`. Mostra o que falta (`aidlc:`, ids falantes, `depende-de`, `escreve`, `Aceite`, blocos `/goal`) e o que o plano já traz para virar tarefa (hipóteses, fases da "Ordem de execução", decisões abertas e resolvidas). `--json` para máquina.

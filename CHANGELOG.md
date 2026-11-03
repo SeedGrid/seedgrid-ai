@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.6] — 2026-11-03
+
 ### Adicionado
 - KB da extension `user-notifications` (P130.F3.T1): visão geral, configuração (6 propriedades) e exemplos; caixa de notificações por usuário, rotas, `UserNotifier`, retenção, isolamento entre usuários e regra "só login → `@Authenticated`, sem seed de permissão". Extension ainda não publicada (2026.11.01, commits locais).
 
@@ -13,6 +15,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 - `sg-new-product` (P130.F3.T1): catálogo e matriz com a `user-notifications` (vem com `login-tenancy` e `subdomain-tenancy` e fica na base do modelo modular); notas de `login-tenancy`, `subdomain-tenancy` e `backup` com a caixa de notificações (alteração local, ainda não publicada); testes do modular ajustados.
 - KB do `SgDatatable` (P127 + P137.F3.T1), regra decidida e **publicada no npm em 2026-11-03** (`@seedgrid/fe-components` 2026.11.1, commit `703acf6`; Flutter na `main` do `fe-flutter` em `5188e9e`, pacote Flutter ainda não publicado): `mobileMode` omitido = automático (cartões abaixo de 600 px, tabela acima), `cards` força cartões, `scroll` força a tabela, sem valor `auto`; `infiniteScroll` (padrão ligado nos cartões, exige `paginator`) e `onLoadMore`; mudança de comportamento (paginador some abaixo de 600 px, `infiniteScroll={false}` mantém); i18n `loadingMore` e `endOfList`; exemplo, Flutter, `props.json`, `Preciso-de.md` e skills `sg-crud-front*` (só SgDatatable).
 - KB do `SgDatatable` (P127.F5.T1): modo cartões no celular (`mobileMode="cards"`, corte de 600 px medido no contêiner, `cardTitle`/`cardHidden`, ordenação em "Ordenar por", filtros em painel), em React e Flutter (visão geral, API, exemplo, chaves de i18n); `sg-crud-front` e `sg-crud-front-flutter` passam a mandar usar o modo cartões em listas de celular; `props.json` e `Preciso-de.md` atualizados só no SgDatatable. Código: componentes `055aa39` e `4da4e3c` (não publicado).
+- Skill `sg-diagnostico` (P123.F3.T1): decide sozinha a pasta do diagnóstico (pasta atual quando o `init` já rodou) e testa o acesso ao repositório legado (`git ls-remote`/`gh`) antes de perguntar ao dono.
+- KB `user-notifications`: Visão geral com as seções Anotações (nenhuma) e SPIs (`NotificationAccountProvider`, `NotificationAuditSink`), exigidas pela PL-21; teste da matriz do `sg-new-product` passa a esperar o `user-notifications` na base do modelo modular; catálogos de componentes regerados.
 
 ### Corrigido
 - KB da `cities`: o `quarkus-security` é opcional (sem ele a REST administrativa responde 404) e a `cities` depende do `commons` (e não o contrário), conforme o código `aa7704f`; a nota dizia o oposto. Acrescentado o padrão de permissões de `billing` e `backup` (permissões declaradas e semeadas pela própria extension). Plano P130.
