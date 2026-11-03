@@ -3,13 +3,13 @@ description: "Exemplos da extension user-notifications: notificar com o UserNoti
 tags: [seedgrid, extension, user-notifications, exemplos]
 fonte: java/seedgrid-quarkus-ext-user-notifications
 branch: main
-commit: 6a192a3
+commit: bd80a8a
 analisado-em: 2026-11-03
 ---
 
 # User-notifications: exemplos
 
-> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
+> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01; 2026.11.02 com a auditoria). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
 
 ## 1. Notificar dentro de uma requisição
 
@@ -108,7 +108,7 @@ public interface ExportInboxNotifier {
 
 Sem a `user-notifications` no projeto o backup funciona igual; falha da caixa só vira log e nunca derruba o job. **Confirmado** (plano P130.F2.T4).
 
-## 6. Consultar a trilha (com a `audit` no projeto; P136, ainda não publicada)
+## 6. Consultar a trilha (com a `audit` no projeto; P136, 2026.11.02)
 
 O usuário diz que o relatório não chegou. Procure o que aconteceu com as notificações dele:
 

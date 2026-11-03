@@ -3,15 +3,15 @@ description: "Visão geral da extension user-notifications: caixa de notificaç�
 tags: [seedgrid, extension, user-notifications, notificacao, quarkus]
 fonte: java/seedgrid-quarkus-ext-user-notifications
 branch: main
-commit: 6a192a3
+commit: bd80a8a
 analisado-em: 2026-11-03
 ---
 
 # User-notifications (Quarkus): visão geral
 
-> **Status: publicada no Maven Central em 2026-11-03**, versão **2026.11.01** (`seedgrid-user-notifications`), repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `6a192a3` na `main` (sem tag no GitHub). Plano P130 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
+> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01) e **2026.11.02 em 2026-11-03** (com a auditoria do P136), `seedgrid-user-notifications`, repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `bd80a8a` na `main` (sem tag no GitHub). Planos P130 e P136 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
 
-> **Auditoria (P136), ainda não publicada:** o código está no working tree do `dev-2` (versão `2026.11.02` no `pom.xml`), sem commit nem publicação. As notas abaixo descrevem o que foi implementado e **precisa ser reconfirmado** no commit publicado.
+> **Auditoria (P136), publicada na 2026.11.02:** `backup` 2026.11.03, `login-tenancy` 2026.11.03 e `subdomain-tenancy` 2026.11.04 saíram só para alinhar a versão (sem mudança de código). O módulo de testes `seedgrid-user-notifications-integration-tests-audit` também foi para o Central.
 
 ## Para que serve
 
@@ -95,7 +95,7 @@ Pergunta que ela responde: o usuário diz "pedi o relatório e não veio"; o avi
 - **Segurança da trilha:** o registro só é gravado **depois do commit** (`AFTER_SUCCESS`): não registra criação ou exclusão desfeita. Falha de um destino da trilha só vira log (com o tipo da exceção) e **nunca derruba** a notificação nem a exclusão.
 - **Consultar:** `GET /audit-logs?entity=UserNotification` (e `operation=CREATE|DELETE`). Exemplo em [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]], seção 6.
 
-**Confirmado** no código do working tree e nos testes relatados pelo `dev-2` (23 unitários, 19 IT sem a `audit`, 8 IT com a `audit`) (`AuditNotificationTrail`, `NotificationAuditDispatcher`, `NotificationAuditSink`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); falta o commit e a publicação.
+**Confirmado** no commit `bd80a8a` (conferido contra o código) e nos testes relatados pelo `dev-2` (23 unitários, 19 IT sem a `audit`, 8 IT com a `audit`) (`AuditNotificationTrail`, `NotificationAuditDispatcher`, `NotificationAuditSink`, `NotificationAuditEvent`, `UserNotificationService`, `UserNotifier`, `UserNotificationsProcessor`); publicado no Maven Central.
 
 ## Quem usa hoje
 

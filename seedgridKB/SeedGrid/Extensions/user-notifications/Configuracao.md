@@ -3,13 +3,13 @@ description: "Propriedades seedgrid.user-notifications.* (enabled, persistence-u
 tags: [seedgrid, extension, user-notifications, configuracao]
 fonte: java/seedgrid-quarkus-ext-user-notifications
 branch: main
-commit: 6a192a3
+commit: bd80a8a
 analisado-em: 2026-11-03
 ---
 
 # User-notifications: configuração
 
-> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01). Os padrões vêm do `@ConfigMapping` `UserNotificationsConfig`. **Nenhuma propriedade é obrigatória**: colocou a dependência, funciona. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]].
+> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01; 2026.11.02 com a auditoria). Os padrões vêm do `@ConfigMapping` `UserNotificationsConfig`. **Nenhuma propriedade é obrigatória**: colocou a dependência, funciona. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]].
 
 ## Propriedades
 
@@ -56,5 +56,5 @@ seedgrid.user-notifications.enabled=false
 
 - **`realtime`:** se o host preenche `seedgrid.realtime.channels` (os canais que o token do Pulse permite), inclua `user-notifications`; vazio = sem restrição.
 - **Migrations:** faixa V1400–V1499, `db/migration/user-notifications`, histórico `sg_flyway_schema_history_user_notifications`. Só mudança de estrutura; nunca edite migrations antigas.
-- **Audit (P136, ainda não publicada):** sem propriedade nova. Se o host tem a extension `audit` (`seedgrid-audit-postgresql` ou `seedgrid-audit-mongodb`), a criação e a exclusão de notificações passam a ir para a trilha; sem ela, nada muda. O `seedgrid-audit-core` é `provided`, então **não vem transitivo**: o host que quer a trilha adiciona o provider da `audit`. Ver [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]], seção Auditoria.
+- **Audit (P136, 2026.11.02):** sem propriedade nova. Se o host tem a extension `audit` (`seedgrid-audit-postgresql` ou `seedgrid-audit-mongodb`), a criação e a exclusão de notificações passam a ir para a trilha; sem ela, nada muda. O `seedgrid-audit-core` é `provided`, então **não vem transitivo**: o host que quer a trilha adiciona o provider da `audit`. Ver [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]], seção Auditoria.
 - **Security:** sem propriedade e sem permissão; as rotas pedem apenas usuário logado.
