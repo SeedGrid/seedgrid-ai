@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, datatable, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 703acf6
+analisado-em: 2026-11-03
 description: "API React de Tabela de dados (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -158,7 +158,7 @@ Quando não é passada, o componente guarda o estado internamente. `rows` é **s
 
 ## Modo cartões no celular (`mobileMode`)
 
-> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+> **Publicada (P127 + P137):** vale a partir do `@seedgrid/fe-components` 2026.11.1 (npm, 2026-11-03), commit `703acf6` do repositório de componentes.
 
 - **Regra (decisão do dono, P127.D e P137.D1):** `mobileMode` omitido = **automático**. O corte é 600 px medido no **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`, exportada pelo pacote; 599 vira cartões, 600 continua tabela), pelo hook `useSgContainerWidth` (ResizeObserver no próprio contêiner), então vale também para tabela em coluna estreita no desktop. Antes da primeira medida a tabela larga é a que aparece.
   - `mobileMode="cards"` explícito: cartões em **qualquer** largura.
@@ -169,11 +169,11 @@ Quando não é passada, o componente guarda o estado internamente. `rows` é **s
 - Ordenação: o cabeçalho some; aparece o seletor "Ordenar por" (colunas `sortable`) e o botão de inverter a direção. Filtros: `showColumnFilters` e `filter` das colunas passam a um painel "Filtros" aberto por botão; o filtro global continua visível.
 - O gerenciador de colunas continua valendo (colunas ocultas não entram no cartão).
 - Paridade: os mesmos 51 casos (`cardCases`, em `datatable_vectors/vectors.json`, 10 deles de rolagem infinita) são testados no React e no Flutter.
-- Fonte: `SgDatatable.tsx`, `useSgContainerWidth.ts`; relato da `front` (P137, 2026-11-03), código só no working tree. **Confirmado** pelos testes relatados (React 93/93, Playwright em navegador real); não visto em celular real.
+- Fonte: `SgDatatable.tsx`, `useSgContainerWidth.ts`; relato da `front` (P137, 2026-11-03), commit `703acf6`, publicado no npm 2026.11.1. **Confirmado** pelos testes relatados (React 93/93, Playwright em navegador real); não visto em celular real.
 
 ## Rolagem infinita (`infiniteScroll`)
 
-> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+> **Publicada (P127 + P137):** vale a partir do `@seedgrid/fe-components` 2026.11.1 (npm, 2026-11-03), commit `703acf6` do repositório de componentes.
 
 - **Efetivo** = `paginator && (infiniteScroll ?? lista exibida como cartões)`. Nos cartões o padrão é ligado (por isso a lista de celular não mostra paginador); na tabela, desligado.
 - **Exige `paginator`**: `rows` é o tamanho de cada página. Sem `paginator`, a prop não faz nada.
@@ -182,7 +182,7 @@ Quando não é passada, o componente guarda o estado internamente. `rows` é **s
 - **Com `lazy`:** o pai **acrescenta** a página seguinte ao `value` (o pedido sai uma vez por tamanho de `value`); o fim é `value.length >= totalRecords`.
 - **Ordenar, filtrar ou mudar `rows`** volta à primeira página.
 - **Mudança de comportamento:** tabela com `paginator` em contêiner abaixo de 600 px deixa de mostrar paginador e vira cartões com rolagem infinita. Para manter o paginador em tela estreita, escreva `infiniteScroll={false}` (os exemplos do showcase que demonstram o paginador fazem isso).
-- Fonte: relato da `front` (P137.F1.T1 e F1.T2), código no working tree. **Confirmado** pelos testes relatados (`datatable-infinite-scroll.test.mjs`, vetores `cardCases`, Playwright: 4 → 8 → 12 cartões e "Fim da lista."); não visto em celular real.
+- Fonte: relato da `front` (P137.F1.T1 e F1.T2), commit `703acf6`, publicado no npm 2026.11.1. **Confirmado** pelos testes relatados (`datatable-infinite-scroll.test.mjs`, vetores `cardCases`, Playwright: 4 → 8 → 12 cartões e "Fim da lista."); não visto em celular real.
 
 ## Internacionalização
 
@@ -193,7 +193,7 @@ Todos os textos visíveis vêm de `components.datatable.*`:
 - `first`, `prev`, `next`, `last`, `jumpBackward`, `jumpForward`;
 - `rowsPerPage`, `pageReport`, `page`, `pagination`;
 - modo cartões: `filters` ("Filtros"), `sortBy` ("Ordenar por"), `sortNone` ("Sem ordem"), `sortDirection` (inverter a direção).
-- rolagem infinita (não publicada): `loadingMore` ("Carregando mais...") e `endOfList` ("Fim da lista.").
+- rolagem infinita: `loadingMore` ("Carregando mais...") e `endOfList` ("Fim da lista.").
 
 `columns` e `restoreColumns` têm fallback fixo em pt-BR ("Colunas", "Restaurar padrão") caso a chave não exista. **Confirmado**.
 

@@ -55,9 +55,9 @@ gerado-em: 2026-11-03
 | `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 39 arquivo(s) de código mudaram em 6 commit(s); alterações locais não commitadas |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 39 arquivo(s) de código mudaram em 7 commit(s) |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
-| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | em dia; alterações locais não commitadas |
+| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 7 commit(s) |
 | `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | em dia |
 
 ## Rust

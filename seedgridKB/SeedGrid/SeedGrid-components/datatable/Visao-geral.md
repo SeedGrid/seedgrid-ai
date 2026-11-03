@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, datatable]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-11-02
+commit: 703acf6
+analisado-em: 2026-11-03
 description: "Tabela de dados em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (v`2026.7.1`). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
+O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (v`2026.11.1`). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
 
 ## Objetivo e funcionalidades
 
@@ -26,7 +26,7 @@ Mostra coleções tabulares com as funções abaixo, todas **Confirmado** em `Sg
   - Com `SgEnvironmentProvider` e `id`, persiste a ordem e a visibilidade.
 - **Modo `lazy`** para paginação, ordenação e filtro no servidor.
 - **Estados** `loading` e vazio.
-- **Modo cartões no celular** (`mobileMode`; **não publicado**, P127 + P137): omitido = automático: abaixo de 600 px de **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`) cada linha vira um cartão "rótulo: valor" com **rolagem infinita** (`infiniteScroll`, padrão ligado nos cartões; exige `paginator`); acima, tabela. `mobileMode="cards"` força cartões em qualquer largura e `mobileMode="scroll"` força a tabela. Detalhes em [[SeedGrid/SeedGrid-components/datatable/API#Modo cartões no celular (`mobileMode`)|API]] e [[SeedGrid/SeedGrid-components/datatable/API#Rolagem infinita (`infiniteScroll`)|rolagem infinita]].
+- **Modo cartões no celular** (`mobileMode`; P127 + P137, desde a 2026.11.1): omitido = automático: abaixo de 600 px de **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`) cada linha vira um cartão "rótulo: valor" com **rolagem infinita** (`infiniteScroll`, padrão ligado nos cartões; exige `paginator`); acima, tabela. `mobileMode="cards"` força cartões em qualquer largura e `mobileMode="scroll"` força a tabela. Detalhes em [[SeedGrid/SeedGrid-components/datatable/API#Modo cartões no celular (`mobileMode`)|API]] e [[SeedGrid/SeedGrid-components/datatable/API#Rolagem infinita (`infiniteScroll`)|rolagem infinita]].
 - **Ref imperativo:** `getProcessedRows`, `getPagedRows`, `clearFilters`, `clearSelection`, `resetSort`, `resetPage` e `goToPage`.
 
 ## Quando usar
@@ -79,5 +79,5 @@ Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-compo
 - `rows` só define o valor inicial de linhas por página; não existe prop controlada para isso. **Confirmado**.
 - O `id` serve também de chave de persistência: duas tabelas com o mesmo `id` dentro do mesmo `SgEnvironmentProvider` compartilham o layout de colunas. **Inferência**, pela chave `datatable:<id>:columns`.
 - Para o gerenciador de colunas e a persistência, dê `columnId` ou `field` estáveis. Colunas sem nenhum dos dois usam o índice como chave. **Confirmado**.
-- **Celular (versão ainda não publicada):** sem escrever nada, abaixo de 600 px (medido no contêiner, não na janela) a tabela vira cartões com ordenação, seleção, ações, rodapé e rolagem infinita; **com `paginator`, o paginador some nessa largura** e `rows` vira o tamanho de cada página carregada. Para manter o paginador, `infiniteScroll={false}`; para nunca virar cartões, `mobileMode="scroll"`; para sempre ser cartões, `mobileMode="cards"`. **Não é preciso criar componente local do produto** (a antiga lacuna HO-10 foi resolvida pelo P127). Na versão publicada hoje, o padrão ainda é `scroll` (só rola na horizontal).
+- **Celular:** sem escrever nada, abaixo de 600 px (medido no contêiner, não na janela) a tabela vira cartões com ordenação, seleção, ações, rodapé e rolagem infinita; **com `paginator`, o paginador some nessa largura** e `rows` vira o tamanho de cada página carregada. Para manter o paginador, `infiniteScroll={false}`; para nunca virar cartões, `mobileMode="scroll"`; para sempre ser cartões, `mobileMode="cards"`. **Não é preciso criar componente local do produto** (a antiga lacuna HO-10 foi resolvida pelo P127). Até a 2026.11.0, o padrão era `scroll` (só rolava na horizontal).
 - No modo cartões a coluna marcada `cardTitle` vira o título; `cardHidden` esconde a coluna só no cartão (ela continua na tabela larga). Sem coluna `cardTitle`, o cartão não tem título e todas as colunas viram "rótulo: valor". **Confirmado** em `SgDatatable.tsx` (commit `055aa39`).

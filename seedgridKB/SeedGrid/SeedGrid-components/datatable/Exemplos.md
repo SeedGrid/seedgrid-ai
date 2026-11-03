@@ -2,7 +2,7 @@
 tags: [seedgrid, component, frontend, react, datatable, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatable
 branch: main
-commit: ad30fc11de
+commit: 703acf6
 analisado-em: 2026-10-14
 description: "Exemplos TSX (React) de Tabela de dados, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
@@ -155,7 +155,7 @@ export default function CardsDatatableExample() {
 
 ## Rolagem infinita e paginador em tela estreita
 
-> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+> **Publicada (P127 + P137):** vale a partir do `@seedgrid/fe-components` 2026.11.1 (npm, 2026-11-03), commit `703acf6` do repositório de componentes.
 
 Sem escrever `mobileMode`, abaixo de 600 px a lista vira cartões com rolagem infinita (precisa de `paginator`; `rows` é o tamanho de cada página). Para manter o paginador em tela estreita, `infiniteScroll={false}`.
 
