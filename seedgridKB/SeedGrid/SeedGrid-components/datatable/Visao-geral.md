@@ -26,6 +26,7 @@ Mostra coleções tabulares com as funções abaixo, todas **Confirmado** em `Sg
   - Com `SgEnvironmentProvider` e `id`, persiste a ordem e a visibilidade.
 - **Modo `lazy`** para paginação, ordenação e filtro no servidor.
 - **Estados** `loading` e vazio.
+- **Modo cartões no celular** (`mobileMode="cards"`, padrão `scroll`): quando o **contêiner** fica abaixo de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`), cada linha vira um cartão "rótulo: valor". Detalhes em [[SeedGrid/SeedGrid-components/datatable/API#Modo cartões no celular (`mobileMode`)|API]]. **Confirmado** no commit `055aa39` do repositório de componentes.
 - **Ref imperativo:** `getProcessedRows`, `getPagedRows`, `clearFilters`, `clearSelection`, `resetSort`, `resetPage` e `goToPage`.
 
 ## Quando usar
@@ -78,4 +79,5 @@ Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-compo
 - `rows` só define o valor inicial de linhas por página; não existe prop controlada para isso. **Confirmado**.
 - O `id` serve também de chave de persistência: duas tabelas com o mesmo `id` dentro do mesmo `SgEnvironmentProvider` compartilham o layout de colunas. **Inferência**, pela chave `datatable:<id>:columns`.
 - Para o gerenciador de colunas e a persistência, dê `columnId` ou `field` estáveis. Colunas sem nenhum dos dois usam o índice como chave. **Confirmado**.
-- **Responsividade do React (Confirmado em `SgDatatable.tsx`):** a tabela fica num contêiner com `overflow-x-auto` (rolagem horizontal em tela estreita); não há modo de celular (cartões ou colunas que se escondem) nem consulta de largura. A paginação ajusta a quantidade de botões. Se o produto exige tabela adaptativa no celular, é componente local do produto (HO-10).
+- **Celular:** por padrão (`mobileMode="scroll"`) a tabela fica num contêiner com `overflow-x-auto` e rola na horizontal em tela estreita. Para listas em celular use `mobileMode="cards"`: abaixo de 600 px (medido no contêiner, não na janela) cada linha vira um cartão com ordenação, seleção, ações, rodapé e paginação preservados. **Não é preciso criar componente local do produto** (a antiga lacuna HO-10 foi resolvida pelo P127). A paginação também ajusta a quantidade de botões.
+- No modo cartões a coluna marcada `cardTitle` vira o título; `cardHidden` esconde a coluna só no cartão (ela continua na tabela larga). Sem coluna `cardTitle`, o cartão não tem título e todas as colunas viram "rótulo: valor". **Confirmado** em `SgDatatable.tsx` (commit `055aa39`).

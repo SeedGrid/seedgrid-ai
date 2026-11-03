@@ -40,6 +40,7 @@ To register the menu item, icon and permission of a new screen, use the `sg-new-
 
 - Layout/navigation: `Shell`, `SgMenu`, `SgBreadcrumb`, `SgCard`, `SgStack`, `SgGrid`
 - Listing: `SgDatatable`, `DatatableSkeleton` (table-shaped loading), `StatusBadge`, `ListLoadError`
+  - Lists that will be used on phones: set `mobileMode="cards"` on `SgDatatable` and mark the main column with `cardTitle: true` (and `cardHidden: true` on columns that make no sense in a card). Below 600 px (container width) each row becomes a card; wider keeps the table. Do not create a local responsive-table component.
 - Search: `SgInputTextSearch`
 - Destructive confirmation: `SgConfirmationDialog`
 - Feedback: `toast` from `@seedgrid/fe-components`

@@ -99,6 +99,60 @@ export default function TemplateDatatableExample({ rows }: { rows: ProductRow[] 
 }
 ```
 
+## Modo cartões no celular
+
+Baseado em `modo-cartoes.tsx.sample` (menos linhas de dados). O contêiner de 420 px fica abaixo de 600 px, então cada linha vira um cartão: `name` é o título, `status` fica só na tabela larga, e o rodapé soma o estoque. Em contêiner de 600 px ou mais o mesmo componente mostra a tabela.
+
+```tsx
+import React from "react";
+import { SgDatatable, type SgDatatableColumn } from "@seedgrid/fe-components";
+
+type ProductRow = {
+  id: number;
+  code: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: "INSTOCK" | "LOWSTOCK" | "OUTOFSTOCK";
+};
+
+const PRODUCT_ROWS: ProductRow[] = [
+  { id: 1, code: "P-1000", name: "Notebook Pro 14", category: "Computers", price: 1899, stock: 22, status: "INSTOCK" },
+  { id: 2, code: "P-1001", name: "Mechanical Keyboard", category: "Accessories", price: 149, stock: 64, status: "INSTOCK" },
+  { id: 3, code: "P-1003", name: "4K Monitor 27", category: "Monitors", price: 499, stock: 8, status: "LOWSTOCK" },
+  { id: 4, code: "P-1006", name: "Webcam 4K", category: "Video", price: 179, stock: 0, status: "OUTOFSTOCK" }
+];
+
+const CARD_COLUMNS: SgDatatableColumn<ProductRow>[] = [
+  { field: "name", header: "Name", sortable: true, filter: true, cardTitle: true },
+  { field: "code", header: "Code", sortable: true, filter: true },
+  { field: "category", header: "Category", sortable: true },
+  { field: "price", header: "Price", sortable: true, align: "right" },
+  { field: "stock", header: "Stock", sortable: true, align: "right", footer: (rows) => rows.reduce((total, row) => total + row.stock, 0) },
+  { field: "status", header: "Status", cardHidden: true }
+];
+
+export default function CardsDatatableExample() {
+  return (
+    <div className="mx-auto w-full max-w-[420px]">
+      <SgDatatable
+        id="datatable-cards"
+        title="Product catalog (cards)"
+        value={PRODUCT_ROWS}
+        columns={CARD_COLUMNS}
+        dataKey="id"
+        mobileMode="cards"
+        selectionMode="single"
+        showColumnFilters
+        paginator
+        rows={4}
+      />
+    </div>
+  );
+}
+```
+
 ## Ações por linha sem disparar a seleção
 
 Baseado em `acoes.tsx.sample`. Botões dentro da célula não selecionam a linha (`button`, `a` e outros são ignorados pelo `onClick` do `<tr>`).

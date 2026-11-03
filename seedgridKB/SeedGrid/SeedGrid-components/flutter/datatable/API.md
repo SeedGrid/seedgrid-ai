@@ -66,6 +66,7 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 | `groupBoxProps` | `SgListGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
 | `showColumnManager` | `bool` | `true` | não | React | — |
 | `columnManagerLabel` | `String?` | — | não | React | — |
+| `mobileMode` | `SgDatatableMobileMode` | `SgDatatableMobileMode.scroll` | não | React | `scroll`: a tabela rola na horizontal; `cards`: abaixo de 600 px (`kDatatableMobileBreakpoint`) de largura do contêiner cada linha vira um cartão. Ver [[#Modo cartões no celular]]. |
 | `columnManagerMaxHeight` | `Object?` | `320` | não | React | Numero (px) ou 'Npx'/'Nrem'. Tipo no React: `string \| number`. |
 | `controller` | `SgDatatableController?` | — | não | Flutter | `ref` do React. |
 
@@ -80,13 +81,20 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 - `groupBoxProps` vira `SgListGroupBoxProps` (`title`, `width`, `height`); `ref` vira `controller`.
 - Reordenar colunas arrastando a alça também funciona por toque; com largura menor que 600 px o painel de colunas vira painel de baixo (ADR 51).
 - Golden e teste em dispositivo não feitos.
+- **Modo cartões:** `mobileMode: SgDatatableMobileMode.cards` reaproveita o corte de 600 px (`kDatatableMobileBreakpoint`, medido no contêiner pelo `LayoutBuilder`). Mesmo comportamento do React (título `cardTitle`, `cardHidden`, ordenação em "Ordenar por", filtros em painel, rodapé, paginação), com os 38 casos `cardCases` dos vetores compartilhados. Ver ADR 58 da KB de plataforma.
 - **Não portado:** `className`, `style`, `tableClassName`, `rowClassName`, `bodyClassName`, `headerClassName` e o `className` de coluna (ADR 50). `tableClassName` e `rowClassName` são aceitos só para cumprir o contrato e não têm efeito.
+
+### Modo cartões no celular
+
+- Padrão `scroll`: a tabela rola na horizontal. Com `cards`, abaixo de 600 px de largura do contêiner cada linha vira um cartão "rótulo: valor", com seleção, ações, rodapé e paginação preservados.
+- Colunas: `cardTitle: true` (a primeira marcada vira título) e `cardHidden: true` (some do cartão e do rodapé do cartão; continua na tabela larga).
+- Código (commit `4da4e3c` do repositório Flutter): `sg_datatable.dart`, `datatable_types.dart`, enum em `generated/enums.g.dart`. **Confirmado**; sem golden nem teste em dispositivo.
 
 ### Eventos, controllers e acessibilidade
 
 **Dados e colunas** (`inputs/datatable/datatable_types.dart`)
 - `SgDatatableRow` é `Map<String, Object?>`; campos aninhados usam notação com ponto (`owner.name`).
-- `SgDatatableColumn`: `header` (obrigatório; `String`, `num` ou `Widget`), `columnId`, `field`, `body` (`Widget Function(SgDatatableRow, SgDatatableCellMeta)`), `footer` (texto, `Widget` ou função que recebe as linhas processadas de todas as páginas), `sortable`, `sortField`, `sortFunction` (comparador próprio; o sinal é invertido em ordem decrescente), `filter`, `filterField`, `filterPlaceholder`, `filterMatchMode` (`SgDatatableFilterMatchMode`: `contains`, `startsWith`, `endsWith`, `equals`), `excludeGlobalFilter`, `align` (`SgDatatableColumnAlign`), `width`, `minWidth` (px, `'Npx'`, `'Nrem'` ou `'N%'`), `hidden`, `hideable`, `reorderable`.
+- `SgDatatableColumn`: `header` (obrigatório; `String`, `num` ou `Widget`), `columnId`, `field`, `body` (`Widget Function(SgDatatableRow, SgDatatableCellMeta)`), `footer` (texto, `Widget` ou função que recebe as linhas processadas de todas as páginas), `sortable`, `sortField`, `sortFunction` (comparador próprio; o sinal é invertido em ordem decrescente), `filter`, `filterField`, `filterPlaceholder`, `filterMatchMode` (`SgDatatableFilterMatchMode`: `contains`, `startsWith`, `endsWith`, `equals`), `excludeGlobalFilter`, `align` (`SgDatatableColumnAlign`), `width`, `minWidth` (px, `'Npx'`, `'Nrem'` ou `'N%'`), `hidden`, `hideable`, `reorderable`, `cardTitle` (modo cartões: vira o título do cartão) e `cardHidden` (modo cartões: não aparece no cartão).
 - `SgDatatableCellMeta`: `rowIndex` (absoluto, considera a página), `field`, `value`, `rowData`.
 
 **Eventos e callbacks** (`sg_datatable.dart`, métodos `_commit*`)

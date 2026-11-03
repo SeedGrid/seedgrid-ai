@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- KB do `SgDatatable` (P127.F5.T1): modo cartões no celular (`mobileMode="cards"`, corte de 600 px medido no contêiner, `cardTitle`/`cardHidden`, ordenação em "Ordenar por", filtros em painel), em React e Flutter (visão geral, API, exemplo, chaves de i18n); `sg-crud-front` e `sg-crud-front-flutter` passam a mandar usar o modo cartões em listas de celular; `props.json` e `Preciso-de.md` atualizados só no SgDatatable. Código: componentes `055aa39` e `4da4e3c` (não publicado).
+
 ### Corrigido
 - KB da `cities`: o `quarkus-security` é opcional (sem ele a REST administrativa responde 404) e a `cities` depende do `commons` (e não o contrário), conforme o código `aa7704f`; a nota dizia o oposto. Acrescentado o padrão de permissões de `billing` e `backup` (permissões declaradas e semeadas pela própria extension). Plano P130.
 

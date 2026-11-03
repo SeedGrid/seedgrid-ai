@@ -18,9 +18,9 @@ O componente é genérico: `SgDatatable<T extends SgDatatableRow = SgDatatableRo
 
 ## Tipos exportados
 
-`SgDatatableProps`, `SgDatatableRow`, `SgDatatableColumn`, `SgDatatableColumnAlign`, `SgDatatableCellMeta`, `SgDatatableFilterEvent`, `SgDatatableFilterMatchMode`, `SgDatatablePageEvent`, `SgDatatableRef`, `SgDatatableSelection`, `SgDatatableSelectionMode`, `SgDatatableSortEvent`, `SgDatatableSortOrder`. **Confirmado** em `src/index.ts`.
+`SgDatatableProps`, `SgDatatableMobileMode`, `SgDatatableRow`, `SgDatatableColumn`, `SgDatatableColumnAlign`, `SgDatatableCellMeta`, `SgDatatableFilterEvent`, `SgDatatableFilterMatchMode`, `SgDatatablePageEvent`, `SgDatatableRef`, `SgDatatableSelection`, `SgDatatableSelectionMode`, `SgDatatableSortEvent`, `SgDatatableSortOrder`. **Confirmado** em `src/index.ts`.
 
-## Props de `SgDatatable` (40)
+## Props de `SgDatatable` (41)
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
@@ -64,8 +64,9 @@ O componente é genérico: `SgDatatable<T extends SgDatatableRow = SgDatatableRo
 | `showColumnManager` | `boolean` | `true` | Não | Gerenciador de colunas (ocultar/reordenar). |
 | `columnManagerLabel` | `string` | i18n `components.datatable.columns` (fallback "Colunas") | Não | Rótulo do gerenciador. |
 | `columnManagerMaxHeight` | `string \| number` | `320` | Não | Altura máxima do painel. |
+| `mobileMode` | `"scroll" \| "cards"` | `"scroll"` | Não | Comportamento quando o contêiner fica abaixo de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`). `scroll` mantém a tabela com rolagem horizontal; `cards` mostra cada linha como cartão. Ver [[#Modo cartões no celular (`mobileMode`)]]. |
 
-## `SgDatatableColumn<T>` (22 campos)
+## `SgDatatableColumn<T>` (24 campos)
 
 | Campo | Tipo | Padrão | Obrigatório | Descrição |
 |---|---|---|---|---|
@@ -91,6 +92,8 @@ O componente é genérico: `SgDatatable<T extends SgDatatableRow = SgDatatableRo
 | `className` | `string` | — | Não | Classe aplicada ao `<th>`, às células e ao rodapé da coluna. |
 | `headerClassName` | `string` | — | Não | Classe do `<th>`. |
 | `bodyClassName` | `string \| ((rowData: T, rowIndex: number) => string \| undefined)` | — | Não | Classe da célula, fixa ou calculada. |
+| `cardTitle` | `boolean` | — | Não | Só no modo `cards`: a primeira coluna visível marcada vira o título do cartão. |
+| `cardHidden` | `boolean` | — | Não | Só no modo `cards`: não mostra a coluna no cartão (nem no rodapé do cartão); continua na tabela larga. |
 
 Fonte: `SgDatatable.tsx` → tipo `SgDatatableColumn` e usos em `SgDatatableBase`. **Confirmado**, exceto onde a célula indica outra coisa.
 
@@ -151,6 +154,15 @@ Quando não é passada, o componente guarda o estado internamente. `rows` é **s
 
 **Confirmado**.
 
+## Modo cartões no celular (`mobileMode`)
+
+- `mobileMode="cards"` só age quando o **contêiner** do `SgDatatable` mede menos de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`, exportada pelo pacote): 599 vira cartões, 600 continua tabela. A medida vem do hook `useSgContainerWidth` (ResizeObserver no próprio contêiner), então vale também para tabela em coluna estreita no desktop. Antes da primeira medida a tabela larga é a que aparece.
+- Cada linha vira um cartão: título (coluna `cardTitle`) e os demais campos como "rótulo: valor". Mantém seleção por clique (botões e links dentro do cartão não selecionam), `rowClassName`, ações de coluna sem `field`, rodapé (bloco "rótulo: total", sem as colunas `cardHidden`), paginação e `lazy`.
+- Ordenação: o cabeçalho some; aparece o seletor "Ordenar por" (colunas `sortable`) e o botão de inverter a direção. Filtros: `showColumnFilters` e `filter` das colunas passam a um painel "Filtros" aberto por botão; o filtro global continua visível.
+- O gerenciador de colunas continua valendo (colunas ocultas não entram no cartão).
+- Paridade: os mesmos 38 casos (`cardCases`, em `datatable_vectors/vectors.json`) são testados no React e no Flutter.
+- Fonte: `SgDatatable.tsx`, `useSgContainerWidth.ts`; commit `055aa39` do repositório de componentes. **Confirmado**; não visto em celular real nem em teste visual.
+
 ## Internacionalização
 
 Todos os textos visíveis vêm de `components.datatable.*`:
@@ -158,7 +170,8 @@ Todos os textos visíveis vêm de `components.datatable.*`:
 - `globalFilterPlaceholder`, `columnFilterPlaceholder`, `clearFilters`;
 - `columns`, `restoreColumns`, `showAllColumns`, `dragToReorder`;
 - `first`, `prev`, `next`, `last`, `jumpBackward`, `jumpForward`;
-- `rowsPerPage`, `pageReport`, `page`, `pagination`.
+- `rowsPerPage`, `pageReport`, `page`, `pagination`;
+- modo cartões: `filters` ("Filtros"), `sortBy` ("Ordenar por"), `sortNone` ("Sem ordem"), `sortDirection` (inverter a direção).
 
 `columns` e `restoreColumns` têm fallback fixo em pt-BR ("Colunas", "Restaurar padrão") caso a chave não exista. **Confirmado**.
 

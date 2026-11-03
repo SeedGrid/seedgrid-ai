@@ -52,7 +52,7 @@ gerado-por: seedgrid-components-mcp/scripts/export-kb-data.mjs
 
 ## Dados e tabelas
 
-- `SgDatatable`: datatable; data grid; table; listing grid
+- `SgDatatable`: datatable; tabela no celular; tabela responsiva; data grid
 
 ## Feedback e avisos
 
