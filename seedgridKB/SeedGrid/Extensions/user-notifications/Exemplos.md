@@ -9,7 +9,7 @@ analisado-em: 2026-11-03
 
 # User-notifications: exemplos
 
-> **Status: ainda não publicada** (2026.11.01, commits locais). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
+> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
 
 ## 1. Notificar dentro de uma requisição
 

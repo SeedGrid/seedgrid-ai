@@ -29,6 +29,7 @@ Estado na análise (2026-10-14): todos na branch `main` e **sem alterações loc
 | `seedgrid-quarkus-ext-exchange` | Extension | 2026.10.13 | `30f1fd6005` | 2026-10-13 | [[SeedGrid/Extensions/exchange/Visao-geral\|exchange]] |
 | `seedgrid-quarkus-ext-business-days` | Extension (repositório ainda não criado) | 2026.10.15 | — | 2026-10-16 | [[SeedGrid/Extensions/business-days/Visao-geral|business-days]] |
 | `seedgrid-quarkus-ext-cities` | Extension | 2026.10.22 | `bad4c48` | 2026-10-27 | [[SeedGrid/Extensions/cities/Visao-geral\|cities]] |
+| `seedgrid-quarkus-ext-user-notifications` | Extension | 2026.11.01 | `6a192a3` | 2026-11-03 | [[SeedGrid/Extensions/user-notifications/Visao-geral\|user-notifications]] |
 | `seedgrid-quarkus-ext-audit` | Extension (core + postgresql + mongodb) | 2026.09.25 | `d5bf32e509` | 2026-09-25 | [[SeedGrid/Extensions/audit/Visao-geral\|audit]] |
 | `seedgrid-quarkus-ext-backup` | Extension | 2026.10.09 | `3bed4075ea` | 2026-10-10 | [[SeedGrid/Extensions/backup/Visao-geral\|backup]] |
 | `seedgrid-quarkus-ext-notification` | Extension (+ `api`) | 2026.10.15 | `3d00bee` | 2026-10-15 | [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |

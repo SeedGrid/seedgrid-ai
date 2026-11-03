@@ -9,7 +9,7 @@ analisado-em: 2026-11-03
 
 # User-notifications (Quarkus): visão geral
 
-> **Status: ainda não publicada.** Versão de trabalho **2026.11.01**, com commits locais (`6a192a3`, sem push). Plano P130 do work. Enquanto não sair no Maven Central, só resolve no `~/.m2` de quem a instalou. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
+> **Status: publicada no Maven Central em 2026-11-03**, versão **2026.11.01** (`seedgrid-user-notifications`), repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `6a192a3` na `main` (sem tag no GitHub). Plano P130 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
 
 ## Para que serve
 

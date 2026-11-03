@@ -385,7 +385,7 @@
         "seedgrid.realtime.channels, se preenchida, deve incluir user-notifications"
       ],
       "obrigatorias_para_subir": [],
-      "observacao": "Vem com os dois modelos de tenancy (login-tenancy e subdomain-tenancy dependem dela) e esta na base do modular. Nao semeia permissoes. Extension ainda nao publicada (2026.11.01, plano P130); sem o jar no Maven Central o projeto gerado so compila com ela instalada no ~/.m2.",
+      "observacao": "Vem com os dois modelos de tenancy (login-tenancy e subdomain-tenancy dependem dela) e esta na base do modular. Nao semeia permissoes. Publicada no Maven Central em 2026-11-03 (2026.11.01, plano P130).",
       "depende_de": [],
       "verificado": false,
       "pom": [

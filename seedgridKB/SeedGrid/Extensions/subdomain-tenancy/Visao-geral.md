@@ -165,9 +165,9 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 
 **Compressão das migrations (2026-10-27):** o histórico anterior (V100 a V111 e a `V706` de timestamps, que ficava órfã em `db/migration/tenancy` e foi removida) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
-## Caixa de notificações do usuário (alteração de 2026-11-03, ainda não publicada)
+## Caixa de notificações do usuário (publicada em 2026-11-03, `subdomain-tenancy` 2026.11.03)
 
-> Commit local `9ea38fd` (`subdomain-tenancy` 2026.11.03, plano P130). A extension passa a depender da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]]. A V1400 (`sg_user_notification`) roda **em cada banco de tenant** (coordinator e provisioning); o **master não recebe a tabela**. A conta é nula (o banco do tenant já isola). O usuário do tenant só vê as próprias notificações, e o id de uma notificação do tenant alfa dá 404 no beta (`UserNotificationsTenantGuardianIT`). **Confirmado** (relato do dev-2; revisar quando publicada).
+> Plano P130 (`subdomain-tenancy` 2026.11.03, commit `9ea38fd`, no Maven Central). A extension passa a depender da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]]. A V1400 (`sg_user_notification`) roda **em cada banco de tenant** (coordinator e provisioning); o **master não recebe a tabela**. A conta é nula (o banco do tenant já isola). O usuário do tenant só vê as próprias notificações, e o id de uma notificação do tenant alfa dá 404 no beta (`UserNotificationsTenantGuardianIT`). **Confirmado** (relato do dev-2).
 
 ## Testes
 

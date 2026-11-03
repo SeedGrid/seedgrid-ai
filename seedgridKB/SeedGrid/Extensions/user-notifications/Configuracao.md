@@ -9,7 +9,7 @@ analisado-em: 2026-11-03
 
 # User-notifications: configuração
 
-> **Status: ainda não publicada** (2026.11.01, commits locais). Os padrões vêm do `@ConfigMapping` `UserNotificationsConfig`. **Nenhuma propriedade é obrigatória**: colocou a dependência, funciona. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]].
+> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01). Os padrões vêm do `@ConfigMapping` `UserNotificationsConfig`. **Nenhuma propriedade é obrigatória**: colocou a dependência, funciona. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]].
 
 ## Propriedades
 

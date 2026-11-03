@@ -145,9 +145,9 @@ public class MeuLoginTenancyTemplateProvider implements LoginTenancyTemplateProv
 
 **Compressão das migrations (2026-10-27):** o histórico anterior (V700 a V706) virou **uma migration de DDL** e, onde há dados iniciais, **um seed repetível** (`R__*.sql`, idempotente). **Sem retrocompatibilidade: banco criado com a versão anterior deve ser recriado** (os checksums mudaram). Estrutura nova depois disso = a próxima `V` da faixa; permissão ou dado inicial novo = uma linha no `R__`.
 
-## Caixa de notificações do usuário (alteração de 2026-11-03, ainda não publicada)
+## Caixa de notificações do usuário (publicada em 2026-11-03, `login-tenancy` 2026.11.02)
 
-> Commits locais do plano P130 (`login-tenancy` 2026.11.02, `894f08b` e `d44696a`). A extension passa a **depender sempre** da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]]: o host que usa o login-tenancy já tem a caixa e as rotas `/user-notifications`. O login-tenancy migra a tabela `sg_user_notification` (V1400) no passo de migrations dele e traz o adaptador `LoginTenancyNotificationAccountProvider`, que implementa o SPI `NotificationAccountProvider` com a **empresa do token** como conta (BE-72). Isolamento por usuário e por empresa testado (`UserNotificationsAccountGuardianIT`). **Confirmado** (relato do dev-2; revisar quando publicada).
+> Plano P130 (`login-tenancy` 2026.11.02, commits `894f08b` e `d44696a`, no Maven Central). A extension passa a **depender sempre** da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]]: o host que usa o login-tenancy já tem a caixa e as rotas `/user-notifications`. O login-tenancy migra a tabela `sg_user_notification` (V1400) no passo de migrations dele e traz o adaptador `LoginTenancyNotificationAccountProvider`, que implementa o SPI `NotificationAccountProvider` com a **empresa do token** como conta (BE-72). Isolamento por usuário e por empresa testado (`UserNotificationsAccountGuardianIT`). **Confirmado** (relato do dev-2).
 
 ## Testes existentes (não executados)
 
