@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Corrigido
+- KB da `cities`: o `quarkus-security` é opcional (sem ele a REST administrativa responde 404) e a `cities` depende do `commons` (e não o contrário), conforme o código `aa7704f`; a nota dizia o oposto. Acrescentado o padrão de permissões de `billing` e `backup` (permissões declaradas e semeadas pela própria extension). Plano P130.
+
 ## [0.7.5] — 2026-11-03
 
 ### Alterado

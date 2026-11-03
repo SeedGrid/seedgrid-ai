@@ -71,7 +71,7 @@ Testes informados pelo time de plataforma: `cities` 116 verdes; Playwright b2b 1
 ## Armadilhas
 
 - **O seed de `CITY_READ` é de melhor esforço.** Se a tabela `sg_permissions` do host tem outras colunas `NOT NULL` sem default que a `cities` não conhece (por exemplo, gerada por entidade), ele pula com aviso e **não derruba o boot**; a permissão fica sem semear.
-- **A `cities` traz o `quarkus-security`** (usa `@PermissionsAllowed`) para todo host que usa o `commons`. O que era anotação inerte num host sem security passa a valer: teste de host sem identidade real precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`. Tornar essa dependência opcional é **decisão do dono, em aberto**.
+- **O `quarkus-security` é opcional na `cities`** (correção de 2026-11-03, código `aa7704f`): com a capability de security a REST administrativa (`@PermissionsAllowed`) funciona; sem ela a REST responde 404 e a consulta pública e os serviços seguem. Host com security e teste sem identidade real precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`.
 - Host com `database.generation=drop-and-create` funciona: as entidades declaram as `unique` da migration (`ibge_code`, `uf`, `code`).
 - O prefixo `sg_` é a regra de tabelas de extension: só `sg_` + o nome da tabela. Toda extension com tabelas já a cumpre (2026.10.22, sem migration de rename: banco que rodou a versão anterior é recriado).
 

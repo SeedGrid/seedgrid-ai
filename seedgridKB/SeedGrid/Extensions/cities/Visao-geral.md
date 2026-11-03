@@ -26,7 +26,7 @@ Países, estados e municípios do Brasil, com código IBGE, semeados por migrati
 | deployment | `br.com.seedgrid:seedgrid-cities-deployment` |
 | integration-tests | não publicado (Testcontainers Postgres) |
 
-A `cities` **não** depende do `commons` nem de `BaseEntity`: é o `commons` que depende dela. Ela traz o `quarkus-security` (usa `@PermissionsAllowed`); torná-lo opcional é decisão do dono em aberto.
+**Correção (2026-11-03, código `aa7704f`, que é posterior a esta análise):** desde 2026-10-28 (`345232f`) a `cities` **depende do `commons`** (recebe `Address` e `StateEnum` dele; antes era o contrário), e desde 2026-10-29 (`aa7704f`) o `quarkus-security` é **opcional**: a REST administrativa usa `@PermissionsAllowed`; com a capability de security ela é um bean normal, **sem ela a classe sai da ArC e a REST responde 404** (a consulta pública e os serviços seguem). O padrão das extensions que usam permissão (`billing`, `backup`) é outro: declaram as permissões em `@PermissionsAllowed` e **semeiam as próprias permissões** por migration repetível guardada (ver `R__backup_seed.sql` e `R__billing_seed.sql`: só semeiam se as tabelas da security existem); o `billing` depende de `seedgrid-security`, o `backup` não declara a dependência.
 
 ## Address e StateEnum (moram aqui)
 
@@ -88,7 +88,7 @@ Faixa **V1200–V1299**, location `db/migration/cities`, histórico `sg_flyway_s
 
 - Host com `quarkus.hibernate-orm.packages` próprio precisa acrescentar `br.com.seedgrid.cities.entities`; sem isso o boot falha com "Association ... Company.address.city targets the type City which does not belong to the same persistence unit".
 - Host com `quarkus.hibernate-orm.database.generation=drop-and-create` recebe as tabelas das entidades (as `unique` de `ibge_code`, `uf` e `code` estão declaradas nelas; sem isso o upsert do `R__cities_seed.sql` quebrava).
-- Teste de host sem identidade real (ex.: ITs que carregam o `commons`) precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`, porque a `cities` traz o `quarkus-security`.
+- Teste de host sem identidade real (ex.: ITs que carregam o `commons`) precisa de `quarkus-test-security` e `@TestSecurity(permissions = ...)`, quando a security está no host (a `cities` já não a traz sozinha: ela é opcional, ver a correção acima).
 - `quarkus.hibernate-orm.validate-in-dev-mode` vem `false`: a `cities` migra no `StartupEvent`, depois da validação do Hibernate.
 - Ordenação por nome usa `collate "C"` (não depende da collation do banco).
 
