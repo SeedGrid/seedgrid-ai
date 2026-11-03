@@ -153,6 +153,40 @@ export default function CardsDatatableExample() {
 }
 ```
 
+## Rolagem infinita e paginador em tela estreita
+
+> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+
+Sem escrever `mobileMode`, abaixo de 600 px a lista vira cartões com rolagem infinita (precisa de `paginator`; `rows` é o tamanho de cada página). Para manter o paginador em tela estreita, `infiniteScroll={false}`.
+
+```tsx
+import { SgDatatable, type SgDatatableColumn } from "@seedgrid/fe-components";
+
+type Row = { id: number; name: string; city: string };
+
+const COLUMNS: SgDatatableColumn<Row>[] = [
+  { field: "name", header: "Name", sortable: true, cardTitle: true },
+  { field: "city", header: "City", sortable: true }
+];
+
+export function InfiniteList({ rows }: { rows: Row[] }) {
+  return (
+    <>
+      {/* celular: cartões + rolagem infinita; desktop: tabela com paginador */}
+      <SgDatatable value={rows} columns={COLUMNS} dataKey="id" paginator rows={10} />
+
+      {/* mantém o paginador também em tela estreita (os cartões ficam sem rolagem infinita) */}
+      <SgDatatable value={rows} columns={COLUMNS} dataKey="id" paginator rows={10} infiniteScroll={false} />
+
+      {/* nunca vira cartões: tabela com rolagem horizontal */}
+      <SgDatatable value={rows} columns={COLUMNS} dataKey="id" paginator rows={10} mobileMode="scroll" />
+    </>
+  );
+}
+```
+
+Com `lazy`, o pai acrescenta a página seguinte a `value` em `onLoadMore` (ou `onPage`) e informa `totalRecords`; o fim é `value.length >= totalRecords`.
+
 ## Ações por linha sem disparar a seleção
 
 Baseado em `acoes.tsx.sample`. Botões dentro da célula não selecionam a linha (`button`, `a` e outros são ignorados pelo `onClick` do `<tr>`).

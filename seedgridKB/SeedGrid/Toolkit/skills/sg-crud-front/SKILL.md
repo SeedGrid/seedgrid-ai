@@ -40,7 +40,7 @@ To register the menu item, icon and permission of a new screen, use the `sg-new-
 
 - Layout/navigation: `Shell`, `SgMenu`, `SgBreadcrumb`, `SgCard`, `SgStack`, `SgGrid`
 - Listing: `SgDatatable`, `DatatableSkeleton` (table-shaped loading), `StatusBadge`, `ListLoadError`
-  - Lists that will be used on phones: set `mobileMode="cards"` on `SgDatatable` and mark the main column with `cardTitle: true` (and `cardHidden: true` on columns that make no sense in a card). Below 600 px (container width) each row becomes a card; wider keeps the table. Do not create a local responsive-table component.
+  - Lists that will be used on phones: mark the main column of `SgDatatable` with `cardTitle: true` (and `cardHidden: true` on columns that make no sense in a card). Once the next `@seedgrid/fe-components` release is out (P127 + P137, not published yet), omitting `mobileMode` is automatic: below 600 px (container width) each row becomes a card with infinite scroll (needs `paginator`; the paginator is hidden at that width, `infiniteScroll={false}` keeps it); wider keeps the table. `mobileMode="cards"` forces cards at any width, `mobileMode="scroll"` forces the table. Until then set `mobileMode="cards"` explicitly. Do not create a local responsive-table component.
 - Search: `SgInputTextSearch`
 - Destructive confirmation: `SgConfirmationDialog`
 - Feedback: `toast` from `@seedgrid/fe-components`

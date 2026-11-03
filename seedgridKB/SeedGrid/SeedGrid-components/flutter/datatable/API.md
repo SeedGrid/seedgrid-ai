@@ -66,7 +66,9 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 | `groupBoxProps` | `SgListGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
 | `showColumnManager` | `bool` | `true` | não | React | — |
 | `columnManagerLabel` | `String?` | — | não | React | — |
-| `mobileMode` | `SgDatatableMobileMode` | `SgDatatableMobileMode.scroll` | não | React | `scroll`: a tabela rola na horizontal; `cards`: abaixo de 600 px (`kDatatableMobileBreakpoint`) de largura do contêiner cada linha vira um cartão. Ver [[#Modo cartões no celular]]. |
+| `mobileMode` | `SgDatatableMobileMode?` | automático (sem valor `auto`) | não | React | Omitido: abaixo de 600 px (`kDatatableMobileBreakpoint`) de largura do contêiner vira cartões com rolagem infinita; acima, tabela. `cards` força cartões em qualquer largura; `scroll` força a tabela. **Não publicado** (P127/P137). Ver [[#Modo cartões no celular]]. |
+| `infiniteScroll` | `bool?` | `true` nos cartões, `false` na tabela | não | React | Rolagem infinita no lugar do paginador; exige `paginator` (`rows` é o tamanho da página). `infiniteScroll: false` mantém o paginador em tela estreita. **Não publicado** (P137). |
+| `onLoadMore` | `ValueChanged<SgDatatablePageEvent>?` | — | não | React | Chamado a cada página extra pedida pela rolagem infinita, além de `onPage`. **Não publicado** (P137). |
 | `columnManagerMaxHeight` | `Object?` | `320` | não | React | Numero (px) ou 'Npx'/'Nrem'. Tipo no React: `string \| number`. |
 | `controller` | `SgDatatableController?` | — | não | Flutter | `ref` do React. |
 
@@ -81,12 +83,14 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 - `groupBoxProps` vira `SgListGroupBoxProps` (`title`, `width`, `height`); `ref` vira `controller`.
 - Reordenar colunas arrastando a alça também funciona por toque; com largura menor que 600 px o painel de colunas vira painel de baixo (ADR 51).
 - Golden e teste em dispositivo não feitos.
-- **Modo cartões:** `mobileMode: SgDatatableMobileMode.cards` reaproveita o corte de 600 px (`kDatatableMobileBreakpoint`, medido no contêiner pelo `LayoutBuilder`). Mesmo comportamento do React (título `cardTitle`, `cardHidden`, ordenação em "Ordenar por", filtros em painel, rodapé, paginação), com os 38 casos `cardCases` dos vetores compartilhados. Ver ADR 58 da KB de plataforma.
+- **Modo cartões:** `mobileMode: SgDatatableMobileMode.cards` reaproveita o corte de 600 px (`kDatatableMobileBreakpoint`, medido no contêiner pelo `LayoutBuilder`). Mesmo comportamento do React (título `cardTitle`, `cardHidden`, ordenação em "Ordenar por", filtros em painel, rodapé, paginação ou rolagem infinita), com os 51 casos `cardCases` dos vetores compartilhados. Ver ADR 58 da KB de plataforma.
 - **Não portado:** `className`, `style`, `tableClassName`, `rowClassName`, `bodyClassName`, `headerClassName` e o `className` de coluna (ADR 50). `tableClassName` e `rowClassName` são aceitos só para cumprir o contrato e não têm efeito.
 
 ### Modo cartões no celular
 
-- Padrão `scroll`: a tabela rola na horizontal. Com `cards`, abaixo de 600 px de largura do contêiner cada linha vira um cartão "rótulo: valor", com seleção, ações, rodapé e paginação preservados.
+- **Não publicado (P127 + P137).** `mobileMode` omitido = automático: abaixo de 600 px de largura do contêiner cada linha vira um cartão "rótulo: valor", com seleção, ações e rodapé preservados e **rolagem infinita** (sem paginador, se houver `paginator`). `SgDatatableMobileMode.cards` força cartões em qualquer largura; `SgDatatableMobileMode.scroll` força a tabela com rolagem horizontal.
+- **Mudança de comportamento:** com `paginator` em contêiner abaixo de 600 px o paginador some; use `infiniteScroll: false` para mantê-lo. Na versão publicada hoje o padrão ainda é `scroll`.
+- **Rolagem infinita:** efetivo = `paginator && (infiniteScroll ?? exibido como cartões)`. O sentinela fica na posição do `Scrollable` vertical ancestral (80 px do fim) e avança a página chamando `onPage` e `onLoadMore`; mostra "Carregando mais..." e "Fim da lista." (i18n `components.datatable.loadingMore` e `endOfList`). Sem `lazy` a janela é ampliada; com `lazy` o pai acrescenta a página ao `value`. Ordenar, filtrar ou mudar `rows` volta à primeira página. 51 casos `cardCases` compartilhados com o React.
 - Colunas: `cardTitle: true` (a primeira marcada vira título) e `cardHidden: true` (some do cartão e do rodapé do cartão; continua na tabela larga).
 - Código (commit `4da4e3c` do repositório Flutter): `sg_datatable.dart`, `datatable_types.dart`, enum em `generated/enums.g.dart`. **Confirmado**; sem golden nem teste em dispositivo.
 

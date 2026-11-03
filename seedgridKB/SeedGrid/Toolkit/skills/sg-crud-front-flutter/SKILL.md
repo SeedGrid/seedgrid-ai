@@ -21,7 +21,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 - `SgDatatable`: `dataKey: 'publicId'`, `paginator`, `rows`, colunas `sortable`. Estado vazio com `emptyMessage`; carga com `loading: true`.
 - Ações por linha: coluna **sem `field`**, com `body: (row, meta)` e `SgButton(iconOnly: true, leftIcon: Icon(...))`. Situação com `SgBadge` (verde/vermelho).
 - Linhas são `Map<String, Object?>` (`SgDatatableRow`); o `SgDatatable` não é genérico e não aceita classes.
-- Lista para celular: `mobileMode: SgDatatableMobileMode.cards` e `cardTitle: true` na coluna principal (`cardHidden: true` nas que não cabem no cartão). Abaixo de 600 px de largura do contêiner cada linha vira cartão; acima, a tabela. Não crie tabela responsiva local.
+- Lista para celular: `cardTitle: true` na coluna principal (`cardHidden: true` nas que não cabem no cartão). Depois da próxima publicação do `seedgrid_components` (P127 + P137, ainda não publicada), omitir `mobileMode` é o automático: abaixo de 600 px de largura do contêiner cada linha vira cartão com rolagem infinita (exige `paginator`; o paginador some nessa largura, `infiniteScroll: false` o mantém); acima, a tabela. `SgDatatableMobileMode.cards` força cartões e `.scroll` força a tabela. Até lá use `mobileMode: SgDatatableMobileMode.cards` explícito. Não crie tabela responsiva local.
 
 ## Formulário
 
@@ -45,7 +45,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 
 - [ ] Lista e edição em telas separadas; `publicId` na chave e na navegação.
 - [ ] Busca (`SgInputTextSearch`), ordenação, paginação, estado vazio e de carga.
-- [ ] Lista usável em celular (`mobileMode: cards` com `cardTitle`).
+- [ ] Lista usável em celular (cartões automáticos ou `mobileMode: cards`, com `cardTitle`).
 - [ ] Confirmação antes de excluir; aviso ao salvar.
 - [ ] Validação dos obrigatórios; input certo por tipo.
 - [ ] Textos pelo i18n.

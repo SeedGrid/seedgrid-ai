@@ -64,7 +64,9 @@ O componente é genérico: `SgDatatable<T extends SgDatatableRow = SgDatatableRo
 | `showColumnManager` | `boolean` | `true` | Não | Gerenciador de colunas (ocultar/reordenar). |
 | `columnManagerLabel` | `string` | i18n `components.datatable.columns` (fallback "Colunas") | Não | Rótulo do gerenciador. |
 | `columnManagerMaxHeight` | `string \| number` | `320` | Não | Altura máxima do painel. |
-| `mobileMode` | `"scroll" \| "cards"` | `"scroll"` | Não | Comportamento quando o contêiner fica abaixo de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`). `scroll` mantém a tabela com rolagem horizontal; `cards` mostra cada linha como cartão. Ver [[#Modo cartões no celular (`mobileMode`)]]. |
+| `mobileMode` | `"scroll" \| "cards"` | automático (sem valor `auto`) | Não | Omitido: abaixo de 600 px de contêiner (`SG_DATATABLE_MOBILE_BREAKPOINT`) vira cartões com rolagem infinita; acima, tabela. `"cards"` **força** cartões em qualquer largura; `"scroll"` **força** a tabela com rolagem horizontal. Ver [[#Modo cartões no celular (`mobileMode`)]]. |
+| `infiniteScroll` | `boolean` | `true` quando a lista aparece como cartões, `false` na tabela | Não | Rolagem infinita no lugar do paginador. **Exige `paginator`** (`rows` vira o tamanho de cada página). Use `infiniteScroll={false}` para manter o paginador em tela estreita. Ver [[#Rolagem infinita (`infiniteScroll`)]]. |
+| `onLoadMore` | `(event: SgDatatablePageEvent) => void` | — | Não | Chamado a cada página extra pedida pela rolagem infinita (junto com `onPage`). |
 
 ## `SgDatatableColumn<T>` (24 campos)
 
@@ -156,12 +158,31 @@ Quando não é passada, o componente guarda o estado internamente. `rows` é **s
 
 ## Modo cartões no celular (`mobileMode`)
 
-- `mobileMode="cards"` só age quando o **contêiner** do `SgDatatable` mede menos de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`, exportada pelo pacote): 599 vira cartões, 600 continua tabela. A medida vem do hook `useSgContainerWidth` (ResizeObserver no próprio contêiner), então vale também para tabela em coluna estreita no desktop. Antes da primeira medida a tabela larga é a que aparece.
-- Cada linha vira um cartão: título (coluna `cardTitle`) e os demais campos como "rótulo: valor". Mantém seleção por clique (botões e links dentro do cartão não selecionam), `rowClassName`, ações de coluna sem `field`, rodapé (bloco "rótulo: total", sem as colunas `cardHidden`), paginação e `lazy`.
+> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+
+- **Regra (decisão do dono, P127.D e P137.D1):** `mobileMode` omitido = **automático**. O corte é 600 px medido no **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`, exportada pelo pacote; 599 vira cartões, 600 continua tabela), pelo hook `useSgContainerWidth` (ResizeObserver no próprio contêiner), então vale também para tabela em coluna estreita no desktop. Antes da primeira medida a tabela larga é a que aparece.
+  - `mobileMode="cards"` explícito: cartões em **qualquer** largura.
+  - `mobileMode="scroll"` explícito: tabela com rolagem horizontal em **qualquer** largura (o jeito de recusar os cartões).
+  - Não existe o valor `auto`: omitir a prop é o automático.
+- **Mudança de comportamento:** quem usava `mobileMode="scroll"` como padrão e não escrevia nada passa a ver cartões abaixo de 600 px. Para manter a tabela, escreva `mobileMode="scroll"`.
+- Cada linha vira um cartão: título (coluna `cardTitle`) e os demais campos como "rótulo: valor". Mantém seleção por clique (botões e links dentro do cartão não selecionam), `rowClassName`, ações de coluna sem `field`, rodapé (bloco "rótulo: total", sem as colunas `cardHidden`) e `lazy`.
 - Ordenação: o cabeçalho some; aparece o seletor "Ordenar por" (colunas `sortable`) e o botão de inverter a direção. Filtros: `showColumnFilters` e `filter` das colunas passam a um painel "Filtros" aberto por botão; o filtro global continua visível.
 - O gerenciador de colunas continua valendo (colunas ocultas não entram no cartão).
-- Paridade: os mesmos 38 casos (`cardCases`, em `datatable_vectors/vectors.json`) são testados no React e no Flutter.
-- Fonte: `SgDatatable.tsx`, `useSgContainerWidth.ts`; commit `055aa39` do repositório de componentes. **Confirmado**; não visto em celular real nem em teste visual.
+- Paridade: os mesmos 51 casos (`cardCases`, em `datatable_vectors/vectors.json`, 10 deles de rolagem infinita) são testados no React e no Flutter.
+- Fonte: `SgDatatable.tsx`, `useSgContainerWidth.ts`; relato da `front` (P137, 2026-11-03), código só no working tree. **Confirmado** pelos testes relatados (React 93/93, Playwright em navegador real); não visto em celular real.
+
+## Rolagem infinita (`infiniteScroll`)
+
+> **Ainda não publicada (P127 + P137):** o comportamento abaixo está no working tree do repositório de componentes (sem commit nem publicação). Vale na versão que sair depois dessa publicação; o Playground do showcase usa o `latest` publicado.
+
+- **Efetivo** = `paginator && (infiniteScroll ?? lista exibida como cartões)`. Nos cartões o padrão é ligado (por isso a lista de celular não mostra paginador); na tabela, desligado.
+- **Exige `paginator`**: `rows` é o tamanho de cada página. Sem `paginator`, a prop não faz nada.
+- **Como funciona:** um sentinela no fim da lista (`IntersectionObserver`, margem de 200 px) avança a página e chama `onPage` e `onLoadMore` com `{ first, rows, page, pageCount, totalRecords }`. As linhas já exibidas continuam na tela. No fim aparece "Fim da lista."; durante `loading` com linhas já exibidas, "Carregando mais...".
+- **Sem `lazy`:** o componente amplia a janela sozinho (`first` fica 0).
+- **Com `lazy`:** o pai **acrescenta** a página seguinte ao `value` (o pedido sai uma vez por tamanho de `value`); o fim é `value.length >= totalRecords`.
+- **Ordenar, filtrar ou mudar `rows`** volta à primeira página.
+- **Mudança de comportamento:** tabela com `paginator` em contêiner abaixo de 600 px deixa de mostrar paginador e vira cartões com rolagem infinita. Para manter o paginador em tela estreita, escreva `infiniteScroll={false}` (os exemplos do showcase que demonstram o paginador fazem isso).
+- Fonte: relato da `front` (P137.F1.T1 e F1.T2), código no working tree. **Confirmado** pelos testes relatados (`datatable-infinite-scroll.test.mjs`, vetores `cardCases`, Playwright: 4 → 8 → 12 cartões e "Fim da lista."); não visto em celular real.
 
 ## Internacionalização
 
@@ -172,6 +193,7 @@ Todos os textos visíveis vêm de `components.datatable.*`:
 - `first`, `prev`, `next`, `last`, `jumpBackward`, `jumpForward`;
 - `rowsPerPage`, `pageReport`, `page`, `pagination`;
 - modo cartões: `filters` ("Filtros"), `sortBy` ("Ordenar por"), `sortNone` ("Sem ordem"), `sortDirection` (inverter a direção).
+- rolagem infinita (não publicada): `loadingMore` ("Carregando mais...") e `endOfList` ("Fim da lista.").
 
 `columns` e `restoreColumns` têm fallback fixo em pt-BR ("Colunas", "Restaurar padrão") caso a chave não exista. **Confirmado**.
 
