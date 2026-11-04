@@ -21,6 +21,9 @@ gerado-por: seedgrid-components-mcp/scripts/export-kb-data.mjs
 - `SgInputCPFCNPJ`: cpf cnpj; documento misto; hybrid document; cpf or cnpj · não serve? SgInputCPF
 - `SgInputCurrency`: currency input; money field; price input; amount input · não serve? SgInputNumber
 - `SgInputDate`: date input; calendar field; deadline input; schedule date · não serve? SgInputText ou SgInputTextArea
+- `SgInputDateTime`: datetime input; data e hora; timestamp; agendamento; compromisso; prazo com hora · não serve? SgInputDate (só data)
+- `SgImageUpload`: image upload; foto; avatar; logotipo; escolher imagem; foto do documento · não serve? arquivo que não é imagem (não existe componente genérico); SgCameraCapture (tirar na hora)
+- `SgCameraCapture`: camera; tirar foto; selfie; webcam; captura de foto · não serve? SgImageUpload (escolher imagem existente)
 - `SgInputEmail`: email; email input; mail field; contact email · não serve? SgInputText
 - `SgInputNumber`: number input; numeric field; quantity input; decimal input · não serve? SgInputText ou SgInputTextArea
 - `SgInputOTP`: otp; one time password; verification code; auth code · não serve? SgInputPassword

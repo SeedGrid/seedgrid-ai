@@ -458,6 +458,7 @@ function rustValues(name, subs, allLines) {
 const GROUPS = [
   ['inputs-texto', 'Inputs de texto e documentos'],
   ['inputs-selecao', 'Inputs de seleção e valores'],
+  ['inputs-midia', 'Data e hora, imagem e câmera'],
   ['datatable', 'Tabela de dados'],
   ['editor', 'Editor de texto rico'],
   ['buttons', 'Botões'],

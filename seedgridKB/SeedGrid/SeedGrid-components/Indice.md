@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-03
+analisado-em: 2026-11-04
 gerado-por: scripts/kb-catalogs.mjs --only components
 ---
 
@@ -29,6 +29,7 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 |---|---|---|---|
 | Inputs de texto e documentos | 15 | 0 | [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos\|Exemplos]] |
 | Inputs de seleção e valores | 14 | 0 | [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 3 | 0 | [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos\|Exemplos]] |
 | Tabela de dados | 1 | 0 | [[SeedGrid/SeedGrid-components/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 0 | [[SeedGrid/SeedGrid-components/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/editor/API\|API]] · [[SeedGrid/SeedGrid-components/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 2 | [[SeedGrid/SeedGrid-components/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/buttons/Exemplos\|Exemplos]] |
@@ -42,7 +43,7 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 | Pacotes de apoio | 0 | 4 | [[SeedGrid/SeedGrid-components/pacotes/Visao-geral\|Visão geral]] |
 | Módulos de tela @seedgrid/fe-* | 0 | 10 | [[SeedGrid/SeedGrid-components/modulos/Visao-geral\|Visão geral]] |
 | Showcase | 0 | 1 | [[SeedGrid/SeedGrid-components/showcase\|Showcase]] |
-| **Total React** | **90** | **120** |  |
+| **Total React** | **93** | **120** |  |
 
 ## Resumo — Flutter
 
@@ -50,6 +51,7 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 |---|---|---|---|---|---|---|
 | Inputs de texto e documentos | 15 | 15 | 0 | 0 | 27 | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos\|Exemplos]] |
 | Inputs de seleção e valores | 14 | 14 | 0 | 0 | 51 | [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 3 | 3 | 0 | 0 | 0 | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
 | Tabela de dados | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 1 | 0 | 0 | 7 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 3 | 0 | 0 | 10 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
@@ -60,7 +62,7 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 12 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **89** | **89** | **0** | **0** | **406** |  |
+| **Total Flutter** | **92** | **92** | **0** | **0** | **406** |  |
 
 ## Onde está cada símbolo
 
@@ -70,6 +72,7 @@ Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` n
 
 - **Inputs de texto e documentos** (`inputs-texto/`, React): SgInputText, SgInputTextArea, SgInputTextSearch, SgInputEmail, SgInputPassword, SgInputPhone, SgInputCPF, SgInputCNPJ, SgInputCPFCNPJ, SgInputPostalCode, SgInputDate, SgInputBirthDate, SgInputNumber, SgInputCurrency, SgInputOTP
 - **Inputs de seleção e valores** (`inputs-selecao/`, React): SgAutocomplete, SgCombobox, SgCheckboxGroup, SgRadioGroup, SgMultiSelect, SgMultiSelectChips, SgOrderList, SgPickList, SgPeriodSelector, SgYearPartSelector, SgToggleSwitch, SgRating, SgSlider, SgStepperInput
+- **Data e hora, imagem e câmera** (`inputs-midia/`, React): SgInputDateTime, SgImageUpload, SgCameraCapture
 - **Tabela de dados** (`datatable/`, React): SgDatatable
 - **Editor de texto rico** (`editor/`, React): SgTextEditor
 - **Botões** (`buttons/`, React): SgButton, SgSplitButton, SgFloatActionButton, buildFabStorageKey, parseStoredFabDragPosition
@@ -90,6 +93,7 @@ Só os widgets e símbolos principais; os de apoio ficam no Catálogo. Mesmo cri
 
 - **Inputs de texto e documentos** (`flutter/inputs-texto/`, Flutter): SgInputText, SgInputTextArea, SgInputTextSearch, SgInputEmail, SgInputPassword, SgInputPhone, SgInputCPF, SgInputCNPJ, SgInputCPFCNPJ, SgInputPostalCode, SgInputDate, SgInputBirthDate, SgInputNumber, SgInputCurrency, SgInputOTP — mais 27 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
 - **Inputs de seleção e valores** (`flutter/inputs-selecao/`, Flutter): SgAutocomplete, SgCombobox, SgCheckboxGroup, SgRadioGroup, SgMultiSelect, SgMultiSelectChips, SgOrderList, SgPickList, SgPeriodSelector, SgYearPartSelector, SgToggleSwitch, SgRating, SgSlider, SgStepperInput — mais 51 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
+- **Data e hora, imagem e câmera** (`flutter/inputs-midia/`, Flutter): SgInputDateTime, SgImageUpload, SgCameraCapture
 - **Tabela de dados** (`flutter/datatable/`, Flutter): SgDatatable — mais 11 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
 - **Editor de texto rico** (`flutter/editor/`, Flutter): SgTextEditor — mais 7 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
 - **Botões** (`flutter/buttons/`, Flutter): SgButton, SgSplitButton, SgFloatActionButton — mais 10 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
