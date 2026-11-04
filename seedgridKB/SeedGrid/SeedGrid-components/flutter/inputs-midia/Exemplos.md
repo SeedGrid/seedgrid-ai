@@ -4,7 +4,7 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-mid
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 00e893c
+commit: e5e8baf
 analisado-em: 2026-11-04
 ---
 
@@ -13,6 +13,7 @@ analisado-em: 2026-11-04
 > **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
 Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
+
 
 ## SgInputDateTime: básico
 
@@ -27,6 +28,50 @@ Column(
     ),
     const SizedBox(height: 8),
     Text('Valor atual: ${_instante ?? '-'}'),
+  ],
+)
+```
+
+## SgInputDateTime: fusos horários
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'fuso-utc',
+      labelText: 'UTC',
+      timeZone: 'UTC',
+      value: _fuso,
+      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
+      onChange: (value, local) {
+        if (value != null) setState(() => _fuso = value);
+      },
+    ),
+    const SizedBox(height: 12),
+    SgInputDateTime(
+      id: 'fuso-sp',
+      labelText: '-03:00',
+      timeZone: '-03:00',
+      value: _fuso,
+      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
+      onChange: (value, local) {
+        if (value != null) setState(() => _fuso = value);
+      },
+    ),
+    const SizedBox(height: 12),
+    SgInputDateTime(
+      id: 'fuso-in',
+      labelText: '+05:30',
+      timeZone: '+05:30',
+      value: _fuso,
+      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
+      onChange: (value, local) {
+        if (value != null) setState(() => _fuso = value);
+      },
+    ),
+    const SizedBox(height: 8),
+    Text('Valor atual: $_fuso'),
   ],
 )
 ```
@@ -57,7 +102,7 @@ const SgInputDateTime(
 )
 ```
 
-## SgInputDateTime: em formulário (fuso -03:00)
+## SgInputDateTime: em formulário
 
 ```dart
 Column(
@@ -75,10 +120,31 @@ Column(
     SgButton(
       label: Text(context.tx('Enviar')),
       onClick: () => _form.handleSubmit(
-        (values) => setState(() => _enviado = '${values['consulta']}'),
+        (values) =>
+            setState(() => _enviado = '${values['consulta']}'),
       ),
     ),
     if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+  ],
+)
+```
+
+## SgInputDateTime: eventos (`onEnter` e `onExit`)
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'eventos',
+      labelText: 'Quando',
+      onChange: (value, local) =>
+          setState(() => _evento = 'onChange: ${value ?? local}'),
+      onEnter: () => setState(() => _evento = 'onEnter'),
+      onExit: () => setState(() => _evento = 'onExit'),
+    ),
+    const SizedBox(height: 8),
+    Text('Último evento: $_evento'),
   ],
 )
 ```
@@ -194,8 +260,6 @@ const SgFileUpload(
 
 ## SgImageUpload: básico
 
-O valor é `List<SgFile>` (use `files.first` com `maxFiles` padrão 1). Os snippets completos estão em `sg_image_upload_page.snippets.g.dart`.
-
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,14 +267,12 @@ Column(
     SgImageUpload(
       id: 'foto',
       labelText: 'Foto',
-      onChange: (files) => setState(
-        () => _info = files.isEmpty
-            ? null
-            : '${files.first.name} (${files.first.size} bytes)',
-      ),
+      onChange: (files) => setState(() => _uma = files),
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: ${_info ?? '-'}'),
+    Text(
+      'Valor atual: ${_uma.isEmpty ? '-' : '${_uma.first.name} (${_uma.first.size} bytes)'}',
+    ),
   ],
 )
 ```
@@ -268,19 +330,62 @@ const SgImageUpload(
 )
 ```
 
+## SgImageUpload: em formulário (o valor é `List<SgFile>`)
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgImageUpload(
+      id: 'documento',
+      name: 'documento',
+      control: _form,
+      labelText: 'Foto do documento',
+      rules: const SgRules(required: 'Escolha uma imagem'),
+    ),
+    const SizedBox(height: 12),
+    SgButton(
+      label: Text(context.tx('Enviar')),
+      onClick: () => _form.handleSubmit(
+        (values) => setState(
+          () => _enviado =
+              (values['documento'] as List).cast<SgFile>().first.name,
+        ),
+      ),
+    ),
+    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+  ],
+)
+```
+
+## SgImageUpload: desabilitado
+
+```dart
+const SgImageUpload(
+  id: 'foto-desabilitada',
+  labelText: 'Foto',
+  disabled: true,
+)
+```
+
 ## SgCameraCapture: básico
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgCameraCapture(
-      id: 'foto',
-      labelText: 'Foto',
-      onCapture: (image) => setState(() => _captured = '${image.length} bytes'),
+    SizedBox(
+      width: 320,
+      child: SgCameraCapture(
+        id: 'foto',
+        labelText: 'Foto',
+        previewHeight: 240,
+        onCapture: (image) => setState(() => _captured = image),
+      ),
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: ${_captured ?? '-'}'),
+    Text('Valor atual: ${_captured?.length ?? '-'} bytes'),
+    if (_captured != null) Image.memory(_captured!, width: 160),
   ],
 )
 ```
@@ -288,24 +393,51 @@ Column(
 ## SgCameraCapture: guia oval (selfie)
 
 ```dart
-const SgCameraCapture(
-  id: 'selfie',
-  labelText: 'Selfie',
-  facing: SgCameraCaptureFacing.user,
-  guide: SgCameraCaptureGuide.oval,
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgCameraCapture(
+        id: 'selfie',
+        labelText: 'Selfie',
+        previewHeight: 280,
+        facing: SgCameraCaptureFacing.user,
+        guide: SgCameraCaptureGuide.oval,
+        onCapture: (image) => setState(() => _selfie = image),
+      ),
+    ),
+    if (_selfie != null) ...[
+      const SizedBox(height: 8),
+      Image.memory(_selfie!, width: 160),
+    ],
+  ],
 )
 ```
 
 ## SgCameraCapture: guia retangular (documento)
 
 ```dart
-const SgCameraCapture(
-  id: 'documento',
-  labelText: 'Documento',
-  facing: SgCameraCaptureFacing.environment,
-  guide: SgCameraCaptureGuide.rect,
-  resolution: SgCameraCaptureResolution.high,
-  previewHeight: 240,
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SizedBox(
+      width: 360,
+      child: SgCameraCapture(
+        id: 'documento',
+        labelText: 'Documento',
+        facing: SgCameraCaptureFacing.environment,
+        guide: SgCameraCaptureGuide.rect,
+        resolution: SgCameraCaptureResolution.high,
+        previewHeight: 240,
+        onCapture: (image) => setState(() => _documento = image),
+      ),
+    ),
+    if (_documento != null) ...[
+      const SizedBox(height: 8),
+      Image.memory(_documento!, width: 160),
+    ],
+  ],
 )
 ```
 
@@ -315,11 +447,15 @@ const SgCameraCapture(
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgCameraCapture(
-      id: 'foto-erros',
-      labelText: 'Foto',
-      onError: (code, message) =>
-          setState(() => _cameraError = '${code.name}: $message'),
+    SizedBox(
+      width: 320,
+      child: SgCameraCapture(
+        id: 'foto-erros',
+        labelText: 'Foto',
+        previewHeight: 240,
+        onError: (code, message) =>
+            setState(() => _cameraError = '${code.name}: $message'),
+      ),
     ),
     const SizedBox(height: 8),
     Text('Valor atual: ${_cameraError ?? '-'}'),

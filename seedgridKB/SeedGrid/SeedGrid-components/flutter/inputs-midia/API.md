@@ -4,7 +4,7 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-mid
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 00e893c
+commit: e5e8baf
 analisado-em: 2026-11-04
 ---
 
@@ -36,9 +36,9 @@ analisado-em: 2026-11-04
 
 ## SgFileUpload
 
-> **Flutter** · estado de paridade: **portado no Flutter; React pendente (P141.F4)** · é o componente **base** de arquivos; o `SgImageUpload` o compõe.
+> **Flutter** · estado de paridade: **parcial** (React tem o mesmo contrato, com arrastar e soltar e `File` do navegador) · é o componente **base** de arquivos; o `SgImageUpload` o compõe.
 
-- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_file_upload.dart`; lógica pura em `sg_file_logic.dart`. Contrato: `tools/gen_props/contratos/P141-file-upload.json` (manual até o React implementar). Vetores compartilhados: `test/widgets/file_upload_vectors`.
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_file_upload.dart`; lógica pura em `sg_file_logic.dart`. As props vêm do contrato gerado a partir do React (o contrato manual `contratos/P141-file-upload.json` foi removido; um componente futuro que nasça no Flutter precisa recriar o mecanismo). Vetores compartilhados: `test/widgets/file_upload_vectors`.
 - **Sem retrocompatibilidade:** o valor é **sempre uma lista de `SgFile`** (um arquivo = lista de um). `SgImageFile` foi removido.
 
 | Parâmetro | Tipo | Padrão | Origem | Descrição |
@@ -59,9 +59,9 @@ analisado-em: 2026-11-04
 | `disabled` / `readOnly` | `bool?` | — | P141 | Desabilita / só mostra. |
 | `name` / `control` / `rules` | — | — | P141 | Ligação com o formulário (`rules` no submit). |
 | `picker` | `SgFilePicker?` | seletor do sistema | **extra do Flutter** | Substitui o seletor (testes ou outra origem). |
-| `extraCheck` | `SgFileCheck?` | — | **extra do Flutter** | Regra extra por arquivo (é como o `SgImageUpload` confere dimensão e proporção). |
-| `thumbnailBuilder` / `thumbnailSize` | — | `96` px | **extra do Flutter** | Miniatura de cada arquivo. |
-| `keyPrefix`, `dropTextKey`, `dropManyTextKey`, `typeNames` | — | — | **extra do Flutter** | Chaves de widget e textos usados pela composição. |
+| `extraCheck` | `SgFileCheck?` | — | igual ao React | Regra extra por arquivo (é como o `SgImageUpload` confere dimensão e proporção). |
+| `thumbnailBuilder` / `thumbnailSize` | — | `96` px | igual ao React | Miniatura de cada arquivo. |
+| `keyPrefix`, `dropTextKey`, `dropManyTextKey`, `typeNames` | — | — | igual ao React | Chaves de widget e textos usados pela composição. |
 
 **Tipos:**
 - `SgFile({name, bytes?, url?, mimeType?, size?})`: `bytes` para o arquivo escolhido; `url` para um já salvo; `size` é `bytes.length` quando há bytes.
@@ -74,7 +74,7 @@ analisado-em: 2026-11-04
 
 ## SgImageUpload
 
-> **Flutter** · estado de paridade: **portado no Flutter; React pendente (P141.F4)** · **composição** do `SgFileUpload` (não herança): mesmas regras, mais as de imagem.
+> **Flutter** · estado de paridade: **parcial** (React tem o mesmo contrato, com arrastar e soltar e `File` do navegador) · **composição** do `SgFileUpload` (não herança): mesmas regras, mais as de imagem.
 
 - Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_image_upload.dart` (`StatelessWidget` que monta um `SgFileUpload` com `mediaType: [image]`, miniaturas e `extraCheck`).
 - Tem as mesmas props de limite e valor do `SgFileUpload` (`value`/`defaultValue`/`onChange` em `List<SgFile>`, `maxFiles` padrão `1`, `maxSizePerFile`, `maxSizeTotal`, `onError` com o nome do arquivo, `picker`, formulário) **e** as de imagem abaixo. **`maxSizeBytes` foi removido** (agora `maxSizePerFile`).

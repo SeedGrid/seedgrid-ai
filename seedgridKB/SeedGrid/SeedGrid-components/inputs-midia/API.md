@@ -2,9 +2,9 @@
 tags: [seedgrid, component, frontend, react, inputs-midia, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: 839e245
+commit: bb0ad1f
 analisado-em: 2026-11-04
-description: "API React de Data e hora, imagem e câmera (@seedgrid/fe-components): props completas de SgInputDateTime, SgImageUpload e SgCameraCapture com tipo e padrão, eventos e códigos de erro. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
+description: "API React de Data e hora, imagem e câmera (@seedgrid/fe-components): props completas de SgInputDateTime, SgFileUpload, SgImageUpload e SgCameraCapture com tipo e padrão, eventos e códigos de erro. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
 
@@ -12,11 +12,11 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API — Data e hora, imagem e câmera (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-> **API do `SgImageUpload` vai mudar (P141, decidido pelo dono em 2026-11-04):** o Flutter já usa a nova (valor sempre `lista`, `maxFiles`, `maxSizePerFile`/`maxSizeTotal` com texto como `"1.5MB"`, e o novo `SgFileUpload` como base); **o React ainda tem a API antiga descrita abaixo** (`File`, `maxSizeBytes`) até a rodada P141.F4, depois da validação do Flutter. Ver [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API Flutter]].
+> **Nova API do upload (P141, validada pelo dono no Flutter em 2026-11-04):** `SgFileUpload` é o componente base de arquivos e `SgImageUpload` é composição dele. O valor é **sempre uma lista**, `maxFiles` (padrão `1`) substitui o `multiple`, `maxSizePerFile`/`maxSizeTotal` aceitam bytes ou texto como `"1.5MB"`, e o tipo é conferido pelo conteúdo. **Sem retrocompatibilidade**: `maxSizeBytes` e o valor `File | string | null` do `SgImageUpload` deixaram de existir. Código no commit local `bb0ad1f` do `fe-components`. Ver [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API Flutter]] (a mesma API).
 
-> **Ainda não publicado no npm** (commit local `839e245`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
+> **Ainda não publicado no npm** (commits locais `839e245` e `bb0ad1f`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
 
-Import: `import { SgInputDateTime, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].
+Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].
 
 ## `SgInputDateTime`
 
@@ -41,33 +41,67 @@ Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange
 
 **Comportamento do valor (Confirmado):** o campo **mostra** a hora no `timeZone` escolhido, mas o `onChange` **sempre entrega UTC**. Com `react-hook-form`, o valor fica com o RHF (a prop `value` não é necessária).
 
-## `SgImageUpload`
+## `SgFileUpload`
 
-Tipo de props: `SgImageUploadProps = RhfFieldProps & { … }` (`name`/`control` do react-hook-form; ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|Contrato RhfFieldProps]]).
+Tipo de props: `SgFileUploadProps = RhfFieldProps & { … }` (`name`/`control` do react-hook-form; ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|Contrato RhfFieldProps]]). É o componente **base** de arquivos: o `SgImageUpload` é uma **composição** dele (não herança de classe). **Sem retrocompatibilidade** (decisão do dono, P141): o valor é **sempre uma lista**.
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
 | `id` | `string` | — | Sim | Identificador único do campo. |
 | `label` / `labelText` | `string` | — | Não | Rótulo acima da área. |
-| `value` | `File \| string \| null` | — | Não | Imagem controlada: `File` escolhido, **URL** de uma imagem já salva ou `null`. |
-| `defaultValue` | `File \| string \| null` | — | Não | Imagem inicial (não controlada); aceita a URL de uma imagem salva. |
-| `onChange` | `(file: File \| null) => void` | — | Não | Arquivo **válido** escolhido, ou `null` ao remover. O envio ao servidor é do host. |
-| `onError` | `(code: ImageErrorCode, message: string) => void` | — | Não | Arquivo recusado. `message` já vem traduzida. |
-| `accept` | `string` | `"image/*"` | Não | Tipos aceitos separados por vírgula: `image/*`, `image/png`, `.png`. |
-| `maxSizeBytes` | `number` | — | Não | Tamanho máximo em bytes. |
+| `value` | `SgFileValue[] \| null` | — | Não | Arquivos controlados (sempre lista; um arquivo = lista de um). |
+| `defaultValue` | `SgFileValue[]` | — | Não | Arquivos iniciais (não controlado). |
+| `onChange` | `(files: SgFileValue[]) => void` | — | Não | Lista de arquivos **válidos** após escolher ou remover. O envio ao servidor é do host. |
+| `onError` | `(code: FileErrorCode, message: string, fileName: string) => void` | — | Não | Arquivo recusado: código, mensagem já traduzida e nome do arquivo. **Por arquivo**: os demais seguem válidos. |
+| `mediaType` | `MediaType[]` | todos | Não | Tipos aceitos (`image`, `pdf`, `xlsx`…). O tipo é conferido **pelo conteúdo** do arquivo (assinatura), não só pela extensão. |
+| `accept` | `string` | — | Não | Tipos extras em texto livre (`.pdf`, `image/png`, `image/*`), separados por vírgula. **Soma-se** ao `mediaType`. |
+| `maxFiles` | `number` | `1` | Não | Quantos arquivos o campo guarda. Com `1`, escolher outro **substitui** o atual; maior que `1` liga a seleção múltipla. Não existe `multiple`. |
+| `maxSizePerFile` | `SizeLimit` | sem limite | Não | Tamanho máximo de cada arquivo: **número (bytes)** ou **texto com unidade** (`"500KB"`, `"1.5MB"`, `"1GB"`). |
+| `maxSizeTotal` | `SizeLimit` | sem limite | Não | Tamanho máximo da soma dos arquivos (mesmo formato). |
+| `hintText` | `string` | — | Não | Texto de ajuda sob a área. |
+| `required` / `requiredMessage` | `boolean` / `string` | — | Não | Obrigatório e a mensagem. |
+| `disabled` / `readOnly` | `boolean` | `false` | Não | Desabilita a escolha e a remoção / só mostra. |
+| `error` | `string` | — | Não | Mensagem de erro externa. |
+| `onEnter` / `onExit` | `() => void` | — | Não | Foco entrou/saiu. |
+| `pickerAccept` | `string` | derivado de `mediaType`/`accept` | Não | **Só no React:** valor do atributo `accept` do seletor do navegador. |
+| `extraCheck` | `(file: File, info: { mime: string }) => Promise<SgFileRejection \| null>` | — | Não | Regra extra, assíncrona, por arquivo, depois da conferência de tipo (é como o `SgImageUpload` confere dimensão e proporção). |
+| `thumbnailBuilder` | `(file: SgFileValue, size: number) => ReactNode` | ícone do tipo | Não | Miniatura de cada arquivo. |
+| `thumbnailSize` | `number` | `96` | Não | Lado da miniatura em px. |
+| `keyPrefix` | `string` | — | Não | Prefixo do `data-sg` dos elementos internos (`sg-file`, `sg-image`). |
+| `dropTextKey` / `dropManyTextKey` | `string` | — | Não | Chaves de i18n do texto da área vazia (um arquivo / vários). |
+| `typeNames` | `string` | derivado | Não | Texto dos tipos aceitos na mensagem de tipo recusado. |
+
+**Tipos (Confirmado em `SgFileUpload.tsx` e `fileUploadLogic.ts`):**
+
+- `SgFileValue = File | SgSavedFile`; `SgSavedFile = { name: string; url: string; size?: number; type?: string }`. Um arquivo **já salvo** no servidor entra como `{ name, url }` (sem bytes).
+- `MediaType`: `image`, `video`, `audio` (**grupos**, `image/*` etc.) e `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `csv`, `txt`, `zip` (**formatos**), mais `all`. Cada valor tem extensões e MIME próprios.
+- `SizeLimit = number | string`.
+- `FileErrorCode`: `type` (fora do aceito), `size` (acima de `maxSizePerFile`), `count` (acima de `maxFiles`), `total` (soma acima de `maxSizeTotal`), `dimension` e `aspect` (só vêm de regra extra, como a do `SgImageUpload`).
+
+**Unidades de tamanho:** `B`, `KB`, `MB`, `GB`, `TB`; **base 1024**; maiúscula ou minúscula; decimal com ponto (`"1.5MB"`); espaço opcional; **número puro = bytes**; texto inválido, vazio ou negativo = **sem limite** (`parseSize`).
+
+**Ordem das regras por arquivo** (`planAdd`): tipo, tamanho por arquivo, quantidade, tamanho total; a regra extra (`extraCheck`) vem depois do tipo. Cada recusa fica no seu arquivo.
+
+**Tipo pelo conteúdo:** o MIME declarado pelo navegador e a extensão são conferidos com a **assinatura** do arquivo (`resolveMime`, `sniffMime`), então um `.jfif` ou um arquivo sem extensão reconhecida é aceito como imagem quando o conteúdo é imagem.
+
+**Arrastar e soltar:** a área aceita arrastar arquivos (`onDrop`) além do clique. **Só no React**: o Flutter não tem arrastar e soltar.
+
+## `SgImageUpload`
+
+Tipo de props: `SgImageUploadProps = Omit<SgFileUploadProps, "mediaType" | "extraCheck" | "thumbnailBuilder" | "thumbnailSize" | "dropTextKey" | "dropManyTextKey" | "typeNames" | "pickerAccept" | "keyPrefix"> & { … }`. É uma **composição** do `SgFileUpload` com `mediaType: ["image"]`, miniatura da imagem e as regras que só existem para imagem. **Funciona igual ao `SgFileUpload`** (decisão do dono): valor sempre lista, `maxFiles` (padrão `1`), `maxSizePerFile`/`maxSizeTotal`, `onError` com o nome do arquivo, `value`/`defaultValue`/`onChange` com `SgFileValue[]`, formulário. **Removidos** (sem retrocompatibilidade): o valor `File \| string \| null` e `maxSizeBytes`.
+
+| Prop | Tipo | Padrão | Obrigatória | Descrição |
+|---|---|---|---|---|
+| (as do `SgFileUpload` acima, menos as omitidas) | — | — | — | `id`, `label`, `value`, `defaultValue`, `onChange`, `onError`, `maxFiles`, `maxSizePerFile`, `maxSizeTotal`, `hintText`, `required`, `requiredMessage`, `disabled`, `readOnly`, `error`, `onEnter`, `onExit`, `name`/`control`. |
+| `accept` | `string` | `"image/*"` | Não | **Estreita** os formatos de imagem (`image/png,image/jpeg`, `.png`). No `SgFileUpload` o `accept` soma; aqui restringe. |
 | `minWidth` | `number` | — | Não | Largura mínima em px. |
 | `minHeight` | `number` | — | Não | Altura mínima em px. |
-| `aspect` | `number` | — | Não | Proporção largura/altura exigida (`1` = quadrada, `16 / 9`). |
-| `previewHeight` | `number` | `160` | Não | Altura da área de pré-visualização em px. |
-| `hintText` | `string` | — | Não | Texto de ajuda sob a área. |
-| `required` | `boolean` | `false` | Não | Campo obrigatório. |
-| `requiredMessage` | `string` | — | Não | Mensagem do erro de obrigatório. |
-| `disabled` | `boolean` | `false` | Não | Desabilita a escolha e a remoção. |
-| `readOnly` | `boolean` | `false` | Não | Só mostra a imagem; sem trocar nem remover. |
-| `className` | `string` | — | Não | Classe CSS do contêiner. |
-| `onEnter` / `onExit` | `() => void` | — | Não | Foco entrou/saiu. |
+| `aspect` | `number` | — | Não | Proporção largura/altura exigida (`1` = quadrada, `16 / 9`; tolerância de 2%). |
+| `previewHeight` | `number` | `160` | Não | Altura da miniatura em px (na grade de vários, no máximo `120`). |
 
-**Códigos de erro** (`ImageErrorCode`): `type` (fora de `accept`), `size` (acima de `maxSizeBytes`), `dimension` (menor que `minWidth`×`minHeight`), `aspect` (proporção diferente de `aspect`, com tolerância de 2%). A ordem de verificação é a de `validateImage` (`imageUploadLogic.ts`). Sem recorte e sem compressão. **Confirmado**.
+**Códigos de erro:** os do `SgFileUpload` (`type`, `size`, `count`, `total`) mais `dimension` (menor que `minWidth`×`minHeight`) e `aspect` (proporção diferente de `aspect`). A leitura de largura e altura só roda quando há `minWidth`, `minHeight` ou `aspect`. Sem recorte e sem compressão. **Confirmado** em `SgImageUpload.tsx` e `imageUploadLogic.ts`.
+
+**Várias imagens:** com `maxFiles` maior que `1` a pré-visualização vira **grade**; com `1`, miniatura maior de um arquivo.
 
 ## `SgCameraCapture`
 
@@ -97,9 +131,10 @@ Chaves em `src/i18n/*.ts` (cinco idiomas: `pt-BR`, `pt-PT`, `en-US`, `es`, `fr`)
 | Grupo | Chaves |
 |---|---|
 | `SgInputDateTime` | `components.inputs.datetime.invalid`, `.range`, `.min`, `.max` |
-| `SgImageUpload` | `components.inputs.imageupload.drop`, `.change`, `.remove`, `.loading`, `.type`, `.size`, `.dimension`, `.aspect` |
+| `SgFileUpload` | `components.inputs.fileupload.drop`, `.dropMany`, `.file`, `.remove`, `.loading`, `.type`, `.size`, `.total`, `.count` |
+| `SgImageUpload` | `components.inputs.imageupload.drop`, `.dropMany`, `.change`, `.remove`, `.loading`, `.type`, `.size`, `.dimension`, `.aspect` |
 | `SgCameraCapture` | `components.inputs.camera.capture`, `.switch`, `.starting`, `.permission`, `.noCamera`, `.failed`, `.retry` |
 
 ## Manifesto de IA e MCP
 
-Cada componente tem `*.meta.ts` (`componentId` `form.input.datetime`, `form.input.image-upload`, `form.input.camera-capture`; `rendererType` SDUI `field.datetime`, `field.image`, `field.camera`). O `seedgrid-components-mcp` foi sincronizado com **107 componentes React** e **92 Flutter** (commit local `8830909`, sem push; o push dispara o deploy do MCP).
+Cada componente tem `*.meta.ts` (`componentId` `form.input.datetime`, `form.input.file-upload`, `form.input.image-upload`, `form.input.camera-capture`; `rendererType` SDUI `field.datetime`, `field.file`, `field.image`, `field.camera`). O `seedgrid-components-mcp` foi sincronizado com o `SgFileUpload` e o `SgImageUpload` refeito (commit local `d3f5f64`, sem push; o push dispara o deploy do MCP); a descrição do `SgFileUpload` no manifesto lista `thumbnailBuilder` e as props extras.

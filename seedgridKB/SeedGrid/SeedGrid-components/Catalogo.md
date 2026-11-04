@@ -29,7 +29,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 |---|---|---|---|
 | Inputs de texto e documentos | 15 | 0 | [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos\|Exemplos]] |
 | Inputs de seleção e valores | 14 | 0 | [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos\|Exemplos]] |
-| Data e hora, imagem e câmera | 3 | 0 | [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 4 | 0 | [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos\|Exemplos]] |
 | Tabela de dados | 1 | 0 | [[SeedGrid/SeedGrid-components/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 0 | [[SeedGrid/SeedGrid-components/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/editor/API\|API]] · [[SeedGrid/SeedGrid-components/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 2 | [[SeedGrid/SeedGrid-components/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/buttons/Exemplos\|Exemplos]] |
@@ -43,7 +43,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Pacotes de apoio | 0 | 4 | [[SeedGrid/SeedGrid-components/pacotes/Visao-geral\|Visão geral]] |
 | Módulos de tela @seedgrid/fe-* | 0 | 10 | [[SeedGrid/SeedGrid-components/modulos/Visao-geral\|Visão geral]] |
 | Showcase | 0 | 1 | [[SeedGrid/SeedGrid-components/showcase\|Showcase]] |
-| **Total React** | **93** | **120** |  |
+| **Total React** | **94** | **120** |  |
 
 ## Resumo — Flutter
 
@@ -51,7 +51,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 |---|---|---|---|---|---|---|
 | Inputs de texto e documentos | 15 | 15 | 0 | 0 | 27 | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos\|Exemplos]] |
 | Inputs de seleção e valores | 14 | 14 | 0 | 0 | 51 | [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Exemplos\|Exemplos]] |
-| Data e hora, imagem e câmera | 4 | 4 | 0 | 0 | 0 | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 4 | 2 | 2 | 0 | 0 | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
 | Tabela de dados | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 1 | 0 | 0 | 7 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 3 | 0 | 0 | 10 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
@@ -62,7 +62,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 12 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **93** | **93** | **0** | **0** | **406** |  |
+| **Total Flutter** | **93** | **91** | **2** | **0** | **406** |  |
 
 ## Inputs de texto e documentos — React
 
@@ -108,7 +108,8 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Nome | Exportado | Resumo | Nota |
 |---|---|---|---|
 | `SgInputDateTime` | sim | Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, mostrando a hora no fuso… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
-| `SgImageUpload` | sim | Escolhe uma imagem (clique ou arrastar e soltar), valida tipo, tamanho, dimensão mínima e… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
+| `SgFileUpload` | sim | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (clique ou arrastar e soltar)… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
+| `SgImageUpload` | sim | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles maior que 1), dimensão… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
 | `SgCameraCapture` | sim | Pré-visualização da câmera com guia de enquadramento (oval ou retângulo), alternância… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
 
 ## Tabela de dados — React
@@ -479,8 +480,8 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Nome | Estado de paridade (componente) / Exportado (símbolo) | Resumo | Nota |
 |---|---|---|---|
 | `SgInputDateTime` | portado | Campo de data e hora com máscara, calendário e seletor de hora; entrega o instante ISO 8601 UTC | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
-| `SgFileUpload` | portado | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (mediaType), valida o tipo pelo… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
-| `SgImageUpload` | portado | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles > 1), dimensão mínima e… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
+| `SgFileUpload` | parcial | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (mediaType), valida o tipo pelo… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
+| `SgImageUpload` | parcial | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles > 1), dimensão mínima e… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgCameraCapture` | portado | Pré-visualização da câmera com guia de enquadramento, troca frontal/traseira e captura em JPEG | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 
 ## Tabela de dados — Flutter

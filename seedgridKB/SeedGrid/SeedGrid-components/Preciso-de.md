@@ -22,7 +22,7 @@ gerado-por: seedgrid-components-mcp/scripts/export-kb-data.mjs
 - `SgInputCurrency`: currency input; money field; price input; amount input · não serve? SgInputNumber
 - `SgInputDate`: date input; calendar field; deadline input; schedule date · não serve? SgInputText ou SgInputTextArea
 - `SgInputDateTime`: datetime input; data e hora; timestamp; agendamento; compromisso; prazo com hora · não serve? SgInputDate (só data)
-- `SgFileUpload`: file upload; upload de arquivo; anexo; anexar documento; vários arquivos; pdf; planilha · não serve? SgImageUpload (só imagem, com miniatura e proporção). **Só no Flutter por enquanto** (P141; React pendente)
+- `SgFileUpload`: file upload; upload de arquivo; anexo; anexar documento; vários arquivos; pdf; planilha · não serve? SgImageUpload (só imagem, com miniatura e proporção). **Nas duas plataformas** (P141): Flutter na `main` do `fe-flutter` (`e5e8baf`); React em commit local (`bb0ad1f`), **ainda não publicado**
 - `SgImageUpload`: image upload; foto; avatar; logotipo; galeria; escolher imagem; foto do documento · não serve? SgFileUpload (arquivo que não é imagem); SgCameraCapture (tirar na hora)
 - `SgCameraCapture`: camera; tirar foto; selfie; webcam; captura de foto · não serve? SgImageUpload (escolher imagem existente)
 - `SgInputEmail`: email; email input; mail field; contact email · não serve? SgInputText
