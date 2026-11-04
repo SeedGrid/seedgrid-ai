@@ -4,7 +4,8 @@
 // Uso: node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs [--dir docs/ai] [--check] [--stdout]
 //   --check    não escreve: falha se o INDEX.md estiver desatualizado ou se houver erro (veja abaixo)
 //   --stdout   imprime o índice em vez de gravar (para conferir)
-// Erros (saem 1): INDEX.md desatualizado (só com --check); id repetido entre planos, entre demandas ou entre ADRs.
+// Erros (saem 1): INDEX.md desatualizado (só com --check); id repetido entre planos, entre demandas ou entre ADRs;
+//   plano `proposto` com tarefa em andamento ou feita (`- [~]`, `- [x]`): o status acompanha a execução (rules/documentos.md).
 // Avisos (saem 0): demanda citada num plano sem arquivo; demanda cujo plano não existe; documento sem "aidlc:".
 // O índice de decisões (adrs/INDEX.md, do adr-index.mjs) continua existindo; aqui as ADRs entram só como lista.
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -107,6 +108,14 @@ for (const tipo of ['plano', 'demanda', 'adr']) {
     if (vistos.has(d.id)) erros.push(`id repetido (${d.id}): ${vistos.get(d.id)} e ${d.rel}`);
     else vistos.set(d.id, d.rel);
   }
+}
+for (const p of docs.filter((d) => d.tipo === 'plano')) {
+  const st = String(p.status).trim().toLowerCase();
+  const linhas = p.texto.split(/\r?\n/);
+  const andando = linhas.filter((l) => /^\s*- \[[x~]\]/.test(l)).length;
+  const abertas = linhas.filter((l) => /^\s*- \[[ ~?]\]/.test(l)).length;
+  if (st.startsWith('proposto') && andando) erros.push(`${p.rel}: status "proposto" com ${andando} tarefa(s) em andamento ou feita(s); mude para "em-andamento"`);
+  else if (st.startsWith('concluido') && abertas) avisos.push(`${p.rel}: status "concluido" com ${abertas} tarefa(s) ainda aberta(s)`);
 }
 const idsDemanda = new Set(docs.filter((d) => d.tipo === 'demanda').map((d) => d.id));
 const idsPlano = new Set(docs.filter((d) => d.tipo === 'plano').map((d) => d.id));

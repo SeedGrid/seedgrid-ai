@@ -35,6 +35,7 @@ node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --stdout   # mostra
 ## O que reprova (`exit 1`)
 
 - Id repetido entre planos, entre demandas ou entre ADRs.
+- Plano `proposto` com tarefa `[~]` ou `[x]`: o status acompanha a execução; mude para `em-andamento`.
 - `--check` com o `INDEX.md` desatualizado.
 
 ## O que só avisa
@@ -42,6 +43,7 @@ node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --stdout   # mostra
 - Plano que cita uma demanda sem arquivo em `demands/`; demanda cujo plano não existe.
 - Documento sem `aidlc:` no cabeçalho (formato antigo).
 - Status de demanda que o script não reconhece.
+- Plano `concluido` com tarefa ainda aberta (`[ ]`, `[~]`, `[?]`).
 
 ## Relação com as outras skills
 

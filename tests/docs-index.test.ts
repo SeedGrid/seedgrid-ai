@@ -138,3 +138,21 @@ test('demanda que uma tarefa ainda não feita vai escrever (`escreve`) não é c
   doc(ai, 'plans/P1-2026-11-01-produto.md', { aidlc: '0.7.3' }, 'Plano', tarefa('x'));
   assert.match(rodar(ai).err, /cita a demanda P1\.F6\.DEM1/);
 });
+
+test('plano proposto com tarefa feita ou em andamento reprova; em-andamento passa; concluido com tarefa aberta so avisa', () => {
+  const ai = docsAi();
+  const FEITA = ['- [x] **P1.F1.T1 Feita**', '  - Evidencia: x'].join(String.fromCharCode(10));
+  doc(ai, 'plans/P1-2026-11-01-a.md', { numero: '1', status: 'proposto', data: '2026-11-01', aidlc: '0.7.6' }, 'A', FEITA);
+  let r = rodar(ai);
+  assert.equal(r.status, 1);
+  assert.match(r.err, /"proposto" com 1 tarefa/);
+  doc(ai, 'plans/P1-2026-11-01-a.md', { numero: '1', status: 'em-andamento', data: '2026-11-01', aidlc: '0.7.6' }, 'A', FEITA);
+  r = rodar(ai);
+  assert.equal(r.status, 0, r.err);
+  doc(ai, 'plans/P1-2026-11-01-a.md', { numero: '1', status: 'proposto', data: '2026-11-01', aidlc: '0.7.6' }, 'A', '- [ ] **P1.F1.T1 Aberta**');
+  assert.equal(rodar(ai).status, 0);
+  doc(ai, 'plans/P1-2026-11-01-a.md', { numero: '1', status: 'concluido', data: '2026-11-01', aidlc: '0.7.6' }, 'A', '- [ ] **P1.F1.T1 Aberta**');
+  r = rodar(ai);
+  assert.equal(r.status, 0, r.err);
+  assert.match(r.err, /"concluido" com 1 tarefa/);
+});
