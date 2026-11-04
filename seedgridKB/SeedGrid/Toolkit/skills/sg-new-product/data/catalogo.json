@@ -225,7 +225,7 @@
       "pom": [
         {
           "artifactId": "seedgrid-ai-pricing",
-          "versao": "2026.10.13"
+          "versao": "2026.10.22"
         }
       ],
       "remover_se_ausente_arquivos": [
@@ -243,7 +243,7 @@
       "pom": [
         {
           "artifactId": "seedgrid-exchange",
-          "versao": "2026.10.13"
+          "versao": "2026.10.22"
         }
       ],
       "remover_se_ausente_arquivos": [
@@ -261,7 +261,7 @@
       "pom": [
         {
           "artifactId": "seedgrid-business-days",
-          "versao": "2026.10.15"
+          "versao": "2026.10.22"
         }
       ]
     },
@@ -347,7 +347,7 @@
       "pom": [
         {
           "artifactId": "seedgrid-cache-core",
-          "versao": "2026.10.13"
+          "versao": "2026.10.22"
         }
       ],
       "pendencia": "provider (redis, valkey ou dragonfly) e servico do compose: o dono fornece; a KB nao traz imagem"

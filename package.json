@@ -30,8 +30,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:test": "tsc -p tsconfig.test.json",
+    "check-catalogo-pins": "node scripts/check-catalogo-pins.mjs",
     "check-secrets": "node scripts/check-secrets.mjs --dir seedgridKB/SeedGrid/Toolkit/boilerplates --kb-dir seedgridKB",
-    "test": "npm run check-secrets && npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
+    "test": "npm run check-secrets && npm run check-catalogo-pins && npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
     "validate-content": "npm run build && node dist/cli.js validate",
     "sync-boilerplates": "node scripts/sync-boilerplates.mjs",
     "check-boilerplates": "node scripts/sync-boilerplates.mjs --check --fetch --soft",
