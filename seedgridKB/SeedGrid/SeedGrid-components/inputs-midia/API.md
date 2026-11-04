@@ -12,6 +12,8 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API — Data e hora, imagem e câmera (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
+> **API do `SgImageUpload` vai mudar (P141, decidido pelo dono em 2026-11-04):** o Flutter já usa a nova (valor sempre `lista`, `maxFiles`, `maxSizePerFile`/`maxSizeTotal` com texto como `"1.5MB"`, e o novo `SgFileUpload` como base); **o React ainda tem a API antiga descrita abaixo** (`File`, `maxSizeBytes`) até a rodada P141.F4, depois da validação do Flutter. Ver [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API Flutter]].
+
 > **Ainda não publicado no npm** (commit local `839e245`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
 
 Import: `import { SgInputDateTime, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].

@@ -4,7 +4,7 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-mid
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 6a35c93
+commit: 00e893c
 analisado-em: 2026-11-04
 ---
 
@@ -12,7 +12,7 @@ analisado-em: 2026-11-04
 
 > **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
-Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_image_upload_page`, `sg_camera_capture_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
+Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
 
 ## SgInputDateTime: básico
 
@@ -83,7 +83,118 @@ Column(
 )
 ```
 
+## SgFileUpload: básico (valor é lista)
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgFileUpload(
+      id: 'anexo',
+      labelText: 'Anexo',
+      onChange: (files) => setState(() => _um = files),
+    ),
+    const SizedBox(height: 8),
+    Text(
+      'Valor atual: ${_um.isEmpty ? '-' : _um.map((f) => f.name).join(', ')}',
+    ),
+  ],
+)
+```
+
+## SgFileUpload: vários arquivos (`maxFiles > 1`)
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgFileUpload(
+      id: 'anexos',
+      labelText: 'Anexos',
+      maxFiles: 3,
+      hintText: 'Até 3 arquivos.',
+      onChange: (files) => setState(() => _varios = files),
+      onError: (code, message, fileName) =>
+          setState(() => _erro = '$fileName: ${code.name}'),
+    ),
+    const SizedBox(height: 8),
+    Text('Arquivos: ${_varios.length}'),
+    Text('Última recusa: $_erro'),
+  ],
+)
+```
+
+## SgFileUpload: limites de quantidade e de tamanho (texto com unidade)
+
+```dart
+const SgFileUpload(
+  id: 'limites',
+  labelText: 'Documentos',
+  maxFiles: 5,
+  maxSizePerFile: '2MB',
+  maxSizeTotal: '5MB',
+  hintText: 'Até 5 arquivos, 2 MB cada e 5 MB no total.',
+)
+```
+
+## SgFileUpload: tipos aceitos (`mediaType`)
+
+```dart
+const SgFileUpload(
+  id: 'planilha',
+  labelText: 'Planilha ou PDF',
+  mediaType: [
+    SgMediaType.pdf,
+    SgMediaType.xls,
+    SgMediaType.xlsx,
+  ],
+  maxFiles: 2,
+)
+```
+
+## SgFileUpload: em formulário (o valor é `List<SgFile>`)
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgFileUpload(
+      id: 'comprovantes',
+      name: 'comprovantes',
+      control: _form,
+      labelText: 'Comprovantes',
+      maxFiles: 3,
+      rules: const SgRules(required: 'Anexe ao menos um arquivo'),
+    ),
+    const SizedBox(height: 12),
+    SgButton(
+      label: Text(context.tx('Enviar')),
+      onClick: () => _form.handleSubmit(
+        (values) => setState(
+          () => _enviado =
+              '${(values['comprovantes'] as List).length} arquivo(s)',
+        ),
+      ),
+    ),
+    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+  ],
+)
+```
+
+## SgFileUpload: desabilitado com arquivo já salvo
+
+```dart
+const SgFileUpload(
+  id: 'anexo-desabilitado',
+  labelText: 'Anexo',
+  disabled: true,
+  defaultValue: [SgFile(name: 'contrato.pdf', size: 482304)],
+)
+```
+
 ## SgImageUpload: básico
+
+O valor é `List<SgFile>` (use `files.first` com `maxFiles` padrão 1). Os snippets completos estão em `sg_image_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -92,8 +203,10 @@ Column(
     SgImageUpload(
       id: 'foto',
       labelText: 'Foto',
-      onChange: (file) => setState(
-        () => _info = file == null ? null : '${file.name} (${file.size} bytes)',
+      onChange: (files) => setState(
+        () => _info = files.isEmpty
+            ? null
+            : '${files.first.name} (${files.first.size} bytes)',
       ),
     ),
     const SizedBox(height: 8),
@@ -102,14 +215,14 @@ Column(
 )
 ```
 
-## SgImageUpload: regras (tipo, tamanho, dimensão e proporção)
+## SgImageUpload: regras (formato, tamanho, dimensão e proporção)
 
 ```dart
 const SgImageUpload(
   id: 'avatar',
   labelText: 'Avatar',
   accept: 'image/png,image/jpeg',
-  maxSizeBytes: 2 * 1024 * 1024,
+  maxSizePerFile: '2MB',
   minWidth: 200,
   minHeight: 200,
   aspect: 1,
@@ -117,30 +230,41 @@ const SgImageUpload(
 )
 ```
 
-## SgImageUpload: em formulário (o valor é `SgImageFile`)
+## SgImageUpload: várias imagens (grade de miniaturas)
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgImageUpload(
-      id: 'documento',
-      name: 'documento',
-      control: _form,
-      labelText: 'Foto do documento',
-      rules: const SgRules(required: 'Escolha uma imagem'),
+      id: 'galeria',
+      labelText: 'Galeria',
+      maxFiles: 4,
+      maxSizePerFile: '2MB',
+      maxSizeTotal: '6MB',
+      hintText: 'Até 4 imagens, 2 MB cada e 6 MB no total.',
+      onChange: (files) => setState(() => _galeria = files),
     ),
-    const SizedBox(height: 12),
-    SgButton(
-      label: Text(context.tx('Enviar')),
-      onClick: () => _form.handleSubmit(
-        (values) => setState(
-          () => _enviado = (values['documento'] as SgImageFile).name,
-        ),
-      ),
-    ),
-    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+    const SizedBox(height: 8),
+    Text('Imagens: ${_galeria.length}'),
   ],
+)
+```
+
+## SgImageUpload: imagem já salva (URL)
+
+```dart
+const SgImageUpload(
+  id: 'logo',
+  labelText: 'Logotipo',
+  defaultValue: [
+    SgFile(
+      name: 'logo.png',
+      url:
+          'https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png',
+    ),
+  ],
+  previewHeight: 96,
 )
 ```
 
