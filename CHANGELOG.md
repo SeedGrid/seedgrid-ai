@@ -4,6 +4,14 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.7] — 2026-11-04
+
+### Adicionado
+- KB do grupo `inputs-midia` ("Data e hora, imagem e câmera"): `SgInputDateTime`, `SgImageUpload` e `SgCameraCapture` em React e Flutter (visão geral, API, exemplos), catálogos, `Preciso-de.md`, `Nao-existe-no-catalogo.md` e `props.json` (P132, P133, P134). React ainda não publicado (commits locais); Flutter na `main` do `fe-flutter`, pub.dev não publicado.
+- KB do Flutter: `SgFileUpload` (componente base de arquivos, vários arquivos, `maxFiles`, `maxSizePerFile`/`maxSizeTotal` com unidades, `SgMediaType`, validação do tipo pela assinatura) e `SgImageUpload` por composição dele (P141, `fe-flutter` 00e893c). Nas notas do React, aviso de que a API do `SgImageUpload` vai mudar na rodada do React.
+- Regra de documentos (P142.F1.T1): o `status:` do plano acompanha a execução (`proposto` → `em-andamento` na primeira tarefa iniciada → `concluido` quando todas fecham).
+- `sg-docs-index --check` (P142.F2.T1) reprova plano `proposto` com tarefa `[~]` ou `[x]`; plano `concluido` com tarefa aberta só avisa. Produtos existentes se corrigem uma vez, ao rodar o `update`.
+
 ## [0.7.6] — 2026-11-03
 
 ### Adicionado
