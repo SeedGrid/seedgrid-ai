@@ -3,13 +3,13 @@ description: "Exemplos da extension user-notifications: notificar com o UserNoti
 tags: [seedgrid, extension, user-notifications, exemplos]
 fonte: java/seedgrid-quarkus-ext-user-notifications
 branch: main
-commit: bd80a8a
-analisado-em: 2026-11-03
+commit: 1b3bf83
+analisado-em: 2026-11-04
 ---
 
 # User-notifications: exemplos
 
-> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01; 2026.11.02 com a auditoria). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
+> **Status: publicada no Maven Central** (2026.11.01 e 2026.11.02 em 2026-11-03; 2026.11.03 em 2026-11-04, com a ETag/304 e o teto padrão de 100). Exemplos executáveis no repositório `seedgrid-platform-examples`: `seedgrid-user-notifications-example` (host mínimo), `backup-example`, `login-tenancy-example` e `subdomain-tenancy-example`. Visão geral: [[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral]] · [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]].
 
 ## 1. Notificar dentro de uma requisição
 
@@ -126,3 +126,18 @@ Como ler:
 - Não há registro de poda automática nem da varredura diária (decisão do dono); sumiço por limite de 200 por usuário não aparece.
 
 A trilha leva só `publicId`, `type`, `userPublicId` (e `onlyRead`/`count` no lote), nunca `title`, `message` nem `payload`.
+
+## 7. Reler só quando mudou (ETag/304; 2026.11.03)
+
+Guarde a ETag da última resposta e mande-a de volta; se nada mudou, a resposta é 304 sem corpo e você reaproveita a lista que já tem:
+
+```bash
+# 1ª leitura: 200 com a lista e o cabeçalho ETag
+curl -i -H "Authorization: Bearer $TOKEN" "http://localhost:8080/user-notifications?size=100"
+#   ETag: W/"3f9c0b7a..."   Cache-Control: private, no-cache   Vary: Authorization
+
+# releitura: 304 se nada mudou (sem corpo); 200 com ETag nova se mudou
+curl -i -H "Authorization: Bearer $TOKEN" -H 'If-None-Match: W/"3f9c0b7a..."' "http://localhost:8080/user-notifications?size=100"
+```
+
+A ETag vale só para a mesma consulta (`unreadOnly`, `type`, `page` e `size` entram nela): guarde uma por consulta. O contador (`/unread-count`) também aceita `If-None-Match`. O servidor aceita um valor, uma lista ou `*`. **Confirmado** nos testes de integração de ETag/304.

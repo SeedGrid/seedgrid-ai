@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-11-03
+analisado-em: 2026-11-04
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -603,7 +603,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.user-notifications.enabled` | Propriedades | — | `true` | — | Liga/desliga a extension | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 | `seedgrid.user-notifications.persistence-unit` | Propriedades | — | unidade default | — | Unidade de persistência da tabela sg_user_notification | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 | `seedgrid.user-notifications.retention` | Propriedades | — | `P30D` | — | Notificações mais velhas que isto são apagadas (duração ISO-8601) | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
-| `seedgrid.user-notifications.max-per-user` | Propriedades | — | `200` | — | Máximo por usuário; ao passar saem as mais antigas (as lidas primeiro) | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
+| `seedgrid.user-notifications.max-per-user` | Propriedades | — | `100` | — | Máximo por usuário; ao passar saem as mais antigas (as lidas primeiro) | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 | `seedgrid.user-notifications.max-payload-bytes` | Propriedades | — | `4096` | — | Tamanho máximo do payload JSON, em bytes; maior que isso lança InvalidNotificationException | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 | `seedgrid.user-notifications.cleanup.cron` | Propriedades | — | `0 30 3 * * ?` (03:30 todo dia) | — | Cron do Quarkus Scheduler (6 campos) da varredura diária que apaga as vencidas de todos os usuários. off desliga | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |
 | `seedgrid.migrations.host-managed` | Propriedades | — | `false` | — | Definido pelas tenancy: o runner da extension não age, a tenancy migra cada banco | [[SeedGrid/Extensions/user-notifications/Configuracao\|user-notifications/Configuracao]] |

@@ -3,13 +3,15 @@ description: "Visão geral da extension user-notifications: caixa de notificaç�
 tags: [seedgrid, extension, user-notifications, notificacao, quarkus]
 fonte: java/seedgrid-quarkus-ext-user-notifications
 branch: main
-commit: bd80a8a
-analisado-em: 2026-11-03
+commit: 1b3bf83
+analisado-em: 2026-11-04
 ---
 
 # User-notifications (Quarkus): visão geral
 
-> **Status: publicada no Maven Central em 2026-11-03** (2026.11.01) e **2026.11.02 em 2026-11-03** (com a auditoria do P136), `seedgrid-user-notifications`, repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `bd80a8a` na `main` (sem tag no GitHub). Planos P130 e P136 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
+> **Status: publicada no Maven Central:** 2026.11.01 e **2026.11.02 em 2026-11-03** (com a auditoria do P136) e **2026.11.03 em 2026-11-04** (ETag/304 nas leituras e teto padrão de 100 por usuário, P129), `seedgrid-user-notifications`, repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `1b3bf83` na `main` (sem tag no GitHub). Planos P130 e P136 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
+
+> **2026.11.03:** `login-tenancy` 2026.11.04 e `subdomain-tenancy` 2026.11.05 saíram para apontar para esta versão (a dependência é `seedgrid.usernotifications.version`); `backup` e `realtime` não mudaram.
 
 > **Auditoria (P136), publicada na 2026.11.02:** `backup` 2026.11.03, `login-tenancy` 2026.11.03 e `subdomain-tenancy` 2026.11.04 saíram só para alinhar a versão (sem mudança de código). O módulo de testes `seedgrid-user-notifications-integration-tests-audit` também foi para o Central.
 
@@ -51,6 +53,17 @@ notifier.notify(userPublicId, "report.ready", "Relatório pronto", "Clique para 
 | `POST /user-notifications/read-all` | Marca todas como lidas (`{ "updated": n }`). |
 | `DELETE /user-notifications/{id}` | Exclui uma (204). |
 | `DELETE /user-notifications?onlyRead=true` | Limpa todas, ou só as lidas (`{ "deleted": n }`). |
+
+### Leituras condicionais (ETag/304, desde a 2026.11.03)
+
+`GET /user-notifications` e `GET /user-notifications/unread-count` mandam uma **ETag fraca** (`W/"..."`) por usuário e aceitam `If-None-Match` (um valor, uma lista ou `*`). Se nada mudou, a resposta é **304 sem corpo**; se mudou (chegou nova, leu, leu todas, excluiu, limpou ou uma venceu), é 200 com a ETag nova. As respostas 200 e 304 trazem `Cache-Control: private, no-cache` e `Vary: Authorization`.
+
+- A ETag é calculada por uma consulta agregada barata (contagem, lidas, maior `created_at` e maior `read_at`) misturada com o usuário, a conta e a própria consulta; a da lista inclui `unreadOnly`, `type`, `page` e `size`, então cada página tem a sua. Um usuário nunca recebe 304 pelo estado de outro, nem uma conta pelo da outra.
+- É calculada **antes** de ler o corpo: se algo mudar no meio, a próxima consulta só busca de novo.
+- Não há cache em memória no servidor (não valeria com mais de uma instância) e **não há propriedade para ligar ou desligar**; é aditivo, e o cliente que não manda `If-None-Match` recebe 200 normal.
+- O sino do front (P129) usa isso no polling e na releitura; no Rust (P131), o que precisa bater é o comportamento, não o valor da ETag.
+
+**Confirmado** em `UserNotificationController` e `UserNotificationService.etag` e nos testes (9 de integração de ETag/304 e 4 unitários).
 
 Não existe rota de criação: `POST` ou `PUT` na coleção dão 405. **Só código do host ou de outra extension cria notificação**, chamando o `UserNotifier`. **Confirmado** no `UserNotificationController` e nos testes do `dev-2`.
 
