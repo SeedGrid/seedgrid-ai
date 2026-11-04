@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-> **Ainda não publicado no npm** (commits locais `839e245` e `bb0ad1f`): os exemplos só compilam depois da publicação do pacote. Os trechos abaixo são os `*.tsx.sample` do showcase (copy/paste 1:1), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
+> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`; versões anteriores, até 2026.11.1, não têm `SgFileUpload`). Os trechos abaixo são os `*.tsx.sample` do showcase (copy/paste 1:1), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
 
 
 ## SgInputDateTime: básico (instante UTC)

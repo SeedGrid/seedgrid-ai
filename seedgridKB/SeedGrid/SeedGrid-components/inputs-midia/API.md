@@ -14,7 +14,7 @@ plataforma: react
 
 > **Nova API do upload (P141, validada pelo dono no Flutter em 2026-11-04):** `SgFileUpload` é o componente base de arquivos e `SgImageUpload` é composição dele. O valor é **sempre uma lista**, `maxFiles` (padrão `1`) substitui o `multiple`, `maxSizePerFile`/`maxSizeTotal` aceitam bytes ou texto como `"1.5MB"`, e o tipo é conferido pelo conteúdo. **Sem retrocompatibilidade**: `maxSizeBytes` e o valor `File | string | null` do `SgImageUpload` deixaram de existir. Código no commit local `bb0ad1f` do `fe-components`. Ver [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API Flutter]] (a mesma API).
 
-> **Ainda não publicado no npm** (commits locais `839e245` e `bb0ad1f`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
+> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`, a partir do commit `9552636`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
 
 Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].
 
