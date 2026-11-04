@@ -4,6 +4,12 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.8] — 2026-11-04
+
+### Alterado
+- KB do React do `SgFileUpload` e do novo `SgImageUpload` (por composição, valor sempre lista): visão geral, API e exemplos 1:1 com o showcase; `props.json`, catálogos, `Preciso-de.md` e `Nao-existe-no-catalogo.md` (P141). `@seedgrid/fe-components` **2026.11.2** publicado no npm (inclui `SgFileUpload`, `SgInputDateTime`, `SgImageUpload` refeito e `SgCameraCapture`); MCP de componentes implantado. Flutter na `main` do `fe-flutter` (`80aa5cb`); pub.dev não publicado (P138). Retirado o aviso "a API do `SgImageUpload` vai mudar".
+- Exemplos do Flutter e do React de `inputs-midia` regerados dos snippets e samples do showcase (conferência achou exemplos defasados de câmera, data e hora e imagem).
+
 ## [0.7.7] — 2026-11-04
 
 ### Adicionado
