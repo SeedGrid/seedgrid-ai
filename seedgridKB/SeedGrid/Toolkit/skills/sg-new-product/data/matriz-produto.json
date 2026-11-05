@@ -185,7 +185,10 @@
             "env_front": {
               "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
               "OTEL_SDK_DISABLED": "true"
-            }
+            },
+            "pendencias": [
+              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+            ]
           }
         },
         {
@@ -234,7 +237,10 @@
             "env_front": {
               "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8080",
               "OTEL_SDK_DISABLED": "true"
-            }
+            },
+            "pendencias": [
+              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+            ]
           }
         },
         {
@@ -283,7 +289,10 @@
               "OTEL_SDK_DISABLED": "true",
               "SEEDGRID_CITIES_API_USERNAME": "${externo}",
               "SEEDGRID_CITIES_API_KEY": "${externo}"
-            }
+            },
+            "pendencias": [
+              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+            ]
           }
         },
         {
@@ -346,7 +355,7 @@
       },
       "origem_opcoes": "catalogo.modelos.<modelo>.nao_traz",
       "pergunta": "Quais extensions opcionais o produto usa? (so as que o modelo nao traz)",
-      "recomendacao": "Marque apenas o que o produto realmente usa; cada uma acrescenta dependencia, configuracao e, se preciso, servico no compose.",
+      "recomendacao": "Marque apenas o que o produto realmente usa; cada uma acrescenta dependencia, configuracao e, se preciso, servico no compose. cities, notification, cache (memoria), resilience e realtime ja vem com o modelo; o provedor de WhatsApp e o provedor de cache sao perguntados em seguida.",
       "opcoes": [
         {
           "id": "ai-pricing",
@@ -400,88 +409,6 @@
           "efeito_ausente": {
             "extensions_remover": [
               "business-days"
-            ]
-          }
-        },
-        {
-          "id": "cities",
-          "rotulo": "cities (cidades e estados do Brasil, com codigo IBGE)",
-          "efeito": {
-            "extensions": [
-              "cities"
-            ]
-          },
-          "efeito_ausente": {
-            "extensions_remover": [
-              "cities"
-            ]
-          }
-        },
-        {
-          "id": "whatsapp",
-          "rotulo": "whatsapp (envio via Evolution API)",
-          "efeito": {
-            "extensions": [
-              "whatsapp"
-            ],
-            "env": {
-              "SEEDGRID_WHATSAPP_API": "evolution",
-              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "${externo}"
-            }
-          },
-          "efeito_ausente": {
-            "extensions_remover": [
-              "whatsapp"
-            ],
-            "env": {
-              "SEEDGRID_SECURITY_2F_ALLOWED_METHODS": "EMAIL,TOTP"
-            },
-            "env_remover": [
-              "SEEDGRID_WHATSAPP_API",
-              "SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL",
-              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY",
-              "SEEDGRID_SECURITY_2F_WHATSAPP_CHANNEL_ID",
-              "SEEDGRID_SECURITY_FIRST_ADMIN_USER_WHATSAPP"
-            ]
-          }
-        },
-        {
-          "id": "realtime",
-          "rotulo": "realtime (avisos em tempo real via SeedGrid Pulse)",
-          "efeito": {
-            "extensions": [
-              "realtime"
-            ],
-            "pendencias": [
-              "realtime: a chave do projeto no Pulse e o servico Pulse sao fornecidos pelo dono; no dev.env ficam como change-me e o recurso fica desligado."
-            ]
-          },
-          "efeito_ausente": {
-            "extensions_remover": [
-              "realtime"
-            ],
-            "env_remover": [
-              "SEEDGRID_REALTIME_ENABLED",
-              "SEEDGRID_REALTIME_PULSE_BASE_URL",
-              "SEEDGRID_REALTIME_PULSE_PROJECT_KEY",
-              "SEEDGRID_REALTIME_TOKEN_TTL"
-            ]
-          }
-        },
-        {
-          "id": "cache",
-          "rotulo": "cache (Redis, Valkey ou Dragonfly)",
-          "efeito": {
-            "extensions": [
-              "cache"
-            ],
-            "pendencias": [
-              "cache: o provider (redis, valkey ou dragonfly) e o servico do compose sao fornecidos pelo dono; a KB nao traz imagem nem healthcheck."
-            ]
-          },
-          "efeito_ausente": {
-            "extensions_remover": [
-              "cache"
             ]
           }
         }
@@ -692,9 +619,157 @@
       ]
     },
     {
+      "id": "provedor-whatsapp",
+      "numero": "3c",
+      "ordem": 5,
+      "tipo": "escolha",
+      "chave": "provedorWhatsapp",
+      "se": {
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
+        ]
+      },
+      "pergunta": "Qual o provedor de WhatsApp? (obrigatorio: a security so traz a interface, o provedor e do produto)",
+      "recomendacao": "Evolution API e o padrao do SeedGrid (sobe como servico externo). Escolha a Cloud API da Meta (Graph API) se o produto usar o numero oficial; o provedor define as chaves do dev.env.",
+      "opcoes": [
+        {
+          "id": "evolution",
+          "rotulo": "Evolution API (padrao)",
+          "efeito": {
+            "extensions": [
+              "whatsapp"
+            ],
+            "produto": {
+              "provedorWhatsapp": "evolution"
+            },
+            "env": {
+              "SEEDGRID_WHATSAPP_API": "evolution",
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY": "${externo}"
+            }
+          }
+        },
+        {
+          "id": "whatsapp-cloud",
+          "rotulo": "WhatsApp Cloud API (Meta)",
+          "efeito": {
+            "extensions": [
+              "whatsapp"
+            ],
+            "produto": {
+              "provedorWhatsapp": "whatsapp-cloud"
+            },
+            "env": {
+              "SEEDGRID_WHATSAPP_API": "whatsapp-cloud",
+              "SEEDGRID_WHATSAPP_CLOUD_ACCESS_TOKEN": "${externo}"
+            },
+            "env_remover": [
+              "SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL",
+              "SEEDGRID_WHATSAPP_EVOLUTION_API_KEY"
+            ],
+            "pom_remover": [
+              "seedgrid-whatsapp-evolution"
+            ],
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-whatsapp-whatsapp-cloud:${seedgrid.whatsapp.version}"
+            ],
+            "pendencias": [
+              "whatsapp: o access-token da Graph API (SEEDGRID_WHATSAPP_CLOUD_ACCESS_TOKEN) e fornecido pelo dono; no dev.env fica change-me. A URL base ja tem padrao (https://graph.facebook.com/v21.0). A KB nao diz qual valor do canal (phoneNumberId) o produto deve informar: confirme na Configuracao do whatsapp antes de ligar o 2FA por WhatsApp."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "provedor-cache",
+      "numero": "3d",
+      "ordem": 6,
+      "tipo": "escolha",
+      "chave": "provedorCache",
+      "padrao": "memoria",
+      "se": {
+        "modelo": [
+          "login-tenancy-b2b",
+          "login-tenancy-b2c",
+          "subdomain-tenancy"
+        ]
+      },
+      "pergunta": "Qual o provedor de cache? (opcional: sem escolha o cache e em memoria)",
+      "recomendacao": "Memoria basta em desenvolvimento e com uma unica instancia. Redis, Valkey ou Dragonfly dao cache compartilhado entre instancias (e o estado do rate limit da resilience); acrescentam o modulo do provedor e exigem o servico no compose.",
+      "opcoes": [
+        {
+          "id": "memoria",
+          "rotulo": "Memoria (padrao, sem dependencia extra)",
+          "efeito": {
+            "produto": {
+              "provedorCache": "memoria"
+            }
+          }
+        },
+        {
+          "id": "redis",
+          "rotulo": "Redis",
+          "efeito": {
+            "produto": {
+              "provedorCache": "redis"
+            },
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-cache-redis:2026.10.22"
+            ],
+            "env": {
+              "SEEDGRID_CACHE_HOSTS": "${externo}",
+              "SEEDGRID_CACHE_FAILOVER_ENABLED": "false"
+            },
+            "pendencias": [
+              "cache: provedor redis: o servico do compose (imagem e healthcheck) e fornecido pelo dono; a KB nao traz imagem. SEEDGRID_CACHE_HOSTS (URIs redis://host:porta) fica change-me no dev.env; o failover (seedgrid.cache.failover.enabled) vem desligado."
+            ]
+          }
+        },
+        {
+          "id": "valkey",
+          "rotulo": "Valkey",
+          "efeito": {
+            "produto": {
+              "provedorCache": "valkey"
+            },
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-cache-valkey:2026.10.22"
+            ],
+            "env": {
+              "SEEDGRID_CACHE_HOSTS": "${externo}",
+              "SEEDGRID_CACHE_FAILOVER_ENABLED": "false"
+            },
+            "pendencias": [
+              "cache: provedor valkey: o servico do compose (imagem e healthcheck) e fornecido pelo dono; a KB nao traz imagem. SEEDGRID_CACHE_HOSTS (URIs redis://host:porta) fica change-me no dev.env; o failover (seedgrid.cache.failover.enabled) vem desligado."
+            ]
+          }
+        },
+        {
+          "id": "dragonfly",
+          "rotulo": "Dragonfly",
+          "efeito": {
+            "produto": {
+              "provedorCache": "dragonfly"
+            },
+            "pom_adicionar": [
+              "br.com.seedgrid:seedgrid-cache-dragonfly:2026.10.22"
+            ],
+            "env": {
+              "SEEDGRID_CACHE_HOSTS": "${externo}",
+              "SEEDGRID_CACHE_FAILOVER_ENABLED": "false"
+            },
+            "pendencias": [
+              "cache: provedor dragonfly: o servico do compose (imagem e healthcheck) e fornecido pelo dono; a KB nao traz imagem. SEEDGRID_CACHE_HOSTS (URIs redis://host:porta) fica change-me no dev.env; o failover (seedgrid.cache.failover.enabled) vem desligado."
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "self-enter",
       "numero": "4",
-      "ordem": 5,
+      "ordem": 7,
       "tipo": "escolha",
       "chave": "selfEnter",
       "se": {
@@ -747,7 +822,7 @@
     {
       "id": "self-enter-modo",
       "numero": "5",
-      "ordem": 6,
+      "ordem": 8,
       "tipo": "escolha",
       "chave": "selfEnterModo",
       "se": {
@@ -796,7 +871,7 @@
     {
       "id": "self-enter-escopo",
       "numero": "5b",
-      "ordem": 7,
+      "ordem": 9,
       "tipo": "escolha",
       "chave": "selfEnterEscopo",
       "se": {
@@ -853,7 +928,7 @@
     {
       "id": "auditoria",
       "numero": "6",
-      "ordem": 8,
+      "ordem": 10,
       "tipo": "escolha",
       "chave": "auditoria",
       "se": {
@@ -909,7 +984,7 @@
     {
       "id": "armazenamento-avatar",
       "numero": "7",
-      "ordem": 9,
+      "ordem": 11,
       "tipo": "escolha",
       "chave": "armazenamentoAvatar",
       "se": {
@@ -1225,7 +1300,7 @@
     {
       "id": "armazenamento-backup",
       "numero": "7a",
-      "ordem": 10,
+      "ordem": 12,
       "tipo": "escolha",
       "chave": "armazenamentoBackup",
       "se": {
@@ -1536,7 +1611,7 @@
     {
       "id": "apikeys-uso",
       "numero": "8",
-      "ordem": 11,
+      "ordem": 13,
       "tipo": "texto",
       "chave": "apikeysUso",
       "se": {
@@ -1558,7 +1633,7 @@
     {
       "id": "billing",
       "numero": "9",
-      "ordem": 12,
+      "ordem": 14,
       "tipo": "campos",
       "se": {
         "extensao": [
@@ -1638,7 +1713,7 @@
     {
       "id": "tenants-exemplo",
       "numero": "9b",
-      "ordem": 13,
+      "ordem": 15,
       "tipo": "campos",
       "se": {
         "modelo": [
@@ -1666,7 +1741,7 @@
     {
       "id": "telas-dispensadas",
       "numero": "9c",
-      "ordem": 14,
+      "ordem": 16,
       "tipo": "multi",
       "chave": "telasDispensadas",
       "se": {
@@ -1729,7 +1804,7 @@
     {
       "id": "dados-para-rodar",
       "numero": "10",
-      "ordem": 15,
+      "ordem": 17,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
       "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",

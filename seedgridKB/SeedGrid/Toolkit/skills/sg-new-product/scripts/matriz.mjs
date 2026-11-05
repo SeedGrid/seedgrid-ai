@@ -99,6 +99,7 @@ export function validarMatriz(matriz, catalogo, modulosFront = null) {
         if (o.efeito_ausente) efeitoOk(`${onde}.${o.id}.efeito_ausente`, o.efeito_ausente);
         if (o.disponivel === false && !o.motivo) e(`${onde}.${o.id}: opcao desligada sem motivo`);
       }
+      if (p.padrao !== undefined && !idsOpc.has(p.padrao)) e(`${onde}: padrao "${p.padrao}" nao e uma opcao`);
     }
     for (const k of Object.keys(p.se ?? {})) if (!['modelo', 'extensao', 'resposta'].includes(k)) e(`${onde}: condicao desconhecida "${k}"`);
     for (const m of p.se?.modelo ?? []) if (!matriz.perguntas.find((q) => q.id === 'modelo')?.opcoes.some((o) => o.id === m)) e(`${onde}: se.modelo inexistente ${m}`);
@@ -190,6 +191,7 @@ export function resolver(matriz, catalogo, entrada) {
       if (!VALIDADORES['nao-vazio'](v)) { e(`pergunta ${p.numero}: falta "${p.chave}"`); continue; }
       efeitos.push({ origem: p.id, efeito: p.efeito });
     } else if (p.tipo === 'escolha') {
+      if (respostas[p.chave] === undefined && p.padrao !== undefined) respostas[p.chave] = p.padrao; // pergunta opcional: sem resposta vale o padrao da matriz
       const v = respostas[p.chave];
       const o = p.opcoes.find((x) => x.id === v);
       if (!o) { e(`pergunta ${p.numero}: "${p.chave}" deve ser um de: ${p.opcoes.map((x) => x.id).join(', ')}`); continue; }

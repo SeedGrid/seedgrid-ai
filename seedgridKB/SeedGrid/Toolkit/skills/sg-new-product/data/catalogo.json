@@ -14,19 +14,19 @@
         "filemanagement",
         "privacy",
         "resilience",
-        "user-notifications"
+        "user-notifications",
+        "cities",
+        "cache",
+        "realtime"
       ],
       "nao_traz": [
         "ai-pricing",
         "exchange",
-        "business-days",
-        "cities",
-        "whatsapp",
-        "realtime",
-        "cache"
+        "business-days"
       ],
       "transitivas_na_base": {
-        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; a opcao cities so declara a dependencia direta no pom"
+        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; o modelo traz e o produto NAO declara dependencia direta (decisao do dono, 2026-11-05)",
+        "cache": "o seedgrid-cache-core vem pela security e pela resilience; sem provedor no classpath o cache e em memoria (decisao do dono, 2026-11-05)"
       },
       "chaves_do_modelo": [
         "seedgrid.login-tenancy.app.code",
@@ -37,7 +37,14 @@
         "subdomain-tenancy"
       ],
       "boilerplate": "login-tenancy-b2b",
-      "bom_pom": "seedgrid-login-tenancy-parent"
+      "bom_pom": "seedgrid-login-tenancy-parent",
+      "escolhas_obrigatorias": {
+        "whatsapp": "provedor obrigatorio: evolution (padrao) ou whatsapp-cloud; a security so traz o whatsapp-core e os provedores sao optional (decisao do dono, 2026-11-05)"
+      },
+      "escolhas_opcionais": {
+        "cache": "provedor: memoria (padrao, sem dependencia extra), redis, valkey ou dragonfly"
+      },
+      "realtime_observacao": "a realtime vem por padrao no modelo (dependencia explicita no pom do boilerplate, desligada ate haver Pulse). A dependencia explicita sai quando o login-tenancy e o subdomain-tenancy a trouxerem (P147; P145.F1.T6)"
     },
     "subdomain-tenancy": {
       "descricao": "Banco por tenant, resolucao por subdominio. Somente B2B; unico que cadastra empresas.",
@@ -51,19 +58,19 @@
         "notification",
         "privacy",
         "resilience",
-        "user-notifications"
+        "user-notifications",
+        "cities",
+        "cache",
+        "realtime"
       ],
       "nao_traz": [
         "ai-pricing",
         "exchange",
-        "business-days",
-        "cities",
-        "whatsapp",
-        "realtime",
-        "cache"
+        "business-days"
       ],
       "transitivas_na_base": {
-        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; a opcao cities so declara a dependencia direta no pom"
+        "cities": "vem pela security (Address.city) e o signup usa o StateEnum dela; o modelo traz e o produto NAO declara dependencia direta (decisao do dono, 2026-11-05)",
+        "cache": "o seedgrid-cache-core vem pela security e pela resilience; sem provedor no classpath o cache e em memoria (decisao do dono, 2026-11-05)"
       },
       "chaves_do_modelo": [
         "seedgrid.subdomain-tenancy.domain-suffix (sem ela todo request cai no tenant master)"
@@ -74,7 +81,14 @@
       "fora_da_matriz": {
         "filemanagement": "L6: a KB nao confirma como filemanagement entra no subdomain-tenancy; nao e oferecido"
       },
-      "boilerplate": "subdomain-tenancy"
+      "boilerplate": "subdomain-tenancy",
+      "escolhas_obrigatorias": {
+        "whatsapp": "provedor obrigatorio: evolution (padrao) ou whatsapp-cloud; a security so traz o whatsapp-core e os provedores sao optional (decisao do dono, 2026-11-05)"
+      },
+      "escolhas_opcionais": {
+        "cache": "provedor: memoria (padrao, sem dependencia extra), redis, valkey ou dragonfly"
+      },
+      "realtime_observacao": "a realtime vem por padrao no modelo (dependencia explicita no pom do boilerplate, desligada ate haver Pulse). A dependencia explicita sai quando o login-tenancy e o subdomain-tenancy a trouxerem (P147; P145.F1.T6)"
     }
   },
   "extensions": {
@@ -168,7 +182,8 @@
         "minio (se storage=minio)"
       ],
       "depende_de": [
-        "security"
+        "security",
+        "realtime"
       ],
       "verificado": false,
       "front": [
@@ -275,7 +290,7 @@
       ],
       "telas_admin": "nao documentadas na KB",
       "depende_de": [],
-      "observacao": "A security (Address.city) ja traz a cities como dependencia transitiva e o endereco guarda a cidade por id; a opcao declara a dependencia DIRETA para o codigo do host usar BrazilGeo e as constantes da extension sem depender do transitivo.",
+      "observacao": "Nos modelos de tenancy vem pela security (Address.city) e o produto nao declara dependencia direta. No modular a opcao declara a dependencia DIRETA (e o pacote hibernate dos embeddables) para o codigo do host usar BrazilGeo.",
       "pom": [
         {
           "artifactId": "seedgrid-cities",
@@ -284,11 +299,11 @@
       ]
     },
     "whatsapp": {
-      "papel": "Envio de WhatsApp via Evolution API ou Meta Cloud API.",
+      "papel": "Envio de WhatsApp via Evolution API ou Meta Cloud API. A security so traz o whatsapp-core; o provedor (evolution ou whatsapp-cloud) e escolha OBRIGATORIA do produto.",
       "fonte": "Extensions/whatsapp/Visao-geral.md, Configuracao.md",
       "migrations": "nenhuma documentada",
       "decisoes_do_produto": [
-        "seedgrid.whatsapp.api: evolution ou whatsapp-cloud"
+        "seedgrid.whatsapp.api: evolution (padrao do AIDLC) ou whatsapp-cloud; obrigatorio escolher"
       ],
       "obrigatorias_para_subir": [
         "evolution: seedgrid.whatsapp.evolution.api-key e seedgrid.whatsapp.rest-client.evolution.url",
@@ -299,7 +314,14 @@
         {
           "artifactId": "seedgrid-whatsapp-evolution",
           "versao": "${seedgrid.whatsapp.version}"
+        },
+        {
+          "artifactId": "seedgrid-whatsapp-whatsapp-cloud",
+          "versao": "${seedgrid.whatsapp.version}"
         }
+      ],
+      "lacunas": [
+        "whatsapp-cloud: a KB nao lista o identificador do numero (phoneNumberId) como chave de configuracao; o endpoint usa POST /{phoneNumberId}/messages, entao o produto precisa saber qual valor passar como canal (ex.: seedgrid.security.2f.whatsapp.channel-id)"
       ]
     },
     "realtime": {
@@ -322,7 +344,8 @@
           "artifactId": "seedgrid-realtime",
           "versao": "${seedgrid.realtime.version}"
         }
-      ]
+      ],
+      "observacao": "Vem por padrao nos modelos de tenancy (dependencia explicita no pom do boilerplate, SEEDGRID_REALTIME_ENABLED=false ate haver Pulse). Quando as tenancies passarem a traze-la (P147), a dependencia explicita sai (P145.F1.T6). No modular, o backup depende dela."
     },
     "resilience": {
       "papel": "Rate limit e circuit breaker declarativos, cache-backed.",
@@ -333,24 +356,36 @@
       "depende_de": []
     },
     "cache": {
-      "papel": "API unica sobre Redis/Valkey/Dragonfly (library).",
+      "papel": "API unica sobre Redis/Valkey/Dragonfly (library). O seedgrid-cache-core ja vem pela security e pela resilience; o que o produto escolhe e o PROVEDOR (sem provedor no classpath o cache e em memoria).",
       "fonte": "Extensions/cache/Visao-geral.md, Configuracao.md",
       "migrations": "nenhuma",
       "decisoes_do_produto": [
-        "provider: redis, valkey ou dragonfly",
+        "provedor: memoria (padrao), redis, valkey ou dragonfly (basta o modulo no classpath; nao ha propriedade de selecao)",
         "seedgrid.cache.failover.enabled"
       ],
+      "obrigatorias_para_subir": [
+        "redis/valkey/dragonfly: seedgrid.cache.hosts (SEEDGRID_CACHE_HOSTS, URIs redis://host:porta; nome da variavel inferido pela regra MicroProfile)"
+      ],
       "servicos_compose": [
-        "redis ou valkey ou dragonfly"
+        "redis ou valkey ou dragonfly (so se o provedor nao for memoria)"
       ],
       "depende_de": [],
-      "pom": [
+      "observacao": "Nos modelos de tenancy e no modular o cache-core ja vem (security e resilience); nao e opcao. A opcao do AIDLC e o provedor.",
+      "provedores": [
         {
-          "artifactId": "seedgrid-cache-core",
+          "artifactId": "seedgrid-cache-redis",
+          "versao": "2026.10.22"
+        },
+        {
+          "artifactId": "seedgrid-cache-valkey",
+          "versao": "2026.10.22"
+        },
+        {
+          "artifactId": "seedgrid-cache-dragonfly",
           "versao": "2026.10.22"
         }
       ],
-      "pendencia": "provider (redis, valkey ou dragonfly) e servico do compose: o dono fornece; a KB nao traz imagem"
+      "pendencia": "servico do compose do provedor (redis, valkey ou dragonfly): o dono fornece; a KB nao traz imagem nem healthcheck"
     },
     "filemanagement": {
       "papel": "Storage de arquivos: filesystem, S3, MinIO, Azure Blob, GCS, Google Drive, OneDrive (library; configuracao por mapa do chamador).",

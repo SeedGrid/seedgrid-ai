@@ -17,7 +17,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 };
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
+const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const SUB = { ...B2B, modelo: 'subdomain-tenancy' };
 const MODULAR = { ...BASE, modelo: 'modular', selfEnter: 'nao', extensoes: ['apikeys'], apikeysUso: 'x' };
 
@@ -217,23 +217,92 @@ test('segredos: o par do JWT em arquivo bate com o do dev.env e nada de segredo 
   assert.equal(trava.status, 0, trava.stdout + trava.stderr);
 });
 
-test('trial, whatsapp, ai-pricing e business-days mexem no pom, no env e nos testes do boilerplate', async () => {
+test('trial, ai-pricing, exchange e business-days mexem no pom, no env e nos testes; whatsapp e realtime vem com o modelo (P145.F1.T5)', async () => {
   const sem = await gerar({ ...B2B, trialDias: 0 });
   const e1 = env(ler(sem.destino, 'backend/dev.env'));
   assert.equal(e1.SEEDGRID_BILLING_TRIAL_ENABLED, 'false');
-  assert.equal(e1.SEEDGRID_SECURITY_2F_ALLOWED_METHODS, 'EMAIL,TOTP');
-  assert.equal(e1.SEEDGRID_WHATSAPP_API, undefined);
-  assert.equal(e1.SEEDGRID_REALTIME_ENABLED, undefined);
+  // o provedor de WhatsApp e obrigatorio: o 2FA mantem o metodo WHATSAPP e a Evolution fica configurada
+  assert.equal(e1.SEEDGRID_SECURITY_2F_ALLOWED_METHODS, 'EMAIL,TOTP,WHATSAPP');
+  assert.equal(e1.SEEDGRID_WHATSAPP_API, 'evolution');
+  // a realtime vem com o modelo, desligada ate haver Pulse
+  assert.equal(e1.SEEDGRID_REALTIME_ENABLED, 'false');
   assert.equal(e1.SEEDGRID_AI_PRICING_SOURCE_URL, undefined);
   const pom1 = ler(sem.destino, 'backend/pom.xml');
-  for (const a of ['seedgrid-whatsapp-evolution', 'seedgrid-realtime', 'seedgrid-ai-pricing', 'seedgrid-exchange']) assert.ok(!pom1.includes(`<artifactId>${a}</artifactId>`), a);
-  assert.ok(pom1.includes('<artifactId>seedgrid-billing-stripe</artifactId>'));
+  for (const a of ['seedgrid-ai-pricing', 'seedgrid-exchange', 'seedgrid-business-days', 'seedgrid-cache-redis', 'seedgrid-cache-valkey', 'seedgrid-cache-dragonfly', 'seedgrid-cities', 'seedgrid-cache-core']) assert.ok(!pom1.includes(`<artifactId>${a}</artifactId>`), a);
+  for (const a of ['seedgrid-whatsapp-evolution', 'seedgrid-realtime', 'seedgrid-billing-stripe']) assert.ok(pom1.includes(`<artifactId>${a}</artifactId>`), a);
+  assert.ok(sem.saida.pendencias.some((p) => /^realtime:/.test(p)), 'a realtime vem com o modelo e o Pulse e pendencia');
+  assert.ok(!sem.saida.pendencias.some((p) => /^cache:/.test(p)), 'cache em memoria nao tem pendencia');
   assert.ok(!existsSync(join(sem.destino, 'backend/src/test/java/br/com/acme/portal/api/audit/DomainAuditTest.java')));
-  const com = await gerar({ ...B2B, extensoes: ['ai-pricing', 'exchange', 'whatsapp', 'realtime', 'business-days', 'cache'] });
+  const com = await gerar({ ...B2B, extensoes: ['ai-pricing', 'exchange', 'business-days'], provedorCache: 'redis' });
+  assert.equal(com.saida.ok, true, (com.saida.erros ?? []).join('\n'));
   const pom2 = ler(com.destino, 'backend/pom.xml');
-  for (const a of ['seedgrid-whatsapp-evolution', 'seedgrid-realtime', 'seedgrid-ai-pricing', 'seedgrid-exchange', 'seedgrid-business-days', 'seedgrid-cache-core']) assert.ok(pom2.includes(`<artifactId>${a}</artifactId>`), a);
+  for (const a of ['seedgrid-whatsapp-evolution', 'seedgrid-realtime', 'seedgrid-ai-pricing', 'seedgrid-exchange', 'seedgrid-business-days', 'seedgrid-cache-redis']) assert.ok(pom2.includes(`<artifactId>${a}</artifactId>`), a);
+  assert.ok(/<artifactId>seedgrid-cache-redis<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom2));
   assert.ok(existsSync(join(com.destino, 'backend/src/test/java/br/com/acme/portal/api/audit/DomainAuditTest.java')));
+  const e2 = env(ler(com.destino, 'backend/dev.env'));
+  assert.equal(e2.SEEDGRID_CACHE_FAILOVER_ENABLED, 'false');
+  assert.equal(e2.SEEDGRID_CACHE_HOSTS, 'change-me');
   assert.ok(com.saida.pendencias.some((p) => /^cache:/.test(p)) && com.saida.pendencias.some((p) => /^realtime:/.test(p)));
+});
+
+test('provedor de WhatsApp: obrigatorio, Cloud troca o artefato e as chaves, Evolution e o padrao do AIDLC (P145.F1.T5)', async () => {
+  const { provedorWhatsapp: _w, ...semProvedor } = B2B as Record<string, unknown>;
+  const falta = await gerar(semProvedor);
+  assert.equal(falta.saida.ok, false, 'sem escolher o provedor de WhatsApp nao gera');
+  assert.ok((falta.saida.erros ?? []).some((e) => /provedorWhatsapp/.test(e)), (falta.saida.erros ?? []).join('\n'));
+  const ruim = await gerar({ ...B2B, provedorWhatsapp: 'nenhum' });
+  assert.equal(ruim.saida.ok, false, 'nao existe a opcao nenhum');
+
+  for (const base of [B2B, SUB]) {
+    const evo = await gerar({ ...base, provedorWhatsapp: 'evolution' });
+    assert.equal(evo.saida.ok, true, (evo.saida.erros ?? []).join('\n'));
+    const pe = ler(evo.destino, 'backend/pom.xml');
+    assert.ok(pe.includes('<artifactId>seedgrid-whatsapp-evolution</artifactId>') && !pe.includes('seedgrid-whatsapp-whatsapp-cloud'));
+    const ee = env(ler(evo.destino, 'backend/dev.env'));
+    assert.equal(ee.SEEDGRID_WHATSAPP_API, 'evolution');
+    assert.equal(JSON.parse(ler(evo.destino, 'produto.json')).provedorWhatsapp, 'evolution');
+
+    const nuvem = await gerar({ ...base, provedorWhatsapp: 'whatsapp-cloud' });
+    assert.equal(nuvem.saida.ok, true, (nuvem.saida.erros ?? []).join('\n'));
+    const pc = ler(nuvem.destino, 'backend/pom.xml');
+    assert.ok(pc.includes('<artifactId>seedgrid-whatsapp-whatsapp-cloud</artifactId>'), 'artefato da Cloud');
+    assert.ok(!pc.includes('<artifactId>seedgrid-whatsapp-evolution</artifactId>'), 'sem o artefato da Evolution');
+    assert.equal(pc.split('<artifactId>seedgrid-whatsapp-whatsapp-cloud</artifactId>').length - 1, 1);
+    const ec = env(ler(nuvem.destino, 'backend/dev.env'));
+    assert.equal(ec.SEEDGRID_WHATSAPP_API, 'whatsapp-cloud');
+    assert.equal(ec.SEEDGRID_WHATSAPP_CLOUD_ACCESS_TOKEN, 'change-me');
+    assert.equal(ec.SEEDGRID_WHATSAPP_EVOLUTION_API_KEY, undefined);
+    assert.equal(ec.SEEDGRID_WHATSAPP_REST_CLIENT_EVOLUTION_URL, undefined);
+    assert.ok(nuvem.saida.pendencias.some((p) => /^whatsapp:/.test(p)), 'a Cloud deixa pendencia (token e canal)');
+    assert.ok(!evo.saida.pendencias.some((p) => /^whatsapp:/.test(p)));
+  }
+  // o modular nao pergunta o provedor
+  const mod = await gerar({ ...MODULAR, provedorWhatsapp: 'evolution' });
+  assert.equal(mod.saida.ok, false, 'o modular nao tem a pergunta do provedor de WhatsApp');
+});
+
+test('provedor de cache: memoria e o padrao; redis, valkey e dragonfly acrescentam so o modulo do provedor (P145.F1.T5)', async () => {
+  const padrao = await gerar(B2B);
+  assert.equal(padrao.saida.ok, true, (padrao.saida.erros ?? []).join('\n'));
+  assert.equal(JSON.parse(ler(padrao.destino, 'produto.json')).provedorCache, 'memoria');
+  const mem = await gerar({ ...B2B, provedorCache: 'memoria' });
+  assert.equal(ler(padrao.destino, 'backend/pom.xml'), ler(mem.destino, 'backend/pom.xml'), 'sem escolha vale memoria (mesmo pom)');
+  for (const [id, art] of [['redis', 'seedgrid-cache-redis'], ['valkey', 'seedgrid-cache-valkey'], ['dragonfly', 'seedgrid-cache-dragonfly']] as const) {
+    for (const base of [B2B, SUB]) {
+      const r = await gerar({ ...base, provedorCache: id });
+      assert.equal(r.saida.ok, true, `${id}: ${(r.saida.erros ?? []).join('\n')}`);
+      const pom = ler(r.destino, 'backend/pom.xml');
+      assert.equal(pom.split(`<artifactId>${art}</artifactId>`).length - 1, 1, `${id}: o modulo do provedor entra uma vez`);
+      for (const outro of ['seedgrid-cache-redis', 'seedgrid-cache-valkey', 'seedgrid-cache-dragonfly']) if (outro !== art) assert.ok(!pom.includes(`<artifactId>${outro}</artifactId>`), `${id}: nao traz ${outro}`);
+      assert.ok(!pom.includes('<artifactId>seedgrid-cache-core</artifactId>'), 'o cache-core vem pela security e pela resilience');
+      assert.ok(r.saida.pendencias.some((p) => new RegExp(`^cache: provedor ${id}`).test(p)), 'pendencia do servico do compose');
+    }
+  }
+  const ruim = await gerar({ ...B2B, provedorCache: 'memcached' });
+  assert.equal(ruim.saida.ok, false);
+  // a opcao antiga "cache" saiu da lista de extensions opcionais
+  const antiga = await gerar({ ...B2B, extensoes: ['cache'] });
+  assert.equal(antiga.saida.ok, false, 'cache nao e mais extension opcional');
 });
 
 test('pacote Java e renomeado: diretorios, package, groupId e nada do pacote antigo', async () => {
@@ -579,25 +648,28 @@ test('modelo modular: self-enter e config do security; ligado traz as telas de c
   assert.equal(env(ler(nao.destino, 'backend/dev.env')).SEEDGRID_SECURITY_SELF_ENTER_ENABLED, 'false');
 });
 
-test('cities (cidades e estados do Brasil): dependencia direta no pom em cada modelo, ausente sem a opcao e determinismo', async () => {
-  for (const [nome, base] of [['login-tenancy-b2b', B2B], ['subdomain-tenancy', SUB], ['modular', MODULAR]] as const) {
-    const sem = await gerar({ ...base, extensoes: base.extensoes.filter((x) => x !== 'cities') });
-    assert.equal(sem.saida.ok, true, `${nome} sem cities: ${(sem.saida.erros ?? []).join('\n')}`);
-    assert.ok(!ler(sem.destino, 'backend/pom.xml').includes('<artifactId>seedgrid-cities</artifactId>'), `${nome}: sem a opcao a cities nao e declarada`);
-
-    const com1 = await gerar({ ...base, extensoes: [...base.extensoes, 'cities'] });
-    const com2 = await gerar({ ...base, extensoes: [...base.extensoes, 'cities'] });
-    assert.equal(com1.saida.ok, true, `${nome} com cities: ${(com1.saida.erros ?? []).join('\n')}`);
-    const pom = ler(com1.destino, 'backend/pom.xml');
-    assert.equal(pom.split('<artifactId>seedgrid-cities</artifactId>').length - 1, 1, `${nome}: uma unica dependencia seedgrid-cities`);
-    assert.ok(/<artifactId>seedgrid-cities<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom), `${nome}: versao da cities`);
-    assert.ok(com1.saida.extensoes.includes('cities'), `${nome}: cities nas extensions resolvidas`);
-    // dados de referencia: nenhuma migration de cidade copiada para o host (a extension migra sozinha)
-    assert.ok(!arquivos(com1.destino).some((f) => /migration.*cit(y|ies)/i.test(f)), `${nome}: o host nao carrega migration da cities`);
+test('cities: nos modelos de tenancy vem com o modelo (sem dependencia direta); no modular a opcao declara a dependencia direta (P145.F1.T5)', async () => {
+  for (const [nome, base] of [['login-tenancy-b2b', B2B], ['subdomain-tenancy', SUB]] as const) {
+    const r = await gerar({ ...base });
+    assert.equal(r.saida.ok, true, `${nome}: ${(r.saida.erros ?? []).join('\n')}`);
+    assert.ok(!ler(r.destino, 'backend/pom.xml').includes('<artifactId>seedgrid-cities</artifactId>'), `${nome}: a cities vem transitiva (security); sem dependencia repetida`);
+    const pedida = await gerar({ ...base, extensoes: ['cities'] });
+    assert.equal(pedida.saida.ok, false, `${nome}: cities nao e mais opcao (o modelo traz)`);
+    assert.ok((pedida.saida.erros ?? []).some((e) => /cities/.test(e)), (pedida.saida.erros ?? []).join('\n'));
   }
-  const a = await gerar({ ...SUB, extensoes: ['cities'] });
-  const b = await gerar({ ...SUB, extensoes: ['cities'] });
-  assert.equal(readFileSync(join(a.destino, 'backend/pom.xml'), 'utf8'), readFileSync(join(b.destino, 'backend/pom.xml'), 'utf8'));
+  // modular: a opcao existe e declara a dependencia direta
+  const sem = await gerar({ ...MODULAR });
+  assert.equal(sem.saida.ok, true, (sem.saida.erros ?? []).join('\n'));
+  assert.ok(!ler(sem.destino, 'backend/pom.xml').includes('<artifactId>seedgrid-cities</artifactId>'), 'modular sem a opcao: cities nao e declarada');
+  const com1 = await gerar({ ...MODULAR, extensoes: [...MODULAR.extensoes, 'cities'] });
+  const com2 = await gerar({ ...MODULAR, extensoes: [...MODULAR.extensoes, 'cities'] });
+  assert.equal(com1.saida.ok, true, (com1.saida.erros ?? []).join('\n'));
+  const pom = ler(com1.destino, 'backend/pom.xml');
+  assert.equal(pom.split('<artifactId>seedgrid-cities</artifactId>').length - 1, 1, 'uma unica dependencia seedgrid-cities');
+  assert.ok(/<artifactId>seedgrid-cities<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom), 'versao da cities');
+  assert.ok(com1.saida.extensoes.includes('cities'));
+  assert.ok(!arquivos(com1.destino).some((f) => /migration.*cit(y|ies)/i.test(f)), 'o host nao carrega migration da cities');
+  assert.equal(readFileSync(join(com1.destino, 'backend/pom.xml'), 'utf8'), readFileSync(join(com2.destino, 'backend/pom.xml'), 'utf8'));
 });
 
 test('planos: sem diferenca declarada gera um plano so, com pendencia (P125.F1.T5)', async () => {

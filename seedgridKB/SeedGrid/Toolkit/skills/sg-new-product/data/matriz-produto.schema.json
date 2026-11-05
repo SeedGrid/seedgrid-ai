@@ -30,6 +30,7 @@
         "ordem": { "type": "integer", "minimum": 1 },
         "tipo": { "enum": ["campos", "escolha", "multi", "texto"] },
         "chave": { "type": "string" },
+        "padrao": { "type": "string", "description": "escolha opcional: id da opcao usada quando a pessoa nao responde" },
         "se": { "type": "object", "propertyNames": { "enum": ["modelo", "extensao", "resposta"] } },
         "pergunta": { "type": "string" },
         "recomendacao": { "type": "string" },

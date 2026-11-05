@@ -32,6 +32,9 @@ Leia `data/matriz-produto.json` e percorra `perguntas` na ordem de `ordem`.
 2. **Só pergunte o que se aplica.** Uma pergunta com `se` só aparece quando a condição vale: `modelo` (a resposta da pergunta 2 está na lista), `extensao` (alguma das extensions está presente: as que o modelo traz, as escolhidas e as trazidas por dependência) e `resposta` (uma resposta anterior tem o valor indicado). Para saber o que o modelo traz, use `efeito.extensions` da opção escolhida na pergunta 2.
 3. **Opção desligada** (`disponivel: false`, como as extensions ainda não verificadas no modelo modular) aparece na lista com o `motivo`; não pode ser escolhida.
 4. **Modelo "modular" (3b):** quem escolhe as extensions uma a uma recebe também as dependências (`depende_de` no catálogo). Diga isso: "escolher `apikeys` traz o `security` junto".
+   - **Nos modelos de tenancy (`login-tenancy-b2b`, `login-tenancy-b2c`, `subdomain-tenancy`)** o que já vem com o modelo **não é perguntado**: `security`, `audit`, `backup`, `billing`, `apikeys`, `notification`, `privacy`, `resilience` e `user-notifications`, mais `cities` (vem pela `security`, o signup usa), o `cache-core` (vem pela `security` e pela `resilience`; sem provedor o cache é em memória) e a `realtime` (desligada até haver Pulse; a dependência explícita no `pom` sai quando as tenancies a trouxerem, P145.F1.T6). Só se pergunta o que o modelo não traz: `ai-pricing`, `exchange` e `business-days` (pergunta 3).
+   - **Provedor de WhatsApp (3c, obrigatório):** `evolution` (padrão) ou `whatsapp-cloud`. A `security` só traz a interface (`whatsapp-core`); o provedor é sempre do produto. Não há opção "nenhum". A Cloud deixa pendências (token da Graph API e o valor do canal).
+   - **Provedor de cache (3d, opcional):** sem resposta vale `memoria` (sem dependência extra); `redis`, `valkey` ou `dragonfly` acrescentam só o módulo do provedor e o serviço do compose é pendência do dono.
 5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/P<plano>.F<fase>.DEM<n>-AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa; `F0` quando é do plano todo) e siga; não prometa nem improvise.
 6. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
 
@@ -40,7 +43,7 @@ As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, 
 ```json
 {
   "nome": "Portal de Chaves", "slug": "portal-chaves", "pacote": "br.com.acme.portal",
-  "modelo": "login-tenancy-b2b", "extensoes": ["exchange"],
+  "modelo": "login-tenancy-b2b", "extensoes": ["exchange"], "provedorWhatsapp": "evolution", "provedorCache": "memoria",
   "selfEnter": "sim", "selfEnterModo": "convite",
   "auditoria": "mongodb", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
   "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro", "diferencaPlanos": "Pro libera mais usuários",
@@ -64,7 +67,7 @@ node .ai/skills/sg-new-product/scripts/scaffold-produto.mjs --respostas docs/ai/
 - **Back falso para o front (Mockoon):** o produto traz `mocks/<slug>.mockoon.json` (rotas de autenticação, perfil, 2FA e, com tenancy, usuários e perfis, com dados fictícios em pt-BR e ids fixos) e o serviço `mockoon` no `docker-compose.yml` (imagem `mockoon/cli:9.9.0`, porta 3100, perfil `mock`, sem UI web). Quem for fazer só o front roda `docker compose --profile mock up -d` e `SEEDGRID_APP_API_BASE_URL=http://127.0.0.1:3100 pnpm dev` (PowerShell: `$env:SEEDGRID_APP_API_BASE_URL="http://127.0.0.1:3100"; pnpm dev`); não precisa de banco nem de backend. Para editar rotas e dados, abra o JSON no aplicativo desktop do Mockoon. **Cobertura inicial**: os módulos de negócio (audit, backup, apikeys, billing…) ainda não têm rota no mock; avise o usuário. Os caminhos espelham `lib/security-paths.ts` e `lib/login-tenancy-paths.ts` do front; as rotas ficam em `data/mock-rotas.json`.
 - **E-mail em desenvolvimento:** o `docker-compose.yml` sobe o **Mailpit** local (SMTP sem autenticação; interface em `http://localhost:8025`, ou `8026` no subdomain-tenancy). O `dev.env` já aponta para ele, com um remetente por extension (`security@`, `backup@`, `subdomain.tenancy@` em `eu-dev.com.br`). Diga ao usuário que convites, confirmações e redefinições de senha chegam nessa interface, qualquer que seja o destinatário.
 - Os **segredos são gerados por produto** (senhas, chaves, par RSA do JWT) e ficam só em `backend/dev.env`, `.env` e `backend/src/main/resources/keys/*.pem`, que o `.gitignore` já ignora. **Nunca** mostre, copie nem cole esses valores no chat, no plano, em ADR ou em commit. O que vai ao git é o `.example`, com `change-me`.
-- Leia a saída: as linhas `PENDENTE` são coisas que o script não resolve (por exemplo cache e Pulse, que o dono precisa fornecer; chaves do Stripe). Elas viram a seção "Pendências" do plano.
+- Leia a saída: as linhas `PENDENTE` são coisas que o script não resolve (por exemplo o serviço do provedor de cache (Redis, Valkey ou Dragonfly) e o Pulse, que o dono precisa fornecer; chaves do Stripe). Elas viram a seção "Pendências" do plano.
 
 ## 3. Documentos do produto (em `docs/ai/`)
 

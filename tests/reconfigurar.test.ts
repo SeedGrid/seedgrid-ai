@@ -15,7 +15,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
 const { reconfigurar } = (await import(pathToFileURL(join(SKILL, 'scripts/reconfigurar.mjs')).href)) as { reconfigurar: (o: { respostas: Record<string, unknown>; destino: string; boilerplates: string; aplicar?: boolean }) => Promise<Plano> };
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
-const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
+const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 const COM_SELF_ENTER = { ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'convite' };
 
 const dirs: string[] = [];
