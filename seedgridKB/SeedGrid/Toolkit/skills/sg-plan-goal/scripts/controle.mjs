@@ -9,6 +9,8 @@
 //                                                          nao conta como problema: esta parada esperando o dono
 //   node controle.mjs <plano.md> pendencias                perguntas ao dono: cada tarefa [?] (com Pergunta/Recomendacao do corpo)
 //                                                          e as tarefas que ela bloqueia; sai 0 mesmo com pendencias
+//   node controle.mjs <plano.md> varredura [--completa]    confere as tabelas de varredura (uma linha por item; [x] so com
+//                                                          "Quem conferiu" e "Evidencia"; --completa falha se sobrou item aberto)
 //   node controle.mjs <plano.md> proximas [--max 4] [--json]
 //                                                          tarefas abertas cujo depende-de ja esta todo [x], escolhidas
 //                                                          para rodar em paralelo sem dois escrevendo no mesmo caminho
@@ -134,10 +136,63 @@ export function checklist(plano, chave, completa, exetoDecisoes = false) {
   return { erros, fase };
 }
 
+// Tabela de varredura (plano que percorre todos os componentes, extensions, telas...): um bloco entre
+// `<!-- varredura:<nome>:inicio -->` e `<!-- varredura:<nome>:fim -->` com uma linha por item. A primeira coluna e `Item`;
+// tem de haver as colunas `Feito` (`[ ]`, `[~]` ou `[x]`), `Quem conferiu` e `Evidencia`. O que vira `[x]` precisa de quem
+// conferiu e da evidencia; com `completa`, qualquer item que nao esteja `[x]` e problema. O verificador do caso (script que
+// compara a fonte com o resultado) e quem manda: o `[x]` so vale se ele concordou.
+const semAcento = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+export function varredura(texto, completa = false) {
+  const linhas = texto.replace(/^﻿/, '').split(/\r?\n/);
+  const erros = [];
+  const blocos = [];
+  for (let i = 0; i < linhas.length; i++) {
+    const ini = /^<!--\s*varredura:([^:\s]+):inicio\s*-->\s*$/.exec(linhas[i]);
+    if (!ini) continue;
+    const nome = ini[1];
+    let fim = -1;
+    for (let j = i + 1; j < linhas.length; j++) if (new RegExp(`^<!--\\s*varredura:${nome}:fim\\s*-->\\s*$`).test(linhas[j])) { fim = j; break; }
+    if (fim < 0) { erros.push(`varredura ${nome}: falta o marcador de fim`); continue; }
+    const tabela = linhas.slice(i + 1, fim).filter((l) => l.trim().startsWith('|'));
+    if (tabela.length < 3) { erros.push(`varredura ${nome}: tabela sem linhas de item`); continue; }
+    const celulas = (l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+    const cab = celulas(tabela[0]).map(semAcento);
+    // Colunas de "feito": todas as que comecam por "Feito" (ex.: "Feito", ou "Feito React" e "Feito Flutter" quando o item e
+    // checado por plataforma). Cada uma vale [ ], [~], [x] ou n/a (a plataforma nao tem o item).
+    const feitoCols = cab.map((h, i) => (h === 'feito' || h.startsWith('feito ') ? i : -1)).filter((i) => i >= 0);
+    const col = { item: 0, quem: cab.indexOf('quem conferiu'), evid: cab.indexOf('evidencia') };
+    if (!['item', 'componente'].includes(cab[0]) || !feitoCols.length || col.quem < 0 || col.evid < 0) { erros.push(`varredura ${nome}: o cabecalho precisa de "Item" ou "Componente" (primeira coluna), uma ou mais colunas "Feito", "Quem conferiu" e "Evidencia"`); continue; }
+    const vistos = new Set();
+    let total = 0;
+    let feitos = 0;
+    for (const l of tabela.slice(2)) {
+      const c = celulas(l);
+      const item = c[col.item];
+      if (!item) continue;
+      total++;
+      if (vistos.has(item)) erros.push(`varredura ${nome}: item repetido "${item}"`);
+      vistos.add(item);
+      const estados = feitoCols.map((i) => { const v = (c[i] ?? '').trim(); return v.toLowerCase() === 'n/a' ? 'n/a' : (/^\[([ ~x])\]$/.exec(v) || [])[1]; });
+      if (estados.some((e) => e === undefined)) { erros.push(`varredura ${nome}: "${item}" com "Feito" invalido (use [ ], [~], [x] ou n/a)`); continue; }
+      const algumX = estados.includes('x');
+      const aberto = estados.some((e) => e === ' ' || e === '~');
+      if (algumX) {
+        if (!c[col.quem]) erros.push(`varredura ${nome}: "${item}" esta [x] sem "Quem conferiu"`);
+        if (!c[col.evid]) erros.push(`varredura ${nome}: "${item}" esta [x] sem "Evidencia"`);
+      }
+      if (!aberto) feitos++;
+      else if (completa) erros.push(`varredura ${nome}: "${item}" ainda nao esta [x]`);
+    }
+    blocos.push({ nome, total, feitos });
+  }
+  if (!blocos.length && !erros.length) erros.push('nenhum bloco "<!-- varredura:<nome>:inicio -->" no plano');
+  return { blocos, erros };
+}
+
 function main(argv) {
   const [arquivo, cmd, ...resto] = argv;
   if (!arquivo || !cmd) {
-    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa [--exceto-decisoes]] | pendencias | proximas [--max N] [--json]');
+    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa [--exceto-decisoes]] | pendencias | varredura [--completa] | proximas [--max N] [--json]');
     return 2;
   }
   let texto;
@@ -174,6 +229,13 @@ function main(argv) {
     }
     console.log(`[controle] pendencias: ${p.length} pergunta(s) ao dono.`);
     return 0;
+  }
+  if (cmd === 'varredura') {
+    const r = varredura(texto, resto.includes('--completa'));
+    for (const e of r.erros) console.error('  ' + e);
+    for (const b of r.blocos) console.log(`varredura ${b.nome}: ${b.feitos}/${b.total} itens conferidos`);
+    console.log(`[controle] varredura: ${r.erros.length} problema(s).`);
+    return r.erros.length ? 1 : 0;
   }
   if (cmd === 'proximas') {
     const i = resto.indexOf('--max');

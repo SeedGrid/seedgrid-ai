@@ -13,6 +13,7 @@ const mod = (await import(pathToFileURL(SCRIPT).href)) as {
   checklist: (p: ReturnType<typeof mod.lerPlano>, fase: string, completa: boolean, exetoDecisoes?: boolean) => { erros: string[] };
   pendencias: (p: ReturnType<typeof mod.lerPlano>) => { id: string; titulo: string; detalhe: string[]; bloqueia: string[] }[];
   bloqueadasPorDecisao: (p: ReturnType<typeof mod.lerPlano>) => Set<string>;
+  varredura: (texto: string, completa?: boolean) => { blocos: { nome: string; total: number; feitos: number }[]; erros: string[] };
 };
 
 const PLANO = `# Tarefas: exemplo
@@ -178,4 +179,44 @@ test('identificador falante P<plano>.F<fase>.T<tarefa>: lido em fase 3b e FIM, c
   const r = mod.proximas(p);
   assert.deepEqual(r.paralelo, ['P24.F3b.T6']);
   assert.deepEqual(r.bloqueadas, [{ id: 'P24.FIM.T1', falta: ['P24.F3b.T6'] }]);
+});
+
+const VARREDURA = (linhas: string[]) => ['## Varredura: componentes', '', '<!-- varredura:comp:inicio -->', '| Item | Exemplos no React | Exemplos no Flutter | Feito | Quem conferiu | Evidência |', '|---|---|---|---|---|---|', ...linhas, '<!-- varredura:comp:fim -->'].join('\n');
+
+test('varredura: item [x] precisa de quem conferiu e de evidência; aberto só reprova com --completa', () => {
+  const ok = VARREDURA(['| SgButton | 15 | 15 | [x] | front | verificador: ok |', '| SgInputText | 19 | 15 | [ ] |  |  |']);
+  let r = mod.varredura(ok);
+  assert.deepEqual(r.erros, []);
+  assert.deepEqual(r.blocos, [{ nome: 'comp', total: 2, feitos: 1 }]);
+  r = mod.varredura(ok, true);
+  assert.deepEqual(r.erros, ['varredura comp: "SgInputText" ainda nao esta [x]']);
+  r = mod.varredura(VARREDURA(['| SgButton | 15 | 15 | [x] |  |  |']));
+  assert.deepEqual(r.erros, ['varredura comp: "SgButton" esta [x] sem "Quem conferiu"', 'varredura comp: "SgButton" esta [x] sem "Evidencia"']);
+});
+
+test('varredura: reprova item repetido, Feito inválido, cabeçalho sem as colunas, bloco sem fim e plano sem varredura', () => {
+  assert.match(mod.varredura(VARREDURA(['| A | 1 | 1 | [ ] |  |  |', '| A | 1 | 1 | [ ] |  |  |'])).erros.join('\n'), /item repetido "A"/);
+  assert.match(mod.varredura(VARREDURA(['| A | 1 | 1 | feito |  |  |'])).erros.join('\n'), /"Feito" invalido/);
+  assert.match(mod.varredura('<!-- varredura:x:inicio -->\n| Item | Feito |\n|---|---|\n| A | [ ] |\n<!-- varredura:x:fim -->').erros.join('\n'), /precisa de "Item"/);
+  assert.match(mod.varredura('<!-- varredura:x:inicio -->\n| Item |').erros.join('\n'), /falta o marcador de fim/);
+  assert.match(mod.varredura('# sem varredura').erros.join('\n'), /nenhum bloco/);
+});
+
+test('o modelo de varredura é um bloco válido para o controle (cabeçalho e marcadores) e o comando roda no plano', () => {
+  const modelo = readFileSync(resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-plan-goal/assets/plano-varredura.md'), 'utf8');
+  const r = mod.varredura(modelo);
+  assert.deepEqual(r.erros, []);
+  assert.equal(r.blocos[0]?.total, 2);
+  assert.equal(mod.varredura(modelo, true).erros.length, 2, 'completa reprova as 2 linhas abertas do modelo');
+  const dir = mkdtempSync(join(tmpdir(), 'sg-varredura-'));
+  try {
+    const plano = join(dir, 'plano.md');
+    writeFileSync(plano, PLANO + '\n' + VARREDURA(['| A | 1 | 1 | [x] | front | ok |']) + '\n', 'utf8');
+    const ok = spawnSync(process.execPath, [SCRIPT, plano, 'varredura', '--completa'], { encoding: 'utf8' });
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.match(ok.stdout, /varredura comp: 1\/1 itens conferidos/);
+    assert.match(ok.stdout, /0 problema\(s\)/);
+    writeFileSync(plano, PLANO + '\n' + VARREDURA(['| A | 1 | 1 | [ ] |  |  |']) + '\n', 'utf8');
+    assert.equal(spawnSync(process.execPath, [SCRIPT, plano, 'varredura', '--completa'], { encoding: 'utf8' }).status, 1);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

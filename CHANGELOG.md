@@ -4,6 +4,12 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- `sg-docs-index`: o `docs/ai/INDEX.md` passa a ter **layout fixo** em todo produto (Resumo, Demandas abertas, Planos, Decisões (ADR), Handoffs, Relatórios, Especificações, Análises, Demandas respondidas e Outros); toda seção sempre aparece e a que não tem documento diz `_Nenhum._`. Antes as seções só apareciam com conteúdo e cada produto saía com uma ordem diferente. Rode o script de novo nos produtos já gerados para atualizar o índice.
+
+### Adicionado
+- `sg-plan-goal`: **modelo de plano de varredura de componentes** (`assets/plano-varredura.md`) para quando é preciso resolver ou verificar algo em todos os componentes SeedGrid (React e Flutter) sem esquecer nenhum. O novo `scripts/varredura-componentes.mjs` (`gerar`, `atualizar`, `conferir [--completa]`) lê a lista de uma fonte única do `seedgrid-platform` (`paridade.json` ou as páginas dos dois showcases), então componente novo aparece sozinho e o plano reprova enquanto algum ficar sem linha, sem marca ou sem evidência; colunas `Componente`, `React`, `Flutter`, `Feito React`, `Feito Flutter`, `Quem conferiu`, `Evidencia`. O `controle.mjs <plano> varredura` confere as regras de qualquer tabela de varredura (serve também para extensions e telas).
+
 ## [0.7.8] — 2026-11-04
 
 ### Alterado

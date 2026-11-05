@@ -8,6 +8,8 @@
 //   plano `proposto` com tarefa em andamento ou feita (`- [~]`, `- [x]`): o status acompanha a execução (rules/documentos.md).
 // Avisos (saem 0): demanda citada num plano sem arquivo; demanda cujo plano não existe; documento sem "aidlc:".
 // O índice de decisões (adrs/INDEX.md, do adr-index.mjs) continua existindo; aqui as ADRs entram só como lista.
+// Layout FIXO: Resumo, Demandas abertas, Planos, Decisões (ADR), Handoffs, Relatórios, Especificações, Análises, Demandas
+//   respondidas e Outros, sempre nessa ordem e sempre presentes (a seção sem documento diz "Nenhum").
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -141,27 +143,47 @@ const tabela = (lista) => [
   ...lista.sort((a, b) => natural(a.id, b.id) || natural(a.rel, b.rel)).map(linha),
 ].join('\n');
 
-const secoes = [];
 const dem = docs.filter((d) => d.tipo === 'demanda');
 const fechadas = dem.filter((d) => FECHADA.test(d.status));
 const abertas = dem.filter((d) => !FECHADA.test(d.status));
 for (const d of abertas) if (!ABERTA.test(d.status)) avisos.push(`${d.rel}: status "${d.status || 'vazio'}" não reconhecido; tratada como aberta`);
-if (abertas.length) secoes.push(`## Demandas abertas (cobram ação de alguém)\n\n${tabela(abertas)}`);
-for (const t of TIPOS) {
-  const lista = docs.filter((d) => d.tipo === t.chave);
-  if (lista.length) secoes.push(`## ${t.titulo}\n\n${tabela(lista)}`);
-}
-if (fechadas.length) secoes.push(`## Demandas respondidas\n\n${tabela(fechadas)}`);
 const outros = docs.filter((d) => d.tipo === 'outro');
-for (const pasta of [...new Set(outros.map((d) => d.pasta || '(raiz de docs/ai)'))].sort()) {
-  secoes.push(`## Outros: ${pasta}\n\n${tabela(outros.filter((d) => (d.pasta || '(raiz de docs/ai)') === pasta))}`);
-}
+
+// Layout FIXO em todo produto (decisão do dono, 2026-11-05): a mesma ordem e todas as seções sempre aparecem; a que não
+// tem documento diz NENHUM. Quem abre o índice sabe onde olhar e não confunde "não existe" com "não foi registrado".
+const NENHUM = '_Nenhum._';
+const porTipo = (chave) => docs.filter((d) => d.tipo === chave);
+const SECOES = [
+  { titulo: 'Demandas abertas (cobram ação de alguém)', resumo: 'Demandas abertas', lista: abertas },
+  { titulo: 'Planos', resumo: 'Planos', lista: porTipo('plano') },
+  { titulo: 'Decisões (ADR)', resumo: 'Decisões (ADR)', lista: porTipo('adr') },
+  { titulo: 'Handoffs', resumo: 'Handoffs', lista: porTipo('handoff') },
+  { titulo: 'Relatórios', resumo: 'Relatórios', lista: porTipo('relatorio') },
+  { titulo: 'Especificações', resumo: 'Especificações', lista: porTipo('spec') },
+  { titulo: 'Análises', resumo: 'Análises', lista: porTipo('analise') },
+  { titulo: 'Demandas respondidas', resumo: 'Demandas respondidas', lista: fechadas },
+];
+const pastasOutros = [...new Set(outros.map((d) => d.pasta || '(raiz de docs/ai)'))].sort();
+
+const resumo = [
+  '| Tipo | Documentos |',
+  '|---|---|',
+  ...SECOES.map((x) => `| ${x.resumo} | ${x.lista.length} |`),
+  `| Outros | ${outros.length} |`,
+  `| **Total** | **${docs.length}** |`,
+].join('\n');
+
+const secoes = [
+  `## Resumo\n\n${resumo}`,
+  ...SECOES.map((x) => `## ${x.titulo}\n\n${x.lista.length ? tabela(x.lista) : NENHUM}`),
+  `## Outros\n\n${pastasOutros.length ? pastasOutros.map((pasta) => `### ${pasta}\n\n${tabela(outros.filter((d) => (d.pasta || '(raiz de docs/ai)') === pasta))}`).join('\n\n') : NENHUM}`,
+];
 
 const corpo = `# Documentos de docs/ai
 
-> Gerado pela skill \`sg-docs-index\` (script \`docs-index.mjs\`) a partir dos nomes e dos cabeçalhos. **Não edite à mão**; rode o script sempre que criar, renomear ou mudar o status de um documento (\`--check\` confere se está em dia). As decisões têm também o índice próprio em \`adrs/INDEX.md\`.
+> Gerado pela skill \`sg-docs-index\` (script \`docs-index.mjs\`) a partir dos nomes e dos cabeçalhos. **Não edite à mão**; rode o script sempre que criar, renomear ou mudar o status de um documento (\`--check\` confere se está em dia). As decisões têm também o índice próprio em \`adrs/INDEX.md\`. O layout é o mesmo em todo produto: Resumo, Demandas abertas, Planos, Decisões (ADR), Handoffs, Relatórios, Especificações, Análises, Demandas respondidas e Outros; a seção sem documento diz "Nenhum".
 
-${secoes.length ? secoes.join('\n\n') : '_Nenhum documento ainda._'}
+${secoes.join('\n\n')}
 `;
 
 const alvo = path.join(raiz, 'INDEX.md');

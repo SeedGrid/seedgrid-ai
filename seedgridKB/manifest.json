@@ -209,7 +209,9 @@
       "files": [
         "SKILL.md",
         "assets/plano-de-tarefas.md",
-        "scripts/controle.mjs"
+        "assets/plano-varredura.md",
+        "scripts/controle.mjs",
+        "scripts/varredura-componentes.mjs"
       ]
     },
     {

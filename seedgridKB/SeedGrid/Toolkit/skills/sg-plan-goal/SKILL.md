@@ -41,6 +41,16 @@ Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha, **inc
 - **Decisão do dono no goal geral:** o executor não decide sozinho. Marca a tarefa `[?]` com `Pergunta:` e `Recomendacao:`, faz todas as tarefas que não dependem dela e, ao final, pergunta tudo de uma vez ao dono. Só é `[?]` o que é decisão do dono (produto, custo, dependência nova, algo irreversível); dúvida técnica se resolve com teste ou spike.
 - **Uma definição de pronto única** no topo do plano.
 
+## Plano de varredura de componentes (resolver ou verificar algo em TODOS, sem esquecer nenhum)
+
+Quando o plano precisa resolver ou verificar algo em **todos** os componentes SeedGrid (React e Flutter) e sempre sobra um ou outro, não confie na lembrança de quem executa: o plano leva uma **tabela com uma linha por componente**, copiada do modelo [assets/plano-varredura.md](assets/plano-varredura.md). O mesmo modelo serve para extensions ou telas: troque só a fonte da lista.
+
+- **A lista vem de uma fonte única e atual, não é digitada.** O `scripts/varredura-componentes.mjs` lê o repositório de código (`--plataforma <raiz do seedgrid-platform>`, ou a variável `SEEDGRID_PLATFORM_DIR`), então componente novo aparece sozinho. Duas fontes, as que já existem: `paridade` (padrão: `front/seedgrid-fe-flutter/docs/paridade.json`, todos os componentes públicos do pacote React e o estado de cada um no Flutter) e `showcase` (as páginas de componente dos dois showcases: pastas `sg-*` do React e `sg_*_page.dart` do Flutter). Escolha pela natureza da checagem; não invente uma terceira lista.
+- **Colunas:** `Componente` | `React` | `Flutter` (`sim` ou `nao`: o componente existe na plataforma) | `Feito React` | `Feito Flutter` (`[ ]`, `[~]`, `[x]` ou `n/a` quando não existe naquela plataforma) | `Quem conferiu` | `Evidencia` (curta: comando ou hash). Todo `[x]` exige as duas últimas preenchidas.
+- **Critério de "feito" = o verificador concordou.** O plano nomeia o **verificador do assunto** (script ou teste que mede a checagem em todos os componentes e sai 1 se divergir). O componente só vira `[x]` na plataforma quando ele passa para esse componente; marcar à mão sem rodar o verificador não vale.
+- **Comandos do `varredura-componentes.mjs`:** `gerar` imprime o bloco da tabela; `atualizar <plano>` acrescenta as linhas dos componentes novos sem tocar nas já marcadas; `conferir <plano> [--completa]` **percorre a lista inteira** e sai 1 se algum componente da fonte não tem linha, se há linha que não é componente da fonte, se um `[x]` não tem quem conferiu e evidência, ou, com `--completa`, se sobrou marca aberta.
+- **No `/goal` do plano:** inclua `varredura-componentes.mjs conferir <plano> --completa` e o comando do verificador do assunto, os dois com 0 problema(s) e a saída visível. O bloco da tabela fica entre `<!-- varredura:<nome>:inicio -->` e `<!-- varredura:<nome>:fim -->`; o `controle.mjs <plano> varredura` confere só as regras da tabela (qualquer lista).
+
 ## Execução em paralelo
 
 Ao começar uma fase, monte o grafo das tarefas e **lance em paralelo tudo o que não depende de tarefa aberta**, em vez de seguir a ordem do documento. O comando `proximas` do `controle.mjs` faz essa conta:
@@ -57,6 +67,7 @@ Ao começar uma fase, monte o grafo das tarefas e **lance em paralelo tudo o que
 - `status`: progresso por fase.
 - `checklist <fase> [--completa [--exceto-decisoes]]`: toda tarefa `[x]` precisa de `Evidencia:`; com `--completa`, falha se sobrou tarefa aberta; com `--exceto-decisoes`, tarefa aberta que depende (direta ou indiretamente) de uma `[?]` não conta, porque está esperando o dono. É a saída que entra na condição do `/goal`.
 - `pendencias`: lista as perguntas ao dono (cada tarefa `[?]` com `Pergunta:` e `Recomendacao:`) e as tarefas que ela bloqueia; sai 0. Entra na condição do goal geral, para a lista aparecer na saída.
+- `varredura [--completa]`: confere as regras das tabelas de varredura do plano (seção "Plano de varredura de componentes"): item repetido, `Feito` inválido, `[x]` sem `Quem conferiu` e `Evidencia` e, com `--completa`, marca ainda aberta. A cobertura da lista (nenhum componente faltando) é do `varredura-componentes.mjs conferir`.
 - `proximas [--max 4] [--json]`: o que pode rodar em paralelo agora, o que espera (conflito de escrita, acima do limite) e o que está bloqueado.
 
 O script só lê o plano; compare sempre com o git real (commits, testes), nunca confie só no arquivo.

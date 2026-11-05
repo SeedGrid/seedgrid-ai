@@ -31,6 +31,10 @@ function rodar(ai: string, ...args: string[]) {
   return { status: r.status, out: r.stdout, err: r.stderr };
 }
 
+const TITULOS_FIXOS = ['Resumo', 'Demandas abertas (cobram ação de alguém)', 'Planos', 'Decisões (ADR)', 'Handoffs', 'Relatórios', 'Especificações', 'Análises', 'Demandas respondidas', 'Outros'];
+/** Os títulos de nível 2 do índice, na ordem em que aparecem. */
+const titulosDe = (indice: string) => [...indice.matchAll(/^## (.+)$/gm)].map((m) => m[1]);
+
 test('lista todos os tipos de documento e linka o arquivo', () => {
   const ai = docsAi();
   doc(ai, 'plans/P1-2026-11-01-produto.md', { numero: '1', status: 'em-andamento', data: '2026-11-01', aidlc: '0.7.3' }, 'Plano do produto');
@@ -124,7 +128,51 @@ test('é idempotente e aceita handoff no singular e no plural, com e sem cabeça
 test('pasta vazia gera índice vazio e passa no --check', () => {
   const ai = docsAi();
   assert.equal(rodar(ai).status, 0);
-  assert.match(readFileSync(join(ai, 'INDEX.md'), 'utf8'), /Nenhum documento ainda/);
+  const vazio = readFileSync(join(ai, 'INDEX.md'), 'utf8');
+  assert.deepEqual(titulosDe(vazio), TITULOS_FIXOS, 'mesmo layout com a pasta vazia');
+  assert.equal((vazio.match(/_Nenhum\._/g) ?? []).length, 9, 'as 9 seções de lista dizem Nenhum');
+  assert.ok(vazio.includes('| **Total** | **0** |'));
+  assert.equal(rodar(ai, '--check').status, 0);
+});
+
+test('layout fixo: a mesma ordem de seções com e sem demanda aberta, com e sem ADR', () => {
+  const sem = docsAi();
+  doc(sem, 'plans/P1-2026-11-01-produto.md', { numero: '1', status: 'em-andamento', aidlc: '0.7.8' }, 'Plano');
+  assert.equal(rodar(sem).status, 0);
+  const indiceSem = readFileSync(join(sem, 'INDEX.md'), 'utf8');
+
+  const com = docsAi();
+  doc(com, 'plans/P1-2026-11-01-produto.md', { numero: '1', status: 'em-andamento', aidlc: '0.7.8' }, 'Plano');
+  doc(com, 'demands/P1.F1.DEM1-2026-11-01-a.md', { plano: '1', fase: '1', status: 'aberta', aidlc: '0.7.8' }, 'Aberta');
+  doc(com, 'demands/P1.F1.DEM2-2026-11-01-b.md', { plano: '1', fase: '1', status: 'respondida', aidlc: '0.7.8' }, 'Respondida');
+  doc(com, 'adrs/ADR1-2026-11-01-x.md', { numero: '1', status: 'aceita', aidlc: '0.7.8' }, 'Decisão');
+  doc(com, 'reports/P1.F1.T1-validacao.md', { aidlc: '0.7.8' }, 'Relatório');
+  doc(com, 'specs/P1.F1.T2-especificacao.md', { aidlc: '0.7.8' }, 'Especificação');
+  assert.equal(rodar(com).status, 0);
+  const indiceCom = readFileSync(join(com, 'INDEX.md'), 'utf8');
+
+  assert.deepEqual(titulosDe(indiceSem), TITULOS_FIXOS);
+  assert.deepEqual(titulosDe(indiceCom), TITULOS_FIXOS);
+  assert.ok(indiceSem.includes('## Demandas abertas (cobram ação de alguém)\n\n_Nenhum._'), 'sem demanda aberta a seção continua lá');
+  assert.ok(indiceSem.includes('## Decisões (ADR)\n\n_Nenhum._'), 'sem ADR a seção continua lá');
+  assert.ok(indiceCom.includes('| Demandas abertas | 1 |') && indiceCom.includes('| Decisões (ADR) | 1 |') && indiceCom.includes('| Demandas respondidas | 1 |'));
+  assert.ok(indiceCom.includes('| **Total** | **6** |'));
+  assert.ok(!indiceCom.slice(indiceCom.indexOf('## Planos'), indiceCom.indexOf('## Decisões')).includes('Aberta'), 'a demanda aberta não vai para Planos');
+});
+
+test('Outros mostra uma subseção por pasta fora do padrão e Nenhum quando não há', () => {
+  const ai = docsAi();
+  doc(ai, 'plans/P1-2026-11-01-produto.md', { numero: '1', status: 'em-andamento', aidlc: '0.7.8' }, 'Plano');
+  assert.equal(rodar(ai).status, 0);
+  assert.ok(readFileSync(join(ai, 'INDEX.md'), 'utf8').endsWith('## Outros\n\n_Nenhum._\n'));
+  doc(ai, 'notas/N1-2026-11-01-ideia.md', { status: 'vigente', aidlc: '0.7.8' }, 'Ideia solta');
+  doc(ai, 'ADICIONAL.md', { aidlc: '0.7.8' }, 'Na raiz');
+  assert.equal(rodar(ai).status, 0);
+  const indice = readFileSync(join(ai, 'INDEX.md'), 'utf8');
+  assert.deepEqual(titulosDe(indice), TITULOS_FIXOS, 'Outros continua sendo a última seção de nível 2');
+  const outros = indice.slice(indice.indexOf('## Outros'));
+  assert.ok(outros.includes('### (raiz de docs/ai)') && outros.includes('### notas'));
+  assert.ok(outros.includes('Ideia solta') && outros.includes('Na raiz'));
   assert.equal(rodar(ai, '--check').status, 0);
 });
 
