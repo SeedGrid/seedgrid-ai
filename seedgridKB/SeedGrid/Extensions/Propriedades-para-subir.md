@@ -93,6 +93,23 @@ Para o JWT há duas formas: variáveis `*_BASE64` (vencem a outra) ou arquivos `
 | `OTEL_SDK_DISABLED` | fixo | `true` em dev |
 | `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME`, `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | fixo | padrão `sg_<slug>_access_token` e `sg_<slug>_refresh_token`; o slug vem da resposta 1 |
 | `SEEDGRID_CITIES_API_USERNAME`, `SEEDGRID_CITIES_API_KEY` | **externa** | só no signup do subdomain-tenancy; sem elas UF e cidade ficam vazios |
+| `SEEDGRID_APP_API_TOKEN` | vazia | **Deixe vazia em produção.** Bearer fixo de máquina, lido só no servidor (sem `NEXT_PUBLIC_`); só entra no `apiFetch` de `lib/seedgrid-app-api.ts` (chamada serviço-a-serviço, sem sessão de usuário). Veja a seção abaixo; segredo se for usada |
+| `SEEDGRID_APP_API_COMPANY_ID` | vazia | **Deixe vazia em produção.** Fixa o `X-Company-Id` das chamadas do servidor; o backend só usa o header para token sem escopo de empresa. Veja a seção abaixo |
+
+## SEEDGRID_APP_API_TOKEN e SEEDGRID_APP_API_COMPANY_ID em produção
+
+Conferido nos fontes em 2026-11-06: boilerplate `subdomain-tenancy` (o `login-tenancy` tem o mesmo código) e `CompanyContextFilter` da extension security. Não foi provado com teste de execução.
+
+- **O que são.** Variáveis opcionais de **serviço-a-serviço**, lidas só no servidor do Next (BFF), nunca expostas ao navegador.
+  - `SEEDGRID_APP_API_TOKEN`: **token fixo** (um Bearer de máquina, por exemplo uma API key da extension apikeys). Vai em `Authorization` apenas nas chamadas de `apiFetch` (`lib/seedgrid-app-api.ts`), que não carregam sessão de usuário. O boilerplate não chama `apiFetch` em nenhuma tela hoje.
+  - `SEEDGRID_APP_API_COMPANY_ID`: id numérico que vira o header `X-Company-Id` no `apiFetch` e na montagem de headers da sessão (`buildServerApiHeaders`).
+- **O usuário logado não depende delas.** A empresa corrente vem **dentro do token da sessão** (claim escopado; o usuário a escolhe em `POST /me/select-company`). O `CompanyContextFilter` só olha o header **quando o token não tem escopo de empresa**, e nesse caso valida que o id está entre as empresas permitidas (senão 403). No subdomain-tenancy o `backendFetch` ainda **apaga** o `X-Company-Id` antes de enviar, e a empresa-tenant vem do host (cabeçalho `X-Forwarded-Host`): na prática a variável não tem efeito nas chamadas com sessão.
+- **O token nunca substitui a sessão.** O fallback para `SEEDGRID_APP_API_TOKEN` quando o cookie de sessão some foi **removido de propósito** de `seedgrid-app-api-server.ts`: ele fazia a tela de perfil responder com os dados de outro usuário (identidade de máquina). Não reintroduza.
+- **Produção:** deixe as duas **vazias** (ou ausentes). Só preencha se um dia o app chamar o backend por `apiFetch` sem usuário; nesse caso o token é **segredo** (não versione, use o segredo do orquestrador) e deve ter só as permissões mínimas. Fixar `COMPANY_ID` num front multiempresa ou multi-tenant é erro: um id só serve a uma empresa.
+
+## Tema e idioma padrão do front do boilerplate
+
+O boilerplate **não tem variável de ambiente** para isso (as `SEEDGRID_PULSE_DEFAULT_THEME_SEED/MODE` e `SEEDGRID_PULSE_UI_DEFAULT_LOCALE` são do Pulse). No `frontend/`: tema inicial em `app/components/Providers.tsx` (`initialTheme`: semente, modo claro, raio, `persistMode: true`); idioma inicial em `app/layout.tsx` (`<LocaleProvider defaultLocale="pt-BR">`), com a escolha do usuário guardada no `localStorage` (chave `seedgrid-app-client.locale`). Para mudar o padrão, edite esses dois arquivos; o tema e o idioma escolhidos pelo usuário valem sobre o padrão.
 
 ## Observabilidade (opcional)
 
