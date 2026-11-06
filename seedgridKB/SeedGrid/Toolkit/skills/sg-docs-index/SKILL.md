@@ -15,7 +15,7 @@ A ordem das seções **não depende do conteúdo**: todo `INDEX.md` tem as mesma
 
 1. **Resumo**: tabela com a contagem de cada tipo e o total.
 2. **Demandas abertas (cobram ação de alguém)**
-3. **Planos**
+3. **Planos**, divididos por estado, sempre nesta ordem: **Em andamento**, **Propostos (não começaram)**, **Concluídos** e **Abandonados ou superados** (o estado vem do `status` do plano). Dentro de cada grupo e em todas as tabelas, a ordem é a **numérica crescente do id** (P2 antes de P10), que é a ordem de criação
 4. **Decisões (ADR)**
 5. **Handoffs** (pastas `handoff` e `handoffs`)
 6. **Relatórios**

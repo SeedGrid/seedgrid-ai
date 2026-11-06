@@ -173,9 +173,28 @@ const resumo = [
   `| **Total** | **${docs.length}** |`,
 ].join('\n');
 
+// Planos divididos por estado (decisão do dono, 2026-11-06); cada grupo em ordem numérica crescente do id (a ordem de
+// criação): em andamento, propostos, concluídos e abandonados ou superados. Os quatro grupos sempre aparecem (layout fixo).
+const estadoDoPlano = (d) => {
+  const st = String(d.status).trim().toLowerCase();
+  if (st.startsWith('concluido')) return 'concluidos';
+  if (st.startsWith('proposto')) return 'propostos';
+  if (/^(abandonad|superad|cancelad)/.test(st)) return 'abandonados';
+  return 'andamento';
+};
+const planosPorEstado = (lista) => [
+  ['andamento', 'Em andamento'],
+  ['propostos', 'Propostos (não começaram)'],
+  ['concluidos', 'Concluídos'],
+  ['abandonados', 'Abandonados ou superados'],
+].map(([chave, titulo]) => {
+  const grupo = lista.filter((d) => estadoDoPlano(d) === chave);
+  return `### ${titulo} (${grupo.length})\n\n${grupo.length ? tabela(grupo) : NENHUM}`;
+}).join('\n\n');
+
 const secoes = [
   `## Resumo\n\n${resumo}`,
-  ...SECOES.map((x) => `## ${x.titulo}\n\n${x.lista.length ? tabela(x.lista) : NENHUM}`),
+  ...SECOES.map((x) => `## ${x.titulo}\n\n${x.lista.length ? (x.resumo === 'Planos' ? planosPorEstado(x.lista) : tabela(x.lista)) : NENHUM}`),
   `## Outros\n\n${pastasOutros.length ? pastasOutros.map((pasta) => `### ${pasta}\n\n${tabela(outros.filter((d) => (d.pasta || '(raiz de docs/ai)') === pasta))}`).join('\n\n') : NENHUM}`,
 ];
 

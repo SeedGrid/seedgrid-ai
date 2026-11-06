@@ -204,3 +204,20 @@ test('plano proposto com tarefa feita ou em andamento reprova; em-andamento pass
   assert.equal(r.status, 0, r.err);
   assert.match(r.err, /"concluido" com 1 tarefa/);
 });
+
+test('planos divididos por estado e em ordem numérica crescente do id (P2 antes de P10)', () => {
+  const ai = docsAi();
+  doc(ai, 'plans/P10-dez.md', { aidlc: '0.7.8', status: 'em-andamento' }, 'Dez');
+  doc(ai, 'plans/P2-dois.md', { aidlc: '0.7.8', status: 'em-andamento' }, 'Dois');
+  doc(ai, 'plans/P3-tres.md', { aidlc: '0.7.8', status: 'proposto' }, 'Três');
+  doc(ai, 'plans/P1-um.md', { aidlc: '0.7.8', status: 'concluido' }, 'Um');
+  doc(ai, 'plans/P12-doze.md', { aidlc: '0.7.8', status: 'concluido' }, 'Doze');
+  assert.equal(rodar(ai).status, 0);
+  const indice = readFileSync(join(ai, 'INDEX.md'), 'utf8');
+  const planos = indice.slice(indice.indexOf('## Planos'), indice.indexOf('## Decisões'));
+  const ordem = ['### Em andamento (2)', '### Propostos (não começaram) (1)', '### Concluídos (2)', '### Abandonados ou superados (0)'].map((t) => planos.indexOf(t));
+  assert.ok(ordem.every((p, i) => p >= 0 && (i === 0 || p > (ordem[i - 1] ?? 0))), 'os quatro grupos, nesta ordem');
+  assert.ok(planos.indexOf('| P2 |') < planos.indexOf('| P10 |'), 'P2 antes de P10 (ordem numérica, não alfabética)');
+  assert.ok(planos.indexOf('| P1 |') < planos.indexOf('| P12 |'));
+  assert.ok(planos.includes('### Abandonados ou superados (0)\n\n_Nenhum._'));
+});
