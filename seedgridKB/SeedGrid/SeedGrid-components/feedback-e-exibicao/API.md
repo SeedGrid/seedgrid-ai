@@ -509,7 +509,7 @@ import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification,
 | `apiUrl` | `string` | `"/api/user-notifications"` | Não | Base das rotas da extension `user-notifications` (BFF, mesma origem). |
 | `tokenEndpoint` | `string` | `"/api/realtime/connect"` | Não | Rota que entrega o token do Pulse; usada quando não há `SgRealtimeProvider` acima. |
 | `requestInit` | `RequestInit` | — | Não | Opções do `fetch` (ex.: `Authorization` quando não há cookie). |
-| `fetcher` | `(input: string, init?: RequestInit) => Promise<Response>` | — | Não | Substitui o `fetch` (apps sem BFF, testes, demonstração). Responder `enabled:false` no token liga o polling. |
+| `fetcher` | `(input: string, init?: RequestInit) => Promise<Response>` | `fetch` global | Não | Substitui o `fetch` (apps sem BFF, testes, demonstração). Responder `enabled:false` no token liga o polling. |
 | `types` | `Record<string, SgNotificationTypeConfig>` | — | Não | Tipo da notificação → `icon` e `onOpen`. O sino não conhece o negócio. |
 | `eventPattern` | `string` | `"user-notification.*"` | Não | Evento do Pulse que dispara a leitura. |
 | `pollIntervalMs` | `number` | `45000` | Não | Polling de reserva (só com o Pulse desligado ou fora do ar), preso entre 30 e 60 s, com jitter e backoff em erro (teto 5 min). |
