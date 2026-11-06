@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- `rules/documentos.md` e `sg-plan-goal`: citar **sempre** o id completo da tarefa com o título (ex.: "P152.F2.T1 (Corrigir o agendador do backup)"), mesmo repetido no mesmo parágrafo, nas mensagens a outros agentes e nas listas de pendências; o exemplo errado ("a F2.T1") ficou explícito.
+
 ## [0.7.9] — 2026-11-05
 
 ### Alterado
