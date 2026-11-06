@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy, configuracao]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
-commit: fe62530a29
-analisado-em: 2026-11-02
+commit: 0534332
+analisado-em: 2026-11-05
 ---
 
 # subdomain-tenancy — Configuração (Quarkus)
@@ -178,9 +178,9 @@ As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."
 | Propriedade | Padrão no consumo | Efeito aqui | Origem |
 |---|---|---|---|
 | `seedgrid.audit.persistence.strategy` | `—` | Só com `jpa` (case-insensitive) roda `db/migration/audit` no master e nos tenants | `RT/flyway/Migrations#migrateAuditSchema` |
-| `seedgrid.subdomain-tenancy.modules.ai-pricing.enabled` | `true` | Migra `db/migration/ai-pricing` no master; desligado = não migra e as rotas respondem 404 | `RT/flyway/Migrations` |
-| `seedgrid.subdomain-tenancy.modules.exchange.enabled` | `true` | Idem para `db/migration/exchange` (master) | `RT/flyway/Migrations` |
-| `seedgrid.subdomain-tenancy.modules.business-days.enabled` | `true` | Migra `db/migration/business-days` no master **e em cada tenant** (cada um com o seu calendário) | `RT/flyway/Migrations` |
+| `seedgrid.subdomain-tenancy.modules.ai-pricing.enabled` | `true` | **Só tem efeito com a extension `seedgrid-ai-pricing` no classpath do host (opcional desde a 2026.11.06).** Migra `db/migration/ai-pricing` no master; desligado ou ausente = não migra e as rotas respondem 404 | `RT/flyway/Migrations` |
+| `seedgrid.subdomain-tenancy.modules.exchange.enabled` | `true` | Idem (só com a extension `seedgrid-exchange` no classpath) para `db/migration/exchange` (master) | `RT/flyway/Migrations` |
+| `seedgrid.subdomain-tenancy.modules.business-days.enabled` | `true` | **Só com a extension `seedgrid-business-days` no classpath.** Migra `db/migration/business-days` no master **e em cada tenant** (cada um com o seu calendário); ausente = nenhuma migration toca o banco | `RT/flyway/Migrations` |
 | `quarkus.mongodb.database` | `default_db` | Sufixo dos bancos Mongo por tenant no `MongoTenantResolverImpl` | `RT/mongodb/MongoTenantResolverImpl` |
 | `seedgrid.ratelimit.{tenant-signup\|tenant-validate-email\|tenant-resend-email}.{permits\|window\|enabled}` | anotação: 100/1 min, 10/1 min, 5/1 h; `enabled=true` | Overrides do `@SgRateLimit` nos endpoints públicos (resilience) | `RT/controllers/TenantSignupController`; `java/seedgrid-quarkus-ext-resilience/.../SgRateLimit.java` (Javadoc) |
 | `seedgrid.security.frontend.base-url` | (do security) | Base dos links de e-mail; `TenantSecurityLinks` insere `<tenant>.` no host em contexto de tenant | `RT/security/TenantSecurityLinks` (via `SecurityFrontendConfig`) |

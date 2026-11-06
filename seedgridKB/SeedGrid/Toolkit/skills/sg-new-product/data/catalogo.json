@@ -44,7 +44,7 @@
       "escolhas_opcionais": {
         "cache": "provedor: memoria (padrao, sem dependencia extra), redis, valkey ou dragonfly"
       },
-      "realtime_observacao": "a realtime vem por padrao no modelo (dependencia explicita no pom do boilerplate, desligada ate haver Pulse). A dependencia explicita sai quando o login-tenancy e o subdomain-tenancy a trouxerem (P147; P145.F1.T6)"
+      "realtime_observacao": "a realtime vem como dependencia normal do login-tenancy 2026.11.05 e do subdomain-tenancy 2026.11.06 (P147), desligada (seedgrid.realtime.enabled=false) ate haver Pulse e sem erro de subida sem ele. O pom dos boilerplates ainda a declara de forma explicita com ${seedgrid.realtime.version} (repeticao inofensiva, herdada do boilerplate; sai quando o repositorio boilerplate deixar de declarar). A pendencia do Pulse (chave do projeto e servico) continua do dono"
     },
     "subdomain-tenancy": {
       "descricao": "Banco por tenant, resolucao por subdominio. Somente B2B; unico que cadastra empresas.",
@@ -88,7 +88,7 @@
       "escolhas_opcionais": {
         "cache": "provedor: memoria (padrao, sem dependencia extra), redis, valkey ou dragonfly"
       },
-      "realtime_observacao": "a realtime vem por padrao no modelo (dependencia explicita no pom do boilerplate, desligada ate haver Pulse). A dependencia explicita sai quando o login-tenancy e o subdomain-tenancy a trouxerem (P147; P145.F1.T6)"
+      "realtime_observacao": "a realtime vem como dependencia normal do login-tenancy 2026.11.05 e do subdomain-tenancy 2026.11.06 (P147), desligada (seedgrid.realtime.enabled=false) ate haver Pulse e sem erro de subida sem ele. O pom dos boilerplates ainda a declara de forma explicita com ${seedgrid.realtime.version} (repeticao inofensiva, herdada do boilerplate; sai quando o repositorio boilerplate deixar de declarar). A pendencia do Pulse (chave do projeto e servico) continua do dono"
     }
   },
   "extensions": {
@@ -235,12 +235,12 @@
       "migrations": "V900-V903",
       "obrigatorias_para_subir": [],
       "telas_admin": "nao documentadas na KB (ver lacunas)",
-      "observacao": "Opcional nos modelos de tenancy (modules.ai-pricing.enabled, padrao true no subdomain).",
+      "observacao": "Opcional de verdade nos modelos de tenancy (P147: <optional> no pom do login-tenancy 2026.11.05 e do subdomain-tenancy 2026.11.06; nao vem transitiva). a versao vem do BOM da tenancy (seedgrid-login-tenancy-parent / seedgrid-subdomain-tenancy-parent): o pom do produto declara a dependencia SEM <version>. Presente, modules.ai-pricing.enabled (padrao true) liga ou desliga; ausente, a extension nao esta no classpath e nao ha migration, tabela nem erro de subida.",
       "depende_de": [],
       "pom": [
         {
           "artifactId": "seedgrid-ai-pricing",
-          "versao": "2026.10.22"
+          "versao_pelo_bom": true
         }
       ],
       "remover_se_ausente_arquivos": [
@@ -258,13 +258,14 @@
       "pom": [
         {
           "artifactId": "seedgrid-exchange",
-          "versao": "2026.10.22"
+          "versao_pelo_bom": true
         }
       ],
       "remover_se_ausente_arquivos": [
         "src/test/java/**/audit/AuditDatabaseResource.java",
         "src/test/java/**/audit/DomainAuditTest.java"
-      ]
+      ],
+      "observacao": "Opcional de verdade nos modelos de tenancy (P147: <optional> no pom do login-tenancy 2026.11.05 e do subdomain-tenancy 2026.11.06; nao vem transitiva). a versao vem do BOM da tenancy (seedgrid-login-tenancy-parent / seedgrid-subdomain-tenancy-parent): o pom do produto declara a dependencia SEM <version>. Presente, modules.exchange.enabled (padrao true) liga ou desliga; ausente, a extension nao esta no classpath e nao ha migration, tabela nem erro de subida."
     },
     "business-days": {
       "papel": "Calendario de dias uteis: feriados, semana de trabalho e calculo.",
@@ -276,9 +277,10 @@
       "pom": [
         {
           "artifactId": "seedgrid-business-days",
-          "versao": "2026.10.22"
+          "versao_pelo_bom": true
         }
-      ]
+      ],
+      "observacao": "Opcional de verdade nos modelos de tenancy (P147: <optional> no pom do login-tenancy 2026.11.05 e do subdomain-tenancy 2026.11.06; nao vem transitiva). a versao vem do BOM da tenancy (seedgrid-login-tenancy-parent / seedgrid-subdomain-tenancy-parent): o pom do produto declara a dependencia SEM <version>. Presente, modules.business-days.enabled (padrao true) liga ou desliga; ausente, a extension nao esta no classpath e nao ha migration, tabela nem erro de subida."
     },
     "cities": {
       "papel": "Cidades e estados do Brasil: paises, 27 estados e 5.571 municipios com codigo IBGE, semeados por migration; API Java (BrazilGeo) e REST de consulta opcional.",
@@ -345,7 +347,7 @@
           "versao": "${seedgrid.realtime.version}"
         }
       ],
-      "observacao": "Vem por padrao nos modelos de tenancy (dependencia explicita no pom do boilerplate, SEEDGRID_REALTIME_ENABLED=false ate haver Pulse). Quando as tenancies passarem a traze-la (P147), a dependencia explicita sai (P145.F1.T6). No modular, o backup depende dela."
+      "observacao": "Nos modelos de tenancy vem como dependencia normal (P147) e desligada; no modelo modular continua opcional e o produto declara o pom."
     },
     "resilience": {
       "papel": "Rate limit e circuit breaker declarativos, cache-backed.",

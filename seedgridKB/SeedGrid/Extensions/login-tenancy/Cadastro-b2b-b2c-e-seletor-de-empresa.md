@@ -30,7 +30,7 @@ seedgrid.login-tenancy.signup.personal-document-required=false
 | `seedgrid.login-tenancy.signup.customer-type` | `B2B` \| `B2C` \| `BOTH` | `B2B` | Quem pode se cadastrar. Fora do tipo: 403 `SIGNUP_TYPE_NOT_ALLOWED`. Só faz sentido em `shared-database`. Em `B2C` ou `BOTH` o login social cria conta pessoal (`LoginTenancySocialAccountCreator`); em `B2B` esse criador fica inativo. |
 | `seedgrid.login-tenancy.signup.personal-document-required` | boolean | `false` | `true` = `POST /public/signup/personal` sem CPF responde **400 `PERSONAL_DOCUMENT_REQUIRED`**. Ligue **só se o produto emitir nota**. Não vale para login social (que não pede CPF). Env: `SEEDGRID_SIGNUP_PERSONAL_DOCUMENT_REQUIRED`. |
 | `seedgrid.login-tenancy.modules.business-days.company-required` | boolean | `true` | Exige empresa corrente no calendário ([[SeedGrid/Extensions/business-days/Calendario-em-camadas|Calendário em camadas]]). |
-| `seedgrid.login-tenancy.modules.<módulo>.enabled` | boolean | `true` | `billing`, `apikeys`, `backup`, `filemanagement`, `ai-pricing`, `exchange`, `business-days`. |
+| `seedgrid.login-tenancy.modules.<módulo>.enabled` | boolean | `true` | `billing`, `apikeys`, `backup`, `filemanagement`, `ai-pricing`, `exchange`, `business-days` (os três últimos **só têm efeito com a extension declarada no `pom` do host**, opcionais desde a 2026.11.05). |
 | `seedgrid.security.isolation` | enum | `shared-database` (declarado pela extension) | Contrato explícito; sem mudança de comportamento. |
 
 ## Quais são as rotas de cadastro?

@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, login-tenancy, exemplos]
 fonte: java/seedgrid-quarkus-ext-login-tenancy
 branch: main
-commit: c67581bda9
-analisado-em: 2026-10-14
+commit: 478421c
+analisado-em: 2026-11-05
 ---
 
 # Login-tenancy (Quarkus) — exemplos
@@ -18,7 +18,7 @@ Fonte: `README.md`, `docs/example-consumo.md` e `pom.xml`.
 <dependency>
   <groupId>br.com.seedgrid</groupId>
   <artifactId>seedgrid-login-tenancy</artifactId>
-  <version>2026.10.14-1</version>
+  <version>2026.11.05</version>
 </dependency>
 <!-- Provider concreto de billing: o login-tenancy só traz o billing-core -->
 <dependency>
@@ -27,6 +27,16 @@ Fonte: `README.md`, `docs/example-consumo.md` e `pom.xml`.
   <version>2026.10.14-1</version>
 </dependency>
 ```
+
+Módulos de domínio **opcionais** (desde a 2026.11.05 não vêm transitivos; declare só os que o produto usa, sem `<version>`, a versão vem do BOM da tenancy):
+
+```xml
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-ai-pricing</artifactId></dependency>
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-exchange</artifactId></dependency>
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-business-days</artifactId></dependency>
+```
+
+A `seedgrid-realtime` já vem (desligada). O `quarkus-mongodb-client` continua obrigatório em host só com a login-tenancy.
 
 ## 2. `application.properties` mínimo
 

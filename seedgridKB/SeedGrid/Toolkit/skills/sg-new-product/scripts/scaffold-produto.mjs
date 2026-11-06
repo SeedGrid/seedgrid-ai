@@ -174,10 +174,11 @@ function ajustarPom(destino, { artefatoApi, nome, r, catalogo, removerPom, adici
   for (const id of adicionar) {
     for (const p of catalogo.extensions[id].pom ?? []) {
       if (pom.includes(`<artifactId>${p.artifactId}</artifactId>`)) continue;
-      const bloco = `\n        <dependency>\n            <groupId>br.com.seedgrid</groupId>\n            <artifactId>${p.artifactId}</artifactId>\n            <version>${p.versao}</version>\n        </dependency>`;
+      const versao = p.versao ? `\n            <version>${p.versao}</version>` : ''; // sem versao: vem do BOM da tenancy (P147)
+      const bloco = `\n        <dependency>\n            <groupId>br.com.seedgrid</groupId>\n            <artifactId>${p.artifactId}</artifactId>${versao}\n        </dependency>`;
       const fim = pom.indexOf('</dependencies>', pom.indexOf('</dependencyManagement>'));
       pom = pom.slice(0, fim).replace(/\s*$/, '') + bloco + '\n    ' + pom.slice(fim);
-      feito.push(`pom: adicionada ${p.artifactId} ${p.versao}`);
+      feito.push(`pom: adicionada ${p.artifactId} ${p.versao ?? '(versao pelo BOM)'}`);
     }
   }
   writeFileSync(f, pom);

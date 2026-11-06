@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, login-tenancy, configuracao]
 fonte: java/seedgrid-quarkus-ext-login-tenancy
 branch: main
-commit: c67581bda9
-analisado-em: 2026-10-14
+commit: 478421c
+analisado-em: 2026-11-05
 ---
 
 # Login-tenancy (Quarkus) — configuração
@@ -61,6 +61,9 @@ Variáveis de ambiente: regra MicroProfile, ex.: `seedgrid.login-tenancy.app.cod
 | `seedgrid.login-tenancy.modules.apikeys.enabled` | `boolean` | `true`/`false` | `true` | Não | `false`: não roda as migrations de apikeys; some de `activeModules`. Beans/endpoints do apikeys continuam presentes. | Desligar migrations de apikeys | — | Runtime | Decl.: `LoginTenancyConfig.Modules.Apikeys#enabled()`. Consumo: `LoginTenancyMigrationService`, status |
 | `seedgrid.login-tenancy.modules.backup.enabled` | `boolean` | `true`/`false` | `true` | Não | `false`: não roda as migrations de backup; some de `activeModules`. Beans do backup continuam. | Desligar migrations de backup | — | Runtime | Decl.: `LoginTenancyConfig.Modules.Backup#enabled()`. Consumo: `LoginTenancyMigrationService`, status |
 | `seedgrid.login-tenancy.modules.filemanagement.enabled` | `boolean` | `true`/`false` | `true` | Não | Só afeta `activeModules` (status/log); filemanagement não tem migrations no baseline. | Informativo | — | Runtime | Decl.: `LoginTenancyConfig.Modules.Filemanagement#enabled()`. Consumo: `LoginTenancyModuleRegistry#activeModules` (status e log do bootstrap) |
+| `seedgrid.login-tenancy.modules.ai-pricing.enabled` | `boolean` | `true`/`false` | `true` | Não | **Só tem efeito com a extension `seedgrid-ai-pricing` no classpath do host** (opcional desde a 2026.11.05; o host a declara no `pom`). Presente: `false` não roda as migrations de ai-pricing e some de `activeModules`. Ausente: nada migra, nenhuma tabela, `activeModules` não a lista. | Desligar ai-pricing | Default de `seedgrid.ai-pricing.enabled=${seedgrid.login-tenancy.modules.ai-pricing.enabled:true}` (`microprofile-config.properties`) | Runtime | Decl.: `LoginTenancyConfig.Modules`. Consumo: `LoginTenancyModuleRegistry`, `OptionalDomainModules`, `LoginTenancyMigrationService` |
+| `seedgrid.login-tenancy.modules.exchange.enabled` | `boolean` | `true`/`false` | `true` | Não | **Só tem efeito com a extension `seedgrid-exchange` no classpath do host** (opcional desde a 2026.11.05; o host a declara no `pom`). Presente: `false` não roda as migrations de exchange e some de `activeModules`. Ausente: nada migra, nenhuma tabela, `activeModules` não a lista. | Desligar exchange | Default de `seedgrid.exchange.enabled=${seedgrid.login-tenancy.modules.exchange.enabled:true}` (`microprofile-config.properties`) | Runtime | Decl.: `LoginTenancyConfig.Modules`. Consumo: `LoginTenancyModuleRegistry`, `OptionalDomainModules`, `LoginTenancyMigrationService` |
+| `seedgrid.login-tenancy.modules.business-days.enabled` | `boolean` | `true`/`false` | `true` | Não | **Só tem efeito com a extension `seedgrid-business-days` no classpath do host** (opcional desde a 2026.11.05; o host a declara no `pom`). Presente: `false` não roda as migrations de business-days e some de `activeModules` (as rotas respondem 404). Ausente: nada migra, nenhuma tabela, `activeModules` não a lista. | Desligar business-days | Default de `seedgrid.business-days.enabled=${seedgrid.login-tenancy.modules.business-days.enabled:true}` (`microprofile-config.properties`) | Runtime | Decl.: `LoginTenancyConfig.Modules`. Consumo: `LoginTenancyModuleRegistry`, `OptionalDomainModules`, `LoginTenancyMigrationService` |
 
 Total `seedgrid.login-tenancy.*`: **13 propriedades**.
 
@@ -182,7 +185,8 @@ seedgrid.login-tenancy.modules.billing.enabled=true
 seedgrid.login-tenancy.modules.apikeys.enabled=true
 seedgrid.login-tenancy.modules.backup.enabled=true
 seedgrid.login-tenancy.modules.filemanagement.enabled=true
-# Modulos de produto (default true): desligado = nao migra e as rotas respondem 404
+# Modulos de dominio (default true; SO tem efeito com a extension no classpath: desde a 2026.11.05 o host declara
+# seedgrid-ai-pricing / seedgrid-exchange / seedgrid-business-days no pom). Desligado = nao migra e as rotas respondem 404
 seedgrid.login-tenancy.modules.ai-pricing.enabled=true
 seedgrid.login-tenancy.modules.exchange.enabled=true
 seedgrid.login-tenancy.modules.business-days.enabled=true
@@ -196,6 +200,8 @@ seedgrid.ratelimit.signup-confirm-email.window=PT5M
 
 ## 8. Receitas
 
+- **Produto que usa IA, câmbio ou dias úteis** (2026.11.05): declare a extension no `pom` (`seedgrid-ai-pricing`, `seedgrid-exchange` e/ou `seedgrid-business-days`, sem `<version>`: a versão vem do BOM do `seedgrid-login-tenancy-parent`). Sem a declaração a tenancy sobe normalmente, sem essas tabelas. Quem vinha de uma versão anterior e usava as três de graça precisa acrescentar a dependência.
+- **Aviso em tempo real (Pulse):** a `seedgrid-realtime` vem por padrão e desligada; para ligar, `seedgrid.realtime.enabled=true` mais a URL e a chave do projeto no Pulse (ver [[SeedGrid/Extensions/realtime/Configuracao|Configuração da realtime]]). Sem isso os `SgUserEvent` de `backup` e `user-notifications` não chegam ao navegador.
 - **Produto sem cobrança**: `seedgrid.login-tenancy.modules.billing.enabled=false` (sem migrations de billing, sem trial no signup e `seedgrid.billing.api.enabled=false` por default). O `BillingProvider` ainda é exigido pelo `billing-core` (README) — Não confirmado se continua obrigatório com o módulo desligado.
 - **Migrations aplicadas por pipeline externo**: `seedgrid.login-tenancy.database.migrate-at-start=false`.
 - **Não criar admin**: deixe `seedgrid.security.first-admin-user.email` vazio (o flag `bootstrap.admin.enabled` sozinho não basta).

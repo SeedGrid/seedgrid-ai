@@ -2,13 +2,13 @@
 tags: [seedgrid, extension, login-tenancy]
 fonte: java/seedgrid-quarkus-ext-login-tenancy
 branch: main
-commit: 5958b92
-analisado-em: 2026-10-27
+commit: 478421c
+analisado-em: 2026-11-05
 ---
 
 # Login-tenancy (Quarkus) — visão geral
 
-Foundation **orquestradora** para aplicações **banco único, multi-empresa (pooled)**: um só PostgreSQL compartilhado por N companies, com isolamento **lógico** (escopo do token + providers SPI). Uma única dependência traz e "fia" os módulos de foundation da v1 (security, audit, billing-core, backup, apikeys, filemanagement, privacy, resilience), orquestra as migrations por módulo, coordena o bootstrap, expõe signup institucional (empresa + usuário root), status técnico e readiness. Não existe `seedgrid.login-tenancy.enabled`: a presença da dependência ativa o baseline.
+Foundation **orquestradora** para aplicações **banco único, multi-empresa (pooled)**: um só PostgreSQL compartilhado por N companies, com isolamento **lógico** (escopo do token + providers SPI). Uma única dependência traz e "fia" os módulos de foundation da v1 (security, audit, billing-core, backup, apikeys, filemanagement, user-notifications, privacy, resilience e a realtime, esta desligada até configurar o Pulse). **`ai-pricing`, `exchange` e `business-days` não vêm mais transitivas (opcionais desde a 2026.11.05)**, orquestra as migrations por módulo, coordena o bootstrap, expõe signup institucional (empresa + usuário root), status técnico e readiness. Não existe `seedgrid.login-tenancy.enabled`: a presença da dependência ativa o baseline.
 
 - Configuração: [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração do login-tenancy]]
 - Exemplos: [[SeedGrid/Extensions/login-tenancy/Exemplos|Exemplos do login-tenancy]]
@@ -22,13 +22,18 @@ Foundation **orquestradora** para aplicações **banco único, multi-empresa (po
 >
 > **Atenção com API keys:** a chave pertence a quem a emitiu. O guarda só impede remover o ÚLTIMO admin; remover qualquer outro admin (ou tirá-lo da empresa) derruba as chaves dele: o dono fora da empresa da chave dá falha de autenticação (fail closed), e apagar o usuário apaga as chaves (`ON DELETE CASCADE`). Prática recomendada (decisão do dono): a chave é emitida por um admin do tenant; antes de remover um admin que emitiu chaves, avisar quem administra e reemitir as chaves por outro admin. Veja [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]].
 
+> **Publicado em 2026-11-05 (`login-tenancy` 2026.11.05, plano P147, commit `478421c`, no Maven Central):**
+> - **`ai-pricing`, `exchange` e `business-days` passaram a opcionais** (`<optional>true</optional>` no runtime e no deployment). O host que usa IA, câmbio ou dias úteis **declara a extension no `pom`**; as versões continuam no BOM (`seedgrid-login-tenancy-parent`), então o host declara sem `<version>`. Sem elas no classpath: nenhuma migration, nenhuma tabela (`sg_ai_*`, câmbio, dias úteis), nenhum `NoClassDefFoundError`, e `activeModules` só lista o que está presente (checagem por nome de classe, sem inicializá-la). **Quebra** para quem usava as três de graça: declare a extension (CHANGELOG da extension).
+> - **`seedgrid-realtime` virou dependência normal** (versão `2026.10.22`). Continua **desligada** (`seedgrid.realtime.enabled=false`) e a subida não falha sem Pulse. É ela quem repassa os `SgUserEvent` (disparados por `backup` e `user-notifications`) ao Pulse; sem a realtime ligada o aviso em tempo real não chega ao navegador. Ver [[SeedGrid/Extensions/realtime/Visao-geral|realtime]].
+> - **`quarkus-mongodb-client`** continua obrigatório em host que tem só a `login-tenancy`, por causa do `LoginTenancyMongoAuditDatabaseProducer` (o `login-tenancy-example` já declara).
+
 ## Módulos Maven e coordenadas (Confirmado — `pom.xml`)
 
 | Módulo | groupId | artifactId | Versão |
 |---|---|---|---|
-| parent | `br.com.seedgrid` | `seedgrid-login-tenancy-parent` | `2026.10.14-1` |
-| runtime | `br.com.seedgrid` | `seedgrid-login-tenancy` | `2026.10.14-1` |
-| deployment | `br.com.seedgrid` | `seedgrid-login-tenancy-deployment` | `2026.10.14-1` |
+| parent | `br.com.seedgrid` | `seedgrid-login-tenancy-parent` | `2026.11.05` |
+| runtime | `br.com.seedgrid` | `seedgrid-login-tenancy` | `2026.11.05` |
+| deployment | `br.com.seedgrid` | `seedgrid-login-tenancy-deployment` | `2026.11.05` |
 
 Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. Status `preview`.
 
@@ -36,17 +41,22 @@ Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02`. Status `preview`.
 
 | Artefato | Versão | Papel |
 |---|---|---|
-| `seedgrid-commons` | `2026.10.08` | embeddable `Contact`, `SeedGridException`/`BusinessException` (o `Address` agora é da `cities`) |
-| `seedgrid-security` (+ `-deployment`) | `2026.10.14` | `Company`, `User`, `Role`, JWT, `EmailServiceInterface`, SPIs de escopo — ver [[SeedGrid/Extensions/security/Visao-geral|security]] |
-| `seedgrid-audit-core`, `seedgrid-audit-postgresql` (`seedgrid-audit-mongodb` só gerenciado) | `2026.09.25` | auditoria e SPIs `AuditMetadataContributor`/`AuditReadScopeProvider` |
-| `seedgrid-backup` (+ `-deployment`) | `2026.10.09` | backup |
-| `seedgrid-billing-core` (+ `-deployment`) | `2026.10.14-1` | cobrança agnóstica; `AccountProvisioningService` |
-| `seedgrid-apikeys` (+ `-deployment`) | `2026.10.14` | ver [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]] |
-| `seedgrid-notification` (+ `-deployment`) | `2026.10.15` | catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral|notification]] |
-| `seedgrid-cities` | `2026.10.22` | cidades e estados do Brasil (código IBGE); **vem transitivamente pela `security`** (`Address.city`) e o signup usa o `StateEnum` dela, então o produto login-tenancy já tem a `cities` no classpath e as migrations V1200-V1299 rodam sozinhas. A opção `cities` do `sg-new-product` só declara a dependência **direta** (para o código do host usar `BrazilGeo` sem depender do transitivo) — ver [[SeedGrid/Extensions/cities/Visao-geral|cities]] |
-| `seedgrid-filemanagement` | `2026.07.08` | arquivos |
-| `seedgrid-privacy` | `2026.07.27` | mascaramento/criptografia de PII |
-| `seedgrid-resilience-core` | `2026.10.13` | `@SgRateLimit` |
+| `seedgrid-commons` | `2026.10.22` | embeddable `Contact`, `SeedGridException`/`BusinessException` (o `Address` agora é da `cities`) |
+| `seedgrid-security` (+ `-deployment`) | `2026.10.22` | `Company`, `User`, `Role`, JWT, `EmailServiceInterface`, SPIs de escopo — ver [[SeedGrid/Extensions/security/Visao-geral|security]] |
+| `seedgrid-audit-core`, `seedgrid-audit-postgresql` (`seedgrid-audit-mongodb` só gerenciado) | `2026.10.22` | auditoria e SPIs `AuditMetadataContributor`/`AuditReadScopeProvider` |
+| `seedgrid-backup` (+ `-deployment`) | `2026.11.03` | backup |
+| `seedgrid-billing-core` (+ `-deployment`) | `2026.10.22` | cobrança agnóstica; `AccountProvisioningService` |
+| `seedgrid-apikeys` (+ `-deployment`) | `2026.10.22` | ver [[SeedGrid/Extensions/apikeys/Visao-geral|apikeys]] |
+| `seedgrid-notification` (+ `-deployment`) | `2026.10.22` | catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral|notification]] |
+| `seedgrid-cities` | `2026.10.22` | cidades e estados do Brasil (código IBGE); **vem transitivamente pela `security`** (`Address.city`) e o signup usa o `StateEnum` dela, então o produto login-tenancy já tem a `cities` no classpath e as migrations V1200-V1299 rodam sozinhas. No `sg-new-product` a `cities` já é parte do modelo de tenancy (não é mais oferecida como opção; só o modelo modular a oferece, declarando a dependência **direta** para o código do host usar `BrazilGeo` sem depender do transitivo) — ver [[SeedGrid/Extensions/cities/Visao-geral|cities]] |
+| `seedgrid-filemanagement` | `2026.11.01` | arquivos |
+| `seedgrid-privacy` | `2026.10.22` | mascaramento/criptografia de PII |
+| `seedgrid-resilience-core` | `2026.10.22` | `@SgRateLimit` |
+| `seedgrid-user-notifications` (+ `-deployment`) | `2026.11.03` | caixa de notificações do usuário (V1400, `LoginTenancyNotificationAccountProvider`); **sempre** vem — ver [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]] |
+| `seedgrid-realtime` | `2026.10.22` | **vem por padrão desde a 2026.11.05**, desligada (`seedgrid.realtime.enabled=false`); repassa `SgUserEvent` ao Pulse — ver [[SeedGrid/Extensions/realtime/Visao-geral|realtime]] |
+| `seedgrid-ai-pricing` | `2026.10.22` (só no BOM) | **opcional** (`<optional>true</optional>`): o host declara; ver [[SeedGrid/Extensions/ai-pricing/Visao-geral|ai-pricing]] |
+| `seedgrid-exchange` | `2026.10.22` (só no BOM) | **opcional**: o host declara; ver [[SeedGrid/Extensions/exchange/Visao-geral|exchange]] |
+| `seedgrid-business-days` | `2026.10.22` (só no BOM) | **opcional**: o host declara; ver [[SeedGrid/Extensions/business-days/Visao-geral|business-days]] |
 
 O **provider de billing** concreto (`BillingProvider`) não vem embarcado: o host precisa fornecer (ex.: `seedgrid-billing-stripe`) ou o boot falha (README; o teste usa `NoopBillingProvider`). Também empacota `quarkus-mongodb-client` como dependência opcional (README) para a auditoria MongoDB.
 
@@ -64,20 +74,24 @@ O **provider de billing** concreto (`BillingProvider`) não vem embarcado: o hos
 
 ```mermaid
 flowchart LR
-    S[security<br/>sg_flyway_schema_history_security] --> A{audit strategy = jpa?}
+    C[cities<br/>sg_cities] --> S[security<br/>sg_flyway_schema_history_security]
+    S --> A{audit strategy = jpa?}
     A -- sim --> AU[audit]
     A -- não --> B
     AU --> B{modules.backup}
-    B -- on --> BK[backup] --> BI
-    B -- off --> BI{modules.billing}
+    B -- on --> BK[backup] --> F
+    B -- off --> F{filemanagement<br/>registry-table.enabled}
+    F -- on --> FM[filemanagement V1300] --> BI
+    F -- off --> BI{modules.billing}
     BI -- on --> BL[billing] --> AK
     BI -- off --> AK{modules.apikeys}
     AK -- on --> AP[apikeys] --> X
-    AK -- off --> X{ai-pricing / exchange / business-days<br/>modules.*.enabled}
-    X --> LT[login-tenancy<br/>V700] --> APP["app (database.locations)<br/>flyway_schema_history"]
+    AK -- off --> X{ai-pricing / exchange / business-days<br/>só se a extension está no classpath<br/>e modules.*.enabled}
+    X --> UN[user-notifications V1400<br/>salvo user-notifications.enabled=false]
+    UN --> LT[login-tenancy<br/>V700] --> APP["app (database.locations)<br/>flyway_schema_history"]
 ```
 
-Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `sg_flyway_schema_history_<modulo>` (`ai-pricing` → `sg_flyway_schema_history_ai_pricing`; `login-tenancy` → `sg_flyway_schema_history_login_tenancy`); a aplicação usa `seedgrid.login-tenancy.database.locations` (padrão `classpath:db/migration/app`) e `flyway_schema_history`. Falha em qualquer módulo lança `MigrationExecutionException` e derruba o startup.
+**`ai-pricing`, `exchange` e `business-days` só migram quando a extension está no classpath do host** (`OptionalDomainModules`, checagem por nome de classe) **e** `modules.<x>.enabled=true` (padrão). Cada módulo usa `classpath:db/migration/<modulo>` e a tabela `sg_flyway_schema_history_<modulo>` (`ai-pricing` → `sg_flyway_schema_history_ai_pricing`; `login-tenancy` → `sg_flyway_schema_history_login_tenancy`); a aplicação usa `seedgrid.login-tenancy.database.locations` (padrão `classpath:db/migration/app`) e `flyway_schema_history`. Falha em qualquer módulo lança `MigrationExecutionException` e derruba o startup.
 
 ### Isolamento lógico por company
 

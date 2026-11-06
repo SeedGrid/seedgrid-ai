@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
-commit: b2abc1e
-analisado-em: 2026-11-02
+commit: 0534332
+analisado-em: 2026-11-05
 ---
 
 # subdomain-tenancy — Visão geral (Quarkus)
@@ -31,13 +31,18 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 - Health por tenant, OpenAPI filtrado por contexto (master × tenant), métricas Micrometer e spans OpenTelemetry.
 - Bootstrap do admin global no master, limpeza de cadastros não validados, integração com billing (conta + trial), audit, backup e security.
 
+> **Publicado em 2026-11-05 (`subdomain-tenancy` 2026.11.06, plano P147, commit `0534332`, no Maven Central; a 2026.11.05 já tinha saído de manhã):**
+> - **`ai-pricing`, `exchange` e `business-days` passaram a opcionais** (`<optional>true</optional>` no runtime e no deployment; versões no BOM do parent). O host que as usa **declara a extension no `pom`**. Sem elas no classpath as migrations desses módulos não rodam (**nem tocam o banco do master ou do tenant**) e a subida não falha. **Quebra** para quem usava as três de graça: declare a extension.
+> - **`seedgrid-realtime` virou dependência normal** (`2026.10.22`), desligada (`seedgrid.realtime.enabled=false`), sobe sem Pulse e sem erro; repassa os `SgUserEvent` de `backup` e `user-notifications` ao Pulse ([[SeedGrid/Extensions/realtime/Visao-geral|realtime]]).
+> - O `quarkus-mongodb-client` continua obrigatório em host que tem só a tenancy (nota do `dev-2`).
+
 ## Módulos e coordenadas Maven
 
 | Módulo | Coordenada | Observação |
 |---|---|---|
-| parent | `br.com.seedgrid:seedgrid-subdomain-tenancy-parent:2026.11.02` (pom) | Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02` (Quarkus 3.30.8). Centraliza as versões da foundation em `<properties>` e `dependencyManagement` |
-| runtime | `br.com.seedgrid:seedgrid-subdomain-tenancy:2026.11.02` | O que o host declara |
-| deployment | `br.com.seedgrid:seedgrid-subdomain-tenancy-deployment:2026.11.02` | `SubdomainTenancyProcessor` |
+| parent | `br.com.seedgrid:seedgrid-subdomain-tenancy-parent:2026.11.06` (pom) | Parent: `br.com.seedgrid:seedgrid-parent:2026.07.02` (Quarkus 3.30.8). Centraliza as versões da foundation em `<properties>` e `dependencyManagement` |
+| runtime | `br.com.seedgrid:seedgrid-subdomain-tenancy:2026.11.06` | O que o host declara |
+| deployment | `br.com.seedgrid:seedgrid-subdomain-tenancy-deployment:2026.11.06` | `SubdomainTenancyProcessor` |
 
 **Confirmado** em `pom.xml`, `runtime/pom.xml`, `deployment/pom.xml`.
 
@@ -45,15 +50,22 @@ Multi-tenancy **um banco PostgreSQL por tenant**, com o tenant identificado pelo
 
 | Artefato | Versão | Uso aqui |
 |---|---|---|
-| `seedgrid-commons` | 2026.10.08 | `BaseEntity`, `commons.spis.TenantProvider`, `SchemaUtils`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
-| `seedgrid-security` | 2026.10.14 | Usuários/papéis, JWT, `PasswordService`, SPIs `JwtTokenCustomizer`, `JwtTokenValidator`, `SecurityScopeResolverProvider`, `SecurityLinkBuilder` |
-| `seedgrid-privacy` | 2026.07.27 | Mascaramento/criptografia de PII do `Tenant` |
-| `seedgrid-audit-core` | 2026.09.25 | `AuditMetadataContributor`, `AuditReadScopeProvider` (`seedgrid-audit-postgresql` só em teste) |
-| `seedgrid-backup` | 2026.10.09 | `backup.spis.TenantProvider` |
-| `seedgrid-billing-core` | 2026.10.14-1 | Conta/trial por tenant, SPIs `CurrentAccountResolver`, `AccountMembersGateway` (`seedgrid-billing-stripe` só em `dependencyManagement`) |
-| `seedgrid-apikeys` | 2026.10.14 | Schema de API keys no master e nos tenants |
-| `seedgrid-notification` (+ `-deployment`) | 2026.10.15 | Catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
-| `seedgrid-resilience-core` | 2026.10.13 | `@SgRateLimit` nos endpoints públicos |
+| `seedgrid-commons` | 2026.10.22 | `BaseEntity`, `commons.spis.TenantProvider`, `SchemaUtils`, `BusinessException`/`SystemSeedGridException` (base `SeedGridException`) |
+| `seedgrid-security` | 2026.10.22 | Usuários/papéis, JWT, `PasswordService`, SPIs `JwtTokenCustomizer`, `JwtTokenValidator`, `SecurityScopeResolverProvider`, `SecurityLinkBuilder` |
+| `seedgrid-privacy` | 2026.10.22 | Mascaramento/criptografia de PII do `Tenant` |
+| `seedgrid-audit-core` | 2026.10.22 | `AuditMetadataContributor`, `AuditReadScopeProvider` (`seedgrid-audit-postgresql` só em teste) |
+| `seedgrid-backup` | 2026.11.03 | `backup.spis.TenantProvider` |
+| `seedgrid-billing-core` | 2026.10.22 | Conta/trial por tenant, SPIs `CurrentAccountResolver`, `AccountMembersGateway` (`seedgrid-billing-stripe` só em `dependencyManagement`) |
+| `seedgrid-apikeys` | 2026.10.22 | Schema de API keys no master e nos tenants |
+| `seedgrid-notification` (+ `-deployment`) | 2026.10.22 | Catálogo de eventos, regras, outbox e envio por e-mail/WhatsApp; vem transitivamente, o host não precisa declará-la — ver [[SeedGrid/Extensions/notification/Visao-geral\|notification]] |
+| `seedgrid-resilience-core` | 2026.10.22 | `@SgRateLimit` nos endpoints públicos |
+| `seedgrid-cities` | 2026.10.22 | cidades e estados (código IBGE); `Address.city`; migra por tenant junto da security |
+| `seedgrid-filemanagement` | 2026.11.01 | anexos (V1300), só com `seedgrid.filemanagement.registry-table.enabled=true` |
+| `seedgrid-user-notifications` | 2026.11.03 | caixa de notificações do usuário (V1400); ver [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]] |
+| `seedgrid-realtime` | 2026.10.22 | **vem por padrão desde a 2026.11.06**, desligada; repassa `SgUserEvent` ao Pulse |
+| `seedgrid-ai-pricing` | 2026.10.22 (só no BOM) | **opcional**: o host declara (migra só o master) |
+| `seedgrid-exchange` | 2026.10.22 (só no BOM) | **opcional**: o host declara (migra só o master) |
+| `seedgrid-business-days` | 2026.10.22 (só no BOM) | **opcional**: o host declara (migra o master e cada tenant) |
 
 Quarkus no runtime: `arc`, `hibernate-orm(-panache)`, `jdbc-postgresql`, `agroal`, `flyway`, `rest-jackson`, `hibernate-validator`, `smallrye-openapi`, `opentelemetry`, `micrometer(-registry-prometheus)`, `smallrye-fault-tolerance`, `mailer`, `qute`, `quarkus-mongodb-client` (**optional**), além de `jbcrypt`. O deployment acrescenta `quarkus-scheduler-deployment`, `quarkus-virtual-threads-deployment` e `quarkus-grpc-common-deployment`.
 
@@ -78,7 +90,7 @@ flowchart LR
 - **Resolução** (Confirmado): `TenantResolutionFilter` lê `X-Forwarded-Host` (prioritário) ou `Host`, extrai o tenant com `TenantHostExtractor` e grava no `TenantContext` e no MDC (`tenantId`); sem tenant → `master`. O Javadoc do filtro deixa explícito que o default para `master` **não** é fronteira de segurança: o isolamento vem do JWT/API key serem resolvidos no banco do próprio tenant.
 - **JWT**: `SubdomainTenancyJwtTokenCustomizer` adiciona as claims `subdomain` e `audience` (`platform`/`client`); `SubdomainTenancyJwtTokenValidator` rejeita token cujo `subdomain` difere do host.
 - **Conexões**: `TenantConnectionResolverImpl` verifica no master se o tenant existe e está ativo (`TenantNotFoundException` caso contrário), cria `SimpleDriverDataSource` por tenant, aplica limite/evicção e circuit breaker. Detalhes dos parâmetros em [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|Configuração]].
-- **Startup** (`MigrationService#onStart`, `@Priority(APPLICATION)`): no master roda, em ordem, security → audit (se `jpa`) → backup → billing → apikeys → ai-pricing → exchange → business-days (módulos de produto, `modules.<x>.enabled`, default `true`) → subdomain-tenancy → `db/migration/master` (+ additional), depois `AdminUserBootstrapService#seedAdminUserIfNeeded`. Tenants não migram no boot por padrão. **Por tenant** (`TenantProvisioningService` e `TenantMigrationCoordinator`): security (+ cities), tenant, audit, backup, apikeys e business-days, mais o `filemanagement` quando `seedgrid.filemanagement.registry-table.enabled=true` (a partir da 2026.11.01). O `filemanagement` não tem `modules.filemanagement.enabled`: quem decide é `seedgrid.filemanagement.registry-table.enabled`. Ligado (a partir da 2026.11.01), a `V1300` (`sg_attachments`) entra no histórico do tenant e o master não ganha a tabela; desligado (padrão), nada é criado. Versões anteriores, tenant existente e o caso do host que reescreve `quarkus.hibernate-orm.packages`: veja [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]].
+- **Startup** (`MigrationService#onStart`, `@Priority(APPLICATION)`): no master roda, em ordem, security → audit (se `jpa`) → backup → billing → apikeys → ai-pricing → exchange → business-days (módulos de domínio **opcionais**, só quando a extension está no classpath do host, e `modules.<x>.enabled`, default `true`; ausente = a migration sai antes de tocar o banco) → subdomain-tenancy → `db/migration/master` (+ additional), depois `AdminUserBootstrapService#seedAdminUserIfNeeded`. Tenants não migram no boot por padrão. **Por tenant** (`TenantProvisioningService` e `TenantMigrationCoordinator`): security (+ cities), tenant, audit, backup, apikeys e business-days, mais o `filemanagement` quando `seedgrid.filemanagement.registry-table.enabled=true` (a partir da 2026.11.01). O `filemanagement` não tem `modules.filemanagement.enabled`: quem decide é `seedgrid.filemanagement.registry-table.enabled`. Ligado (a partir da 2026.11.01), a `V1300` (`sg_attachments`) entra no histórico do tenant e o master não ganha a tabela; desligado (padrão), nada é criado. Versões anteriores, tenant existente e o caso do host que reescreve `quarkus.hibernate-orm.packages`: veja [[SeedGrid/Extensions/filemanagement/Configuracao|Configuração do filemanagement]].
 - **Signup → provisionamento**: `POST /public/tenants` grava o tenant pendente e envia OTP; `POST /public/tenants/validate-email` valida o código e chama `TenantProvisioningService#createTenantWithAdmin` (lock local + `pg_try_advisory_lock`, `CREATE DATABASE` idempotente, migrations security → tenant → audit → backup → apikeys → business-days, usuário root; rollback com `DROP DATABASE` se o banco foi criado no fluxo), depois `SubdomainBillingAccounts#ensureFor` (conta + trial no billing) e ativa o tenant.
 - **Migração por tenant**: `TenantMigrationCoordinator` com estado em `sg_tenant_migration_state` (`PENDING`/`MIGRATING`/`READY`/`FAILED`), lock com fencing token e heartbeat. Gatilhos: login (gate devolve `503` + `Retry-After: 15`), endpoint manual, ou boot.
 - **Admin do master (`seedgrid.subdomain-tenancy.admin-user.*`, Confirmado em `AdminUserBootstrapService`, PasswordChangeRequiredFilter e UserService#changePassword; P2.F0.DEM10 do display):** no primeiro boot, com a tabela `sg_users` do master vazia, o bootstrap cria o usuário root com a role `ADMIN`, ligado à empresa-plataforma (default company). Ele **nasce com `change_password_required = true`** (mesmo com `initial-password` configurada) e **sem e-mail confirmado** (grava `email_confirmation_token` e envia o e-mail de boas-vindas com a senha e o token). Com a flag ligada, o `PasswordChangeRequiredFilter` responde **401** com o corpo `{"code":"PASSWORD_CHANGE_REQUIRED","message":"..."}` em **toda** rota autenticada (não só `/admin`), exceto as marcadas `@SgPermitWithoutPasswordChange`. O login em si funciona e devolve o token, com `changePasswordRequired: true` na resposta. Para liberar: `PUT /users/change-password` (corpo `{"currentPassword","newPassword"}`; permissão `USER_CHANGE_PASSWORD`, que a role `ADMIN` já tem) ou `PUT /me/profile/password` (mesmo corpo); ambos limpam a flag, gravam o histórico de senhas e **revogam os refresh tokens e a sessão do usuário**, então o front deve fazer login de novo com a senha nova. A nova senha segue a política de senha (`@ValidPassword`) e não pode repetir senha recente; senha atual errada devolve erro de negócio. Se a senha foi gerada (sem `initial-password`) e o e-mail não saiu, o admin fica sem acesso até a recuperação de senha (o log avisa). Teste automatizado que não quer percorrer o fluxo pode baixar a flag direto no master (`UPDATE sg_users SET change_password_required = FALSE WHERE email = ...`), só em ambiente de teste. Não conferi se o login exige o e-mail confirmado.

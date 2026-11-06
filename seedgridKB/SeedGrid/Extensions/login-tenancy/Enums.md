@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, login-tenancy, enum]
 fonte: java/seedgrid-quarkus-ext-login-tenancy
 branch: main
-commit: c67581bda9
-analisado-em: 2026-10-14
+commit: 478421c
+analisado-em: 2026-11-05
 ---
 
 # Login-tenancy (Quarkus) — enums
@@ -61,9 +61,12 @@ FQN: `br.com.seedgrid.logintenancy.configs.FoundationModule` — módulos de fou
 | `APIKEYS` | Módulo apikeys | `modules.apikeys.enabled`: migrations de apikeys | Confirmado |
 | `BACKUP` | Módulo backup | `modules.backup.enabled`: migrations de backup | Confirmado |
 | `FILEMANAGEMENT` | Módulo filemanagement | `modules.filemanagement.enabled`: só entra em `activeModules` (status/log) | Confirmado |
+| `AI_PRICING` | Módulo ai-pricing (**opcional**) | `modules.ai-pricing.enabled`: migrations e rotas; só ativo com a extension no classpath (`OptionalDomainModules`) | Confirmado (2026.11.05) |
+| `EXCHANGE` | Módulo exchange (**opcional**) | `modules.exchange.enabled`: idem | Confirmado (2026.11.05) |
+| `BUSINESS_DAYS` | Módulo business-days (**opcional**) | `modules.business-days.enabled`: idem | Confirmado (2026.11.05) |
 
 - Não é tipo de propriedade: cada constante tem sua propriedade booleana (ver [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração]]); o mapeamento é o `switch` de `LoginTenancyFoundationConfig#moduleEnabled`.
-- **JSON**: em `GET /public/login-tenancy/status`, `activeModules` lista os nomes em minúsculas (`billing`, `apikeys`, `backup`, `filemanagement`), na ordem do enum.
+- **JSON**: em `GET /public/login-tenancy/status`, `activeModules` lista os nomes em minúsculas (`billing`, `apikeys`, `backup`, `filemanagement` e, só com a extension no classpath, `ai_pricing`, `exchange`, `business_days`: o nome da constante em minúsculas, com `_`), na ordem do enum.
 - API: `LoginTenancyModuleRegistry#isActive(FoundationModule)`, `#activeModules()`.
 
 ## Internos

@@ -4,7 +4,12 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.7.9] — 2026-11-05
+
 ### Alterado
+- `sg-new-product`: o catálogo passa a refletir o modelo novo (P145, P147). `cities`, `notification`, `cache-core` (com `resilience-core`) e `realtime` **vêm com o modelo**; o **provedor de WhatsApp é obrigatório** (`evolution` padrão ou `whatsapp-cloud`, pergunta 3c) e o **provedor de cache é opcional** (memória padrão, `redis`, `valkey` ou `dragonfly`, pergunta 3d); `ai-pricing`, `exchange` e `business-days` são **opcionais de verdade** nas tenancies (`<optional>` no pom, sem migration, tabela nem erro de subida quando ausentes); `realtime` é dependência normal e fica desligada por `seedgrid.realtime.enabled=false`. Pins do catálogo atualizados (`ai-pricing`, `exchange`, `business-days`, `cache-core` em 2026.10.22) e `check-catalogo-pins` no `npm test`.
+- Boilerplates ressincronizados (`login-tenancy-b2b`, `login-tenancy-b2c`, `modular`, `subdomain-tenancy`) com o repositório `boilerplate` em `476e179`: `login-tenancy` 2026.11.06 e `subdomain-tenancy` 2026.11.07.
+- KB das extensions `login-tenancy` e `subdomain-tenancy`: módulos de domínio opcionais, `realtime` por padrão e o aviso de `SgUserEvent` sem ouvinte (`SgUserEvents.fire` no `commons` 2026.11.01); `Versoes.md` e catálogo de enums regenerados.
 - `sg-docs-index`: o `docs/ai/INDEX.md` passa a ter **layout fixo** em todo produto (Resumo, Demandas abertas, Planos, Decisões (ADR), Handoffs, Relatórios, Especificações, Análises, Demandas respondidas e Outros); toda seção sempre aparece e a que não tem documento diz `_Nenhum._`. Antes as seções só apareciam com conteúdo e cada produto saía com uma ordem diferente. Rode o script de novo nos produtos já gerados para atualizar o índice.
 
 ### Adicionado

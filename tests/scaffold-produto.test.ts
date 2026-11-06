@@ -245,6 +245,22 @@ test('trial, ai-pricing, exchange e business-days mexem no pom, no env e nos tes
   assert.ok(com.saida.pendencias.some((p) => /^cache:/.test(p)) && com.saida.pendencias.some((p) => /^realtime:/.test(p)));
 });
 
+test('ai-pricing, exchange e business-days sao opcionais de verdade: so a marcada fica no pom e sem <version> (BOM da tenancy) (P145.F1.T6)', async () => {
+  const tres = ['ai-pricing', 'exchange', 'business-days'];
+  for (const modelo of ['login-tenancy-b2b', 'login-tenancy-b2c', 'subdomain-tenancy']) {
+    for (const marcada of tres) {
+      const r = await gerar({ ...B2B, modelo, extensoes: [marcada] });
+      assert.equal(r.saida.ok, true, modelo + ' ' + marcada + ': ' + (r.saida.erros ?? []).join('\n'));
+      const pom = ler(r.destino, 'backend/pom.xml');
+      for (const x of tres) {
+        const tem = pom.includes(`<artifactId>seedgrid-${x}</artifactId>`);
+        assert.equal(tem, x === marcada, `${modelo}: ${x} ${tem ? 'presente' : 'ausente'} com so ${marcada} marcada`);
+      }
+      assert.ok(!new RegExp(`<artifactId>seedgrid-${marcada}</artifactId>\\s*<version>`).test(pom), `${modelo}: ${marcada} sem <version> (versao pelo BOM)`);
+    }
+  }
+});
+
 test('provedor de WhatsApp: obrigatorio, Cloud troca o artefato e as chaves, Evolution e o padrao do AIDLC (P145.F1.T5)', async () => {
   const { provedorWhatsapp: _w, ...semProvedor } = B2B as Record<string, unknown>;
   const falta = await gerar(semProvedor);

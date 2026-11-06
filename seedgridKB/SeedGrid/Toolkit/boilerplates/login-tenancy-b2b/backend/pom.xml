@@ -30,7 +30,7 @@
              causa (em 2026-08-19: sessao caindo sozinha por rotacao concorrente de refresh token).
              Nao volte a pinar lib da foundation aqui: se precisar de uma versao diferente, o certo
              e' bumpar no login-tenancy e republicar a cascata. -->
-        <seedgrid.login-tenancy.version>2026.10.22</seedgrid.login-tenancy.version>
+        <seedgrid.login-tenancy.version>2026.11.06</seedgrid.login-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
         <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
         <seedgrid.notification.version>2026.10.22</seedgrid.notification.version>
@@ -97,6 +97,19 @@
             <groupId>br.com.seedgrid</groupId>
             <artifactId>seedgrid-login-tenancy</artifactId>
             <version>${seedgrid.login-tenancy.version}</version>
+        </dependency>
+        <!-- Modulos de dominio opcionais (plano 147): este app os usa, entao declara (versao pelo BOM da tenancy). -->
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-ai-pricing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-exchange</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-business-days</artifactId>
         </dependency>
         <!-- Realtime: entrega ao front o token de conexao do Pulse (POST /realtime/connect) e
              repassa ao Pulse os SgUserEvent da plataforma (ex.: o backup avisando que terminou).

@@ -28,6 +28,7 @@
         <seedgrid.privacy.version>2026.10.22</seedgrid.privacy.version>
         <seedgrid.commons.version>2026.10.22</seedgrid.commons.version>
         <seedgrid.resilience.version>2026.10.22</seedgrid.resilience.version>
+        <seedgrid.user-notifications.version>2026.11.04</seedgrid.user-notifications.version>
         <!-- No seedgrid-filemanagement o minio e <optional>: nao chega transitivo. -->
         <minio.version>8.5.9</minio.version>
     </properties>
@@ -74,6 +75,13 @@
             <groupId>br.com.seedgrid</groupId>
             <artifactId>seedgrid-privacy</artifactId>
             <version>${seedgrid.privacy.version}</version>
+        </dependency>
+
+        <!-- Caixa de notificacoes do usuario (sino): sem configuracao extra; migra a propria tabela. -->
+        <dependency>
+            <groupId>br.com.seedgrid</groupId>
+            <artifactId>seedgrid-user-notifications</artifactId>
+            <version>${seedgrid.user-notifications.version}</version>
         </dependency>
 
         <!-- Provider de auditoria (PostgreSQL). A security traz so o audit-core; o host escolhe o provider. -->

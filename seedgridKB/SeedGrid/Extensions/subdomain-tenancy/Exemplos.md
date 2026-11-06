@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy, exemplos]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy, platform-examples/examples/seedgrid-subdomain-tenancy-example
 branch: main
-commit: fe62530a29
-analisado-em: 2026-10-14
+commit: 0534332
+analisado-em: 2026-11-05
 ---
 
 # subdomain-tenancy — Exemplos (Quarkus)
@@ -18,8 +18,16 @@ Fontes: app de exemplo `platform-examples/examples/seedgrid-subdomain-tenancy-ex
 <dependency>
     <groupId>br.com.seedgrid</groupId>
     <artifactId>seedgrid-subdomain-tenancy</artifactId>
-    <version>2026.10.14-1</version>
+    <version>2026.11.06</version>
 </dependency>
+```
+
+Módulos de domínio **opcionais** (desde a 2026.11.06 não vêm transitivos; declare só os que o produto usa, sem `<version>`, que vem do BOM do parent da tenancy):
+
+```xml
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-ai-pricing</artifactId></dependency>
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-exchange</artifactId></dependency>
+<dependency><groupId>br.com.seedgrid</groupId><artifactId>seedgrid-business-days</artifactId></dependency>
 ```
 
 O exemplo usa a propriedade `seedgrid.subdomain-tenancy.version` (`2026.10.13` no pom dele) e importa o parent da extension como BOM para não pinar commons/security/billing… à mão (comentário no `pom.xml` do exemplo).
