@@ -28,8 +28,10 @@ Comandos de geração (equivalentes em qualquer sistema com `openssl`):
 | Senha de banco / MinIO / Mongo | `openssl rand -base64 24` |
 | Par RSA do JWT (PKCS#8) | `openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out private.pem` |
 | Chave pública a partir da privada | `openssl pkey -in private.pem -pubout -out public.pem` |
-| Privada em Base64 (DER) | `openssl pkey -in private.pem -outform DER \| openssl base64 -A` |
+| Privada em Base64 (DER, **PKCS#8**) | `openssl pkcs8 -topk8 -nocrypt -in private.pem -outform DER \| openssl base64 -A` |
 | Pública em Base64 (DER) | `openssl pkey -in private.pem -pubout -outform DER \| openssl base64 -A` |
+
+> **Atenção (2026-11-06):** `openssl pkey -in private.pem -outform DER` **não serve** para a privada: no OpenSSL 3.5.3 ele grava o DER em **PKCS#1** (`RSAPrivateKey`: `SEQUENCE { INTEGER 0, INTEGER n ... }`), mesmo a partir de um PEM `BEGIN PRIVATE KEY`, e o `RsaKeyProvider` do security falha com `algid parse error, not a sequence` (visto no display em produção). Para o Java a privada precisa ser PKCS#8 DER: use `openssl pkcs8 -topk8 -nocrypt -in private.pem -outform DER` (confirmado: `SEQUENCE { INTEGER 0, SEQUENCE { OBJECT rsaEncryption ...`). A **pública** (`pkey -pubout -outform DER`) está certa (X.509 SPKI). Confira o formato antes de subir: `echo "$B64" \| base64 -d \| openssl asn1parse -inform DER \| head -4` — o 3º item tem de ser `SEQUENCE` com `rsaEncryption`, não um `INTEGER` grande.
 
 Para o JWT há duas formas: variáveis `*_BASE64` (vencem a outra) ou arquivos `keys/private.pem` e `keys/public.pem`. `MP_JWT_VERIFY_PUBLICKEY` precisa receber o **mesmo** valor da pública Base64 (não há ponte automática). Tanto `keys/` quanto `*.pem` ficam no `.gitignore`.
 
