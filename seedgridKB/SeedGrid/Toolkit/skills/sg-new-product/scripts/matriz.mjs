@@ -152,6 +152,17 @@ const mesclar = (a, b) => {
   }
 };
 
+// Respostas geradas por toolkit antigo (<= 0.7.8) listam extensions que hoje o modelo ja traz (cities, realtime...) ou que
+// viraram pergunta propria (whatsapp -> 3c). Em vez de so recusar, diz o que fazer com a resposta velha (P145.F1.T4).
+function dicaOpcaoAposentada(catalogo, modelo, id) {
+  if (id === 'whatsapp') return ' -> o WhatsApp agora e a pergunta 3c: tire "whatsapp" desta lista e informe provedorWhatsapp (evolution ou whatsapp-cloud)';
+  // o id do modelo na pergunta pode levar o publico (login-tenancy-b2c); o catalogo usa a chave sem ele
+  const chave = Object.keys(catalogo.modelos ?? {}).find((k) => modelo === k || String(modelo).startsWith(`${k}-`));
+  const traz = catalogo.modelos?.[chave]?.traz ?? [];
+  if (traz.includes(id)) return ` -> "${id}" ja vem com o modelo ${modelo}: tire da lista (resposta de toolkit antigo)`;
+  return '';
+}
+
 // Valida as respostas contra a matriz e devolve { erros, respostas, extensoes, adicionadas, efeitos }.
 // `efeitos` vem na ordem das perguntas; cada item e { origem, efeito }. Nada e perguntado fora da matriz:
 // resposta a pergunta que nao se aplica, ou chave desconhecida, e erro.
@@ -205,7 +216,7 @@ export function resolver(matriz, catalogo, entrada) {
       const validos = new Set(p.opcoes.map((x) => x.id));
       const repetido = v.find((x, i) => v.indexOf(x) !== i);
       if (repetido) e(`pergunta ${p.numero}: opcao repetida ${repetido}`);
-      for (const x of v) if (!validos.has(x)) e(`pergunta ${p.numero}: opcao desconhecida "${x}" (validas: ${[...validos].join(', ')})`);
+      for (const x of v) if (!validos.has(x)) e(`pergunta ${p.numero}: opcao desconhecida "${x}" (validas: ${[...validos].join(', ')})${dicaOpcaoAposentada(catalogo, ctx.modelo, x)}`);
       const escolhidas = [...validos].filter((x) => v.includes(x));
       const fechadas = p.id === 'extensoes-modelo-modular' ? fecharDependencias(catalogo, escolhidas) : new Set(escolhidas);
       adicionadas = p.id === 'extensoes-modelo-modular' ? [...fechadas].filter((x) => !escolhidas.includes(x) && !ctx.extensoes.has(x)).sort() : []; // o que a base do modelo ja traz nao conta como 'trazida por dependencia'

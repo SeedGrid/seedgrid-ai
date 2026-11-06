@@ -5,6 +5,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Alterado
+- **Aviso para quem gerou projeto com a 0.7.8** (P145.F1.T4): o `backend/pom.xml` saiu com `seedgrid-ai-pricing` fixa em **2026.10.13** (e `seedgrid-cities` repetida), e uma versão escrita no `pom` do produto vence a do BOM do `login-tenancy`. A 2026.10.13 cria as tabelas `ai_*`; da 2026.10.22 em diante a extension cria `sg_ai_*` (migrations reescritas no lugar, sem retrocompatibilidade). Para corrigir: subir `seedgrid.login-tenancy.version`, apagar os blocos `seedgrid-ai-pricing` e `seedgrid-cities` do fim do `pom`, declarar `seedgrid-ai-pricing` **sem `<version>`** (a versão vem do BOM da tenancy) e, em desenvolvimento, **recriar o banco** (`docker compose down -v`). Se for rodar `--reconfigurar`, tire `cities`, `realtime` e `whatsapp` de `extensoes` e informe `provedorWhatsapp`.
+- `sg-new-product`: a recusa de resposta antiga (gerada por toolkit <= 0.7.8) agora diz o que fazer: extension que o modelo já traz ("já vem com o modelo ... tire da lista") e `whatsapp` ("agora é a pergunta 3c ... informe provedorWhatsapp"). O pendente do `realtime` não diz mais "dependência explícita no pom".
+- `check-catalogo-pins` também confere as versões de `pom_adicionar` da matriz (antes só as do catálogo).
 - `rules/documentos.md` e `sg-plan-goal`: citar **sempre** o id completo da tarefa com o título (ex.: "P152.F2.T1 (Corrigir o agendador do backup)"), mesmo repetido no mesmo parágrafo, nas mensagens a outros agentes e nas listas de pendências; o exemplo errado ("a F2.T1") ficou explícito.
 
 ## [0.7.9] — 2026-11-05

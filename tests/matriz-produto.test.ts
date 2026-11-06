@@ -116,3 +116,12 @@ test('toda receita citada pela matriz existe em data/modulos-front.json (validac
   const { modulosFront } = lib.carregar() as unknown as { modulosFront: unknown };
   assert.deepEqual(lib.validarMatriz(matriz, catalogo, modulosFront), []);
 });
+
+test('resposta de toolkit antigo (<= 0.7.8): a recusa diz o que fazer com extension que o modelo ja traz e com o whatsapp (P145.F1.T4)', () => {
+  const r = lib.resolver(matriz, catalogo, { ...B2B, extensoes: ['ai-pricing', 'whatsapp', 'cities', 'realtime'] });
+  const txt = r.erros.join('\n');
+  assert.ok(/"whatsapp".*pergunta 3c.*provedorWhatsapp/.test(txt), txt);
+  assert.ok(/"cities" ja vem com o modelo/.test(txt), txt);
+  assert.ok(/"realtime" ja vem com o modelo/.test(txt), txt);
+  assert.ok(!/"ai-pricing" ja vem/.test(txt), 'ai-pricing e opcional de verdade: nao e aposentada');
+});

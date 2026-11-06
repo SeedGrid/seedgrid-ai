@@ -20,7 +20,9 @@ const args = process.argv.slice(2);
 const opt = (n) => (args.includes(`--${n}`) ? args[args.indexOf(`--${n}`) + 1] : undefined);
 const strict = args.includes('--strict');
 const platform = path.resolve(opt('platform') ?? process.env.SEEDGRID_PLATFORM ?? path.join(root, '..', 'seedgrid-platform'));
-const catalogFile = path.join(root, 'seedgridKB', 'SeedGrid', 'Toolkit', 'skills', 'sg-new-product', 'data', 'catalogo.json');
+const dataDir = path.join(root, 'seedgridKB', 'SeedGrid', 'Toolkit', 'skills', 'sg-new-product', 'data');
+const catalogFile = path.join(dataDir, 'catalogo.json');
+const matrizFile = path.join(dataDir, 'matriz-produto.json');
 
 const catalogo = JSON.parse(readFileSync(catalogFile, 'utf8'));
 const pins = new Map();
@@ -31,6 +33,15 @@ const pins = new Map();
     Object.values(o).forEach(walk);
   }
 })(catalogo);
+
+// A matriz tambem fixa versao em `pom_adicionar` ("br.com.seedgrid:artifact:versao"): pin velho ali vence a mediacao do BOM do modelo
+// do mesmo jeito que o do catalogo (P145; a conferencia so do catalogo deixava a matriz passar).
+(function walkMatriz(o) {
+  if (Array.isArray(o)) return o.forEach(walkMatriz);
+  if (o && typeof o === 'object') return Object.values(o).forEach(walkMatriz);
+  const m = typeof o === 'string' ? o.match(/^br\.com\.seedgrid:([\w-]+):(\d{4}\.\d+\.\d+)$/) : null;
+  if (m && !pins.has(m[1])) pins.set(m[1], m[2]);
+})(JSON.parse(readFileSync(matrizFile, 'utf8')));
 
 const javaDir = path.join(platform, 'java');
 if (!existsSync(javaDir)) {

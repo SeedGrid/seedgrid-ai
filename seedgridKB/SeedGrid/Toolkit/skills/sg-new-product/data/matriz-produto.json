@@ -187,7 +187,7 @@
               "OTEL_SDK_DISABLED": "true"
             },
             "pendencias": [
-              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+              "realtime: ja vem com o modelo (dependencia normal das tenancies); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
             ]
           }
         },
@@ -239,7 +239,7 @@
               "OTEL_SDK_DISABLED": "true"
             },
             "pendencias": [
-              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+              "realtime: ja vem com o modelo (dependencia normal das tenancies); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
             ]
           }
         },
@@ -291,7 +291,7 @@
               "SEEDGRID_CITIES_API_KEY": "${externo}"
             },
             "pendencias": [
-              "realtime: ja vem com o modelo (dependencia explicita no pom ate as tenancies a trazerem); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
+              "realtime: ja vem com o modelo (dependencia normal das tenancies); fica desligada (SEEDGRID_REALTIME_ENABLED=false) ate o dono fornecer o servico Pulse e a chave do projeto."
             ]
           }
         },
