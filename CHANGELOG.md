@@ -12,6 +12,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 - `sg-plan-goal` (`varredura-componentes.mjs`): a fonte `paridade` passa a incluir os componentes que só existem no Flutter (lista `somenteFlutter` do `paridade.json`, ex.: `SgColorPicker`), com `n/a` na coluna do React; antes esses componentes ficavam fora da tabela.
 - `rules/documentos.md` e `sg-plan-goal`: citar **sempre** o id completo da tarefa com o título (ex.: "P152.F2.T1 (Corrigir o agendador do backup)"), mesmo repetido no mesmo parágrafo, nas mensagens a outros agentes e nas listas de pendências; o exemplo errado ("a F2.T1") ficou explícito.
 
+### Adicionado
+- KB de componentes: `SgNotificationBell` (sino de notificações do usuário; P129.F5.T1) nas notas de feedback e exibição do React e do Flutter (Visão geral, API, Exemplos), em `Preciso-de.md`, nos índices/catálogo (regerados) e no `props.json` da skill `sg-componente`. Documenta ETag/304, o teto de 100 por usuário (saem primeiro as lidas mais antigas), o interruptor "Não lidas", `connectionFactory` no Flutter, o SDK público do Pulse pelo git e que o Pulse é serviço pago (chave de projeto). Conferido contra fe-components 40d8340 e fe-flutter 74c3189; sem release.
+- `sg-crud-front` e `sg-crud-front-flutter`: regra mínima para aviso persistente ao usuário logado usar o `SgNotificationBell` (não `toast`, não sino feito à mão); sem release.
+
 ## [0.7.9] — 2026-11-05
 
 ### Alterado

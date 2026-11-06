@@ -43,7 +43,8 @@ To register the menu item, icon and permission of a new screen, use the `sg-new-
   - Lists that will be used on phones: mark the main column of `SgDatatable` with `cardTitle: true` (and `cardHidden: true` on columns that make no sense in a card). Since `@seedgrid/fe-components` 2026.11.1 (P127 + P137), omitting `mobileMode` is automatic: below 600 px (container width) each row becomes a card with infinite scroll (needs `paginator`; the paginator is hidden at that width, `infiniteScroll={false}` keeps it); wider keeps the table. `mobileMode="cards"` forces cards at any width, `mobileMode="scroll"` forces the table. With older versions set `mobileMode="cards"` explicitly. Do not create a local responsive-table component.
 - Search: `SgInputTextSearch`
 - Destructive confirmation: `SgConfirmationDialog`
-- Feedback: `toast` from `@seedgrid/fe-components`
+- Feedback: `toast` from `@seedgrid/fe-components` (immediate answer to an action; it disappears on its own)
+- Persistent notices to the logged-in user (report ready, backup finished, import done, invitation): `SgNotificationBell` in the authenticated layout header, never a toast and never a hand-made bell. It needs the `user-notifications` extension on the backend; set `types` to map each notification type to an icon and an open action. See `Preciso-de.md` and the `SgNotificationBell` section of `feedback-e-exibicao/API.md` in the components KB.
 - Edit: `SgInputText`, `SgInputNumber`, `SgInputCurrency`, `SgInputPassword`, `SgInputDate`, `SgToggleSwitch`, `SgButton` as applicable
 
 ## Input Type Standard

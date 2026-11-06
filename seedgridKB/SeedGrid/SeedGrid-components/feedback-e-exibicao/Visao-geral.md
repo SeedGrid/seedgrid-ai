@@ -26,6 +26,7 @@ Componentes de exibição (avatar, badge, skeleton) e de feedback (toasts e whis
 | `SgAvatarGroup` | sim | Avatares sobrepostos com contador `+N` | `/components/sg-avatar` |
 | `SgBadge` | sim | Etiqueta/contador com severidade, variantes, ponto pulsante, ícones e remoção | `/components/sg-badge` |
 | `SgBadgeOverlay` | sim | Posiciona um badge sobre outro elemento | `/components/sg-badge-overlay` |
+| `SgNotificationBell` | sim | Sino de notificações do usuário logado: contador de não lidas, lista de até 100, ler, excluir, interruptor "Não lidas" e aviso em tempo real pelo Pulse (com polling de reserva) | `/components/sg-notification-bell` |
 | `SgSkeleton` | sim | Placeholder de carregamento (formas e animações `wave`/`pulse`) | `/components/sg-skeleton` |
 | `SgToaster` | sim | Pilha fixa de toasts disparados por `toast(...)` | `/components/sg-toaster` |
 | `SgToastHost` | sim | Define onde os toasts aparecem; vários hosts → o último montado vence | `/components/sg-toast-host` |
@@ -33,6 +34,8 @@ Componentes de exibição (avatar, badge, skeleton) e de feedback (toasts e whis
 | `SgWhistleHost` | sim | Define onde os whistles aparecem (mesma regra de prioridade) | `/components/sg-whistle-host` |
 | `SgToasterHostContext` | não (interno) | Contexto booleano que faz o `SgToaster` interno do host pular a checagem de host | — |
 | `SgWhistlerHostContext` | não (interno) | Idem para whistles | — |
+
+O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica neste grupo por ser aviso ao usuário. Ele depende da extension `user-notifications` no backend ([[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral da user-notifications]]) e, para tempo real, do Pulse (serviço **pago**: precisa de chave de projeto, que fica no backend; o showcase funciona sem chave). Detalhes na seção `SgNotificationBell` da [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API]].
 
 ## Funções e tipos exportados relacionados
 

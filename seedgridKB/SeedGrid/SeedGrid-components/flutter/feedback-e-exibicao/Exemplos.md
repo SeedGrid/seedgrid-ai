@@ -822,3 +822,37 @@ Wrap(
 )
 ```
 
+## SgNotificationBell
+
+Exemplos da página `pages/sg_notification_bell_page.dart` do showcase Flutter: o backend e o Pulse são simulados em memória (`demo_notifications_api.dart` e `SgSimulatedPulseConnection`), sem token nem chave. Conferido contra seedgrid-fe-flutter 74c3189.
+
+### Uso real (não executa na demo)
+
+```dart
+SgNotificationBell(
+  apiUrl: 'https://api.meuapp.com/user-notifications',
+  tokenEndpoint: 'https://api.meuapp.com/realtime/connect',
+  requestInit: SgTokenRequestInit(headers: {'Authorization': 'Bearer $token'}),
+  connectionFactory: () => PulseAdapter(), // cliente do Pulse (ver PULSE_ADAPTER.md)
+  types: {
+    'report.ready': SgNotificationTypeConfig(
+      icon: Icon(Icons.description_outlined),
+      onOpen: (n) => baixarRelatorio(n.payload?['reportExecutionId']),
+    ),
+  },
+  onNotification: (n) => print(n.title),
+)
+```
+
+Os exemplos numerados da demo (sino com notificações simuladas, tipos com ícone e ação, interruptor "Não lidas" e sem interruptor) seguem os mesmos do React, com o código 1:1 na própria página do showcase.
+
+Dependência do SDK pelo git, para quem quiser tempo real (provisório até o pub.dev):
+
+```yaml
+dependencies:
+  seedgrid_pulse_subscriber:
+    git:
+      url: https://github.com/SeedGrid/seedgrid-pulse-sdk.git
+      path: components/subscribers/seedgrid-pulse-subscriber-flutter
+      ref: main
+```

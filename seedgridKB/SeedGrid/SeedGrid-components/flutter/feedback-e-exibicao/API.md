@@ -421,3 +421,47 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 
 **Acessibilidade**: a mesma do `SgWhistler` (região viva por whistle); o host em si não declara `Semantics`.
 
+## SgNotificationBell
+
+> **Flutter** · estado de paridade: **portado** · equivalente React: `SgNotificationBell` (mesmo nome). Conferido contra seedgrid-fe-flutter 74c3189.
+
+Sino de notificações do usuário logado, com os mesmos nomes de prop do React e **um extra**: `connectionFactory`. Autônomo: sem `SgRealtimeProvider` acima que assine `user-notifications`, abre o próprio.
+
+- Arquivo: `packages/seedgrid_components/lib/src/feedback/sg_notification_bell.dart` · lógica em `sg_notification_bell_logic.dart`; contrato gerado em `lib/src/generated/sg_notification_bell.g.dart`.
+- Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
+- Contrato compartilhado com o React (vetores): `test/widgets/notification_bell_vectors/CONTRATO.md`.
+
+### Props de SgNotificationBell
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `apiUrl` | `String` | `'/api/user-notifications'` | não | React | Base das rotas da extension `user-notifications`. **No Flutter, URL absoluta** (não existe "mesma origem"). |
+| `tokenEndpoint` | `String` | `sgDefaultRealtimeTokenEndpoint` | não | React | Rota do token do Pulse (se não houver provider que assine `user-notifications`). URL absoluta. |
+| `requestInit` | `SgTokenRequestInit?` | — | não | React | Cabeçalhos (e corpo do pedido de token), ex.: `Authorization`. |
+| `fetcher` | `SgFetcher?` | — | não | React | Substitui o HTTP (apps sem BFF, testes, demonstração). |
+| `types` | `Map<String, SgNotificationTypeConfig>?` | — | não | React | Tipo → ícone e ação ao abrir. |
+| `eventPattern` | `String` | `sgDefaultEventPattern` (`user-notification.*`) | não | React | Evento do Pulse que dispara a leitura. |
+| `pollIntervalMs` | `num?` | 45000 | não | React | Polling de reserva, preso entre 30 e 60 s. |
+| `maxVisible` | `num?` | 100 | não | React | Máximo na lista (padrão e máximo 100). |
+| `placement` | `SgNotificationBellPlacement?` | `auto` | não | React | Lado em que o painel abre (como no `SgPopup`). |
+| `showUnreadToggle` | `bool?` | `true` | não | React | Mostra o interruptor "Não lidas"; `false` esconde só o interruptor (o sino fica). |
+| `defaultUnreadOnly` | `bool?` | `true` | não | React | O painel abre em "Não lidas"; ignorada com `showUnreadToggle: false`; não persiste entre recargas. |
+| `onNotification` | `void Function(SgNotification)?` | — | não | React | Chegou uma notificação nova (aviso do Pulse). |
+| `onNotificationDelete` | `void Function(SgNotification)?` | — | não | React | O usuário excluiu uma notificação. |
+| `onOpen` | `void Function(SgNotification)?` | — | não | React | O usuário abriu uma notificação (depois do `onOpen` do tipo). |
+| `onPollingTick` | `void Function(SgPollingStats)?` | — | não | React | O polling consultou a API: contador, instante e motivo. |
+| `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | **Extra do Flutter**: cria o cliente do Pulse quando o sino abre a própria conexão. |
+
+### Diferenças do React
+
+- **`connectionFactory`** (extra): o pacote não depende do SDK do Pulse; a aplicação entrega uma função que devolve uma `SgPulseConnection` (adaptador sobre o SDK real; guia `PULSE_ADAPTER.md`). Sem ela o status do Pulse fica `unavailable` e o sino usa o **polling de reserva**, então continua funcionando, só sem tempo real. Decisão: ADR 62 (`SeedGrid/Dev/ADR/2026-11-06-sgnotificationbell-flutter-usa-o-sdk-publico-do-pulse-pelo-git`).
+- **SDK do Pulse pelo git (provisório)**: o SDK de assinatura Flutter mora no repositório público `github.com/SeedGrid/seedgrid-pulse-sdk` (`components/subscribers/seedgrid-pulse-subscriber-flutter`); o projeto que quiser tempo real declara a dependência `git:` com `url`, `path` e `ref: main`. O pub.dev vem depois (plano P138). **O Pulse é serviço pago**: precisa de chave de projeto, que fica no backend.
+- **URLs absolutas**: `apiUrl` e `tokenEndpoint` não podem ser relativos.
+- **Painel**: abre como popover (tela larga) ou como folha que sobe de baixo (celular).
+- **`requestInit`** é `SgTokenRequestInit` (cabeçalhos e corpo), não o `RequestInit` da web.
+- **ETag/304**: igual ao React; `SgFetchResponse` devolve também os `headers`. O cache da ETag vive em memória no sino (recomeça ao reiniciar o app).
+- **Teto e leitura**: iguais ao React (servidor mantém 100 por usuário; saem primeiro as lidas mais antigas, depois a não lida mais antiga).
+
+### Eventos, controllers e acessibilidade
+
+Callbacks: `onNotification`, `onNotificationDelete`, `onOpen`, `onPollingTick`. Sem controller. Animação do sino respeita "reduzir movimento"; textos em i18n.

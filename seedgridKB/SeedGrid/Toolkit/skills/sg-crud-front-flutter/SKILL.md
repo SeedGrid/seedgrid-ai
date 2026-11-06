@@ -33,6 +33,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 
 - `SgConfirmationDialog` com `SgDialogSeverity.danger`; guarde o alvo em estado separado do `open`. Nunca confirmação nativa.
 - Ao salvar ou excluir: `toast.success(...)` e volta à lista.
+- Aviso persistente ao usuário logado (relatório pronto, backup concluído, importação, convite): `SgNotificationBell` no cabeçalho do layout autenticado, nunca `toast` nem sino feito à mão. Exige a extension `user-notifications` no backend; use `types` para mapear cada tipo a um ícone e a uma ação. `apiUrl` e `tokenEndpoint` são URLs absolutas; o tempo real entra por `connectionFactory` (sem ele, polling de reserva). Veja a nota `SgNotificationBell` na KB de componentes.
 
 ## Armadilhas verificadas
 

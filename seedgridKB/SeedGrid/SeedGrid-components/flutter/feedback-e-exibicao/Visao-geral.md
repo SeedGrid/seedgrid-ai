@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-9 componente(s): **9 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+10 componente(s): **10 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
 
 ## Para que serve
 
@@ -28,6 +28,7 @@ analisado-em: 2026-10-30
 | `SgAvatarGroup` | portado | Avatares sobrepostos com limite visível e contador de quem ficou de fora. | `pages/sg_avatar_group_page.dart` |
 | `SgBadge` | portado | Etiqueta ou contador com severidade, ponto pulsante, ícones, clique e remoção. | `pages/sg_badge_page.dart` |
 | `SgBadgeOverlay` | portado | Posiciona um selo (badge) sobre um canto ou lado de outro widget. | `pages/sg_badge_overlay_page.dart` |
+| `SgNotificationBell` | portado | Sino de notificações do usuário logado: contador, lista de até 100, ler, excluir, interruptor "Não lidas" e aviso em tempo real pelo Pulse (cliente entra por `connectionFactory`; sem ele, polling de reserva). | `pages/sg_notification_bell_page.dart` |
 | `SgSkeleton` | portado | Placeholder de carregamento com formas e animação de onda ou pulso. | `pages/sg_skeleton_page.dart` |
 | `SgToaster` | portado | Pilha de toasts disparados por `toast(...)`, com posição, duração e cores. | `pages/sg_toaster_page.dart` |
 | `SgToastHost` | portado | Define onde os toasts aparecem; com vários hosts, vale o último montado. | `pages/sg_toast_host_page.dart` |

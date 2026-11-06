@@ -66,6 +66,7 @@ gerado-por: seedgrid-components-mcp/scripts/export-kb-data.mjs
 - `SgBadgeOverlay`: badge overlay; notification overlay; indicator overlay; statusoverlay · não serve? SgBadge
 - `SgConfirmationDialog`: confirmation dialog; confirm modal; danger prompt; warning confirm · não serve? SgDialog
 - `SgDialog`: dialog; modal; overlay modal; popup dialog
+- `SgNotificationBell`: sino; notificações; notification bell; inbox; avisos do usuário; caixa de notificações; contador de não lidas · não serve? SgToaster (mensagem rápida que some sozinha) ou SgWhistler (aviso fixo no fluxo do layout)
 - `SgPopup`: popup; anchored popup; context menu popup; contextual overlay · não serve? SgDialog ou SgConfirmationDialog
 - `SgSkeleton`: skeleton; loading placeholder; content shimmer; loading block
 - `SgToaster`: toaster; toast container; toast notifications; toastcontainer · não serve? SgConfirmationDialog

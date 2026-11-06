@@ -492,3 +492,47 @@ Store global análogo; ids `sg-whistle-<timestamp>-<n>`. `onClose` do whistle é
 | `SgWhistlePromiseStates<T>` | `{ loading?: …&{message: string}; success?: estado \| ((value: T) => estado); error?: estado \| ((error: unknown) => estado) }`, onde estado = `Omit<Partial<SgWhistleOptions>, "id" \| "severity"> & { message: string }` |
 
 Testado em `tests/commons.test.mjs` (`sgWhistle.promise`, `sgWhistle.update`, `onClose`) e `tests/commons-dom.test.mjs`.
+
+## SgNotificationBell
+
+Sino de notificações do usuário logado: contador de não lidas, painel com até 100 notificações (título, texto, data relativa e estado lida/não lida), marcar como lida, excluir, marcar todas e limpar. **Autônomo**: abre sozinho a conexão com o Pulse (token vindo do backend, sem apikey no front) ou reaproveita um `SgRealtimeProvider` que assine `user-notifications`; com o Pulse desligado ou fora do ar faz polling de reserva. Sem regra de negócio: o que cada `type` mostra e faz vem da prop `types`. Fonte: `src/notifications/SgNotificationBell.tsx` e `notificationBellLogic.ts` (conferido contra seedgrid-fe-components 40d8340). Confirmado.
+
+```tsx
+import { SgNotificationBell } from "@seedgrid/fe-components";
+import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification, SgPollingStats } from "@seedgrid/fe-components";
+```
+
+### Props
+
+| Prop | Tipo | Padrão | Obrigatória | Descrição |
+|---|---|---|---|---|
+| `apiUrl` | `string` | `"/api/user-notifications"` | Não | Base das rotas da extension `user-notifications` (BFF, mesma origem). |
+| `tokenEndpoint` | `string` | `"/api/realtime/connect"` | Não | Rota que entrega o token do Pulse; usada quando não há `SgRealtimeProvider` acima. |
+| `requestInit` | `RequestInit` | — | Não | Opções do `fetch` (ex.: `Authorization` quando não há cookie). |
+| `fetcher` | `(input: string, init?: RequestInit) => Promise<Response>` | — | Não | Substitui o `fetch` (apps sem BFF, testes, demonstração). Responder `enabled:false` no token liga o polling. |
+| `types` | `Record<string, SgNotificationTypeConfig>` | — | Não | Tipo da notificação → `icon` e `onOpen`. O sino não conhece o negócio. |
+| `eventPattern` | `string` | `"user-notification.*"` | Não | Evento do Pulse que dispara a leitura. |
+| `pollIntervalMs` | `number` | `45000` | Não | Polling de reserva (só com o Pulse desligado ou fora do ar), preso entre 30 e 60 s, com jitter e backoff em erro (teto 5 min). |
+| `maxVisible` | `number` | `100` | Não | Máximo de notificações na lista (cabe numa página; a lista rola dentro do painel). |
+| `placement` | `"auto" \| "top" \| "right" \| "bottom" \| "left"` | `"auto"` | Não | Lado do sino em que o painel abre (como o `SgPopup`); `auto` escolhe o lado em que cabe. |
+| `showUnreadToggle` | `boolean` | `true` | Não | Mostra o interruptor "Não lidas" no topo do painel; `false` esconde só o interruptor (o sino fica) e o painel lista tudo. |
+| `defaultUnreadOnly` | `boolean` | `true` | Não | O painel abre em "Não lidas" (ainda não clicadas); ignorada com `showUnreadToggle={false}`; não persiste entre recargas. |
+| `onNotification` | `(notification: SgNotification) => void` | — | Não | Chegou uma notificação nova (aviso do Pulse); uma vez por notificação. |
+| `onNotificationDelete` | `(notification: SgNotification) => void` | — | Não | O usuário excluiu uma notificação. |
+| `onOpen` | `(notification: SgNotification) => void` | — | Não | O usuário abriu uma notificação (depois do `onOpen` do tipo). |
+| `onPollingTick` | `(stats: SgPollingStats) => void` | — | Não | O polling consultou a API: `{ count, lastAt, reason }` (`disabled` ou `unavailable`). |
+
+### Comportamento
+
+- **Item (`SgNotification`)**: `publicId`, `type` (livre), `title`, `message?`, `payload?` (só identificadores), `read`, `readAt?`, `createdAt`, `expiresAt?`. Ordem: mais nova primeiro.
+- **Em "Não lidas"** (padrão) o painel pede `GET {apiUrl}?unreadOnly=true`; clicar numa notificação a tira da lista (animação curta) e o contador cai na hora; vazio mostra "Tudo em dia" com atalho "Ver todas". Em "Todas" a notificação só perde o destaque. O sino nunca some.
+- **Contador**: vem do servidor (`GET /unread-count`); `99+` acima de 99.
+- **ETag/304**: o sino guarda a ETag fraca e o corpo de cada consulta (chave = query) em memória, manda `If-None-Match` na releitura e, em 304, reaproveita o corpo guardado. Contrato: `CONTRATO.md` do pacote Flutter (vetores compartilhados).
+- **Teto no servidor**: a extension `user-notifications` mantém no máximo 100 por usuário (`seedgrid.user-notifications.max-per-user`, padrão 100). A cada notificação nova, o excedente sai: primeiro as lidas mais antigas; sem lidas, a não lida mais antiga. Retenção de 30 dias à parte.
+- **Pulse**: com `SgRealtimeProvider` acima assinando `user-notifications`, reaproveita a conexão; senão abre a própria usando `tokenEndpoint`. O aviso (`user-notification.*`) faz reler a lista. Se o `/realtime/connect` falhar (503/429/rede) o provider tenta de novo; só `enabled:false` é definitivo.
+- **Pulse é serviço pago**: o tempo real exige chave de projeto, que fica só no backend (o front recebe um token curto). Sem chave o sino funciona em polling.
+- **Acessibilidade**: `aria-live` para novas notificações e animação do sino respeita "reduzir movimento".
+
+### Eventos, ref e estilo
+
+Sem `ref` e sem `children`. Eventos: `onNotification`, `onNotificationDelete`, `onOpen`, `onPollingTick`. Textos em i18n (pt-BR, pt-PT, en-US, es, fr).

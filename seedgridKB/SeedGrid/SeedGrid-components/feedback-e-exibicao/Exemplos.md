@@ -546,3 +546,136 @@ export default function Example() {
   );
 }
 ```
+
+## SgNotificationBell
+
+Exemplos do showcase (`/components/sg-notification-bell`); a demonstração usa um `fetcher` e um Pulse simulados em memória, sem token nem chave. Conferidos contra seedgrid-fe-components 40d8340.
+
+### Básico
+
+```tsx
+import * as React from "react";
+import { SgButton, SgNotificationBell, SgRealtimeProvider } from "@seedgrid/fe-components";
+import { createDemoFetcher, createDemoPulse, demoPulseToken } from "./demo-fetcher";
+
+// Na aplicacao real, troque o fetcher da demonstracao pelo apiUrl do backend (extension user-notifications) e
+// deixe o SgRealtimeProvider pedir o token ao BFF; aqui o Pulse e a caixa vivem em memoria.
+const demo = createDemoFetcher();
+const pulse = createDemoPulse();
+
+export default function App() {
+  return (
+    <div className="flex items-center gap-3">
+      <SgRealtimeProvider channels={["user-notifications"]} fetchToken={demoPulseToken} connectOptions={{ webSocketImpl: pulse.webSocketImpl }}>
+        <SgNotificationBell fetcher={demo} />
+      </SgRealtimeProvider>
+      <SgButton
+        size="sm"
+        appearance="outline"
+        onClick={() => {
+          const id = demo.notify("report.ready", "Novo relatório", "Acabou de ficar pronto.");
+          pulse.publish("user-notification.created", { notificationPublicId: id, type: "report.ready" });
+        }}
+      >
+        Simular notificação
+      </SgButton>
+    </div>
+  );
+}
+```
+
+### Tipos com ícone e ação
+
+```tsx
+import * as React from "react";
+import { CheckCircle2, FileText } from "lucide-react";
+import { SgNotificationBell } from "@seedgrid/fe-components";
+import { createDemoFetcher } from "./demo-fetcher";
+
+const demo = createDemoFetcher();
+
+export default function App() {
+  const [opened, setOpened] = React.useState("-");
+
+  return (
+    <div className="flex items-center gap-3">
+      <SgNotificationBell
+        fetcher={demo}
+        types={{
+          "report.ready": { icon: <FileText className="size-4" />, onOpen: (n) => setOpened(`baixar relatório ${n.publicId}`) },
+          "backup.finished": { icon: <CheckCircle2 className="size-4" />, onOpen: (n) => setOpened(`baixar backup ${n.publicId}`) }
+        }}
+        onOpen={(n) => setOpened((prev) => `${prev} (abriu: ${n.title})`)}
+        onNotificationDelete={(n) => setOpened(`excluiu: ${n.title}`)}
+      />
+      <span className="text-xs text-muted-foreground">Último evento: {opened}</span>
+    </div>
+  );
+}
+```
+
+### Painel em "Todas" (defaultUnreadOnly)
+
+```tsx
+import * as React from "react";
+import { SgNotificationBell } from "@seedgrid/fe-components";
+import { createDemoFetcher } from "./demo-fetcher";
+
+// O painel traz o interruptor "Não lidas": ligado, clicar numa notificação a tira da lista e o contador cai na hora;
+// desligado, mostra todas. defaultUnreadOnly={false} faz o painel abrir em "Todas" (a escolha não persiste).
+const demo = createDemoFetcher();
+
+export default function App() {
+  return (
+    <div className="flex items-center gap-3">
+      <SgNotificationBell fetcher={demo} defaultUnreadOnly={false} />
+    </div>
+  );
+}
+```
+
+### Sem o interruptor (showUnreadToggle)
+
+```tsx
+import * as React from "react";
+import { SgNotificationBell } from "@seedgrid/fe-components";
+import { createDemoFetcher } from "./demo-fetcher";
+
+// showUnreadToggle={false} esconde só o interruptor: o sino continua, e o painel lista todas as notificações.
+const demo = createDemoFetcher();
+
+export default function App() {
+  return (
+    <div className="flex items-center gap-3">
+      <SgNotificationBell fetcher={demo} showUnreadToggle={false} />
+    </div>
+  );
+}
+```
+
+### Uso real (não executa na demo)
+
+```tsx
+import * as React from "react";
+import { FileText } from "lucide-react";
+import { SgNotificationBell } from "@seedgrid/fe-components";
+
+// Em produção: o BFF da sua app expõe as rotas da extension user-notifications (a apikey nunca vai para o navegador).
+export default function App() {
+  return (
+    <SgNotificationBell
+      apiUrl="/api/user-notifications"
+      tokenEndpoint="/api/realtime/connect"
+      types={{
+        "report.ready": {
+          icon: <FileText className="size-4" />,
+          onOpen: (n) => window.open(`/relatorios/${String(n.payload?.reportExecutionId)}`)
+        }
+      }}
+      onNotification={(n) => console.log("nova notificação", n.title)}
+    />
+  );
+}
+```
+
+O `createDemoFetcher` e o `createDemoPulse` do showcase estão em `samples/demo-fetcher.ts` do mesmo exemplo; a aplicação real troca o `fetcher` pelo `apiUrl` do backend.
