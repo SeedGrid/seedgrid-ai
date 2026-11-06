@@ -37,6 +37,7 @@ function plataforma(): string {
       { componente: 'SgNotificationBell', status: 'parcial' },
       { componente: 'SgSoReact', status: 'pendente' },
     ],
+    somenteFlutter: [{ componente: 'SgColorPicker', status: 'somente-flutter' }],
   }));
   const comps = join(front, 'seedgrid-fe-components/apps/showcase/src/app/components');
   for (const n of ['sg-button', 'sg-input-text', 'sg-input-cpfcnpj']) escreve(join(comps, n, 'page.tsx'));
@@ -51,8 +52,8 @@ const roda = (...args: string[]) => { const r = spawnSync(process.execPath, [SCR
 
 test('fonte paridade: todos os componentes do pacote e o estado no Flutter (portado/parcial existem; pendente não)', () => {
   const lista = mod.lerFonte(plataforma());
-  assert.deepEqual(lista.map((c) => c.nome), ['SgButton', 'SgInputText', 'SgNotificationBell', 'SgSoReact']);
-  assert.deepEqual(lista.map((c) => [c.react, c.flutter]), [[true, true], [true, true], [true, true], [true, false]]);
+  assert.deepEqual(lista.map((c) => c.nome), ['SgButton', 'SgColorPicker', 'SgInputText', 'SgNotificationBell', 'SgSoReact']);
+  assert.deepEqual(lista.map((c) => [c.react, c.flutter]), [[true, true], [false, true], [true, true], [true, true], [true, false]]);
 });
 
 test('fonte showcase: une as pastas sg-* do React (inclusive em subpastas) e as páginas sg_*_page.dart do Flutter pelo nome normalizado', () => {
@@ -67,18 +68,19 @@ test('o bloco gerado tem uma linha por componente, n/a onde a plataforma não te
   const bloco = mod.blocoNovo(lista);
   assert.ok(bloco.includes('| SgSoReact | sim | nao | [ ] | n/a |  |  |'));
   assert.ok(bloco.includes('| SgButton | sim | sim | [ ] | [ ] |  |  |'));
+  assert.ok(bloco.includes('| SgColorPicker | nao | sim | n/a | [ ] |  |  |'), 'componente so do Flutter: React n/a');
   assert.equal(bloco, mod.blocoNovo(mod.lerFonte(plataforma())));
   // o bloco gerado é válido para as regras da varredura
   const v = controle.varredura(bloco);
   assert.deepEqual(v.erros, []);
-  assert.deepEqual(v.blocos, [{ nome: 'comp', total: 4, feitos: 0 }], 'toda linha nasce com marca aberta');
+  assert.deepEqual(v.blocos, [{ nome: 'comp', total: 5, feitos: 0 }], 'toda linha nasce com marca aberta');
 });
 
 test('conferir: componente novo na fonte sem linha reprova; atualizar acrescenta sem tocar nas marcadas', () => {
   const p = plataforma();
   const lista = mod.lerFonte(p);
   const plano = join(p, 'plano.md');
-  writeFileSync(plano, ['# Plano', '', mod.blocoNovo(lista.slice(0, 3)), ''].join('\n'), 'utf8');
+  writeFileSync(plano, ['# Plano', '', mod.blocoNovo(lista.slice(0, 4)), ''].join('\n'), 'utf8');
   let r = roda('conferir', plano, '--plataforma', p);
   assert.equal(r.status, 1);
   assert.match(r.err, /componente "SgSoReact" esta na fonte e nao tem linha/);
@@ -111,11 +113,11 @@ test('conferir: linha que não é componente da fonte, [x] sem evidência e --co
 
   // tudo marcado com evidência: passa mesmo com --completa; n/a não conta como aberto
   let tudo = base;
-  for (const c of lista) tudo = tudo.replace(`| ${c.nome} | ${c.react ? 'sim' : 'nao'} | ${c.flutter ? 'sim' : 'nao'} | [ ] | ${c.flutter ? '[ ]' : 'n/a'} |  |  |`, `| ${c.nome} | ${c.react ? 'sim' : 'nao'} | ${c.flutter ? 'sim' : 'nao'} | [x] | ${c.flutter ? '[x]' : 'n/a'} | front | ok |`);
+  for (const c of lista) tudo = tudo.replace(`| ${c.nome} | ${c.react ? 'sim' : 'nao'} | ${c.flutter ? 'sim' : 'nao'} | ${c.react ? '[ ]' : 'n/a'} | ${c.flutter ? '[ ]' : 'n/a'} |  |  |`, `| ${c.nome} | ${c.react ? 'sim' : 'nao'} | ${c.flutter ? 'sim' : 'nao'} | ${c.react ? '[x]' : 'n/a'} | ${c.flutter ? '[x]' : 'n/a'} | front | ok |`);
   writeFileSync(plano, tudo, 'utf8');
   const ok = roda('conferir', plano, '--completa', '--plataforma', p);
   assert.equal(ok.status, 0, ok.err);
-  assert.match(ok.out, /4\/4 componentes conferidos \(fonte: 4\)/);
+  assert.match(ok.out, /5\/5 componentes conferidos \(fonte: 5\)/);
   writeFileSync(plano, tudo.replace('| SgInputText | sim | sim | [x] | [x] | front | ok |', '| SgInputText | sim | sim | [x] | [~] | front | ok |'), 'utf8');
   assert.match(roda('conferir', plano, '--completa', '--plataforma', p).err, /"SgInputText" ainda nao esta \[x\]/);
 });

@@ -50,6 +50,8 @@ export function lerFonte(plataforma, fonte = 'paridade') {
     const j = JSON.parse(readFileSync(arq, 'utf8'));
     if (!Array.isArray(j.componentes)) throw new Error(`fonte "paridade": ${arq} sem a lista "componentes"`);
     lista = j.componentes.map((c) => ({ nome: c.componente, react: true, flutter: ['portado', 'parcial'].includes(c.status) }));
+    // componentes que so existem no Flutter (ex.: SgColorPicker; o React usa o seletor nativo do navegador) ficam em `somenteFlutter`, fora de `componentes`
+    for (const c of Array.isArray(j.somenteFlutter) ? j.somenteFlutter : []) lista.push({ nome: c.componente, react: false, flutter: true });
   } else if (fonte === 'showcase') {
     const react = pastasSg(join(front, 'seedgrid-fe-components', 'apps', 'showcase', 'src', 'app', 'components'));
     const pages = join(front, 'seedgrid-fe-flutter', 'apps', 'seedgrid_showcase', 'lib', 'pages');
