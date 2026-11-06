@@ -73,7 +73,7 @@ Fora de `seedgrid-platform`; consomem as crates/extensions acima.
 
 | Repositório | Tipo | Versão | Commit | Consome | Nota |
 |---|---|---|---|---|---|
-| `seedgrid-pulse` | Produto (servidor Rust + UI Next.js + SDKs) | 0.3.0 (servidor e UI) | `9dcbdad` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
+| `seedgrid-pulse` | Produto (servidor Rust + UI Next.js; privado; os SDKs e exemplos saíram em 2026-11-06 para o repositório público `seedgrid-platform/seedgrid-pulse-sdk`, remoto `SeedGrid/seedgrid-pulse-sdk`) | 0.3.0 (servidor e UI) | `9dcbdad` | crates `security`, `login-tenancy`, `audit`, `apikeys`, `broker-*` (por path dependency) | [[SeedGrid/Produtos/Pulse/Visao-geral\|Pulse]] |
 
 ### Boilerplates (repositório `boilerplate`)
 
