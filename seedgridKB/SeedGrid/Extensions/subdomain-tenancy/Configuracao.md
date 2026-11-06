@@ -3,7 +3,7 @@ tags: [seedgrid, extension, subdomain-tenancy, configuracao]
 fonte: java/seedgrid-quarkus-ext-subdomain-tenancy
 branch: main
 commit: 0534332
-analisado-em: 2026-11-05
+analisado-em: 2026-11-06
 ---
 
 # subdomain-tenancy — Configuração (Quarkus)
@@ -336,6 +336,17 @@ seedgrid.ratelimit.tenant-signup.window=PT1M
 - **Várias réplicas**: defina `migration.instance-id` estável por pod para facilitar diagnóstico do lock (sem ela, cada boot gera `instance-<UUID>`).
 - **Esconder APIs administrativas do Swagger dos tenants**: acrescente prefixos em `openapi.master-only-paths` ou marque recursos com `@SgMasterOnly`.
 - **Afrouxar/apertar rate limit do signup**: `seedgrid.ratelimit.tenant-signup.permits`/`.window`/`.enabled` (ver [[SeedGrid/Extensions/resilience/Configuracao|Configuração do resilience]]).
+
+### E-mail de confirmação do admin inicial e host dos links (conferido em 2026-11-06)
+
+**Reenvio no boot.** O subdomain-tenancy **não reenvia**: o `AdminUserBootstrapService` só cria o admin (e manda o e-mail de boas-vindas) quando a tabela `sg_users` do master está vazia; com qualquer usuário existente ele pula (`Admin bootstrap skipped: users table already has N record(s)`), então reiniciar o backend não reenvia nada. Se o e-mail não saiu (ou foi perdido), o caminho é recuperação de senha, ou apagar o usuário do master para o boot recriar o admin (e mandar o e-mail de novo, com `initial-password` configurada ou senha gerada). O reenvio no boot que o dono lembra é do **login-tenancy**, via `FirstAdminBootstrapService` do security (ver [[SeedGrid/Extensions/login-tenancy/Configuracao|Configuração do login-tenancy]]): lá, enquanto o admin configurado não confirma o e-mail, cada boot reenvia o boas-vindas. Esse caminho **só vale com `seedgrid.security.bootstrap.enabled=true`**, e em banco-por-tenant (subdomain-tenancy) o bootstrap do security fica desligado.
+
+**Rota pública de reenvio.** Não há rota pública de reenvio para o admin inicial em nenhuma das duas. `POST /public/tenants/resend-email?subdomain=` (`TenantSignupController`, 5/h por IP) reenvia o OTP do **cadastro de uma empresa-tenant** pendente, não o do admin da plataforma. No security, `POST /me/security/users/{id}/resend-activation` exige autenticação (e o admin ainda não entrou), e o reenvio de self-enter é por solicitação de entrada.
+
+**Host dos links de e-mail.** `seedgrid.security.frontend.base-url` é a **origem raiz** do front. O `TenantSecurityLinks` reescreve login, reset de senha, confirmação de e-mail, boas-vindas e convite: **em requisição de tenant** o host vira `<tenant>.<host da base-url>` (esquema e porta da base-url mantidos); **fora de requisição** (boot, jobs) ou com tenant `master`, o link sai com a base-url **sem alteração**. Consequências:
+- O e-mail do admin inicial é enviado no boot, sem requisição, então o link aponta para a base-url pura (por exemplo `https://display.seedgrid.com.br`), nunca para `admin.<raiz>`.
+- Usuários de empresa (requisição de tenant) recebem `<empresa>.<raiz>`. Isto já funciona.
+- **Não existe propriedade** para um host próprio do master/admin (por exemplo `admin.display...`). Pôr `admin.display...` na base-url quebraria os links de tenant (viraria `<empresa>.admin.display...`). Para o admin cair em `admin.<raiz>`, é preciso mudar a extension (por exemplo uma propriedade opcional de URL do master usada quando não há tenant), ou o front da raiz redirecionar para `admin.`. Fontes: `RT/security/TenantSecurityLinks`, `RT/services/AdminUserBootstrapService` (commit `8d957d9`).
 
 ## 9. Dúvidas e lacunas
 
