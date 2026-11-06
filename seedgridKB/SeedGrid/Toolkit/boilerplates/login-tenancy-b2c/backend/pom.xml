@@ -30,7 +30,7 @@
              causa (em 2026-08-19: sessao caindo sozinha por rotacao concorrente de refresh token).
              Nao volte a pinar lib da foundation aqui: se precisar de uma versao diferente, o certo
              e' bumpar no login-tenancy e republicar a cascata. -->
-        <seedgrid.login-tenancy.version>2026.11.06</seedgrid.login-tenancy.version>
+        <seedgrid.login-tenancy.version>2026.11.07</seedgrid.login-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
         <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
         <!-- Login social (Google/Facebook): modulo opcional, so' no b2c. Fora do BOM do login-tenancy. -->
