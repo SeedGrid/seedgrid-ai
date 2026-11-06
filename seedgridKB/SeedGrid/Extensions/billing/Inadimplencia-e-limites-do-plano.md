@@ -1,7 +1,7 @@
 ---
 description: "Como limitar empresas e usuários por plano e tratar a inadimplência no billing, em perguntas e respostas: campos do PlanTerm (maxCompanies, maxReadOnlyCompanies, maxUsers, pastDue*Days), propriedades seedgrid.billing.past-due.* (padrão 7 e 30 dias), erros 402, escolha de empresas no downgrade e no checkout, eventos para o host avisar o cliente e a tela de condição comercial."
 tags: [seedgrid, extension, billing, inadimplencia, plano, planterm, downgrade, cota, host, perguntas-e-respostas]
-analisado-em: 2026-11-02
+analisado-em: 2026-11-06
 ---
 
 # Limites do plano e inadimplência (empresas, usuários e prazos)
@@ -74,6 +74,7 @@ seedgrid.billing.past-due.interval=1h
 - Com assinatura `PAST_DUE` há 7 dias, as empresas da conta ficam **somente leitura**; com 30, ficam **desligadas** (as sessões caem e o login dá `COMPANY_DISABLED`). Os prazos do `PlanTerm` sobrepõem o padrão.
 - **A empresa do responsável nunca é desligada**: fica em somente leitura e ainda alcança `/me/billing`, `/me/plans`, `/me/subscription` e `/me/usage` para pagar (contribuição aditiva do billing em `seedgrid.security.company-access.read-only.contributions.billing`; não use `allowed-paths`, que substitui o padrão).
 - Nunca muda a plataforma, nunca deixa a conta toda `DISABLED`, não toca empresa inativada pelo administrador; só **escala** o estado.
+- **Primeiro boot com banco vazio** (corrigido na `seedgrid-billing` **2026.10.23**, `128d559`; enviada ao portal em 2026-11-06, confirmação no Maven Central pendente na data da nota): o agendador dispara no instante 0 e, num banco novo, as tabelas do billing só aparecem alguns segundos depois (as migrations do master rodam no `StartupEvent`). Antes da correção isso gerava `ERROR ... relation "sg_tenant_subscriptions" does not exist` com stack no log e a próxima rodada só vinha 1 h depois; era só ruído, nada quebrava. Agora o `PastDueScheduler` pergunta ao `BillingSchemaReadiness` (`to_regclass`) se a tabela existe, registra uma linha em DEBUG e segue; erro de SQL de relação ou coluna inexistente (SQLState `42P01`/`42703`) vira rodada vazia, e **qualquer outro erro continua aparecendo**. Mesmo padrão dos agendadores do backup e do exchange; o tenancy usa `SchemaUtils.schemaReady`. Quem consome a correção precisa do BOM novo: `seedgrid-login-tenancy` **2026.11.08** ou `seedgrid-subdomain-tenancy` **2026.11.09** (só trocam o pin do billing). O construtor público do `PastDueScheduler` ganhou um 4º parâmetro (`BillingSchemaReadiness`): o CDI resolve sozinho, só quem faz `new` no teste precisa mudar.
 - **Pagar** (`PAYMENT_CONFIRMED`, recompra do plano) devolve ao estado de antes **só as empresas que o billing mexeu** (o motivo gravado é `billing-past-due|prev=<estado>`). O que o administrador ou o downgrade mudaram depois não é desfeito.
 
 ## O que o cliente faz quando troca para um plano com menos empresas (downgrade)?
