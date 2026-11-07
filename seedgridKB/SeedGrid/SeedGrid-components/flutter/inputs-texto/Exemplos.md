@@ -4,152 +4,278 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-tex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Inputs de texto e documentos (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, e `${context.tx('texto')}` dentro de uma string virou `texto`. Conferido em 2026-11-07 por comparação de texto com as constantes `*PageSnippets` do showcase (seedgrid-fe-flutter 8a43f9d): todos os blocos abaixo são cópia 1:1 dessas constantes, com essa única alteração. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis `_x` do estado da página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes na página. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgInputText
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_text_page.dart` (15 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_text_page.dart` (19 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Rótulo flutuante, placeholder e botão de limpar.
+Campo ligado a um formulário (SgFormController): name + control; o valor sai no envio.
 
 Região `sgInputTextBasico` em `sg_input_text_page.snippets.g.dart`.
 
 ```dart
-SgInputText(
-  id: 'nome',
-  labelText: 'Nome',
-  placeholder: 'Digite seu nome',
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputText(
+        id: 'demo-basic',
+        labelText: 'Nome completo',
+        name: 'nome',
+        control: _form,
+      ),
+    ),
+    const SizedBox(height: 8),
+    SgButton(
+      label: Text('Enviar'),
+      onClick: () => _form.handleSubmit(
+        (values) => setState(() => _enviado = '${values['nome']}'),
+      ),
+    ),
+    const SizedBox(height: 8),
+    Text('Valor: $_enviado'),
+  ],
 )
 ```
 
-### Posição do rótulo
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: {'nome': '', 'controlled': 'Texto inicial'});`
+- `String _enviado = '';`
 
-Região `sgInputTextRotulo` em `sg_input_text_page.snippets.g.dart`.
+### Obrigatório
+
+required valida ao sair do campo; requiredMessage troca a mensagem.
+
+Região `sgInputTextObrigatorio` em `sg_input_text_page.snippets.g.dart`.
 
 ```dart
-const Column(
+Column(
   children: [
-    SgInputText(
-      id: 'topo',
-      labelText: 'Rótulo no topo',
-      labelPosition: SgInputTextLabelPosition.top,
+    SizedBox(
+      width: 320,
+      child: SgInputText(
+        id: 'demo-required',
+        labelText: 'Campo obrigatório',
+        required: true,
+      ),
     ),
-    SizedBox(height: 12),
-    SgInputText(
-      id: 'esquerda',
-      labelText: 'À esquerda',
-      labelPosition: SgInputTextLabelPosition.left,
-      labelWidth: 110,
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputText(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        required: true,
+        requiredMessage: 'Preencha este campo!',
+      ),
     ),
   ],
 )
 ```
 
-### Prefixo, sufixo e contador
+### Controlado
 
-O valor entregue a onChange inclui prefixo e sufixo, como no React.
+O formulário guarda o valor: setValue preenche ou limpa o campo por fora e o valor atual aparece em tempo real.
 
-Região `sgInputTextAfixos` em `sg_input_text_page.snippets.g.dart`.
+Região `sgInputTextControlado` em `sg_input_text_page.snippets.g.dart`.
 
 ```dart
-const SgInputText(
-  id: 'valor',
-  labelText: 'Valor',
-  prefixText: r'R$ ',
-  suffixText: ' /mês',
-  maxLength: 12,
-  showCharCounter: true,
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputText(
+        id: 'demo-controlled',
+        labelText: 'Nome do cliente',
+        name: 'controlled',
+        control: _form,
+      ),
+      const SizedBox(height: 12),
+      ListenableBuilder(
+        listenable: _form,
+        builder: (context, _) => Text(
+          'Estado atual: "${_form.getValue('controlled') ?? ''}"',
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          SgButton(
+            label: Text(
+              'Simular preenchimento via API',
+            ),
+            onClick: () => _form.setValue(
+              'controlled',
+              'Texto vindo da API',
+            ),
+          ),
+          SgButton(
+            appearance: SgAppearance.outline,
+            label: Text('Setar outro valor'),
+            onClick: () => _form.setValue(
+              'controlled',
+              'Outro valor',
+            ),
+          ),
+          SgButton(
+            appearance: SgAppearance.outline,
+            severity: SgSeverity.danger,
+            label: Text('Limpar campo'),
+            onClick: () => _form.setValue('controlled', ''),
+          ),
+        ],
+      ),
+    ],
+  ),
 )
 ```
 
+Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: {'nome': '', 'controlled': 'Texto inicial'});`
+
 ## SgInputTextArea
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_text_area_page.dart` (15 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_text_area_page.dart` (18 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Rótulo flutuante, 2 linhas por padrão e botão de limpar.
+Textarea com floating label e botão limpar (padrão).
 
 Região `sgInputTextAreaBasico` em `sg_input_text_area_page.snippets.g.dart`.
 
 ```dart
-const SgInputTextArea(id: 'obs', labelText: 'Observações')
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputTextArea(
+        id: 'demo-basic',
+        labelText: 'Descrição',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
 ```
 
-### Linhas, altura e posição do rótulo
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
 
-maxLines define as linhas visíveis; height fixa a altura e o texto rola dentro.
+### Obrigatório
 
-Região `sgInputTextAreaLinhas` em `sg_input_text_area_page.snippets.g.dart`.
+Valida ao perder o foco (validateOnBlur=true por padrão).
+
+Região `sgInputTextAreaObrigatorio` em `sg_input_text_area_page.snippets.g.dart`.
 
 ```dart
-const Column(
+Column(
   children: [
-    SgInputTextArea(
-      id: 'linhas',
-      labelText: '5 linhas',
-      maxLines: 5,
+    SizedBox(
+      width: 384,
+      child: SgInputTextArea(
+        id: 'demo-required',
+        labelText: 'Campo obrigatório',
+        required: true,
+      ),
     ),
-    SizedBox(height: 12),
-    SgInputTextArea(
-      id: 'topo',
-      labelText: 'Rótulo no topo, 120 px de altura',
-      labelPosition: SgInputTextAreaLabelPosition.top,
-      hintText: 'Escreva aqui',
-      height: 120,
-    ),
-    SizedBox(height: 12),
-    SgInputTextArea(
-      id: 'esquerda',
-      labelText: 'À esquerda',
-      labelPosition: SgInputTextAreaLabelPosition.left,
-      labelWidth: 110,
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 384,
+      child: SgInputTextArea(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        required: true,
+        requiredMessage: 'Preencha este campo!',
+      ),
     ),
   ],
 )
 ```
 
-### Limites e contador
+### Controlado
 
-maxLength limita a digitação; a validação roda a cada tecla.
+Para controlar o valor de fora (setar, limpar, preencher via API), use o formulário: setValue atualiza o campo e o estado atual aparece em tempo real.
 
-Região `sgInputTextAreaLimites` em `sg_input_text_area_page.snippets.g.dart`.
+Região `sgInputTextAreaControlado` em `sg_input_text_area_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  children: [
-    SgInputTextArea(
-      id: 'max',
-      labelText: 'No máximo 60 caracteres',
-      maxLength: 60,
-      showCharCounter: true,
-    ),
-    SizedBox(height: 12),
-    SgInputTextArea(
-      id: 'palavras',
-      labelText: 'Pelo menos 5 palavras',
-      minNumberOfWords: 5,
-    ),
-    SizedBox(height: 12),
-    SgInputTextArea(
-      id: 'minlinhas',
-      labelText: 'Pelo menos 3 linhas',
-      minLines: 3,
-      maxLines: 4,
-    ),
-  ],
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputTextArea(
+        id: 'demo-controlled',
+        labelText: 'Observações',
+        name: 'controlled',
+        control: _form,
+      ),
+      const SizedBox(height: 12),
+      ListenableBuilder(
+        listenable: _form,
+        builder: (context, _) => Text(
+          'Estado atual: "${_form.getValue('controlled') ?? ''}"',
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text(
+              'Simular preenchimento via API',
+            ),
+            onClick: () => _form.setValue(
+              'controlled',
+              'Texto preenchido via API.',
+            ),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text('Setar outro valor'),
+            onClick: () => _form.setValue(
+              'controlled',
+              'Outro valor qualquer',
+            ),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            severity: SgSeverity.danger,
+            label: Text('Limpar campo'),
+            onClick: () => _form.setValue('controlled', ''),
+          ),
+        ],
+      ),
+    ],
+  ),
 )
 ```
+
+Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: {'controlled': ''});`
 
 ## SgInputTextSearch
 
@@ -177,7 +303,8 @@ Column(
 )
 ```
 
-Ajuste: o trecho usa o estado da página do showcase (`setState` de um `State`). Para copiar, declare no `State` do seu widget: `String _busca = '(nenhuma ainda)';`.
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _busca = '(nenhuma ainda)';`
 
 ### onChange imediato x onSearchChange com debounce
 
@@ -202,425 +329,649 @@ Column(
 )
 ```
 
-Ajuste: o trecho usa o estado da página do showcase. Declare no `State` do seu widget: `String _crua = '';` e `int _disparos = 0;`.
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _crua = '';`
+- `int _disparos = 0;`
 
-### Rótulo, largura e botão de limpar
+### minChars e debounceMs
 
-Limpar o campo dispara a busca vazia (volta para a lista completa).
+Dispara a partir de 1 caractere e com 100 ms de espera.
 
-Região `sgInputTextSearchAparencia` em `sg_input_text_search_page.snippets.g.dart`.
-
-```dart
-SgInputTextSearch(
-  id: 'aparencia',
-  labelText: 'Cliente',
-  labelPosition: SgInputTextSearchLabelPosition.top,
-  placeholder: 'Nome ou CPF',
-  width: 320,
-  filled: true,
-  onSearchChange: (valor) {},
-)
-```
-
-## SgInputEmail
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_email_page.dart` (11 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Valida o formato a cada digitação e ao sair do campo.
-
-Região `sgInputEmailBasico` em `sg_input_email_page.snippets.g.dart`.
-
-```dart
-SgInputEmail(
-  id: 'email',
-  labelText: 'E-mail',
-  placeholder: 'voce@empresa.com',
-)
-```
-
-### Obrigatório e mensagens próprias
-
-Saia do campo vazio para ver a mensagem de obrigatório.
-
-Região `sgInputEmailObrigatorio` em `sg_input_email_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputEmail(
-      id: 'obrigatorio',
-      labelText: 'Obrigatório',
-      required: true,
-    ),
-    SizedBox(height: 12),
-    SgInputEmail(
-      id: 'proprias',
-      labelText: 'Mensagens próprias',
-      required: true,
-      requiredMessage: 'Informe o e-mail do responsável',
-      invalidMessage: 'Esse e-mail não parece certo',
-    ),
-  ],
-)
-```
-
-### E-mails descartáveis
-
-Domínios temporários (yopmail.com, guerrillamail.com...) são bloqueados por padrão; blockFakeMail desliga e blockedEmailDomains acrescenta.
-
-Região `sgInputEmailDescartaveis` em `sg_input_email_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputEmail(
-      id: 'padrao',
-      labelText: 'Bloqueio padrão (tente a@yopmail.com)',
-    ),
-    SizedBox(height: 12),
-    SgInputEmail(
-      id: 'livre',
-      labelText: 'blockFakeMail: false',
-      blockFakeMail: false,
-    ),
-    SizedBox(height: 12),
-    SgInputEmail(
-      id: 'extra',
-      labelText: 'Bloqueia @concorrente.com',
-      blockedEmailDomains: ['concorrente.com'],
-    ),
-  ],
-)
-```
-
-## SgInputPassword
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_password_page.dart` (5 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Política padrão: 8 caracteres, maiúscula, minúscula, número, especial, sem repetição nem sequência. A barra mostra a força.
-
-Região `sgInputPasswordBasico` em `sg_input_password_page.snippets.g.dart`.
-
-```dart
-const SgInputPassword(id: 'senha', labelText: 'Senha')
-```
-
-### Gerar senha forte
-
-O botão gera uma senha que cumpre a política; newPasswordLength define o tamanho.
-
-Região `sgInputPasswordGerar` em `sg_input_password_page.snippets.g.dart`.
-
-```dart
-const SgInputPassword(
-  id: 'gerada',
-  labelText: 'Senha',
-  createNewPasswordButton: true,
-  newPasswordLength: 12,
-  maxLength: 32,
-  hidePassword: false,
-)
-```
-
-### Política própria
-
-Cada critério liga e desliga; minSize muda o tamanho mínimo e showStrengthBar esconde a barra.
-
-Região `sgInputPasswordPolitica` em `sg_input_password_page.snippets.g.dart`.
-
-```dart
-const SgInputPassword(
-  id: 'politica',
-  labelText: 'PIN alfanumérico',
-  minSize: 6,
-  upperRequired: false,
-  specialCharacterRequired: false,
-  prohibitsSequentialAscCharacters: false,
-  prohibitsSequentialDescCharacters: false,
-  showStrengthBar: false,
-  commonPasswordCheck: false,
-)
-```
-
-## SgInputPhone
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_phone_page.dart` (9 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Fixo (10 dígitos) e celular (11 dígitos) formatam sozinhos.
-
-Região `sgInputPhoneBasico` em `sg_input_phone_page.snippets.g.dart`.
-
-```dart
-const SgInputPhone(id: 'telefone', labelText: 'Telefone')
-```
-
-### Obrigatório e mensagem própria
-
-Região `sgInputPhoneObrigatorio` em `sg_input_phone_page.snippets.g.dart`.
-
-```dart
-const SgInputPhone(
-  id: 'telefone-obrigatorio',
-  labelText: 'Celular',
-  required: true,
-  requiredMessage: 'Informe um telefone',
-  invalidMessage: 'Telefone incompleto',
-)
-```
-
-### Variações visuais
-
-filled alterna o fundo preenchido; withBorder remove a borda.
-
-Região `sgInputPhoneVariacoes` em `sg_input_phone_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputPhone(
-      id: 'preenchido',
-      labelText: 'Preenchido',
-      filled: true,
-    ),
-    SizedBox(height: 12),
-    SgInputPhone(
-      id: 'vazado',
-      labelText: 'Sem preenchimento',
-      filled: false,
-    ),
-    SizedBox(height: 12),
-    SgInputPhone(
-      id: 'semborda',
-      labelText: 'Sem borda',
-      withBorder: false,
-    ),
-  ],
-)
-```
-
-## SgInputCPF
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpf_page.dart` (10 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-A máscara é aplicada a cada dígito; a validação aparece ao digitar e ao sair do campo.
-
-Região `sgInputCpfBasico` em `sg_input_cpf_page.snippets.g.dart`.
-
-```dart
-const SgInputCPF(id: 'cpf', labelText: 'CPF')
-```
-
-### Obrigatório e mensagens próprias
-
-Região `sgInputCpfObrigatorio` em `sg_input_cpf_page.snippets.g.dart`.
-
-```dart
-const SgInputCPF(
-  id: 'cpf-obrigatorio',
-  labelText: 'CPF do titular',
-  required: true,
-  requiredMessage: 'Informe o CPF',
-  lengthMessage: 'O CPF tem 11 dígitos',
-  invalidMessage: 'Esse CPF não existe',
-)
-```
-
-### Validação própria
-
-A função recebe o valor mascarado e devolve a mensagem ou null.
-
-Região `sgInputCpfValidacao` em `sg_input_cpf_page.snippets.g.dart`.
-
-```dart
-SgInputCPF(
-  id: 'cpf-regra',
-  labelText: 'CPF (não aceita 000...)',
-  validation: (v) =>
-      v.startsWith('000') ? 'CPF de teste não permitido' : null,
-)
-```
-
-## SgInputCNPJ
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cnpj_page.dart` (10 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Aceita o CNPJ numérico e o alfanumérico (letras viram maiúsculas).
-
-Região `sgInputCnpjBasico` em `sg_input_cnpj_page.snippets.g.dart`.
-
-```dart
-const SgInputCNPJ(id: 'cnpj', labelText: 'CNPJ')
-```
-
-### Obrigatório e mensagens próprias
-
-Região `sgInputCnpjObrigatorio` em `sg_input_cnpj_page.snippets.g.dart`.
-
-```dart
-const SgInputCNPJ(
-  id: 'cnpj-obrigatorio',
-  labelText: 'CNPJ da empresa',
-  required: true,
-  requiredMessage: 'Informe o CNPJ',
-  invalidMessage: 'CNPJ inválido, confira os dígitos',
-)
-```
-
-### Variações visuais
-
-filled alterna o fundo preenchido; withBorder remove a borda.
-
-Região `sgInputCnpjVariacoes` em `sg_input_cnpj_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputCNPJ(
-      id: 'preenchido',
-      labelText: 'Preenchido',
-      filled: true,
-    ),
-    SizedBox(height: 12),
-    SgInputCNPJ(
-      id: 'vazado',
-      labelText: 'Sem preenchimento',
-      filled: false,
-    ),
-    SizedBox(height: 12),
-    SgInputCNPJ(
-      id: 'semborda',
-      labelText: 'Sem borda',
-      withBorder: false,
-    ),
-  ],
-)
-```
-
-## SgInputCPFCNPJ
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpfcnpj_page.dart` (4 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Até 11 dígitos é CPF; passando disso, ou com letra, é CNPJ.
-
-Região `sgInputCpfcnpjBasico` em `sg_input_cpfcnpj_page.snippets.g.dart`.
-
-```dart
-const SgInputCPFCNPJ(id: 'documento', labelText: 'CPF ou CNPJ')
-```
-
-### Obrigatório e mensagens
-
-Região `sgInputCpfcnpjObrigatorio` em `sg_input_cpfcnpj_page.snippets.g.dart`.
-
-```dart
-const SgInputCPFCNPJ(
-  id: 'documento-obrigatorio',
-  labelText: 'Documento',
-  required: true,
-  requiredMessage: 'Informe o documento',
-  lengthMessage: 'Documento incompleto',
-)
-```
-
-### Dentro de um formulário
-
-Região `sgInputCpfcnpjFormulario` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+Região `sgInputTextSearchAjuste` em `sg_input_text_search_page.snippets.g.dart`.
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgInputCPFCNPJ(
-      id: 'campo',
-      name: 'campo',
-      control: _form,
-      labelText: 'Campo',
-      required: true,
-      requiredMessage: 'Preencha o campo',
+    SgInputTextSearch(
+      id: 'ajuste',
+      labelText: 'Resposta rápida',
+      minChars: 1,
+      debounceMs: 100,
+      onSearchChange: (valor) => setState(() => _rapida = valor),
     ),
-    const SizedBox(height: 12),
-    SgButton(
-      label: Text('Enviar'),
-      onClick: () => _form.handleSubmit(
-        (values) => setState(() => _enviado = '${values['campo']}'),
-      ),
-    ),
-    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+    const SizedBox(height: 8),
+    Text('Última busca: $_rapida'),
   ],
 )
 ```
 
-Ajuste: o trecho usa o estado da página do showcase. Declare no `State` do seu widget: `final SgFormController _form = SgFormController();` (com `_form.dispose()` no `dispose`) e `String _enviado = '';`.
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _rapida = '(nenhuma ainda)';`
+
+## SgInputEmail
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_email_page.dart` (13 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+Email com label e hint.
+
+Região `sgInputEmailBasico` em `sg_input_email_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputEmail(
+        id: 'demo-basic',
+        labelText: 'Email',
+        hintText: 'exemplo@dominio.com',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### Obrigatório
+
+Valida se está vazio e mostra mensagem customizada.
+
+Região `sgInputEmailObrigatorio` em `sg_input_email_page.snippets.g.dart`.
+
+```dart
+Column(
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputEmail(
+        id: 'demo-required',
+        labelText: 'Email obrigatório',
+        hintText: 'Obrigatório',
+        required: true,
+      ),
+    ),
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputEmail(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        hintText: 'Obrigatório',
+        required: true,
+        requiredMessage: 'Informe o email.',
+      ),
+    ),
+  ],
+)
+```
+
+### Mensagem inválida
+
+Personaliza mensagem de email inválido.
+
+Região `sgInputEmailInvalido` em `sg_input_email_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputEmail(
+    id: 'demo-invalid',
+    labelText: 'Email',
+    hintText: 'exemplo@dominio.com',
+    invalidMessage: 'Email inválido.',
+  ),
+)
+```
+
+## SgInputPassword
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_password_page.dart` (8 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+Senha com label, hint e toggle de visibilidade.
+
+Região `sgInputPasswordBasico` em `sg_input_password_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputPassword(
+        id: 'demo-basic',
+        labelText: 'Senha',
+        hintText: 'Digite sua senha',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### Obrigatório
+
+Valida se está vazio e mostra mensagem customizada.
+
+Região `sgInputPasswordObrigatorio` em `sg_input_password_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputPassword(
+    id: 'demo-required',
+    labelText: 'Senha obrigatória',
+    hintText: 'Obrigatório',
+    required: true,
+  ),
+)
+```
+
+### Validação customizada
+
+Função de validação retorna mensagem ou null.
+
+Região `sgInputPasswordValidacao` em `sg_input_password_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputPassword(
+        id: 'demo-validation',
+        labelText: 'Mínimo 8',
+        hintText: 'Mínimo 8 caracteres',
+        validation: (value) => value.length < 8
+            ? 'Senha precisa ter no mínimo 8 caracteres.'
+            : null,
+        onValidation: (msg) => setState(() => _validationMsg = msg),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        'onValidation: ${_validationMsg ?? 'válido'}',
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String? _validationMsg;`
+
+## SgInputPhone
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_phone_page.dart` (10 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+Telefone com label e hint.
+
+Região `sgInputPhoneBasico` em `sg_input_phone_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputPhone(
+        id: 'demo-basic',
+        labelText: 'Telefone',
+        hintText: '(00) 00000-0000',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: "$_basico"'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### Obrigatório
+
+Valida se está vazio e mostra mensagem customizada.
+
+Região `sgInputPhoneObrigatorio` em `sg_input_phone_page.snippets.g.dart`.
+
+```dart
+Column(
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputPhone(
+        id: 'demo-required',
+        labelText: 'Telefone obrigatório',
+        hintText: 'Obrigatório',
+        required: true,
+      ),
+    ),
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputPhone(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        hintText: 'Obrigatório',
+        required: true,
+        requiredMessage: 'Informe o telefone.',
+      ),
+    ),
+  ],
+)
+```
+
+### Mensagem inválida
+
+Personaliza mensagem de telefone inválido.
+
+Região `sgInputPhoneInvalida` em `sg_input_phone_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputPhone(
+    id: 'demo-invalid',
+    labelText: 'Telefone',
+    hintText: '(00) 00000-0000',
+    invalidMessage: 'Telefone inválido.',
+  ),
+)
+```
+
+## SgInputCPF
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpf_page.dart` (11 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+CPF com label e hint.
+
+Região `sgInputCpfBasico` em `sg_input_cpf_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCPF(
+        id: 'demo-basic',
+        labelText: 'CPF',
+        hintText: '000.000.000-00',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### Obrigatório
+
+Valida se está vazio e mostra mensagem customizada.
+
+Região `sgInputCpfObrigatorio` em `sg_input_cpf_page.snippets.g.dart`.
+
+```dart
+Column(
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputCPF(
+        id: 'demo-required',
+        labelText: 'CPF obrigatório',
+        hintText: 'Obrigatório',
+        required: true,
+      ),
+    ),
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputCPF(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        hintText: 'Obrigatório',
+        required: true,
+        requiredMessage: 'Informe o CPF.',
+      ),
+    ),
+  ],
+)
+```
+
+### Mensagem de tamanho
+
+Personaliza mensagem quando CPF não tem 11 dígitos.
+
+Região `sgInputCpfTamanho` em `sg_input_cpf_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputCPF(
+    id: 'demo-length',
+    labelText: 'CPF',
+    hintText: '000.000.000-00',
+    lengthMessage: 'CPF deve ter 11 dígitos.',
+  ),
+)
+```
+
+## SgInputCNPJ
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cnpj_page.dart` (14 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+CNPJ com label e hint.
+
+Região `sgInputCnpjBasico` em `sg_input_cnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCNPJ(
+        id: 'demo-basic',
+        labelText: 'CNPJ',
+        hintText: '00.000.000/0000-00',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### CNPJ alfanumérico
+
+Exemplo com letras (A-Z) no corpo e DVs numéricos.
+
+Região `sgInputCnpjAlfanumerico` em `sg_input_cnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputCNPJ(
+    id: 'demo-alnum',
+    labelText: 'CNPJ alfanumérico',
+    hintText: '00.000.000/E08G-12',
+    initialValue: '00.000.000/E08G-12',
+  ),
+)
+```
+
+### Exemplos válidos (alfanumérico)
+
+Lista de CNPJs alfanuméricos válidos.
+
+Região `sgInputCnpjListaAlfanumerica` em `sg_input_cnpj_page.snippets.g.dart`.
+
+```dart
+const SelectableText(
+  '// Exemplos válidos\n'
+  '00.000.000/E08G-12  (raw: 00000000E08G12)\n'
+  'GK.IPC.PIK/0001-52  (raw: GKIPCPIK000152)\n'
+  'AB.12C.345/D6E7-99  (raw: AB12C345D6E799)\n'
+  '12.ABC.345/DE67-34  (raw: 12ABC345DE6734)\n'
+  'A1.B2C.3D4/E5F6-68  (raw: A1B2C3D4E5F668)\n'
+  'ZX.CVB.NM1/2345-84  (raw: ZXCVBNM1234584)',
+  style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+)
+```
+
+## SgInputCPFCNPJ
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpfcnpj_page.dart` (13 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+CPF/CNPJ com label e hint.
+
+Região `sgInputCpfCnpjBasico` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCPFCNPJ(
+        id: 'demo-basic',
+        labelText: 'Documento',
+        hintText: 'CPF ou CNPJ',
+        onChange: (v) => setState(() => _basico = v),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_basico'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _basico = '';`
+
+### Obrigatório
+
+Valida se está vazio e mostra mensagem customizada.
+
+Região `sgInputCpfCnpjObrigatorio` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+
+```dart
+Column(
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputCPFCNPJ(
+        id: 'demo-required',
+        labelText: 'Documento obrigatório',
+        hintText: 'Obrigatório',
+        required: true,
+      ),
+    ),
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputCPFCNPJ(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        hintText: 'Obrigatório',
+        required: true,
+        requiredMessage: 'Informe o CPF/CNPJ.',
+      ),
+    ),
+  ],
+)
+```
+
+### Mensagem inválida
+
+Personaliza mensagem de documento inválido.
+
+Região `sgInputCpfCnpjInvalida` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: SgInputCPFCNPJ(
+    id: 'demo-invalid',
+    labelText: 'Documento',
+    hintText: 'CPF ou CNPJ',
+    invalidMessage: 'Documento inválido.',
+  ),
+)
+```
 
 ## SgInputPostalCode
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_postal_code_page.dart` (10 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_postal_code_page.dart` (16 exemplo(s) na página; abaixo 3).
 
-### CEP (padrão)
+### Básico
+
+Código postal com label e hint (padrão: Brasil).
 
 Região `sgInputPostalCodeBasico` em `sg_input_postal_code_page.snippets.g.dart`.
 
 ```dart
-const SgInputPostalCode(id: 'cep', labelText: 'CEP')
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputPostalCode(
+        id: 'demo-basic',
+        labelText: 'CEP (Brasil)',
+        hintText: '00000-000',
+        name: 'cep',
+        control: _form,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: _form,
+        builder: (context, _) => Text(
+          'Valor: "${_form.getValue('cep') ?? ''}"',
+        ),
+      ),
+    ],
+  ),
+)
 ```
 
-### Outros países
+Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: {'cep': '', 'controlled': ''});`
 
-Cada país tem a sua máscara e o seu tamanho.
+### Países
+
+Cada país tem máscara, tamanho e validação específicos.
 
 Região `sgInputPostalCodePaises` em `sg_input_postal_code_page.snippets.g.dart`.
 
 ```dart
-const Column(
+Wrap(
+  spacing: 16,
+  runSpacing: 12,
   children: [
-    SgInputPostalCode(
-      id: 'cp-pt',
-      labelText: 'Portugal',
-      country: SgInputPostalCodeCountry.pt,
-    ),
-    SizedBox(height: 12),
-    SgInputPostalCode(
-      id: 'cp-us',
-      labelText: 'Estados Unidos',
-      country: SgInputPostalCodeCountry.us,
-    ),
-    SizedBox(height: 12),
-    SgInputPostalCode(
-      id: 'cp-ar',
-      labelText: 'Argentina',
-      country: SgInputPostalCodeCountry.ar,
-    ),
+    for (final (country, label, hint) in [
+      (
+        SgInputPostalCodeCountry.br,
+        'CEP (Brasil)',
+        '00000-000',
+      ),
+      (
+        SgInputPostalCodeCountry.pt,
+        'Código postal (Portugal)',
+        '0000-000',
+      ),
+      (
+        SgInputPostalCodeCountry.us,
+        'ZIP code (EUA)',
+        '00000',
+      ),
+      (
+        SgInputPostalCodeCountry.es,
+        'Código postal (Espanha)',
+        '00000',
+      ),
+      (
+        SgInputPostalCodeCountry.uy,
+        'Código postal (Uruguai)',
+        '00000',
+      ),
+      (
+        SgInputPostalCodeCountry.ar,
+        'Código postal (Argentina)',
+        'A0000AAA',
+      ),
+      (
+        SgInputPostalCodeCountry.py,
+        'Código postal (Paraguai)',
+        '000000',
+      ),
+    ])
+      SizedBox(
+        width: 280,
+        child: SgInputPostalCode(
+          id: 'demo-${country.name}',
+          country: country,
+          labelText: label,
+          hintText: hint,
+        ),
+      ),
   ],
 )
 ```
 
-### Consulta ao ViaCEP
+### Obrigatório
 
-Aqui a consulta é simulada (viaCepFetch); só vale para o Brasil.
+Valida se está vazio e mostra mensagem customizada.
 
-Região `sgInputPostalCodeViacep` em `sg_input_postal_code_page.snippets.g.dart`.
+Região `sgInputPostalCodeObrigatorio` em `sg_input_postal_code_page.snippets.g.dart`.
 
 ```dart
-SgInputPostalCode(
-  id: 'cep-consulta',
-  labelText: 'CEP com consulta',
-  validateWithViaCep: true,
-  viaCepErrorMessage: 'CEP inexistente',
-  viaCepFetch: (cep) async => cep.startsWith('99')
-      ? const SgViaCepResult(erro: true)
-      : SgViaCepResult(cep: cep, uf: 'SP'),
+Column(
+  children: [
+    SizedBox(
+      width: 320,
+      child: SgInputPostalCode(
+        id: 'demo-required',
+        labelText: 'Código postal obrigatório',
+        hintText: 'Obrigatório',
+        required: true,
+      ),
+    ),
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputPostalCode(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        hintText: 'Obrigatório',
+        required: true,
+        requiredMessage: 'Informe o código postal.',
+      ),
+    ),
+  ],
 )
 ```
 
@@ -714,203 +1065,305 @@ const SgInputBirthDate(
 
 ## SgInputNumber
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_number_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_number_page.dart` (16 exemplo(s) na página; abaixo 3).
 
-### Casas decimais e sinal
+### Básico
 
-decimals muda as casas (0 a n); allowNegative: false ignora o sinal de menos.
+Campo ligado a um formulário (SgFormController): name + control; o valor sai no envio.
 
-Região `sgInputNumberDecimais` em `sg_input_number_page.snippets.g.dart`.
+Região `sgInputNumberBasico` em `sg_input_number_page.snippets.g.dart`.
 
 ```dart
-const Column(
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputNumber(
+        id: 'demo-basic',
+        labelText: 'Valor',
+        name: 'valor',
+        control: _form,
+        decimals: 2,
+      ),
+      const SizedBox(height: 8),
+      SgButton(
+        size: SgSize.sm,
+        appearance: SgAppearance.outline,
+        label: Text('Enviar'),
+        onClick: () => _form.handleSubmit(
+          (values) =>
+              setState(() => _enviado = '${values['valor']}'),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_enviado'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
+- `String _enviado = '';`
+
+### Obrigatório
+
+Valida ao perder o foco (validateOnBlur=true por padrão).
+
+Região `sgInputNumberObrigatorio` em `sg_input_number_page.snippets.g.dart`.
+
+```dart
+Column(
   children: [
-    SgInputNumber(
-      id: 'inteiro',
-      labelText: 'Inteiro (decimals: 0)',
-      decimals: 0,
+    SizedBox(
+      width: 320,
+      child: SgInputNumber(
+        id: 'demo-required',
+        labelText: 'Campo obrigatório',
+        required: true,
+        decimals: 2,
+      ),
     ),
-    SizedBox(height: 12),
-    SgInputNumber(
-      id: 'tres',
-      labelText: 'Três casas (decimals: 3)',
-      decimals: 3,
-    ),
-    SizedBox(height: 12),
-    SgInputNumber(
-      id: 'positivo',
-      labelText: 'Só positivo',
-      allowNegative: false,
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputNumber(
+        id: 'demo-required-custom',
+        labelText: 'Mensagem customizada',
+        required: true,
+        requiredMessage: 'Informe um valor.',
+        decimals: 2,
+      ),
     ),
   ],
 )
 ```
 
-### Rótulo, afixos e vazio
+### Controlado
 
-labelPosition, prefixText/suffixText e emptyValue: nullValue (o campo começa vazio em vez de 0,00).
+Use quando precisa do valor em tempo real e de setValue externos.
 
-Região `sgInputNumberAfixos` em `sg_input_number_page.snippets.g.dart`.
+Região `sgInputNumberControlado` em `sg_input_number_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  children: [
-    SgInputNumber(
-      id: 'peso',
-      labelText: 'Peso',
-      labelPosition: SgInputNumberLabelPosition.top,
-      suffixText: 'kg',
-    ),
-    SizedBox(height: 12),
-    SgInputNumber(
-      id: 'distancia',
-      labelText: 'Distância',
-      labelPosition: SgInputNumberLabelPosition.left,
-      labelWidth: 110,
-      suffixText: 'km',
-      emptyValue: SgInputNumberEmptyValue.nullValue,
-      hintText: 'digite',
-    ),
-  ],
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputNumber(
+        id: 'demo-controlled',
+        labelText: 'Valor controlado',
+        name: 'controlled',
+        control: _form,
+        decimals: 2,
+      ),
+      const SizedBox(height: 12),
+      ListenableBuilder(
+        listenable: _form,
+        builder: (context, _) => Text(
+          'Estado atual: "${_form.getValue('controlled') ?? ''}"',
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text('Setar via API'),
+            onClick: () => _form.setValue('controlled', '12345.00'),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text('Resetar'),
+            onClick: () => _form.setValue('controlled', '0.00'),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            severity: SgSeverity.danger,
+            label: Text('Limpar'),
+            onClick: () => _form.setValue('controlled', ''),
+          ),
+        ],
+      ),
+    ],
+  ),
 )
 ```
 
-### Validação
-
-required (zero conta como vazio), minValue e maxValue com mensagens do idioma; a mensagem aparece ao sair do campo.
-
-Região `sgInputNumberValidacao` em `sg_input_number_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputNumber(
-      id: 'obrigatorio',
-      labelText: 'Obrigatório',
-      required: true,
-    ),
-    SizedBox(height: 12),
-    SgInputNumber(
-      id: 'faixa',
-      labelText: 'Entre 10 e 20',
-      minValue: 10,
-      maxValue: 20,
-    ),
-    SizedBox(height: 12),
-    SgInputNumber(
-      id: 'mensagem',
-      labelText: 'Mínimo 5',
-      minValue: 5,
-      minValueMessage: 'Muito pouco',
-    ),
-  ],
-)
-```
+Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
 
 ## SgInputCurrency
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_currency_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_currency_page.dart` (15 exemplo(s) na página; abaixo 3).
 
-### Moedas e locales
+### Básico
 
-currency e locale escolhem símbolo, posição e separadores (Intl). JPY não tem casas decimais.
+Campo ligado a um formulário (SgFormController): name + control; o valor sai no envio.
 
-Região `sgInputCurrencyMoedas` em `sg_input_currency_page.snippets.g.dart`.
+Região `sgInputCurrencyBasico` em `sg_input_currency_page.snippets.g.dart`.
 
 ```dart
-const Column(
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCurrency(
+        id: 'demo-basic',
+        currency: 'BRL',
+        labelText: 'Valor',
+        name: 'valor',
+        control: _form,
+      ),
+      const SizedBox(height: 8),
+      SgButton(
+        size: SgSize.sm,
+        appearance: SgAppearance.outline,
+        label: Text('Enviar'),
+        onClick: () => _form.handleSubmit(
+          (values) =>
+              setState(() => _enviado = '${values['valor']}'),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $_enviado'),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
+- `String _enviado = '';`
+
+### Obrigatório
+
+Valida ao perder o foco (validateOnBlur=true por padrão).
+
+Região `sgInputCurrencyObrigatorio` em `sg_input_currency_page.snippets.g.dart`.
+
+```dart
+Column(
   children: [
-    SgInputCurrency(
-      id: 'usd',
-      labelText: 'Dólar (en-US)',
-      currency: 'USD',
-      locale: 'en-US',
-      initialValue: '1234.5',
+    SizedBox(
+      width: 320,
+      child: SgInputCurrency(
+        id: 'demo-required',
+        currency: 'BRL',
+        labelText: 'Campo obrigatório',
+        required: true,
+      ),
     ),
-    SizedBox(height: 12),
-    SgInputCurrency(
-      id: 'eur',
-      labelText: 'Euro (fr)',
-      currency: 'EUR',
-      locale: 'fr',
-      initialValue: '1234.5',
-    ),
-    SizedBox(height: 12),
-    SgInputCurrency(
-      id: 'jpy',
-      labelText: 'Iene (sem casas)',
-      currency: 'JPY',
-      initialValue: '1234',
+    const SizedBox(height: 12),
+    SizedBox(
+      width: 320,
+      child: SgInputCurrency(
+        id: 'demo-required-custom',
+        currency: 'BRL',
+        labelText: 'Mensagem customizada',
+        required: true,
+        requiredMessage: 'Informe um valor.',
+      ),
     ),
   ],
 )
 ```
 
-### Símbolo e agrupamento
+### Controlado
 
-currencyDisplay, currencySymbolPlacement, currencySymbolOverride, showCurrencySymbol e useGrouping.
+Use quando precisa do valor em tempo real e de setValue externos.
 
-Região `sgInputCurrencySimbolo` em `sg_input_currency_page.snippets.g.dart`.
+Região `sgInputCurrencyControlado` em `sg_input_currency_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  children: [
-    SgInputCurrency(
-      id: 'codigo',
-      labelText: 'Código no fim',
-      currencyDisplay: SgInputCurrencyCurrencyDisplay.code,
-      currencySymbolPlacement:
-          SgInputCurrencyCurrencySymbolPlacement.suffix,
-      initialValue: '1234.5',
-    ),
-    SizedBox(height: 12),
-    SgInputCurrency(
-      id: 'pontos',
-      labelText: 'Símbolo próprio',
-      currencySymbolOverride: 'pts',
-      initialValue: '10',
-    ),
-    SizedBox(height: 12),
-    SgInputCurrency(
-      id: 'semsimbolo',
-      labelText: 'Sem símbolo nem milhar',
-      showCurrencySymbol: false,
-      useGrouping: false,
-      initialValue: '1234567.8',
-    ),
-  ],
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCurrency(
+        id: 'demo-controlled',
+        currency: 'BRL',
+        labelText: 'Valor controlado',
+        name: 'controlled',
+        control: _form,
+      ),
+      const SizedBox(height: 12),
+      ListenableBuilder(
+        listenable: _form,
+        builder: (context, _) => Text(
+          'Estado atual: "${_form.getValue('controlled') ?? ''}"',
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text('Setar via API'),
+            onClick: () => _form.setValue('controlled', '12345.00'),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            label: Text('Resetar'),
+            onClick: () => _form.setValue('controlled', '0.00'),
+          ),
+          SgButton(
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            severity: SgSeverity.danger,
+            label: Text('Limpar'),
+            onClick: () => _form.setValue('controlled', ''),
+          ),
+        ],
+      ),
+    ],
+  ),
 )
 ```
 
-### Validação
-
-required (zero conta como vazio), minValue e maxValue; mensagens do idioma ou próprias.
-
-Região `sgInputCurrencyValidacao` em `sg_input_currency_page.snippets.g.dart`.
-
-```dart
-const Column(
-  children: [
-    SgInputCurrency(
-      id: 'obrigatorio',
-      labelText: 'Obrigatório',
-      required: true,
-    ),
-    SizedBox(height: 12),
-    SgInputCurrency(
-      id: 'faixa',
-      labelText: 'Entre 10 e 500',
-      minValue: 10,
-      maxValue: 500,
-      maxValueMessage: 'Acima do limite',
-    ),
-  ],
-)
-```
+Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
 
 ## SgInputOTP
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_input_otp_page.dart` (6 exemplo(s) na página; abaixo 3).
+
+### Básico
+
+Seis dígitos. Digitar avança, Backspace volta, setas movem, e colar o código inteiro distribui nos campos.
+
+Região `sgInputOtpBasico` em `sg_input_otp_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputOTP(
+      id: 'basico',
+      label: 'Código de verificação',
+      hintText: 'Enviamos 6 dígitos por SMS.',
+      onComplete: (v) => setState(() => _concluido = v),
+    ),
+    if (_concluido.isNotEmpty) Text('Código completo: $_concluido'),
+  ],
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `String _concluido = '';`
 
 ### Máscara com separador
 
@@ -952,41 +1405,6 @@ SgInputOTP(
   requiredMessage: 'Informe o código.',
   validation: (raw, masked) =>
       raw.length < 4 ? 'O código tem 4 dígitos.' : null,
-)
-```
-
-### Estados
-
-Região `sgInputOtpEstados` em `sg_input_otp_page.snippets.g.dart`.
-
-```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgInputOTP(
-      id: 'erro',
-      label: 'Com erro',
-      mask: '9999',
-      defaultValue: '1234',
-      error: 'Código expirado.',
-    ),
-    SizedBox(height: 16),
-    SgInputOTP(
-      id: 'desab',
-      label: 'Desabilitado',
-      mask: '9999',
-      defaultValue: '12',
-      enabled: false,
-    ),
-    SizedBox(height: 16),
-    SgInputOTP(
-      id: 'leitura',
-      label: 'Somente leitura',
-      mask: '9999',
-      defaultValue: '9876',
-      readOnly: true,
-    ),
-  ],
 )
 ```
 

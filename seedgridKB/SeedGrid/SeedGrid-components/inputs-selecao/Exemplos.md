@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-selecao, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Inputs de seleção e valores, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,18 +12,22 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Exemplos|Exemplos — Inputs de seleção e valores (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos foram conferidos contra [[SeedGrid/SeedGrid-components/inputs-selecao/API|API dos inputs de seleção]]. As fontes são relativas a `front/seedgrid-fe-components/apps/showcase/src/app/components/`. Os exemplos não foram compilados nem executados.
+Todos os exemplos foram conferidos contra [[SeedGrid/SeedGrid-components/inputs-selecao/API|API dos inputs de seleção]]. As fontes são relativas a `front/seedgrid-fe-components/apps/showcase/src/app/components/`. Conferência dos exemplos em 2026-11-07 (seedgrid-fe-components 557bc16): os blocos marcados como cópia são idênticos, texto a texto, ao `.sample` do showcase; os demais (os que citam mais de um sample ou indicam acréscimos) foram compilados com o `tsc` (strict) contra o código-fonte de `@seedgrid/fe-components`, sem erros. Não foram executados no navegador.
 
 ## SgAutocomplete com fonte assíncrona e `control`
 
-Fonte: `sg-autocomplete/samples/basico.tsx.sample`. O formulário guarda o **texto** selecionado; o objeto completo chega por `onSelect`.
+Fonte: `sg-autocomplete/samples/basico.tsx.sample` (cópia 1:1 do sample do showcase). O formulário guarda o **texto** selecionado; o objeto completo chega por `onSelect`.
 
 ```tsx
 import React from "react";
 import { useForm } from "react-hook-form";
 import { SgAutocomplete, type SgAutocompleteItem } from "@seedgrid/fe-components";
 
-type Country = { id: number; description: string; code: string };
+type Country = {
+  id: number;
+  description: string;
+  code: string;
+};
 
 const COUNTRIES: Country[] = [
   { id: 1, description: "Afghanistan", code: "AF" },
@@ -39,7 +43,9 @@ const source = async (query: string) => {
 };
 
 export default function Example() {
-  const { control } = useForm({ defaultValues: { country: "" } });
+  const { control } = useForm({
+    defaultValues: { country: "" }
+  });
   const [selected, setSelected] = React.useState<SgAutocompleteItem | null>(null);
 
   return (
@@ -50,11 +56,17 @@ export default function Example() {
         control={control}
         label="Country"
         source={source}
-        mapItem={(raw) => ({ id: raw.id, label: raw.description })}
+        mapItem={(raw) => ({
+          id: raw.id,
+          label: raw.description
+        })}
         minLengthForSearch={1}
         onSelect={(item) => setSelected(item)}
       />
-      {selected ? <pre>{JSON.stringify(selected, null, 2)}</pre> : null}
+
+      {selected ? (
+        <pre>{JSON.stringify(selected, null, 2)}</pre>
+      ) : null}
     </form>
   );
 }
@@ -62,7 +74,61 @@ export default function Example() {
 
 ## SgCombobox com lista local agrupada
 
-Fonte: `sg-combobox/samples/basico-com-lista-de-objetos.tsx.sample`, com a lista encurtada. O `value`/`onValueChange` trabalham com o **id**; `onSelect` entrega o objeto original.
+Fonte: `sg-combobox/samples/basico-com-lista-de-objetos.tsx.sample` (cópia 1:1 do sample do showcase).
+
+```tsx
+import * as React from "react";
+import { SgCombobox } from "@seedgrid/fe-components";
+
+type Country = {
+  id: number;
+  description: string;
+  code: string;
+  region: string;
+};
+
+const COUNTRIES: Country[] = [
+  { id: 1, description: "Brazil", code: "BR", region: "Americas" },
+  { id: 2, description: "Argentina", code: "AR", region: "Americas" },
+  { id: 3, description: "United States", code: "US", region: "Americas" },
+  { id: 4, description: "Canada", code: "CA", region: "Americas" },
+  { id: 5, description: "Germany", code: "DE", region: "Europe" },
+  { id: 6, description: "France", code: "FR", region: "Europe" },
+  { id: 7, description: "Portugal", code: "PT", region: "Europe" },
+  { id: 8, description: "India", code: "IN", region: "Asia" },
+  { id: 9, description: "Japan", code: "JP", region: "Asia" },
+  { id: 10, description: "Australia", code: "AU", region: "Oceania" }
+];
+
+export default function Example() {
+  const [selectedCountry, setSelectedCountry] = React.useState<Country | null>(null);
+
+  return (
+    <>
+      <SgCombobox<Country>
+        id="cb-basic"
+        label="Country"
+        source={COUNTRIES}
+        openOnFocus
+        grouped
+        mapItem={(raw) => ({
+          id: raw.id,
+          label: raw.description,
+          value: raw.code,
+          group: raw.region
+        })}
+        onSelect={(value) => setSelectedCountry(value)}
+      />
+
+      <div>
+        {selectedCountry ? JSON.stringify(selectedCountry, null, 2) : "No item selected"}
+      </div>
+    </>
+  );
+}
+```
+
+Variação que não está no showcase: lista encurtada e `value`/`onValueChange` controlados pelo **id** (`onSelect` entrega o objeto original). Conferida com o compilador do TypeScript (não é cópia do sample).
 
 ```tsx
 import * as React from "react";
@@ -134,12 +200,12 @@ export default function Example() {
 
 ## SgRadioGroup com `register`
 
-Fonte: `sg-radio-group/samples/react-hook-form-register.tsx.sample`.
+Fonte: `sg-radio-group/samples/react-hook-form-register.tsx.sample` (cópia 1:1 do sample do showcase).
 
 ```tsx
 import React from "react";
 import { useForm } from "react-hook-form";
-import { SgButton, SgRadioGroup, type SgRadioGroupOption } from "@seedgrid/fe-components";
+import { SgRadioGroup, SgButton, type SgRadioGroupOption } from "@seedgrid/fe-components";
 
 const FRUIT_OPTIONS: SgRadioGroupOption[] = [
   { label: "Apple", value: "apple" },
@@ -150,9 +216,19 @@ const FRUIT_OPTIONS: SgRadioGroupOption[] = [
 
 export default function Example() {
   const { register, handleSubmit } = useForm();
+
+  const onSubmit = (data: unknown) => {
+    alert(`Dados do formulario: ${JSON.stringify(data, null, 2)}`);
+  };
+
   return (
-    <form onSubmit={handleSubmit((data) => alert(JSON.stringify(data, null, 2)))} className="space-y-4">
-      <SgRadioGroup name="fruit" title="Choose your fruit" source={FRUIT_OPTIONS} register={register} />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <SgRadioGroup
+        name="fruit"
+        title="Choose your fruit"
+        source={FRUIT_OPTIONS}
+        register={register}
+      />
       <SgButton type="submit">Submit</SgButton>
     </form>
   );
@@ -212,11 +288,11 @@ export default function App() {
 
 ## SgOrderList com controles externos por ref
 
-Fonte: `sg-order-list/samples/selecao-multipla-controles-externos-ref.tsx.sample`.
+Fonte: `sg-order-list/samples/selecao-multipla-controles-externos-ref.tsx.sample` (cópia 1:1 do sample do showcase).
 
 ```tsx
 import React from "react";
-import { SgButton, SgGrid, SgOrderList, type SgOrderListItem, type SgOrderListRef } from "@seedgrid/fe-components";
+import { SgOrderList, type SgOrderListItem, type SgOrderListRef, SgButton, SgGrid } from "@seedgrid/fe-components";
 
 const PIPELINE_STEPS: SgOrderListItem[] = [
   { label: "Prospeccao", value: "lead" },
@@ -340,24 +416,45 @@ const semestre = resolveYearPart({ year: 2024, kind: YearPartKind.SEMESTER, part
 
 ## SgToggleSwitch com `register` e `control`
 
-Fonte: `sg-toggle-switch/samples/react-hook-form.tsx.sample`.
+Fonte: `sg-toggle-switch/samples/react-hook-form.tsx.sample` (cópia 1:1 do sample do showcase).
 
 ```tsx
 import * as React from "react";
 import { Check, X } from "lucide-react";
 import { useForm, type FieldValues } from "react-hook-form";
-import { SgButton, SgToggleSwitch } from "@seedgrid/fe-components";
+import { SgToggleSwitch } from "@seedgrid/fe-components";
 
 export default function Example() {
-  const { register, control, handleSubmit } = useForm<FieldValues>({
-    defaultValues: { notifications: false, active: true } as FieldValues
+  const [submitResult, setSubmitResult] = React.useState("-");
+  const { register, control, handleSubmit, watch } = useForm<FieldValues>({
+    defaultValues: {
+      notifications: false,
+      active: true
+    } as FieldValues
   });
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <SgToggleSwitch id="demo-rhf-register" name="notifications" label="Receber notificacoes por email" register={register} />
-      <SgToggleSwitch id="demo-rhf-control" name="active" label="Conta ativa" control={control} onIcon={<Check size={12} />} offIcon={<X size={12} />} />
-      <SgButton type="submit">Enviar</SgButton>
+    <form onSubmit={handleSubmit((data) => setSubmitResult(JSON.stringify(data)))}>
+      <SgToggleSwitch
+        id="demo-rhf-register"
+        name="notifications"
+        label="Receber notificacoes por email"
+        register={register}
+      />
+
+      <SgToggleSwitch
+        id="demo-rhf-control"
+        name="active"
+        label="Conta ativa"
+        control={control}
+        onIcon={<Check size={12} />}
+        offIcon={<X size={12} />}
+      />
+
+      <button type="submit">Enviar</button>
+      <p>watch.notifications: {String(watch("notifications"))}</p>
+      <p>watch.active: {String(watch("active"))}</p>
+      <p>Ultimo submit: {submitResult}</p>
     </form>
   );
 }

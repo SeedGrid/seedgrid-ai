@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-sel
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Inputs de seleção e valores (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos — Inputs de seleção e valores (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis `_x` do estado da página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes na página. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, e `${context.tx('texto')}` dentro de uma string virou `texto`. Conferido em 2026-11-07 por comparação de texto com as constantes `*PageSnippets` do showcase (seedgrid-fe-flutter 8a43f9d): todos os blocos abaixo são cópia 1:1 dessas constantes, com essa única alteração. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis `_x` do estado da página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes na página. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgAutocomplete
 
@@ -152,13 +152,50 @@ SgCombobox<SgAutocompleteItem>(
 
 ## SgCheckboxGroup
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_checkbox_group_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_checkbox_group_page.dart` (16 exemplo(s) na página; abaixo 3).
 
-### Horizontal e highlight
+### Básico
 
-orientation horizontal quebra a linha; selectionStyle highlight troca a caixa por um cartão.
+Região `sgCheckboxGroupBasico` em `sg_checkbox_group_page.snippets.g.dart`.
 
-Região `sgCheckboxGroupEstilos` em `sg_checkbox_group_page.snippets.g.dart`.
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgCheckboxGroup(
+      id: 'basic',
+      title: 'Escolha as opções',
+      value: _basico,
+      onChange: (v) => setState(() => _basico = v),
+      source: [
+        SgCheckboxGroupOption(
+          label: 'Opção 1',
+          value: 'option1',
+        ),
+        SgCheckboxGroupOption(
+          label: 'Opção 2',
+          value: 'option2',
+        ),
+        SgCheckboxGroupOption(
+          label: 'Opção 3',
+          value: 'option3',
+        ),
+      ],
+    ),
+    const SizedBox(height: 8),
+    Text(
+      'Valores selecionados: [${_basico.join(', ')}]',
+    ),
+  ],
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `List<Object> _basico = const ['option1'];`
+
+### Orientação Horizontal
+
+Região `sgCheckboxGroupOrientacaoHorizontal` em `sg_checkbox_group_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -166,128 +203,73 @@ Column(
   children: [
     SgCheckboxGroup(
       id: 'horizontal',
-      title: 'Horizontal',
+      title: 'Selecione frutas',
       orientation: SgCheckboxGroupOrientation.horizontal,
-      source: [
-        SgCheckboxGroupOption(label: 'Um', value: 1),
-        SgCheckboxGroupOption(
-          label: 'Dois',
-          value: 2,
-          checked: true,
-        ),
-        SgCheckboxGroupOption(label: 'Três', value: 3),
-      ],
-    ),
-    SizedBox(height: 16),
-    SgCheckboxGroup(
-      id: 'highlight',
-      title: 'Highlight',
-      selectionStyle: SgCheckboxGroupSelectionStyle.highlight,
+      value: _horizontal,
+      onChange: (v) => setState(() => _horizontal = v),
       source: [
         SgCheckboxGroupOption(
-          label: 'Lista',
-          value: 'lista',
-          checked: true,
-          icon: Icon(Icons.list, size: 16),
+          label: 'Maçã',
+          value: 'apple',
         ),
         SgCheckboxGroupOption(
-          label: 'Grade',
-          value: 'grade',
-          icon: Icon(Icons.grid_view, size: 16),
+          label: 'Banana',
+          value: 'banana',
         ),
-      ],
-    ),
-  ],
-)
-```
-
-### Selecionar todos
-
-showCheckAll marca só as opções habilitadas e mostra o estado indeterminado.
-
-Região `sgCheckboxGroupTodos` em `sg_checkbox_group_page.snippets.g.dart`.
-
-```dart
-SgCheckboxGroup(
-  id: 'todos',
-  title: 'Permissões',
-  showCheckAll: true,
-  source: [
-    SgCheckboxGroupOption(
-      label: 'Ler',
-      value: 'r',
-      checked: true,
-    ),
-    SgCheckboxGroupOption(
-      label: 'Escrever',
-      value: 'w',
-    ),
-    SgCheckboxGroupOption(
-      label: 'Apagar',
-      value: 'd',
-      enabled: false,
-    ),
-  ],
-)
-```
-
-### Controle por código
-
-O SgCheckboxGroupController substitui o ref do React (getChecked, setChecked, checkAll, clearAll).
-
-Região `sgCheckboxGroupController` em `sg_checkbox_group_page.snippets.g.dart`.
-
-```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgCheckboxGroup(
-      id: 'ctrl',
-      controller: _controller,
-      source: const [
-        SgCheckboxGroupOption(label: 'A', value: 'a'),
-        SgCheckboxGroupOption(label: 'B', value: 'b'),
-        SgCheckboxGroupOption(label: 'C', value: 'c'),
+        SgCheckboxGroupOption(
+          label: 'Laranja',
+          value: 'orange',
+        ),
+        SgCheckboxGroupOption(
+          label: 'Uva',
+          value: 'grape',
+        ),
       ],
     ),
     const SizedBox(height: 8),
-    Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        SgButton(
-          label: Text('Marcar todos'),
-          size: SgSize.sm,
-          onClick: _controller.checkAll,
-        ),
-        SgButton(
-          label: Text('Limpar'),
-          size: SgSize.sm,
-          appearance: SgAppearance.outline,
-          onClick: _controller.clearAll,
-        ),
-        SgButton(
-          label: Text('Só B'),
-          size: SgSize.sm,
-          appearance: SgAppearance.outline,
-          onClick: () => _controller.setChecked(['b']),
-        ),
-      ],
+    Text(
+      'Valores selecionados: [${_horizontal.join(', ')}]',
     ),
   ],
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `final SgCheckboxGroupController _controller = SgCheckboxGroupController();`
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `List<Object> _horizontal = const [];`
+
+### Com Ícones
+
+Região `sgCheckboxGroupComIcones` em `sg_checkbox_group_page.snippets.g.dart`.
+
+```dart
+SgCheckboxGroup(
+  id: 'with-icons',
+  title: 'Escolha ações',
+  source: [
+    SgCheckboxGroupOption(
+      label: 'Favorito',
+      value: 'favorite',
+      icon: Icon(Icons.favorite, size: 16),
+    ),
+    SgCheckboxGroupOption(
+      label: 'Importante',
+      value: 'important',
+      icon: Icon(Icons.star, size: 16),
+    ),
+    SgCheckboxGroupOption(
+      label: 'Curtir',
+      value: 'like',
+      icon: Icon(Icons.thumb_up, size: 16),
+    ),
+  ],
+)
+```
 
 ## SgRadioGroup
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_radio_group_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_radio_group_page.dart` (14 exemplo(s) na página; abaixo 3).
 
 ### Básico
-
-Escolha única; as setas do teclado movem a seleção e pulam opções desabilitadas.
 
 Região `sgRadioGroupBasico` em `sg_radio_group_page.snippets.g.dart`.
 
@@ -296,33 +278,37 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgRadioGroup(
-      id: 'tamanho',
-      title: 'Tamanho',
+      id: 'basic',
+      title: 'Escolha uma opção',
+      value: _basico,
+      onChange: (v) => setState(() => _basico = v),
       source: [
         SgRadioGroupOption(
-          label: 'Pequeno',
-          value: 'p',
+          label: 'Opção 1',
+          value: 'option1',
         ),
-        SgRadioGroupOption(label: 'Médio', value: 'm'),
         SgRadioGroupOption(
-          label: 'Grande',
-          value: 'g',
-          enabled: false,
+          label: 'Opção 2',
+          value: 'option2',
+        ),
+        SgRadioGroupOption(
+          label: 'Opção 3',
+          value: 'option3',
         ),
       ],
-      onChange: (v) => setState(() => _tamanho = v),
     ),
-    Text('Escolhido: ${_tamanho ?? '-'}'),
+    const SizedBox(height: 8),
+    Text('Valor selecionado: ${_basico ?? '-'}'),
   ],
 )
 ```
 
 Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `Object? _tamanho;`
+- `Object? _basico = 'option1';`
 
-### Horizontal e highlight
+### Orientation Horizontal
 
-Região `sgRadioGroupEstilos` em `sg_radio_group_page.snippets.g.dart`.
+Região `sgRadioGroupOrientationHorizontal` em `sg_radio_group_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -330,31 +316,26 @@ Column(
   children: [
     SgRadioGroup(
       id: 'horizontal',
-      title: 'Horizontal',
+      title: 'Selecione uma fruta',
       orientation: SgRadioGroupOrientation.horizontal,
-      value: 'b',
-      source: [
-        SgRadioGroupOption(label: 'A', value: 'a'),
-        SgRadioGroupOption(label: 'B', value: 'b'),
-        SgRadioGroupOption(label: 'C', value: 'c'),
-      ],
-    ),
-    SizedBox(height: 16),
-    SgRadioGroup(
-      id: 'highlight',
-      title: 'Highlight',
-      selectionStyle: SgRadioGroupSelectionStyle.highlight,
-      value: 'lista',
+      value: _fruta,
+      onChange: (v) => setState(() => _fruta = v),
       source: [
         SgRadioGroupOption(
-          label: 'Lista',
-          value: 'lista',
-          icon: Icon(Icons.list, size: 16),
+          label: 'Maçã',
+          value: 'apple',
         ),
         SgRadioGroupOption(
-          label: 'Grade',
-          value: 'grade',
-          icon: Icon(Icons.grid_view, size: 16),
+          label: 'Banana',
+          value: 'banana',
+        ),
+        SgRadioGroupOption(
+          label: 'Laranja',
+          value: 'orange',
+        ),
+        SgRadioGroupOption(
+          label: 'Uva',
+          value: 'grape',
         ),
       ],
     ),
@@ -362,55 +343,32 @@ Column(
 )
 ```
 
-### Só ícones, somente leitura e desabilitado
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `Object? _fruta;`
 
-Região `sgRadioGroupEstados` em `sg_radio_group_page.snippets.g.dart`.
+### Com Ícones
+
+Região `sgRadioGroupComIcones` em `sg_radio_group_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgRadioGroup(
-      id: 'icones',
-      title: 'iconOnly',
-      iconOnly: true,
-      orientation: SgRadioGroupOrientation.horizontal,
-      selectionStyle: SgRadioGroupSelectionStyle.highlight,
-      value: 'a',
-      source: [
-        SgRadioGroupOption(
-          label: 'Estrela',
-          value: 'a',
-          icon: Icon(Icons.star),
-        ),
-        SgRadioGroupOption(
-          label: 'Coração',
-          value: 'b',
-          icon: Icon(Icons.favorite),
-        ),
-      ],
+SgRadioGroup(
+  id: 'with-icons',
+  title: 'Escolha uma ação',
+  source: [
+    SgRadioGroupOption(
+      label: 'Favorito',
+      value: 'favorite',
+      icon: Icon(Icons.favorite, size: 16),
     ),
-    SizedBox(height: 16),
-    SgRadioGroup(
-      id: 'leitura',
-      title: 'readOnly',
-      readOnly: true,
-      value: 'x',
-      source: [
-        SgRadioGroupOption(label: 'X', value: 'x'),
-        SgRadioGroupOption(label: 'Y', value: 'y'),
-      ],
+    SgRadioGroupOption(
+      label: 'Importante',
+      value: 'important',
+      icon: Icon(Icons.star, size: 16),
     ),
-    SizedBox(height: 16),
-    SgRadioGroup(
-      id: 'off',
-      title: 'enabled: false',
-      enabled: false,
-      value: 'x',
-      source: [
-        SgRadioGroupOption(label: 'X', value: 'x'),
-        SgRadioGroupOption(label: 'Y', value: 'y'),
-      ],
+    SgRadioGroupOption(
+      label: 'Curtir',
+      value: 'like',
+      icon: Icon(Icons.thumb_up, size: 16),
     ),
   ],
 )
@@ -1019,6 +977,30 @@ Column(
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_toggle_switch_page.dart` (7 exemplo(s) na página; abaixo 3).
 
+### Básico
+
+Clique no rótulo ou na chave; Tab foca e Espaço alterna.
+
+Região `sgToggleSwitchBasico` em `sg_toggle_switch_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgToggleSwitch(
+      id: 'notificar',
+      label: 'Receber notificações',
+      description: 'Avisos por e-mail',
+      onChange: (v) => setState(() => _ligado = v),
+    ),
+    Text('Estado: ${_ligado ? 'ligado' : 'desligado'}'),
+  ],
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `bool _ligado = false;`
+
 ### Ícones, somente leitura e desabilitado
 
 Região `sgToggleSwitchEstados` em `sg_toggle_switch_page.snippets.g.dart`.
@@ -1044,7 +1026,7 @@ Column(
     SizedBox(height: 12),
     SgToggleSwitch(
       id: 'off',
-      label: 'enabled: false',
+      label: 'disabled',
       enabled: false,
     ),
   ],
@@ -1079,28 +1061,13 @@ Column(
 )
 ```
 
-### Erro externo e largura
-
-error mostra uma mensagem vinda de fora; width limita a largura do componente.
-
-Região `sgToggleSwitchErroExterno` em `sg_toggle_switch_page.snippets.g.dart`.
-
-```dart
-SgToggleSwitch(
-  id: 'erro',
-  label: 'Aceito os termos',
-  error: 'Aceite os termos para continuar',
-  width: 280,
-)
-```
-
 ## SgRating
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_rating_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_rating_page.dart` (8 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-value inicial, cancel zera a nota e onHover entrega a nota sob o ponteiro.
+Exemplo controlado com estado.
 
 Região `sgRatingBasico` em `sg_rating_page.snippets.g.dart`.
 
@@ -1108,79 +1075,77 @@ Região `sgRatingBasico` em `sg_rating_page.snippets.g.dart`.
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgRating(
-      id: 'basico',
-      label: 'Sua avaliação',
-      value: 3,
-      onChange: (v) => setState(() => _nota = v),
-      onHover: (v) => setState(() => _hover = v),
+    Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0x403B82F6)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SgRating(
+        value: _basico,
+        onChange: (v) => setState(() => _basico = v),
+      ),
     ),
+    const SizedBox(height: 8),
+    Text('Valor atual: $_basico'),
+  ],
+)
+```
+
+Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+- `num _basico = 0;`
+
+### Meia estrela + tooltip
+
+Permite clicar nas metades e exibir valor no hover.
+
+Região `sgRatingMeia` em `sg_rating_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgRating(
+      label: 'Passe o mouse e clique nas meias estrelas',
+      value: _meia,
+      allowHalf: true,
+      showTooltip: true,
+      onChange: (v) => setState(() => _meia = v),
+      onHover: (v) => setState(() => _meiaHover = v),
+    ),
+    const SizedBox(height: 8),
     Text(
-      'Nota: $_nota${_hover == null ? '' : ' (passando: $_hover)'}',
+      'Selecionado: $_meia | Hover: ${_meiaHover ?? 'nenhum'}',
     ),
   ],
 )
 ```
 
 Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `num _nota = 3;`
-- `num? _hover;`
+- `num _meia = 2.5;`
+- `num? _meiaHover;`
 
-### Meia estrela e tooltip
+### Read-only e desabilitado
 
-allowHalf: a metade esquerda da estrela vale 0,5; showTooltip mostra a nota acima.
+Visualização sem interação e estado desabilitado.
 
-Região `sgRatingMeia` em `sg_rating_page.snippets.g.dart`.
-
-```dart
-const SgRating(
-  id: 'meia',
-  allowHalf: true,
-  showTooltip: true,
-  cancel: false,
-  value: 2.5,
-)
-```
-
-### Tamanhos, cores e ícones
-
-size de sm a xl; color e emptyColor como #hex, rgb() ou hsl(var(--token)); ícones próprios.
-
-Região `sgRatingVisual` em `sg_rating_page.snippets.g.dart`.
+Região `sgRatingReadonly` em `sg_rating_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgGrid(
+  columns: const {'base': 1, 'md': 2},
+  gap: 16,
   children: [
     SgRating(
-      id: 'sm',
-      size: SgRatingSize.sm,
-      cancel: false,
-      value: 4,
+      label: 'Somente leitura',
+      value: 3.5,
+      allowHalf: true,
+      readOnly: true,
     ),
-    SizedBox(height: 8),
     SgRating(
-      id: 'xl',
-      size: SgRatingSize.xl,
-      cancel: false,
+      label: 'Desabilitado',
       value: 2,
-    ),
-    SizedBox(height: 8),
-    SgRating(
-      id: 'cores',
-      color: '#E11D48',
-      emptyColor: '#9CA3AF',
-      cancel: false,
-      value: 3,
-    ),
-    SizedBox(height: 8),
-    SgRating(
-      id: 'icones',
-      stars: 3,
-      cancel: false,
-      value: 2,
-      onIcon: Icon(Icons.favorite, color: Colors.red),
-      offIcon: Icon(Icons.favorite_border, color: Colors.grey),
+      enabled: false,
     ),
   ],
 )

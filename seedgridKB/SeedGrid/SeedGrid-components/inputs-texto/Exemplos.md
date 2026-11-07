@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-texto, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Inputs de texto e documentos, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos foram conferidos contra os tipos descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API dos inputs de texto]]. Os que vêm do showcase indicam o arquivo de origem, relativo a `front/seedgrid-fe-components/apps/showcase/src/app/components/`. Cada componente também tem página no showcase em `/components/<slug>` (campo `showcase.route` dos `*.meta.ts`). Os exemplos não foram compilados nem executados nesta análise. A conferência foi feita contra os tipos.
+Todos os exemplos foram conferidos contra os tipos descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API dos inputs de texto]]. Os que vêm do showcase indicam o arquivo de origem, relativo a `front/seedgrid-fe-components/apps/showcase/src/app/components/`. Cada componente também tem página no showcase em `/components/<slug>` (campo `showcase.route` dos `*.meta.ts`). Conferência dos exemplos em 2026-11-07 (seedgrid-fe-components 557bc16): os blocos marcados como cópia são idênticos, texto a texto, ao `.sample` do showcase; os demais (os que citam mais de um sample ou indicam acréscimos) foram compilados com o `tsc` (strict) contra o código-fonte de `@seedgrid/fe-components`, sem erros. Não foram executados no navegador.
 
 ## Configuração de idioma (recomendada)
 
@@ -48,7 +48,28 @@ export default function App() {
 
 ## SgInputText com `control` e validação
 
-Baseado em `sg-input-text/samples/controlado.tsx.sample`, com `required`/`minLength` acrescentados. As props usadas estão confirmadas no tipo.
+Fonte: `sg-input-text/samples/controlado.tsx.sample` (cópia 1:1 do sample do showcase).
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputText } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { control, watch, setValue } = useForm({ defaultValues: { controlled: "SeedGrid" } });
+  return (
+    <>
+      <SgInputText id="demo-controlled" label="Cliente" name="controlled" control={control} />
+      <button type="button" onClick={() => setValue("controlled", "Valor de API")}>Set API</button>
+      <button type="button" onClick={() => setValue("controlled", "Outro valor")}>Set Outro</button>
+      <button type="button" onClick={() => setValue("controlled", "")}>Limpar</button>
+      <p>Estado atual: "{watch("controlled")}"</p>
+    </>
+  );
+}
+```
+
+Variação que não está no showcase: acrescenta `required`, `minLength`, `showCharCounter`, `maxLength` e o envio por `handleSubmit`. Conferida com o compilador do TypeScript (não é cópia do sample).
 
 ```tsx
 import * as React from "react";
@@ -119,7 +140,25 @@ export default function App() {
 
 ## SgInputEmail
 
-Fonte: `sg-input-email/samples/basico.tsx.sample`. `blockedEmailDomains` foi acrescentado (prop confirmada).
+Fonte: `sg-input-email/samples/basico.tsx.sample` (cópia 1:1 do sample do showcase).
+
+```tsx
+import * as React from "react";
+import { SgInputEmail } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <SgInputEmail
+      id="email"
+      label="E-mail"
+      hintText="name@domain.com"
+      onChange={(value) => console.log(value)}
+    />
+  );
+}
+```
+
+Variação que não está no showcase: acrescenta `blockedEmailDomains`. Conferida com o compilador do TypeScript (não é cópia do sample).
 
 ```tsx
 import * as React from "react";
@@ -140,7 +179,30 @@ export default function App() {
 
 ## SgInputPassword com política e gerador
 
-Baseado em `sg-input-password/samples/basico.tsx.sample`, com props de política acrescentadas. Observe que o `maxLength` padrão é 15, e por isso aqui ele é aumentado.
+Fonte: `sg-input-password/samples/basico.tsx.sample` (cópia 1:1 do sample do showcase).
+
+```tsx
+import * as React from "react";
+import { SgInputPassword } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [basicValue, setBasicValue] = React.useState("");
+
+  return (
+    <div className="w-80">
+      <SgInputPassword
+        id="demo-basic"
+        label="Senha"
+        hintText="Digite sua senha"
+        onChange={(value) => setBasicValue(value)}
+      />
+      <p className="mt-2 text-xs text-muted-foreground">Valor atual: {basicValue}</p>
+    </div>
+  );
+}
+```
+
+Variação que não está no showcase: política (`minSize`, `maxLength`, `specialCharacterRequired`), botão gerador de senha (`createNewPasswordButton`, `newPasswordLength`) e `onValidation`. O `maxLength` padrão é 15, por isso aqui ele é aumentado. Conferida com o compilador do TypeScript (não é cópia do sample).
 
 ```tsx
 import * as React from "react";
@@ -240,9 +302,39 @@ export default function App() {
 
 Sempre informe `minAge` e/ou `maxAge` no `SgInputBirthDate`. Sem eles, qualquer data gera erro de configuração.
 
-## SgInputNumber e SgInputCurrency com `control`
+## SgInputCurrency com `control`
 
-`SgInputCurrency` vem de `sg-input-currency/samples/controlado.tsx.sample`. O `SgInputNumber` foi acrescentado no mesmo formulário: os samples `basico`/`controlado` dele no showcase não têm `useForm`.
+Fonte: `sg-input-currency/samples/controlado.tsx.sample` (cópia 1:1 do sample do showcase).
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { SgButton, SgGrid, SgInputCurrency } from "@seedgrid/fe-components";
+
+export default function Example() {
+  const { control, watch, setValue } = useForm({
+    defaultValues: {
+      controlled: "1234.50"
+    }
+  });
+
+  return (
+    <div className="w-96 space-y-3">
+      <SgInputCurrency id="demo-controlled" label="Controlado" name="controlled" control={control} currency="BRL" />
+
+      <SgGrid columns={{ base: 1, sm: 3 }} gap={8}>
+        <SgButton size="sm" appearance="outline" onClick={() => setValue("controlled", "12345.00")}>Set API</SgButton>
+        <SgButton size="sm" appearance="outline" onClick={() => setValue("controlled", "0.00")}>Reset</SgButton>
+        <SgButton size="sm" appearance="outline" severity="danger" onClick={() => setValue("controlled", "")}>Limpar</SgButton>
+      </SgGrid>
+
+      <p>Estado atual: "{watch("controlled")}"</p>
+    </div>
+  );
+}
+```
+
+Variação que não está no showcase: o mesmo formulário com `SgInputNumber` ao lado (os samples `basico`/`controlado` do `SgInputNumber` no showcase não têm `useForm`). Conferida com o compilador do TypeScript (não é cópia do sample).
 
 ```tsx
 import React from "react";
