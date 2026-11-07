@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, fundamentos, exemplos]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components; front/seedgrid-fe-components/apps/showcase/src/app/samples
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: cad3105
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Fundamentos (utilitários, i18n, tema), validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -14,11 +14,11 @@ plataforma: react
 
 Referência: [[SeedGrid/SeedGrid-components/fundamentos/API|API dos utilitários]] · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Visão geral]].
 
-Cada exemplo indica a fonte. Os marcados "montado a partir da API" usam apenas assinaturas confirmadas no código, mas não existem literalmente no repositório.
+Cada exemplo indica a fonte. Os exemplos 3, 4 e 5 são cópia 1:1 do `.sample` do showcase (`apps/showcase/src/app/samples/`); o 2 é cópia 1:1 do `.sample` da página de tema do showcase. Os exemplos 6 e 7 foram compilados com `tsc --strict` contra o código-fonte do pacote (2026-11-07); o 1 vem do README e do `package.json` do pacote; o 8 descreve a rota real do showcase.
 
 ## 1. Instalação e estilos
 
-Fonte: `packages/seedgrid-fe-components/README.md`.
+Fonte: `packages/seedgrid-fe-components/README.md` (comando) e `exports["./style.css"]` do `package.json` do pacote.
 
 ```bash
 pnpm add @seedgrid/fe-components @seedgrid/fe-theme react-hook-form lucide-react
@@ -32,17 +32,22 @@ import { SgInputText } from "@seedgrid/fe-components";
 
 ## 2. Tema no layout raiz (Next.js App Router)
 
-Fonte: `apps/showcase/src/app/layout.tsx` (trecho).
+Fonte: `apps/showcase/src/app/theme/samples/setup-basico.tsx.sample` (cópia 1:1). O layout real do showcase (`apps/showcase/src/app/layout.tsx`) usa `suppressHydrationWarning` no `<html>`, porque o tema `auto`/persistido é resolvido no client (comentário no arquivo).
 
 ```tsx
 import { SeedThemeProvider } from "@seedgrid/fe-theme";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body className="bg-[rgb(var(--sg-bg))] text-[rgb(var(--sg-text))]">
+    <html lang="pt-BR">
+      <body>
         <SeedThemeProvider
-          initialTheme={{ seed: "#16803D", mode: "auto", radius: 8, persistMode: true }}
+          initialTheme={{
+            seed: "#16803D",
+            mode: "auto",
+            radius: 8,
+            persistMode: true,
+          }}
           applyTo="html"
         >
           {children}
@@ -53,11 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-`suppressHydrationWarning` é usado porque o tema `auto`/persistido é resolvido no client (comentário no arquivo).
-
 ## 3. i18n global (fora do React)
 
-Fonte: `apps/showcase/src/app/samples/set-components-i18n.tsx.sample`.
+Fonte: `apps/showcase/src/app/samples/set-components-i18n.tsx.sample` (cópia 1:1).
 
 ```tsx
 import { setComponentsI18n } from "@seedgrid/fe-components";
@@ -73,7 +76,7 @@ setComponentsI18n({
 
 ## 4. i18n por provider
 
-Fonte: `apps/showcase/src/app/samples/i18n-provider-root-layout.tsx.sample`.
+Fonte: `apps/showcase/src/app/samples/i18n-provider-root-layout.tsx.sample` (cópia 1:1).
 
 ```tsx
 import { SgComponentsI18nProvider } from "@seedgrid/fe-components";
@@ -100,32 +103,39 @@ Para português: `locale="pt-BR"` já carrega o catálogo embutido; `messages` s
 
 ## 5. Formulário com React Hook Form
 
-Fonte: `packages/seedgrid-fe-components/README.md` ("Formulario com React Hook Form").
+Fonte: `apps/showcase/src/app/samples/react-hook-form-basico.tsx.sample` (cópia 1:1; trecho, `onSubmit` é uma função sua).
 
 ```tsx
-"use client";
 import { useForm } from "react-hook-form";
-import { SgButton, SgInputEmail, SgInputText, SgStack } from "@seedgrid/fe-components";
+import { SgInputEmail, SgInputText } from "@seedgrid/fe-components";
 
-type FormValues = { nome: string; email: string };
+const { register, handleSubmit } = useForm({
+  defaultValues: { nome: "", email: "" }
+});
 
-export default function ExampleForm() {
-  const { register, handleSubmit } = useForm<FormValues>({ defaultValues: { nome: "", email: "" } });
-  return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <SgStack gap={12}>
-        <SgInputText id="nome" name="nome" register={register} label="Nome" required requiredMessage="Informe o nome." />
-        <SgInputEmail id="email" name="email" register={register} label="Email" required />
-        <SgButton label="Salvar" type="submit" />
-      </SgStack>
-    </form>
-  );
-}
+<form onSubmit={handleSubmit(onSubmit)}>
+  <SgInputText
+    id="nome"
+    name="nome"
+    register={register}
+    label="Nome"
+    required
+    requiredMessage="Informe o nome."
+  />
+
+  <SgInputEmail
+    id="email"
+    name="email"
+    register={register}
+    label="Email"
+    required
+  />
+</form>;
 ```
 
 ## 6. Máscaras e validadores em código próprio
 
-Montado a partir da API (`src/masks.ts`, `src/validators.ts`).
+Compilado com `tsc --strict` contra `src/index.ts` (exports de `src/masks.ts` e `src/validators.ts`); os resultados comentados foram conferidos lendo as funções.
 
 ```ts
 import {
@@ -133,6 +143,7 @@ import {
   isValidCpf, isValidCnpj, validatePassword, validateBirthDate, isBlockedEmailDomain
 } from "@seedgrid/fe-components";
 
+const valorDigitado = "11222333000181";
 maskCpfCnpj("12345678901");      // "123.456.789-01"
 maskPhone("11987654321");        // "(11) 98765-4321"
 maskPostalCodeBR("01001000");    // "01001-000"
@@ -141,8 +152,8 @@ isValidCpf("123.456.789-09");    // boolean (checa DV)
 isValidCnpj(valorDigitado);      // aceita CNPJ numérico ou alfanumérico; os 2 DV devem ser numéricos
 
 // null = ok; string = mensagem i18n com os motivos
-const erroSenha = validatePassword("abc", { minSize: 10, special: false });
-const erroNascimento = validateBirthDate("2010-05-01", { minAge: 18 });
+const erroSenha: string | null = validatePassword("abc", { minSize: 10, special: false });
+const erroNascimento: string | null = validateBirthDate("2010-05-01", { minAge: 18 });
 
 isBlockedEmailDomain("x@yopmail.com");                 // true (lista padrão)
 isBlockedEmailDomain("x@empresa.com", ["empresa.com"]); // true (lista extra)
@@ -150,7 +161,7 @@ isBlockedEmailDomain("x@empresa.com", ["empresa.com"]); // true (lista extra)
 
 ## 7. Domínios bloqueados em runtime (global)
 
-Montado a partir de `getRuntimeBlockedEmailDomains()` em `src/validators.ts` — não há setter exportado; o app atribui a global.
+Compilado com `tsc --strict`. Vem de `getRuntimeBlockedEmailDomains()` em `src/validators.ts`: não há setter exportado; o app atribui a global.
 
 ```ts
 (globalThis as { __seedgridBlockedEmailDomains?: string[] }).__seedgridBlockedEmailDomains = [

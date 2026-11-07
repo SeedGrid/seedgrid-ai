@@ -1,18 +1,18 @@
 ---
-description: "Exemplos Dart dos fundamentos do SeedGrid em Flutter: formulário com SgForm e regras, controlador programático, idioma, tema claro/escuro, máscaras, validadores de senha e idade, consulta de CEP/CNPJ e cliente HTTP, conferidos contra a API por leitura."
+description: "Exemplos Dart dos fundamentos do SeedGrid em Flutter: formulário com SgForm e SgFormController, controlador programático, idioma, tema claro/escuro, máscaras, validadores de senha e idade, consulta de CEP/CNPJ e cliente HTTP, conferidos contra a API por leitura do código Dart."
 tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, fundamentos, exemplos]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 6a37694
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Fundamentos (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos — Fundamentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/fundamentos/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|Visão geral (Flutter)]].
 
-> **Como foram conferidos.** Escritos para esta nota e conferidos **por leitura** contra as assinaturas em `seedgrid_components`, `seedgrid_theme` e `seedgrid_commons` (commit `e9989b8`) e contra o uso real em `packages/seedgrid_components/test/form/`, `test/i18n/`, `apps/seedgrid_showcase/test/familiarity/formulario_screen.dart` e `apps/seedgrid_showcase/lib/main.dart`. **Não foram compilados nem executados** (sem `flutter test`/`flutter analyze` nesta análise). Os parâmetros `id`, `name`, `control`, `label`, `required` e `rules` dos campos vêm da API de cada widget ([[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|Inputs de texto — Flutter]]). Importações usadas:
+> **Como foram conferidos.** O showcase Flutter não tem página para estes utilitários (formulário, idioma, tema, máscaras, validadores, CEP/CNPJ, HTTP), então nenhum bloco é cópia de snippet. Cada exemplo foi escrito para esta nota e conferido **por leitura** contra as assinaturas em `seedgrid_components`, `seedgrid_theme` e `seedgrid_commons` (commit `6a37694`): construtores, tipos dos parâmetros e retornos. **Não foram compilados nem executados** (sem `flutter analyze`). Seguem a regra do dono (ADR 63): nenhum usa `setState` de página; o valor mora num `SgFormController` ou num `ValueNotifier`, e a tela reage por `ListenableBuilder`/`ValueListenableBuilder`. Os parâmetros `id`, `name`, `control`, `label`, `required`, `requiredMessage`, `minLength`, `minLengthMessage` e `validation` dos campos vêm da API de cada widget ([[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|Inputs de texto — Flutter]]). Importações usadas:
 >
 > ```dart
 > import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ analisado-em: 2026-10-30
 
 ## 1. Formulário com `SgForm`, regras e envio
 
-Equivale ao `useForm` + `handleSubmit` do React (ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]]). O `SgButton` com `type: SgButtonType.submit` precisa estar dentro de um `SgForm`; o Enter em campo de uma linha também envia.
+Equivale ao `useForm` + `handleSubmit` do React (ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]]). O `SgButton` com `type: SgButtonType.submit` precisa estar dentro de um `SgForm`; o Enter em campo de uma linha também envia. O resultado do envio vai para um `ValueNotifier`, e o `ValueListenableBuilder` redesenha só o texto.
 
 ```dart
 class CadastroForm extends StatefulWidget {
@@ -35,11 +35,12 @@ class CadastroForm extends StatefulWidget {
 
 class _CadastroFormState extends State<CadastroForm> {
   final form = SgFormController(defaultValues: {'nome': '', 'email': ''});
-  Map<String, Object?>? enviado;
+  final enviado = ValueNotifier<Map<String, Object?>?>(null);
 
   @override
   void dispose() {
     form.dispose();
+    enviado.dispose();
     super.dispose();
   }
 
@@ -47,7 +48,7 @@ class _CadastroFormState extends State<CadastroForm> {
   Widget build(BuildContext context) {
     return SgForm(
       controller: form,
-      onValid: (values) => setState(() => enviado = values),
+      onValid: (values) => enviado.value = values,
       onInvalid: (errors) => debugPrint('Campos com erro: ${errors.keys}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +70,11 @@ class _CadastroFormState extends State<CadastroForm> {
           ),
           const SizedBox(height: 12),
           SgButton(label: 'Enviar', type: SgButtonType.submit),
-          if (enviado != null) Text('Enviado: $enviado'),
+          ValueListenableBuilder<Map<String, Object?>?>(
+            valueListenable: enviado,
+            builder: (context, valor, _) =>
+                valor == null ? const SizedBox.shrink() : Text('Enviado: $valor'),
+          ),
         ],
       ),
     );
@@ -82,27 +87,52 @@ Como `SgInputEmail` registra o validador próprio (formato e domínios descartá
 ## 2. Obrigatório com mensagem e validação própria (props diretas)
 
 ```dart
-final form = SgFormController(defaultValues: {'senha': '', 'confirma': ''});
+class SenhaForm extends StatefulWidget {
+  const SenhaForm({super.key});
 
-// ...
-SgInputPassword(
-  id: 'senha',
-  name: 'senha',
-  control: form,
-  label: 'Senha',
-  required: true,
-  requiredMessage: 'Informe a senha',
-  minLength: 8,
-  minLengthMessage: 'Mínimo de 8 caracteres',
-),
-SgInputPassword(
-  id: 'confirma',
-  name: 'confirma',
-  control: form,
-  label: 'Confirmar senha',
-  // `validation`: devolve a mensagem de erro, ou null quando o valor é válido.
-  validation: (v) => v == form.getValue('senha') ? null : 'As senhas diferem',
-),
+  @override
+  State<SenhaForm> createState() => _SenhaFormState();
+}
+
+class _SenhaFormState extends State<SenhaForm> {
+  final form = SgFormController(defaultValues: {'senha': '', 'confirma': ''});
+
+  @override
+  void dispose() {
+    form.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SgForm(
+      controller: form,
+      child: Column(
+        children: [
+          SgInputPassword(
+            id: 'senha',
+            name: 'senha',
+            control: form,
+            label: 'Senha',
+            required: true,
+            requiredMessage: 'Informe a senha',
+            minLength: 8,
+            minLengthMessage: 'Mínimo de 8 caracteres',
+          ),
+          SgInputPassword(
+            id: 'confirma',
+            name: 'confirma',
+            control: form,
+            label: 'Confirmar senha',
+            // `validation`: devolve a mensagem de erro, ou null quando o valor é válido.
+            validation: (v) =>
+                v == form.getValue('senha') ? null : 'As senhas diferem',
+          ),
+        ],
+      ),
+    );
+  }
+}
 ```
 
 O `validation` usa `form`, então o campo não é `const`. O `SgRules` e a prop `rules` foram removidos do Flutter (P153.F2.T3, removido): o obrigatório e a validação própria são props do componente.
@@ -112,11 +142,11 @@ O `validation` usa `form`, então o campo não é `const`. O `SgRules` e a prop 
 Útil fora de `SgForm` (por exemplo, preencher a partir de uma API e validar antes de abrir uma etapa).
 
 ```dart
-final form = SgFormController(defaultValues: {'email': ''});
-form.registerField('email', required: 'Obrigatório');
-
 Future<void> exemplo() async {
-  // Muda o valor sem chamar o onChange do campo e valida em seguida.
+  final form = SgFormController(defaultValues: {'email': ''});
+  form.registerField('email', required: 'Obrigatório');
+
+  // Grava o valor e, com shouldValidate, valida o campo em seguida.
   await form.setValue('email', 'ana@exemplo.com', shouldValidate: true);
 
   final ok = await form.trigger(['email']); // true se válido
@@ -127,17 +157,34 @@ Future<void> exemplo() async {
 
   // Volta aos padrões e limpa erros/dirty/touched.
   form.reset();
+  form.dispose();
 }
 ```
 
-Para reagir às mudanças na tela, ouça o controlador: `ListenableBuilder(listenable: form, builder: (context, _) => Text('${form.getValues()}'))` (o padrão de `formulario_screen.dart`).
+Para reagir às mudanças na tela, ouça o controlador:
+
+```dart
+class ResumoDoForm extends StatelessWidget {
+  const ResumoDoForm({super.key, required this.form});
+
+  final SgFormController form;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: form,
+      builder: (context, _) => Text('${form.getValues()}'),
+    );
+  }
+}
+```
 
 ## 4. Idioma dos componentes
 
 Provider na árvore (recomendado) e atalho para ler o idioma:
 
 ```dart
-MaterialApp(
+Widget app() => MaterialApp(
   builder: (context, child) => SgComponentsI18nProvider(
     locale: 'pt-BR',
     // Sobrescreve só uma chave; o resto vem do catálogo pt-BR embutido.
@@ -145,21 +192,27 @@ MaterialApp(
     child: child!,
   ),
   home: const Scaffold(body: Center(child: Text('Olá'))),
-)
+);
 ```
 
 ```dart
 // Dentro de um widget abaixo do provider:
-final i18n = context.sgI18n; // ou useComponentsI18n(context)
-final texto = t(i18n, 'components.wizard.next'); // 'Avançar'
-final comParametro = t(i18n, 'components.validators.password.minSize', {'min': 8});
+String textos(BuildContext context) {
+  final i18n = context.sgI18n; // ou useComponentsI18n(context)
+  final texto = t(i18n, 'components.wizard.next'); // 'Avançar'
+  final comParametro = t(i18n, 'components.validators.password.minSize', {'min': 8});
+  return '$texto / $comParametro';
+}
 ```
 
 Sem árvore de widgets (por exemplo, num serviço), use o estado global:
 
 ```dart
-setComponentsI18n(const SgComponentsI18nInput(locale: 'es'));
-final msg = t(getComponentsI18n(), 'components.actions.clear');
+void idiomaGlobal() {
+  setComponentsI18n(const SgComponentsI18nInput(locale: 'es'));
+  final msg = t(getComponentsI18n(), 'components.actions.clear'); // 'Limpiar'
+  debugPrint(msg);
+}
 ```
 
 O padrão sem nada configurado é `en-US`. O provider **não** herda o estado gravado por `setComponentsI18n` (só o idioma embutido e o `messages` dele).
@@ -169,7 +222,7 @@ O padrão sem nada configurado é `en-US`. O provider **não** herda o estado gr
 O `SeedThemeProvider` vai abaixo do `MaterialApp`, em `builder:` (assim o tema entra no `ThemeData`):
 
 ```dart
-MaterialApp(
+Widget app() => MaterialApp(
   builder: (context, child) => SeedThemeProvider(
     initialTheme: const SeedThemeInput(
       seed: '#16803D',
@@ -179,7 +232,7 @@ MaterialApp(
     child: child!,
   ),
   home: const PaginaTema(),
-)
+);
 
 class PaginaTema extends StatelessWidget {
   const PaginaTema({super.key});
@@ -220,36 +273,45 @@ Fora do provider, `useSgTheme(context)` lança `StateError`; para ler o tema sem
 ## 6. Máscaras e validadores soltos
 
 ```dart
-maskCpf('52998224725');            // 529.982.247-25
-maskCnpj('11222333000181');        // 11.222.333/0001-81
-maskCpfCnpj('11222333000181');     // 11.222.333/0001-81
-maskPostalCodePT('1000001');       // 1000-001
-maskPhone('11987654321');          // (11) 98765-4321
+void mascarasEValidadores() {
+  maskCpf('52998224725');            // 529.982.247-25
+  maskCnpj('11222333000181');        // 11.222.333/0001-81
+  maskCpfCnpj('11222333000181');     // 11.222.333/0001-81
+  maskPostalCodePT('1000001');       // 1000-001
+  maskPhone('11987654321');          // (11) 98765-4321
 
-isValidCpf('529.982.247-25');      // true
-isValidCpf('111.111.111-11');      // false (todos iguais)
-isValidEmail(' ana@exemplo.com '); // true (faz trim)
-isBlockedEmailDomain('x@yopmail.com'); // true (domínio descartável)
+  isValidCpf('529.982.247-25');      // true
+  isValidCpf('111.111.111-11');      // false (todos iguais)
+  isValidEmail(' ana@exemplo.com '); // true (faz trim)
+  isBlockedEmailDomain('x@yopmail.com'); // true (domínio descartável)
+}
 ```
 
-Os valores de entrada vêm dos casos de `test/form/sg_form_component_validators_test.dart` (CPF e CNPJ válidos); os resultados de máscara decorrem da lógica de `masks.dart` (lida, não executada).
+Os resultados de máscara decorrem da lógica de `masks.dart` e `validators.dart` (lida, não executada).
 
 ## 7. Senha e idade: resultado x mensagem
 
 No Dart `validatePassword` devolve o **resultado**; a mensagem traduzida vem de `seedgrid_components`.
 
 ```dart
-final r = validatePassword('abc', const PasswordPolicy(minSize: 8));
-r.ok;        // false
-r.problems;  // [minSize, upper, number, special, sequence] (lista de PasswordProblem)
+void senhaEIdade(BuildContext context) {
+  final r = validatePassword('abc', const PasswordPolicy(minSize: 8));
+  debugPrint('${r.ok}');       // false
+  debugPrint('${r.problems}'); // [minSize, upper, number, special, sequence] (lista de PasswordProblem)
 
-// Texto no idioma do contexto (ou do estado global, se não passar i18n):
-final msg = validatePasswordMessage('abc', const PasswordPolicy(minSize: 8), context.sgI18n);
+  // Texto no idioma do contexto (ou do estado global, se não passar i18n):
+  final msg = validatePasswordMessage(
+    'abc',
+    const PasswordPolicy(minSize: 8),
+    context.sgI18n,
+  );
 
-// Idade mínima de 18 anos (data ISO):
-final idade = validateBirthDate('2012-05-10', const BirthDatePolicy(minAge: 18));
-idade.problem; // BirthDateProblem.ageMin (depende da data de hoje)
-final textoIdade = birthDateValidationMessage(idade, context.sgI18n);
+  // Idade mínima de 18 anos (data ISO):
+  final idade = validateBirthDate('2012-05-10', const BirthDatePolicy(minAge: 18));
+  debugPrint('${idade.problem}'); // BirthDateProblem.ageMin (depende da data de hoje)
+  final textoIdade = birthDateValidationMessage(idade, context.sgI18n);
+  debugPrint('$msg / $textoIdade');
+}
 ```
 
 A lista de `problems` de `'abc'` foi deduzida da leitura de `validatePassword` (tamanho, maiúscula, número, especial e sequência `abc`); os nomes dos enums são os do código.
@@ -270,15 +332,17 @@ Future<void> consultar() async {
 }
 ```
 
-Nos testes, passe um `http.Client` falso (`client:`) para não usar a rede. `buscarCnpj` só aceita CNPJ numérico (remove letras).
+Nos testes, passe um `http.Client` falso (`client:`) para não usar a rede. `buscarCnpj` remove tudo que não é dígito (não aceita CNPJ alfanumérico) e lança `Exception` se sobrarem menos ou mais de 14 dígitos.
 
 ## 9. Cliente HTTP com token
 
 ```dart
+String? meuToken; // sua variável de sessão; null quando não há sessão
+
 final api = SgHttpClient(
   HttpClientOptions(
     baseUrl: 'https://api.exemplo.com',
-    getAccessToken: () => meuToken, // devolva null se não houver sessão
+    getAccessToken: () => meuToken,
   ),
 );
 
@@ -320,6 +384,6 @@ class MeuRotulo extends StatelessWidget {
 
 ## Não verificado
 
-- Nenhum dos exemplos foi compilado ou executado; os resultados comentados (`// 529.982.247-25` etc.) vêm da leitura das funções, não de execução.
-- `r.problems` do exemplo 7 foi deduzido da leitura de `validatePassword` (tamanho, maiúscula, número, especial e sequência `abc`); `idade.problem` depende da data de hoje.
-- Exemplos de formulário com `SgInputPassword`, `SgInputEmail` e `SgInputText` assumem os parâmetros `id`, `name`, `control`, `label`, `required`, `requiredMessage` (Confirmado nos construtores de `SgInputText`, `SgInputEmail` e `SgInputPassword`, e em `formulario_screen.dart`).
+- Nenhum dos exemplos foi compilado ou executado (sem `flutter analyze` nesta análise); a conferência foi por leitura dos construtores e assinaturas, e os resultados comentados (`// 529.982.247-25` etc.) vêm da leitura das funções.
+- `r.problems` do exemplo 7 foi deduzido da leitura de `validatePassword`; `idade.problem` depende da data de hoje.
+- Os exemplos 8 e 9 fazem chamadas de rede reais se executados (ViaCEP, publica.cnpj.ws, `api.exemplo.com` fictício).
