@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, layout, ex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Layout e containers (Flutter)
@@ -830,55 +830,74 @@ Ajuste: o trecho usa `bool _overlay = false;` e `setState` num `State`; declare 
 
 ## SgCarousel
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_carousel_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_carousel_page.dart` (11 exemplo(s) na página; abaixo 3).
 
-### Vários itens visíveis
+### Múltiplos itens visíveis
 
-Região `sgCarouselVarios` em `sg_carousel_page.snippets.g.dart`.
+Carrossel mostrando 3 itens de uma vez
+
+Região `sgCarouselMultiplos` em `sg_carousel_page.snippets.g.dart`.
 
 ```dart
-SgCarousel(
-  height: 120,
-  items: _slides(8),
-  numVisible: 3,
-  numScroll: 2,
-  gap: 12,
-  circular: false,
+SizedBox(
+  height: 256,
+  child: SgCarousel(
+    items: _slides(),
+    numVisible: 3,
+    numScroll: 1,
+    orientation: SgCarouselOrientation.horizontal,
+    height: '100%',
+  ),
 )
 ```
 
-Ajuste: `_slides(n)` é um método estático da página: `static List<Widget> _slides(int n) => [for (var i = 0; i < n; i++) Container(decoration: BoxDecoration(color: Colors.primaries[(i * 3) % Colors.primaries.length].shade400, borderRadius: BorderRadius.circular(8)), alignment: Alignment.center, child: Text('Slide ${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 20)))];`. Os outros exemplos do carrossel usam o mesmo auxiliar.
+Ajuste: `_slides()` é um método estático da página (`static List<Widget> _slides([int n = 6])`) que devolve `n` contêineres coloridos (`Container` com `Colors.primaries[...]`, raio 8 e os textos `Item N` e `Slide N`); os outros exemplos do carrossel usam o mesmo auxiliar.
 
-### Reprodução automática
+### Auto play
 
-Avança a cada 2 s e pausa enquanto você toca ou passa o mouse.
+Carrossel com navegação automática (a cada 2 segundos)
 
 Região `sgCarouselAutoplay` em `sg_carousel_page.snippets.g.dart`.
 
 ```dart
-SgCarousel(
-  height: 140,
-  items: _slides(4),
-  autoPlay: true,
-  autoPlayInterval: 2000,
-  showNavigators: false,
+SizedBox(
+  height: 256,
+  child: SgCarousel(
+    items: _slides(),
+    numVisible: 1,
+    autoPlay: true,
+    autoPlayInterval: 2000,
+    orientation: SgCarouselOrientation.horizontal,
+    height: '100%',
+  ),
 )
 ```
 
-### Vertical e navegadores próprios
+### Orientação vertical
+
+Carrossel com navegação vertical
 
 Região `sgCarouselVertical` em `sg_carousel_page.snippets.g.dart`.
 
 ```dart
-SgCarousel(
-  height: 200,
-  width: 260,
-  orientation: SgCarouselOrientation.vertical,
-  items: _slides(4),
-  customNavigators: const SgCarouselNavigators(
-    prev: Icon(Icons.expand_less),
-    next: Icon(Icons.expand_more),
-  ),
+SgGrid(
+  columns: 1,
+  justify: SgGridJustify.center,
+  children: [
+    Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        width: 320,
+        height: 384,
+        child: SgCarousel(
+          items: _slides(),
+          numVisible: 1,
+          orientation: SgCarouselOrientation.vertical,
+          height: '100%',
+        ),
+      ),
+    ),
+  ],
 )
 ```
 

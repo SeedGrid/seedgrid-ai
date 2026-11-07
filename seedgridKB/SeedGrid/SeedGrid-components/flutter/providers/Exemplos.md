@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, providers,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Providers (ambiente/persistência e realtime) (Flutter)
@@ -16,7 +16,7 @@ analisado-em: 2026-10-30
 
 ## SgEnvironmentProvider
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_environment_provider_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_environment_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Namespace e escopo
 
@@ -88,7 +88,7 @@ SgEnvironmentProvider(
 )
 ```
 
-### Persistência por API
+### REST (por usuário)
 
 GET, POST e DELETE em /sg/persistence. Aqui o servidor é simulado e as chamadas aparecem abaixo.
 
@@ -105,7 +105,7 @@ Column(
           baseUrl: 'https://api.exemplo.com',
           scope: 'app:showcase',
           stateVersion: 1,
-          fetcher: _fakeServer,
+          fetcher: _fakeServer(_server, _requests),
         ),
       ),
       child: SgPersistentStateBuilder<int>(
@@ -133,11 +133,11 @@ Column(
 )
 ```
 
-Ajuste: `_fakeServer` é um método da página do showcase (`Future<SgFetchResponse> Function(SgFetchRequest)`) que simula o servidor de persistência; troque por um `fetcher` real ou omita o parâmetro para usar `sgDefaultFetcher`.
+Ajuste: `_fakeServer(_server, _requests)` é um método da página do showcase (`Future<SgFetchResponse> Function(SgFetchRequest)`; `_server` é um `Map<String, Object?>` e `_requests` uma `List<String>`, ambos membros do `State`) que simula o servidor de persistência; troque por um `fetcher` real ou omita o parâmetro para usar `sgDefaultFetcher`.
 
 ## SgRealtimeProvider
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_realtime_provider_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_realtime_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Simulador
 

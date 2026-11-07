@@ -1,18 +1,18 @@
 ---
-description: "Exemplos Dart (Flutter) de Data e hora, imagem e câmera, copiados dos snippets do showcase do seedgrid_components."
+description: "Exemplos Dart (Flutter) de Data e hora, imagem, câmera e seletor de cor, copiados dos snippets do showcase do seedgrid_components."
 tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-midia, exemplos]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e5e8baf
-analisado-em: 2026-11-04
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Data e hora, imagem e câmera (Flutter)
 
 > **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
-Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
+Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
 
 
 ## SgInputDateTime: básico
@@ -465,3 +465,130 @@ Column(
   ],
 )
 ```
+
+## SgColorPicker: básico
+
+`defaultValue` define a cor inicial; `onChange` entrega a cor em `#RRGGBB` maiúsculo a cada mudança válida.
+
+Região `sgColorPickerBasico` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgColorPicker(
+      id: 'cor-basico',
+      defaultValue: '#16803D',
+      ariaLabel: 'Cor',
+      onChange: (hex) => setState(() => _basico = hex),
+    ),
+    Text(_basico),
+  ],
+)
+```
+
+Ajuste: o trecho usa `String _basico = '#16803D';` e `setState` num `State`; declare a variável no widget que contém o exemplo.
+
+## SgColorPicker: valor controlado
+
+Com `value`, o pai decide a cor: o painel só muda quando o `value` muda.
+
+Região `sgColorPickerControlado` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgColorPicker(
+      id: 'cor-controlada',
+      labelText: 'Cor da marca',
+      value: _controlada,
+      onChange: (hex) => setState(() => _controlada = hex),
+    ),
+    const SizedBox(height: 12),
+    SgButton(
+      label: Text('Voltar para azul'),
+      onClick: () => setState(() => _controlada = '#0EA5E9'),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa `String _controlada = '#0EA5E9';` e `setState` num `State`.
+
+## SgColorPicker: barras (matiz, saturação e brilho)
+
+`mode: SgColorPickerMode.sliders` troca o gradiente por três barras.
+
+Região `sgColorPickerBarras` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+const SgColorPicker(
+  id: 'cor-barras',
+  defaultValue: '#16803D',
+  mode: SgColorPickerMode.sliders,
+  width: '80%',
+)
+```
+
+## SgColorPicker: dentro de um formulário
+
+`name` + `control` ligam o seletor ao `SgFormController`; o valor enviado é o `#RRGGBB`.
+
+Região `sgColorPickerFormulario` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgColorPicker(
+      id: 'cor-formulario',
+      name: 'marca',
+      control: _form,
+      presets: const ['#F97316', '#10B981', '#7C3AED'],
+    ),
+    const SizedBox(height: 12),
+    SgButton(
+      label: Text('Enviar'),
+      onClick: () => _form.handleSubmit(
+        (values) => setState(() => _enviado = '${values['marca']}'),
+      ),
+    ),
+    if (_enviado.isNotEmpty) Text(_enviado),
+  ],
+)
+```
+
+Ajuste: o trecho usa `_form` e `_enviado` do `State` da página: `final SgFormController _form = SgFormController(defaultValues: {'marca': '#F97316'});` (chame `_form.dispose()` no `dispose`) e `String _enviado = '';`.
+
+## SgColorPicker: diálogo `showSgColorPicker`
+
+Abre o seletor num diálogo e devolve o `#RRGGBB` escolhido (ou `null` se cancelar).
+
+Região `sgColorPickerDialogo` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 12,
+  runSpacing: 8,
+  crossAxisAlignment: WrapCrossAlignment.center,
+  children: [
+    SgButton(
+      label: Text('Escolher cor'),
+      onClick: () async {
+        final hex = await showSgColorPicker(
+          context,
+          id: 'cor-dialogo',
+          initialValue: _dialogo,
+          presets: const ['#EF4444', '#10B981', '#7C3AED'],
+        );
+        if (hex != null) setState(() => _dialogo = hex);
+      },
+    ),
+    Container(width: 32, height: 32, color: sgHexToColor(_dialogo)),
+    Text(_dialogo),
+  ],
+)
+```
+
+Ajuste: o trecho usa `String _dialogo = '#7C3AED';` e `setState` num `State`.

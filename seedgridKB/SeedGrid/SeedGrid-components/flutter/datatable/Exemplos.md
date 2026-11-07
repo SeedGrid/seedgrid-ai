@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, datatable,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Tabela de dados (Flutter)
@@ -16,7 +16,7 @@ analisado-em: 2026-10-30
 
 ## SgDatatable
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_datatable_page.dart` (10 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_datatable_page.dart` (14 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -43,31 +43,36 @@ showGlobalFilter, showColumnFilters, filterMatchMode por coluna e showClearFilte
 Região `sgDatatableFiltros` em `sg_datatable_page.snippets.g.dart`.
 
 ```dart
-SgDatatable(
-  value: _pessoas,
-  columns: [
-    SgDatatableColumn(
-      field: 'nome',
-      header: 'Nome',
-      filter: true,
+SizedBox(
+  height: 420,
+  child: SingleChildScrollView(
+    child: SgDatatable(
+      value: _pessoas,
+      columns: [
+        SgDatatableColumn(
+          field: 'nome',
+          header: 'Nome',
+          filter: true,
+        ),
+        SgDatatableColumn(
+          field: 'cidade',
+          header: 'Cidade',
+          filter: true,
+          filterMatchMode: SgDatatableFilterMatchMode.startsWith,
+        ),
+        SgDatatableColumn(
+          field: 'salario',
+          header: 'Salário',
+          excludeGlobalFilter: true,
+        ),
+      ],
+      paginator: true,
+      rows: 5,
+      showGlobalFilter: true,
+      showColumnFilters: true,
+      showClearFiltersButton: true,
     ),
-    SgDatatableColumn(
-      field: 'cidade',
-      header: 'Cidade',
-      filter: true,
-      filterMatchMode: SgDatatableFilterMatchMode.startsWith,
-    ),
-    SgDatatableColumn(
-      field: 'salario',
-      header: 'Salário',
-      excludeGlobalFilter: true,
-    ),
-  ],
-  paginator: true,
-  rows: 5,
-  showGlobalFilter: true,
-  showColumnFilters: true,
-  showClearFiltersButton: true,
+  ),
 )
 ```
 

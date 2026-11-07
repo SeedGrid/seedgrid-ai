@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, datatable, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatable
 branch: main
-commit: 703acf6
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Tabela de dados, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos|Exemplos — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Os exemplos foram conferidos contra [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. As fontes são relativas a `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatable/samples/`. Não foram compilados nem executados.
+Os exemplos foram conferidos contra [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. As fontes são relativas a `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-datatable/samples/`. Os trechos foram verificados com type-check TypeScript (`strict`) contra `packages/seedgrid-fe-components/src/index.ts` (commit 557bc16) em 2026-11-07, sem erros; não foram executados.
 
 Os samples `basico` e `templates` do showcase declaram as colunas **sem tipo** (`const BASE_COLUMNS = [{ …, align: "right" }]`). Sem anotação, o TypeScript alarga `"right"` para `string`, que não é atribuível a `SgDatatableColumnAlign`. Por isso, abaixo, as colunas são anotadas com `SgDatatableColumn<Row>[]`. Isso é **Inferência** pelas regras do TS: os `.sample` não passam pelo `typecheck` do pacote.
 
