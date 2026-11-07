@@ -27,7 +27,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 
 - `SgFormController(defaultValues)` + `SgForm(onValid)`; cada campo se liga por `name` e `control`. Faça `dispose` do controller.
 - Input certo por tipo: `SgInputText`, `SgInputEmail`, `SgCombobox<String>`, `SgInputCurrency` (valor em string `"0.00"`, converta no submit), `SgToggleSwitch`. Nunca `SgInputText` para número ou dinheiro. Salvar com `SgButtonType.submit`.
-- Obrigatórios validados por `SgRules`; mensagens pelo i18n.
+- Obrigatórios por `required: true` e `requiredMessage` no próprio campo; validação própria por `validation` (o `SgRules` e a prop `rules` não existem mais no Flutter); mensagens pelo i18n.
 
 ## Exclusão e feedback
 
