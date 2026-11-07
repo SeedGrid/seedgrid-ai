@@ -10,6 +10,9 @@ import { QUERY_PROXY_PREFIX } from "./lib/query-paths";
 import { proxyQuery } from "./lib/query-proxy";
 import { COMPANY_SELECT_PATH } from "./lib/company-selection";
 
+// Links de e-mail do administrador da plataforma (boas-vindas, confirmacao e redefinicao de senha).
+const ADMIN_EMAIL_LINK_PATHS = new Set(["/auth/welcome", "/auth/confirm-email", "/auth/forgot-password/confirm"]);
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -23,6 +26,13 @@ export function proxy(request: NextRequest) {
   const host = request.headers.get("host")?.toLowerCase().replace(/:\d+$/, "");
   if (host === domain && (pathname === "/login" || pathname === "/")) {
     return NextResponse.redirect(new URL("/auth/tenant", request.url));
+  }
+  // O e-mail do administrador da plataforma (criado no boot, sem tenant) leva ao dominio raiz, mas este cliente
+  // nao atende o master: quem confirma e' o admin (`SEEDGRID_ADMIN_HOST`, padrao `admin.<dominio>`). Mantem o
+  // ?token. Em dev (localhost) nao se aplica: o admin roda em outra porta, sem subdominio.
+  if (host === domain && domain !== "localhost" && ADMIN_EMAIL_LINK_PATHS.has(pathname)) {
+    const adminHost = process.env.SEEDGRID_ADMIN_HOST?.trim().toLowerCase() || `admin.${domain}`;
+    return NextResponse.redirect(`https://${adminHost}${pathname}${request.nextUrl.search}`);
   }
   const hasSession =
     Boolean(request.cookies.get(ADMIN_TOKEN_COOKIE)?.value) ||

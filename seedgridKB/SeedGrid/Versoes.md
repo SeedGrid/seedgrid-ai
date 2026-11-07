@@ -1,7 +1,7 @@
 ---
 tags: [seedgrid, versoes, gerado]
 gerado-por: scripts/kb-versions.mjs
-gerado-em: 2026-11-06
+gerado-em: 2026-11-07
 ---
 
 # Versões documentadas × atuais
@@ -34,7 +34,7 @@ gerado-em: 2026-11-06
 | [[SeedGrid/Extensions/realtime/Visao-geral\|ext-realtime]] | `seedgrid-realtime`, `seedgrid-realtime-parent` | `2026.10.08` | `2026.10.22` | **defasada**: 4 arquivo(s) de código mudaram em 9 commit(s); versão mudou 2026.10.08 → 2026.10.22 |
 | [[SeedGrid/Extensions/resilience/Visao-geral\|ext-resilience]] | `seedgrid-resilience-core`, `seedgrid-resilience-core-parent` | `2026.10.13` | `2026.10.22` | **defasada**: 22 arquivo(s) de código mudaram em 10 commit(s); versão mudou 2026.10.13 → 2026.10.22 |
 | [[SeedGrid/Extensions/security/Visao-geral\|ext-security]] | `seedgrid-security`, `seedgrid-security-parent` | `2026.10.13` | `2026.10.22` | **defasada**: 283 arquivo(s) de código mudaram em 58 commit(s); versão mudou 2026.10.13 → 2026.10.22 |
-| [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral\|ext-subdomain-tenancy]] | `seedgrid-subdomain-tenancy`, `seedgrid-subdomain-tenancy-integration-tests-minimal`, `seedgrid-subdomain-tenancy-parent` | `2026.11.06` | `2026.11.09` | **defasada**: 4 arquivo(s) de código mudaram em 3 commit(s); versão mudou 2026.11.06 → 2026.11.09 |
+| [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral\|ext-subdomain-tenancy]] | `seedgrid-subdomain-tenancy`, `seedgrid-subdomain-tenancy-integration-tests-minimal`, `seedgrid-subdomain-tenancy-parent` | `2026.11.06` | `2026.11.10` | **defasada**: 5 arquivo(s) de código mudaram em 5 commit(s); versão mudou 2026.11.06 → 2026.11.10 |
 | [[SeedGrid/Extensions/user-notifications/Visao-geral\|ext-user-notifications]] | `seedgrid-user-notifications`, `seedgrid-user-notifications-integration-tests-audit`, `seedgrid-user-notifications-parent` | `2026.11.03` | `2026.11.04` | **defasada**: 7 arquivo(s) de código mudaram em 1 commit(s); versão mudou 2026.11.03 → 2026.11.04 |
 | [[SeedGrid/Extensions/whatsapp/Visao-geral\|ext-whatsapp]] | `seedgrid-whatsapp`, `seedgrid-whatsapp-core`, `seedgrid-whatsapp-core-deployment`, `seedgrid-whatsapp-evolution`, `seedgrid-whatsapp-whatsapp-cloud` | `2026.08.16` | `2026.10.22` | **defasada**: 27 arquivo(s) de código mudaram em 10 commit(s); versão mudou 2026.08.16 → 2026.10.22 |
 | [[SeedGrid/Extensions/cache/Visao-geral\|lib-cache]] | `seedgrid-cache`, `seedgrid-cache-core`, `seedgrid-cache-dragonfly`, `seedgrid-cache-redis`, `seedgrid-cache-testkit`, `seedgrid-cache-valkey` | `2026.10.13` | `2026.10.22` | **defasada**: 83 arquivo(s) de código mudaram em 25 commit(s); versão mudou 2026.10.13 → 2026.10.22 |
@@ -45,19 +45,19 @@ gerado-em: 2026-11-06
 
 | Pacote | Documentada | Atual | Situação |
 |---|---|---|---|
-| `@seedgrid/fe-apikeys` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 17 commit(s) |
+| `@seedgrid/fe-apikeys` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
 | `@seedgrid/fe-audit` | `2026.7.0` | `2026.7.0` | em dia |
-| `@seedgrid/fe-backup` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 17 commit(s) |
-| `@seedgrid/fe-billing-platform` | `2026.7.0` | `2026.7.0` | **defasada**: 3 arquivo(s) de código mudaram em 17 commit(s) |
-| `@seedgrid/fe-billing-user` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 17 commit(s) |
-| `@seedgrid/fe-login-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 17 commit(s) |
-| `@seedgrid/fe-security` | `2026.7.3` | `2026.7.3` | **defasada**: 10 arquivo(s) de código mudaram em 17 commit(s); alterações locais não commitadas |
-| `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 17 commit(s) |
-| `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 17 commit(s) |
+| `@seedgrid/fe-backup` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-billing-platform` | `2026.7.0` | `2026.7.0` | **defasada**: 3 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-billing-user` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-login-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-security` | `2026.7.3` | `2026.7.3` | **defasada**: 10 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 99 arquivo(s) de código mudaram em 17 commit(s); alterações locais não commitadas |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 103 arquivo(s) de código mudaram em 21 commit(s) |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
-| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 17 commit(s) |
+| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
 | `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | em dia |
 
 ## Rust

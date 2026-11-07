@@ -19,6 +19,18 @@ hosts apontando para `127.0.0.1`.
 No deploy, configure `SEEDGRID_TENANCY_DOMAIN` com o mesmo sufixo do backend e faça
 o proxy preservar o `Host` original. O BFF ignora `X-Forwarded-Host` enviado pelo navegador.
 
+### Links de e-mail do administrador da plataforma
+
+O administrador criado no boot não tem tenant: o e-mail dele aponta para o **domínio raiz**
+(`/auth/welcome`, `/auth/confirm-email`, `/auth/forgot-password/confirm`), que este cliente não atende.
+Em produção (domínio diferente de `localhost`) o `proxy.ts` redireciona esses 3 caminhos, mantendo o `?token`,
+para o host do admin: `SEEDGRID_ADMIN_HOST` (padrão `admin.<SEEDGRID_TENANCY_DOMAIN>`). Em subdomínio de empresa
+e em `localhost` nada muda. Se o link cair mesmo assim em `/api/auth/confirm-email` no domínio raiz, a rota responde
+409 com a orientação de abrir o endereço do admin (em vez do 503 "Não foi possível conectar ao servidor").
+
+O certificado wildcard (`*.dominio`) cobre **um nível**: `admin.dominio.com.br` é atendido,
+`admin.x.dominio.com.br` não. Mantenha o host do admin um nível abaixo do domínio.
+
 ```bash
 pnpm exec tsc --noEmit
 pnpm build

@@ -243,3 +243,58 @@ describe("proxy: nao-regressao do comportamento anterior", () => {
     expect(rewriteOf(response)).toBe(`${API}/users/search`);
   });
 });
+
+describe("proxy: confirmacao do administrador da plataforma (dominio raiz -> admin)", () => {
+  const rootHost = (h: string) => ({ headers: { host: h } });
+
+  // Restaura a variavel de verdade (atribuir `undefined` a process.env grava a string "undefined").
+  function withEnv(vars: Record<string, string>, fn: () => void) {
+    const prev = Object.fromEntries(Object.keys(vars).map((k) => [k, process.env[k]]));
+    Object.assign(process.env, vars);
+    try {
+      fn();
+    } finally {
+      for (const [k, v] of Object.entries(prev)) {
+        if (v === undefined) delete process.env[k];
+        else process.env[k] = v;
+      }
+    }
+  }
+
+  it("no dominio raiz de producao, os 3 caminhos vao para admin.<dominio> com o ?token", () => {
+    withEnv({ SEEDGRID_TENANCY_DOMAIN: "app.example.test" }, () => {
+      for (const path of ["/auth/welcome", "/auth/confirm-email", "/auth/forgot-password/confirm"]) {
+        const res = proxy(request(`${path}?token=abc`, rootHost("app.example.test")));
+        expect(redirectOf(res)).toBe(`https://admin.app.example.test${path}?token=abc`);
+      }
+    });
+  });
+
+  it("SEEDGRID_ADMIN_HOST define o host do admin", () => {
+    withEnv({ SEEDGRID_TENANCY_DOMAIN: "app.example.test", SEEDGRID_ADMIN_HOST: "painel.example.test" }, () => {
+      const res = proxy(request("/auth/welcome?token=abc", rootHost("app.example.test")));
+      expect(redirectOf(res)).toBe("https://painel.example.test/auth/welcome?token=abc");
+    });
+  });
+
+  it("em subdominio de empresa nao redireciona", () => {
+    withEnv({ SEEDGRID_TENANCY_DOMAIN: "app.example.test" }, () => {
+      const res = proxy(request("/auth/welcome?token=abc", rootHost("acmeco.app.example.test")));
+      expect(redirectOf(res)).toBeNull();
+    });
+  });
+
+  it("em localhost (dev) nao redireciona", () => {
+    withEnv({ SEEDGRID_TENANCY_DOMAIN: "localhost" }, () => {
+      const res = proxy(request("/auth/welcome?token=abc", rootHost("localhost:3000")));
+      expect(redirectOf(res)).toBeNull();
+    });
+  });
+
+  it("outros caminhos do dominio raiz nao sao tocados", () => {
+    withEnv({ SEEDGRID_TENANCY_DOMAIN: "app.example.test" }, () => {
+      const res = proxy(request("/auth/signup", rootHost("app.example.test")));
+      expect(redirectOf(res)).toBeNull();
+    });
+  });
+});

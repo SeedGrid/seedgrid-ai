@@ -202,7 +202,7 @@ default razoável no `application.properties`.
 ```bash
 # par novo (PKCS#8, que é o que o código espera) e as duas linhas prontas para o env
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out private.pem
-echo "SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64=$(openssl pkey -in private.pem -outform DER | openssl base64 -A)"
+echo "SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64=$(openssl pkcs8 -topk8 -nocrypt -in private.pem -outform DER | openssl base64 -A)"
 echo "SEEDGRID_SECURITY_JWT_PUBLIC_KEY_BASE64=$(openssl pkey -in private.pem -pubout -outform DER | openssl base64 -A)"
 ```
 

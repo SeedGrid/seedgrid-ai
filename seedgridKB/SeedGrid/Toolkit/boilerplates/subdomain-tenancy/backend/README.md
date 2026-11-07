@@ -26,6 +26,11 @@ openssl pkey -in src/main/resources/keys/private.pem -pubout -out src/main/resou
 openssl rand -base64 32
 ```
 
+Em produção, a chave vai por variável (`SEEDGRID_SECURITY_JWT_PRIVATE_KEY_BASE64` / `..._PUBLIC_KEY_BASE64`, DER em base64).
+A privada precisa ser **PKCS#8**: use `openssl pkcs8 -topk8 -nocrypt -in private.pem -outform DER | openssl base64 -A`
+(`openssl pkey -outform DER` grava PKCS#1 e dá "algid parse error"). A pública:
+`openssl pkey -in private.pem -pubout -outform DER | openssl base64 -A`.
+
 Preencha `dev.env`: credenciais PostgreSQL, senha inicial do administrador e a chave
 de criptografia gerada pelo último comando. Use um PostgreSQL dedicado ao produto;
 o usuário de provisionamento precisa de permissão `CREATEDB`.

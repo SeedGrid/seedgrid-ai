@@ -18,7 +18,7 @@
         <quarkus.platform.version>3.30.6</quarkus.platform.version>
         <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
         <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
-        <seedgrid.subdomain-tenancy.version>2026.11.08</seedgrid.subdomain-tenancy.version>
+        <seedgrid.subdomain-tenancy.version>2026.11.10</seedgrid.subdomain-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
         <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
         <seedgrid.notification.version>2026.10.22</seedgrid.notification.version>
