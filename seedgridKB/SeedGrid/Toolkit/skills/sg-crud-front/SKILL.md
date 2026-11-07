@@ -181,7 +181,7 @@ native `window.confirm`. The native dialog is the wrong, inconsistent popup.
   does not perform the delete.
 - Run the request in `onConfirm`. Keep the dialog open during the async call
   with `closeOnConfirm={false}`, show progress on the confirm button
-  (`label: deleting ? "Excluindo..." : "Excluir"`, `disabled: deleting`), and
+  (`label: deleting ? "Excluindo..." : "Excluir"`, `enabled: !deleting`), and
   clear the state in a `finally` to close it.
 - Use `severity="danger"`, a user-facing title and message that names the entity
   and warns the action cannot be undone.
@@ -194,8 +194,8 @@ native `window.confirm`. The native dialog is the wrong, inconsistent popup.
   severity="danger"
   title="Excluir <entity>"
   message={entityToDelete ? `Tem certeza que deseja excluir "${entityToDelete.name}"? Esta acao nao pode ser desfeita.` : ""}
-  confirmButton={{ label: deleting ? "Excluindo..." : "Excluir", severity: "danger", disabled: deleting }}
-  cancelButton={{ label: "Cancelar", disabled: deleting }}
+  confirmButton={{ label: deleting ? "Excluindo..." : "Excluir", severity: "danger", enabled: !deleting }}
+  cancelButton={{ label: "Cancelar", enabled: !deleting }}
   closeOnConfirm={false}
   onConfirm={() => void confirmDelete()}
   onCancel={() => setEntityToDelete(null)}
