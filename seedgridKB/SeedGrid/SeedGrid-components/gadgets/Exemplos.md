@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, gadgets]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components/gadgets
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Gadgets (relógio, calendário, gauges, QR), validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Exemplos copiados 1:1 dos `samples/*.tsx.sample` do showcase (rotas `/components/gadgets/*`, `/components/providers/*`, `/components/hooks/*`), salvo os marcados como **exemplo próprio**. Todos verificados com type-check TypeScript (`strict`) contra `packages/seedgrid-fe-components/src/index.ts` no commit `ad30fc11de` — sem erros. Classes utilitárias são Tailwind do app de exemplo.
+Exemplos copiados 1:1 dos `samples/*.tsx.sample` do showcase (rotas `/components/gadgets/*`, `/components/providers/*`, `/components/hooks/*`), salvo os marcados como **exemplo próprio**. Conferência de 2026-11-07: cada bloco marcado como cópia foi comparado, texto a texto, com o `.sample` do showcase em seedgrid-fe-components 557bc16 (idêntico); os blocos "próprio" ou "completado" foram lidos contra os tipos e props do código desse commit. Não foram compilados nesta conferência. Classes utilitárias são Tailwind do app de exemplo.
 
 API: [[SeedGrid/SeedGrid-components/gadgets/API|API dos gadgets]] · Visão geral: [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets — visão geral]]
 
@@ -400,6 +400,10 @@ export default function Example() {
       orientation="vertical"
       width={140}
       height={360}
+      primaryPointerColor="#2563eb"
+      primaryPointerShape="triangle"
+      primaryPointerSize={12}
+      primaryPointerDraggable
       pointers={pointers}
       onPointerValueChange={(pointerId, next) => {
         if (pointerId === "target") setTarget(next);
@@ -586,27 +590,38 @@ Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/gadgets/sg
 ```tsx
 "use client";
 
-import React from "react";
-import { SgStringAnimator } from "@seedgrid/fe-components";
+import * as React from "react";
+import { SgStringAnimator, SgButton } from "@seedgrid/fe-components";
 
 const NAMES = ["LUCIANO", "MARTA", "PEDRO", "ANA", "SEEDGRID"];
 
 export default function Example() {
-  const [index, setIndex] = React.useState(0);
+  const [idx, setIdx] = React.useState(0);
   const [target, setTarget] = React.useState(NAMES[0] ?? "");
 
-  React.useEffect(() => {
-    const id = window.setInterval(() => {
-      setIndex((prev) => {
-        const next = (prev + 1) % NAMES.length;
-        setTarget(NAMES[next] ?? "");
-        return next;
-      });
-    }, 1800);
-    return () => window.clearInterval(id);
-  }, []);
+  const next = () => {
+    const nextIdx = (idx + 1) % NAMES.length;
+    const nextName = NAMES[nextIdx] ?? NAMES[0] ?? "";
+    setIdx(nextIdx);
+    setTarget(nextName);
+  };
 
-  return <SgStringAnimator sourceString={NAMES[index] ?? ""} targetString={target} stringAnimatorStyle="roller3d" alignTo="left" fontSize={28} autoStart />;
+  return (
+    <div className="flex flex-col gap-4">
+      <SgStringAnimator
+        sourceString={NAMES[(idx - 1 + NAMES.length) % NAMES.length] ?? target}
+        targetString={target}
+        stringAnimatorStyle="roller3d"
+        alignTo="left"
+        fontSize={28}
+        autoStart
+        velocity={60}
+      />
+      <SgButton size="sm" onClick={next}>
+        Próximo nome
+      </SgButton>
+    </div>
+  );
 }
 ```
 

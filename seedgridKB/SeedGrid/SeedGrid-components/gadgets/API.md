@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, gadgets]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/gadgets
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Gadgets (relógio, calendário, gauges, QR) (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---

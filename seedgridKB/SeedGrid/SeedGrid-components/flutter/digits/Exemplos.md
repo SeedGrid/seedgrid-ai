@@ -4,19 +4,19 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, digits, ex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Dígitos animados (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/digits/Exemplos|Exemplos — Dígitos animados (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/digits/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgDiscardDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_discard_digit_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_discard_digit_page.dart` (11 exemplo(s) na página; abaixo 3).
 
 ### Descarte (padrão)
 
@@ -123,7 +123,7 @@ Observação: este trecho não é autocontido; ele usa estado e controllers da p
 
 ## SgFadeDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_fade_digit_page.dart` (3 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_fade_digit_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Cartão com fade
 
@@ -191,9 +191,9 @@ Builder(
         children: [
           SgFadeDigit(value: '$value'),
           const SizedBox(width: 24),
-          FilledButton(
-            onPressed: () => set(() => value = (value + 1) % 10),
-            child: Text('Próximo'),
+          SgButton(
+            label: Text('Próximo'),
+            onClick: () => set(() => value = (value + 1) % 10),
           ),
         ],
       ),
@@ -204,7 +204,7 @@ Builder(
 
 ## SgFlipDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_flip_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_flip_digit_page.dart` (8 exemplo(s) na página; abaixo 3).
 
 ### Contador
 
@@ -283,7 +283,7 @@ Observação: este trecho não é autocontido; ele usa estado e controllers da p
 
 ## SgMatrixDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_matrix_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_matrix_digit_page.dart` (8 exemplo(s) na página; abaixo 3).
 
 ### Texto em matriz de pontos
 
@@ -352,7 +352,7 @@ const Wrap(
 
 ## SgNeonDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_neon_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_neon_digit_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Brilho neon
 
@@ -437,7 +437,7 @@ Builder(
 
 ## SgRoller3DDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_roller3d_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_roller3d_digit_page.dart` (6 exemplo(s) na página; abaixo 3).
 
 ### Dígitos de 0 a 9
 
@@ -521,7 +521,7 @@ Observação: este trecho não é autocontido; ele usa estado e controllers da p
 
 ## SgSegmentDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_segment_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_segment_digit_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Algarismos, sinal e dois pontos
 
@@ -547,16 +547,31 @@ size é a altura em pixels; a largura segue a proporção.
 Região `sgSegmentDigitTamanhos` em `sg_segment_digit_page.snippets.g.dart`.
 
 ```dart
-const Wrap(
-  spacing: 8,
-  runSpacing: 8,
-  crossAxisAlignment: WrapCrossAlignment.end,
+Wrap(
+  spacing: 24,
+  runSpacing: 12,
   children: [
-    SgSegmentDigit(value: '8', size: 10),
-    SgSegmentDigit(value: '8', size: 16),
-    SgSegmentDigit(value: '8', size: 32),
-    SgSegmentDigit(value: '8', size: 64),
-    SgSegmentDigit(value: '8', size: 100),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Pequeno'),
+        SgSegmentDigit(value: '8', size: 18),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Médio'),
+        SgSegmentDigit(value: '8', size: 32),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Grande'),
+        SgSegmentDigit(value: '8', size: 52),
+      ],
+    ),
   ],
 )
 ```
@@ -568,17 +583,55 @@ Sem color, usa a cor de texto do tema; com color, aceita #rrggbb, rgb() e rgba()
 Região `sgSegmentDigitCores` em `sg_segment_digit_page.snippets.g.dart`.
 
 ```dart
-const Wrap(
-  spacing: 8,
-  runSpacing: 8,
+Wrap(
+  spacing: 24,
+  runSpacing: 12,
   children: [
-    SgSegmentDigit(value: '1', size: 48),
-    SgSegmentDigit(value: '2', size: 48, color: '#ef4444'),
-    SgSegmentDigit(value: '3', size: 48, color: 'rgb(37, 99, 235)'),
-    SgSegmentDigit(
-      value: '4',
-      size: 48,
-      color: 'rgba(22, 163, 74, 0.5)',
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Padrão'),
+        SgSegmentDigit(value: '8', size: 42),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Azul'),
+        SgSegmentDigit(value: '8', size: 42, color: '#3b82f6'),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Amarelo'),
+        SgSegmentDigit(value: '8', size: 42, color: '#eab308'),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Verde'),
+        SgSegmentDigit(value: '8', size: 42, color: '#22c55e'),
+      ],
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Branco'),
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: const Color(0xFF171717),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: const SgSegmentDigit(
+            value: '8',
+            size: 42,
+            color: '#f8fafc',
+          ),
+        ),
+      ],
     ),
   ],
 )
@@ -586,7 +639,7 @@ const Wrap(
 
 ## SgSevenSegmentDigit
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_seven_segment_digit_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_seven_segment_digit_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Algarismos e letras
 

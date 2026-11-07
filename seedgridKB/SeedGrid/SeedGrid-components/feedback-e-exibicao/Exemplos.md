@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, feedback-e-exibicao]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Feedback e exibição, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos|Exemplos — Feedback e exibição (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Copiados 1:1 dos `samples/*.tsx.sample` do showcase e verificados com type-check (TypeScript `strict`) contra `packages/seedgrid-fe-components/src/index.ts` em 2026-10-14 — todos sem erros. API: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API de feedback e exibição]] · Visão geral: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral|Feedback e exibição]].
+Copiados 1:1 dos `samples/*.tsx.sample` do showcase. Conferência de 2026-11-07: cada bloco marcado como cópia foi comparado, texto a texto, com o `.sample` do showcase em seedgrid-fe-components 557bc16 (idêntico); os blocos "próprio" ou "completado" foram lidos contra os tipos e props do código desse commit. Não foram compilados nesta conferência. API: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API de feedback e exibição]] · Visão geral: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral|Feedback e exibição]].
 
 ## SgAvatar e SgAvatarGroup
 
@@ -549,7 +549,7 @@ export default function Example() {
 
 ## SgNotificationBell
 
-Exemplos do showcase (`/components/sg-notification-bell`); a demonstração usa um `fetcher` e um Pulse simulados em memória, sem token nem chave. Conferidos contra seedgrid-fe-components 40d8340.
+Exemplos do showcase (`/components/sg-notification-bell`); a demonstração usa um `fetcher` e um Pulse simulados em memória, sem token nem chave.
 
 ### Básico
 

@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, navegacao-
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Navegação, overlay e wizard (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos|Exemplos — Navegação, overlay e wizard (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 > **Pré-requisitos.** Vários exemplos usam estado da página, num `State` de `StatefulWidget`: flags e escolhas (`_basico`, `_severidade`, `_sev`, `_animacao`, `_anim`, `_placement`, `_align`, `_pos`, `_acoes`, `_icones`, `_botoes`, `_ultima`, `_resultado`), `GlobalKey`s das âncoras do `SgPopup` (`_basicoKey`, `_acoesKey`, `_posKey`) e um `SgFormController` (`_form`) nos exemplos do `SgWizard`; declare-os antes de copiar. Conferi, por amostragem (pelo menos um exemplo por componente), que nomes e parâmetros existem na API Dart real (`SgDialog(open:, onOpenChange:, title:, footer:)`, `SgPopup(anchorRef:, open:)`, `SgConfirmationDialog(onConfirm:, onCancel:)`, `SgWizard(control:, stepper: SgWizardStepper.numbered)`, `SgWizardPage(fields:)`, `SgDockMenu(items:)`); não encontrei divergência.
 
@@ -503,7 +503,7 @@ Column(
 
 ## SgWizard
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_wizard_demo_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_wizard_demo_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -606,8 +606,9 @@ SgWizard(
         labelText: 'E-mail',
         required: true,
         requiredMessage: 'Informe o e-mail',
-        validation: (v) =>
-            RegExp(r'.+@.+\..+').hasMatch(v) ? null : 'E-mail inválido',
+        validation: (v) => RegExp(r'.+@.+\..+').hasMatch(v)
+            ? null
+            : 'E-mail inválido',
       ),
     ),
   ],

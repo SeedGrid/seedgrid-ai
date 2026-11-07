@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, navegacao-e-overlay]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components (sg-dock-menu, sg-popup, sg-dialog, sg-confirmation-dialog, sg-wizard)
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Navegação, overlay e wizard, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -14,7 +14,7 @@ plataforma: react
 
 Visão geral: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · API: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|API]]
 
-Todos os exemplos abaixo foram verificados com type-check TypeScript (`strict`) contra `packages/seedgrid-fe-components/src/index.ts` no commit `ad30fc11de` (resultado: OK). Os marcados "1:1" são cópias exatas dos arquivos `samples/*.tsx.sample` do showcase. Os do `SgDockMenu` foram **completados** (imports e componente) porque os samples do showcase desse componente são trechos sem `import`/`export` — o JSX e os dados são os do sample citado.
+Conferência de 2026-11-07: cada bloco marcado como cópia foi comparado, texto a texto, com o `.sample` do showcase em seedgrid-fe-components 557bc16 (idêntico); os blocos "próprio" ou "completado" foram lidos contra os tipos e props do código desse commit. Não foram compilados nesta conferência. Os marcados "1:1" são cópias exatas dos arquivos `samples/*.tsx.sample` do showcase. Os do `SgDockMenu` foram **completados** (imports e componente) porque os samples do showcase desse componente são trechos sem `import`/`export` — o JSX e os dados são os do sample citado.
 
 ## SgDockMenu
 

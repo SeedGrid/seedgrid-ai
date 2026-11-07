@@ -4,19 +4,19 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, gadgets, e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgCalendar
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_calendar_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_calendar_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -62,26 +62,47 @@ SgCalendar(
 
 ## SgClock
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_clock_page.dart` (7 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_clock_page.dart` (14 exemplo(s) na página; abaixo 3).
 
 ### Digital
 
-Relógio digital padrão: 24 horas, com segundos. initialServerTime fixa a hora de partida; o relógio anda sozinho.
+Presets de tamanho com locale/timezone.
 
 Região `sgClockDigital` em `sg_clock_page.snippets.g.dart`.
 
 ```dart
-const SgClock(
-  initialServerTime: '2026-06-15T09:41:07-03:00',
-  timezone: 'America/Sao_Paulo',
+const Wrap(
+  spacing: 12,
+  runSpacing: 12,
+  children: [
+    SgClock(
+      size: 'sm',
+      initialServerTime: '2026-06-15T09:41:07-03:00',
+      timezone: 'America/Sao_Paulo',
+    ),
+    SgClock(
+      initialServerTime: '2026-06-15T09:41:07-03:00',
+      timezone: 'America/Sao_Paulo',
+    ),
+    SgClock(
+      size: 'lg',
+      initialServerTime: '2026-06-15T09:41:07-03:00',
+      timezone: 'America/Sao_Paulo',
+    ),
+    SgClock(
+      size: 28,
+      initialServerTime: '2026-06-15T09:41:07-03:00',
+      timezone: 'America/Sao_Paulo',
+    ),
+  ],
 )
 ```
 
-### Fuso, idioma e 12 horas
+### Timezone
 
-timezone aceita nomes de fuso conhecidos (America/Sao_Paulo, Europe/Paris, Asia/Tokyo...), UTC e deslocamentos (+03:00). O período do dia vem do idioma.
+Troca rápida de timezone e formato 12h/24h.
 
-Região `sgClock12h` em `sg_clock_page.snippets.g.dart`.
+Região `sgClockTimezone` em `sg_clock_page.snippets.g.dart`.
 
 ```dart
 const Wrap(
@@ -97,6 +118,11 @@ const Wrap(
     ),
     SgClock(
       initialServerTime: '2026-06-15T15:41:07Z',
+      timezone: 'Europe/Lisbon',
+      locale: 'pt-PT',
+    ),
+    SgClock(
+      initialServerTime: '2026-06-15T15:41:07Z',
       timezone: 'Asia/Tokyo',
       format: SgClockFormat.v12h,
       locale: 'es',
@@ -105,39 +131,76 @@ const Wrap(
 )
 ```
 
-### Tamanhos
+### Analógico
 
-size: sm, md (padrão), lg ou um número em pixels (altura de linha 1).
+Seletor de tema com segundos step/smooth.
 
-Região `sgClockTamanhos` em `sg_clock_page.snippets.g.dart`.
+Região `sgClockAnalogico` em `sg_clock_page.snippets.g.dart`.
 
 ```dart
-const Wrap(
-  spacing: 12,
-  runSpacing: 12,
-  children: [
-    SgClock(
-      size: 'sm',
-      initialServerTime: '2026-06-15T12:00:00Z',
-      timezone: 'UTC',
-    ),
-    SgClock(
-      size: 'lg',
-      initialServerTime: '2026-06-15T12:00:00Z',
-      timezone: 'UTC',
-    ),
-    SgClock(
-      size: 28,
-      initialServerTime: '2026-06-15T12:00:00Z',
-      timezone: 'UTC',
-    ),
-  ],
+SgClockThemeProvider(
+  value: SgClockThemeProviderValue(themes: sgClockThemesBuiltIn),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    crossAxisAlignment: WrapCrossAlignment.start,
+    children: [
+      SizedBox(
+        width: 260,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgClockThemePicker(
+              value: _themeId,
+              onChange: (id) => setState(() => _themeId = id),
+              label: 'Tema',
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                SgButton(
+                  label: Text(
+                    _smooth
+                        ? 'Segundos: smooth'
+                        : 'Segundos: step',
+                  ),
+                  onClick: () => setState(() => _smooth = !_smooth),
+                ),
+                SgButton(
+                  label: Text(
+                    _showSeconds
+                        ? 'Segundos: ON'
+                        : 'Segundos: OFF',
+                  ),
+                  onClick: () =>
+                      setState(() => _showSeconds = !_showSeconds),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      SgClock(
+        clockStyle: SgClockClockStyle.analog,
+        size: 220,
+        initialServerTime: '2026-06-15T10:08:30Z',
+        timezone: 'UTC',
+        themeId: _themeId,
+        showSeconds: _showSeconds,
+        secondHandMode: _smooth
+            ? SgClockSecondHandMode.smooth
+            : SgClockSecondHandMode.step,
+      ),
+    ],
+  ),
 )
 ```
 
 ## SgTimeProvider
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_time_provider_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_time_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Uma hora para toda a árvore
 
@@ -201,23 +264,37 @@ SgTimeProvider(
 
 ## SgClockThemeProvider
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_clock_theme_provider_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_clock_theme_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
-### Registrando os temas embutidos
+### Uso básico
 
-Os temas embutidos não vêm registrados: passe sgClockThemesBuiltIn no value. Todos os relógios abaixo do provider enxergam os temas.
+Envolva SgClock e SgClockThemePicker com SgClockThemeProvider para compartilhar a resolução de temas.
 
 Região `sgClockThemeProviderBasico` em `sg_clock_theme_provider_page.snippets.g.dart`.
 
 ```dart
 SgClockThemeProvider(
   value: SgClockThemeProviderValue(themes: sgClockThemesBuiltIn),
-  child: const SgClock(
-    clockStyle: SgClockClockStyle.analog,
-    size: 160,
-    initialServerTime: '2026-06-15T10:08:30Z',
-    timezone: 'UTC',
-    themeId: 'music-notes',
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    crossAxisAlignment: WrapCrossAlignment.start,
+    children: [
+      SgClock(
+        clockStyle: SgClockClockStyle.analog,
+        size: 160,
+        initialServerTime: '2026-06-15T10:08:30Z',
+        timezone: 'UTC',
+        themeId: _themeId,
+      ),
+      SizedBox(
+        width: 300,
+        child: SgClockThemePicker(
+          value: _themeId,
+          onChange: (id) => setState(() => _themeId = id),
+        ),
+      ),
+    ],
   ),
 )
 ```
@@ -402,21 +479,34 @@ Região `sgClockThemePreviewBasico` em `sg_clock_theme_preview_page.snippets.g.d
 SgClockThemePreview(theme: sgClockThemesBuiltIn.first)
 ```
 
-### Os temas embutidos
+### Galeria de temas
 
-Os dez temas que vêm com a biblioteca, em 72 px.
+Previews compactos de temas embutidos para comparação visual.
 
-Região `sgClockThemePreviewTodos` em `sg_clock_theme_preview_page.snippets.g.dart`.
+Região `sgClockThemePreviewGaleria` em `sg_clock_theme_preview_page.snippets.g.dart`.
 
 ```dart
 Wrap(
-  spacing: 8,
-  runSpacing: 8,
+  spacing: 16,
+  runSpacing: 16,
   children: [
-    for (final tema in sgClockThemesBuiltIn)
-      Tooltip(
-        message: tema.label ?? tema.id,
-        child: SgClockThemePreview(theme: tema, size: 72),
+    for (final tema in sgClockThemesBuiltIn.take(8))
+      SizedBox(
+        width: 140,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: SgClockThemePreview(theme: tema, size: 72),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              tema.label ?? tema.id,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            Text(tema.id, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
       ),
   ],
 )
@@ -441,7 +531,7 @@ Wrap(
 
 ## SgLinearGauge
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_linear_gauge_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_linear_gauge_page.dart` (6 exemplo(s) na página; abaixo 3).
 
 ### Barra horizontal
 
@@ -505,7 +595,7 @@ const Wrap(
 
 ## SgRadialGauge
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_radial_gauge_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_radial_gauge_page.dart` (11 exemplo(s) na página; abaixo 3).
 
 ### Ponteiro simples
 
@@ -573,7 +663,7 @@ SgRadialGauge(
 
 ## SgQRCode
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_qr_code_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_qr_code_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### QR Code básico
 
@@ -621,32 +711,37 @@ SgQRCode(
 
 ## SgStringAnimator
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_string_animator_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_string_animator_page.dart` (9 exemplo(s) na página; abaixo 3).
 
-### Animação manual (roller3d)
+### Roller 3D - nomes (alinhado à esquerda)
 
-A animação só começa quando você chama startAnimation(), pelo controller (o ref do React).
+Anima "LUCIANO" até "MARTA". Posições extras preenchidas com espaço à direita (alignTo="left").
 
-Região `sgStringAnimatorManual` em `sg_string_animator_page.snippets.g.dart`.
+Região `sgStringAnimatorRollerNomes` em `sg_string_animator_page.snippets.g.dart`.
 
 ```dart
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
   child: Builder(
     builder: (context) {
-      final controller = SgStringAnimatorController();
+      final animRef = SgStringAnimatorController();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SgStringAnimator(
             sourceString: 'LUCIANO',
             targetString: 'MARTA',
-            controller: controller,
+            stringAnimatorStyle:
+                SgStringAnimatorStringAnimatorStyle.roller3d,
+            alignTo: SgStringAnimatorAlignTo.left,
+            fontSize: 28,
+            controller: animRef,
           ),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: controller.startAnimation,
-            child: Text('Animar'),
+          SgButton(
+            size: SgSize.sm,
+            label: Text('Animar'),
+            onClick: animRef.startAnimation,
           ),
         ],
       );
@@ -655,42 +750,46 @@ SingleChildScrollView(
 )
 ```
 
-### Troca de alvo com autoStart (flip)
+### autoStart - animação automática
 
-Com autoStart a animação roda na montagem e sempre que targetString muda.
+Com autoStart=true, a animação é iniciada automaticamente sempre que targetString mudar. Funciona com todos os estilos.
 
-Região `sgStringAnimatorAuto` em `sg_string_animator_page.snippets.g.dart`.
+Região `sgStringAnimatorAutoStart` em `sg_string_animator_page.snippets.g.dart`.
 
 ```dart
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
   child: Builder(
     builder: (context) {
-      var target = 'LUCIANO';
+      const names = [
+        'LUCIANO',
+        'MARTA',
+        'PEDRO',
+        'ANA',
+        'SEEDGRID',
+      ];
+      var idx = 0;
       return StatefulBuilder(
         builder: (context, set) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SgStringAnimator(
-              sourceString: 'LUCIANO',
-              targetString: target,
+              sourceString:
+                  names[(idx - 1 + names.length) % names.length],
+              targetString: names[idx],
               stringAnimatorStyle:
-                  SgStringAnimatorStringAnimatorStyle.flip,
-              autoStart: true,
-              velocity: 70,
+                  SgStringAnimatorStringAnimatorStyle.roller3d,
+              alignTo: SgStringAnimatorAlignTo.left,
               fontSize: 28,
+              autoStart: true,
+              velocity: 60,
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final nome in const ['MARTA', 'JOAO', 'ANA'])
-                  OutlinedButton(
-                    onPressed: () => set(() => target = nome),
-                    child: Text(nome),
-                  ),
-              ],
+            SgButton(
+              size: SgSize.sm,
+              label: Text('Próximo nome'),
+              onClick: () =>
+                  set(() => idx = (idx + 1) % names.length),
             ),
           ],
         ),
@@ -700,45 +799,35 @@ SingleChildScrollView(
 )
 ```
 
-### Números alinhados à direita
+### Roller 3D - números (alinhado à direita)
 
-alignTo: right preenche à esquerda com emptyChar e anima as unidades primeiro; charset limita o tambor.
+Anima "42" até "1337". Espaços são inseridos à esquerda (alignTo="right") e os dígitos animam da direita para a esquerda.
 
-Região `sgStringAnimatorDireita` em `sg_string_animator_page.snippets.g.dart`.
+Região `sgStringAnimatorRollerNumeros` em `sg_string_animator_page.snippets.g.dart`.
 
 ```dart
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
   child: Builder(
     builder: (context) {
-      final controller = SgStringAnimatorController();
-      return Row(
-        mainAxisSize: MainAxisSize.min,
+      final animRef = SgStringAnimatorController();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SgStringAnimator(
-            sourceString: '7',
-            targetString: '2048',
+            sourceString: '42',
+            targetString: '1337',
+            stringAnimatorStyle:
+                SgStringAnimatorStringAnimatorStyle.roller3d,
             alignTo: SgStringAnimatorAlignTo.right,
-            emptyChar: '0',
-            charset: const [
-              '0',
-              '1',
-              '2',
-              '3',
-              '4',
-              '5',
-              '6',
-              '7',
-              '8',
-              '9',
-            ],
-            velocity: 90,
-            controller: controller,
+            fontSize: 28,
+            controller: animRef,
           ),
-          const SizedBox(width: 24),
-          FilledButton(
-            onPressed: controller.startAnimation,
-            child: Text('Contar'),
+          const SizedBox(height: 16),
+          SgButton(
+            size: SgSize.sm,
+            label: Text('Animar'),
+            onClick: animRef.startAnimation,
           ),
         ],
       );

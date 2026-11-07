@@ -4,21 +4,21 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, feedback-e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Feedback e exibição (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Exemplos|Exemplos — Feedback e exibição (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 > **Pré-requisitos.** Os exemplos de `toast` e `sgWhistle` só **disparam** mensagens: é preciso haver um `SgToaster` ou `SgToastHost` (para toasts) e um `SgWhistler` ou `SgWhistleHost` (para whistles) montado em algum lugar da árvore; os exemplos de `SgToastHost`/`SgWhistleHost` mostram a montagem. O exemplo com `_extraHost` usa uma variável `bool` de estado da página (`StatefulWidget`). Conferi, por amostragem (pelo menos um exemplo por componente), que nomes e parâmetros existem na API Dart real (por exemplo `toast.promise<T>`, `SgToastPromiseMessages`, `SgWhistleOptions(message:)`, `SgAvatarGroup(children:)`); não encontrei divergência.
 
 ## SgAvatar
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_avatar_page.dart` (6 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_avatar_page.dart` (7 exemplo(s) na página; abaixo 3).
 
 ### Iniciais, ícone e fallback
 
@@ -46,22 +46,47 @@ Wrap(
 )
 ```
 
-### Severidades
+### Severidades e cor própria
 
-Região `sgAvatarSeveridades` em `sg_avatar_page.snippets.g.dart`.
+Cores padrão por severidade e uma cor própria com `SgAvatarSeverity.custom` e `customColors`.
+
+Região `sgAvatarCores` em `sg_avatar_page.snippets.g.dart`.
 
 ```dart
 Wrap(
   spacing: 12,
   runSpacing: 12,
+  crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    for (final s in SgAvatarSeverity.values)
-      SgAvatar(label: Text(s.value), severity: s),
+    SgAvatar(
+      label: Text('P'),
+      severity: SgAvatarSeverity.primary,
+    ),
+    SgAvatar(
+      label: Text('S'),
+      severity: SgAvatarSeverity.success,
+    ),
+    SgAvatar(
+      label: Text('D'),
+      severity: SgAvatarSeverity.danger,
+    ),
+    SgAvatar(
+      icon: Icon(Icons.photo_camera),
+      severity: SgAvatarSeverity.custom,
+      customColors: SgAvatarCustomColors(
+        bg: Color(0xFF7C3AED),
+        fg: Color(0xFFFFFFFF),
+        border: Color(0xFF5B21B6),
+        ring: Color(0x597C3AED),
+      ),
+    ),
   ],
 )
 ```
 
 ### Tamanhos e formas
+
+Formas `circle` e `square`, tamanhos `xs` e `lg` e imagem por `src`.
 
 Região `sgAvatarTamanhos` em `sg_avatar_page.snippets.g.dart`.
 
@@ -71,17 +96,21 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgAvatar(label: Text('XS'), size: SgAvatarSize.xs),
-    SgAvatar(label: Text('SM'), size: SgAvatarSize.sm),
-    SgAvatar(label: Text('MD')),
-    SgAvatar(label: Text('LG'), size: SgAvatarSize.lg),
-    SgAvatar(label: Text('XL'), size: SgAvatarSize.xl),
     SgAvatar(
-      label: Text('Quadrado'),
-      shape: SgAvatarShape.square,
-      size: SgAvatarSize.lg,
+      label: Text('C'),
+      shape: SgAvatarShape.circle,
     ),
-    SgAvatar(label: Text('Sem borda'), bordered: false),
+    SgAvatar(
+      label: Text('S'),
+      shape: SgAvatarShape.square,
+    ),
+    SgAvatar(label: Text('XS'), size: SgAvatarSize.xs),
+    SgAvatar(label: Text('LG'), size: SgAvatarSize.lg),
+    SgAvatar(
+      src: 'https://i.pravatar.cc/150?img=47',
+      label: Text('Asiya Javayant'),
+      shape: SgAvatarShape.square,
+    ),
   ],
 )
 ```
@@ -167,7 +196,7 @@ Column(
 
 ## SgBadge
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_badge_page.dart` (6 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_badge_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Severidades e estilos
 
@@ -192,7 +221,9 @@ Wrap(
 )
 ```
 
-### Tamanhos, forma e ícones
+### Tamanhos
+
+Os quatro tamanhos do badge: `xs`, `sm`, `md` e `lg`.
 
 Região `sgBadgeTamanhos` em `sg_badge_page.snippets.g.dart`.
 
@@ -202,26 +233,17 @@ Wrap(
   runSpacing: 8,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgBadge(value: Text('xs'), size: SgBadgeSize.xs),
-    SgBadge(value: Text('sm'), size: SgBadgeSize.sm),
-    SgBadge(value: Text('md')),
-    SgBadge(value: Text('lg'), size: SgBadgeSize.lg),
-    SgBadge(value: Text('quadrado'), rounded: false),
-    SgBadge(
-      value: Text('favorito'),
-      leftIcon: Icon(Icons.star),
-    ),
-    SgBadge(
-      value: Text('próximo'),
-      rightIcon: Icon(Icons.arrow_forward),
-    ),
+    SgBadge(value: Text('XS'), size: SgBadgeSize.xs),
+    SgBadge(value: Text('SM'), size: SgBadgeSize.sm),
+    SgBadge(value: Text('MD'), size: SgBadgeSize.md),
+    SgBadge(value: Text('LG'), size: SgBadgeSize.lg),
   ],
 )
 ```
 
-### Contador com limite
+### Contador, limite e ponto
 
-count aplica max ("99+") e showZero.
+`count` aplica `max` ("99+"); `dot` mostra só o ponto e `pulse` o anima.
 
 Região `sgBadgeContador` em `sg_badge_page.snippets.g.dart`.
 
@@ -229,11 +251,16 @@ Região `sgBadgeContador` em `sg_badge_page.snippets.g.dart`.
 const Wrap(
   spacing: 8,
   runSpacing: 8,
+  crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgBadge(count: 5, severity: SgBadgeSeverity.danger),
-    SgBadge(count: 150, max: 99, severity: SgBadgeSeverity.danger),
-    SgBadge(count: 0),
-    SgBadge(count: 0, showZero: false),
+    SgBadge(count: 3, severity: SgBadgeSeverity.danger),
+    SgBadge(count: 120, max: 99, severity: SgBadgeSeverity.danger),
+    SgBadge(dot: true, severity: SgBadgeSeverity.success),
+    SgBadge(
+      dot: true,
+      severity: SgBadgeSeverity.success,
+      pulse: true,
+    ),
   ],
 )
 ```
@@ -824,9 +851,127 @@ Wrap(
 
 ## SgNotificationBell
 
-Exemplos da página `pages/sg_notification_bell_page.dart` do showcase Flutter: o backend e o Pulse são simulados em memória (`demo_notifications_api.dart` e `SgSimulatedPulseConnection`), sem token nem chave. Conferido contra seedgrid-fe-flutter 74c3189.
+Página: `apps/seedgrid_showcase/lib/pages/sg_notification_bell_page.dart` (4 exemplo(s) na página; abaixo 4). O backend e o Pulse são simulados em memória (`demo_notifications_api.dart` e `SgSimulatedPulseConnection`), sem token nem chave.
+
+### Básico
+
+Toque no sino. Aqui não há servidor: a caixa vive em memória e um Pulse simulado avisa na hora quando o botão cria uma notificação nova.
+
+Região `sgNotificationBellBasico` em `sg_notification_bell_page.snippets.g.dart`.
+
+```dart
+SgRealtimeProvider(
+  channels: const ['user-notifications'],
+  fetchToken: _demoToken,
+  connectionFactory: () => _pulse,
+  child: Wrap(
+    spacing: 12,
+    runSpacing: 8,
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      SgNotificationBell(
+        apiUrl: 'https://demo.local/user-notifications',
+        fetcher: _basico.fetch,
+      ),
+      OutlinedButton(
+        onPressed: () {
+          final id = _basico.notify(
+            'report.ready',
+            'Novo relatório',
+            'Acabou de ficar pronto.',
+          );
+          _pulse.emitMessage(
+            channel: 'user-notifications',
+            event: 'user-notification.created',
+            data: {
+              'notificationPublicId': id,
+              'type': 'report.ready',
+            },
+          );
+        },
+        child: Text('Simular notificação'),
+      ),
+    ],
+  ),
+)
+```
+
+Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+
+### Tipos com ícone e ação
+
+`types` liga cada tipo de notificação a um ícone e à ação de abrir; os callbacks avisam o que o usuário fez.
+
+Região `sgNotificationBellTipos` em `sg_notification_bell_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 12,
+  runSpacing: 8,
+  crossAxisAlignment: WrapCrossAlignment.center,
+  children: [
+    SgNotificationBell(
+      apiUrl: 'https://demo.local/user-notifications',
+      fetcher: _tipos.fetch,
+      types: {
+        'report.ready': SgNotificationTypeConfig(
+          icon: const Icon(Icons.description_outlined),
+          onOpen: (n) => setState(
+            () => _evento = 'baixar relatório ${n.publicId}',
+          ),
+        ),
+        'backup.finished': SgNotificationTypeConfig(
+          icon: const Icon(Icons.check_circle_outline),
+          onOpen: (n) => setState(
+            () => _evento = 'baixar backup ${n.publicId}',
+          ),
+        ),
+      },
+      onNotificationDelete: (n) =>
+          setState(() => _evento = 'excluiu: ${n.title}'),
+    ),
+    Text('Último evento: $_evento'),
+  ],
+)
+```
+
+Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+
+### Interruptor Não lidas
+
+O painel traz o interruptor "Não lidas"; com `defaultUnreadOnly` desligado, ele abre em "Todas". A escolha não persiste entre recargas.
+
+Região `sgNotificationBellInterruptor` em `sg_notification_bell_page.snippets.g.dart`.
+
+```dart
+SgNotificationBell(
+  apiUrl: 'https://demo.local/user-notifications',
+  fetcher: _interruptor.fetch,
+  defaultUnreadOnly: false,
+)
+```
+
+Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+
+### Sem o interruptor
+
+`showUnreadToggle: false` esconde só o interruptor: o sino continua e o painel lista todas as notificações.
+
+Região `sgNotificationBellSemInterruptor` em `sg_notification_bell_page.snippets.g.dart`.
+
+```dart
+SgNotificationBell(
+  apiUrl: 'https://demo.local/user-notifications',
+  fetcher: _semInterruptor.fetch,
+  showUnreadToggle: false,
+)
+```
+
+Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
 
 ### Uso real (não executa na demo)
+
+Exemplo próprio, não vem do showcase: as props (`apiUrl`, `tokenEndpoint`, `requestInit`, `types`, `onNotification`, `connectionFactory`) existem no construtor de `SgNotificationBell`. `PulseAdapter`, `token` e `baixarRelatorio` são do app, não da biblioteca: `connectionFactory` espera uma função que devolve `SgPulseConnection`.
 
 ```dart
 SgNotificationBell(
@@ -843,8 +988,6 @@ SgNotificationBell(
   onNotification: (n) => print(n.title),
 )
 ```
-
-Os exemplos numerados da demo (sino com notificações simuladas, tipos com ícone e ação, interruptor "Não lidas" e sem interruptor) seguem os mesmos do React, com o código 1:1 na própria página do showcase.
 
 Dependência do SDK pelo git, para quem quiser tempo real (provisório até o pub.dev):
 
