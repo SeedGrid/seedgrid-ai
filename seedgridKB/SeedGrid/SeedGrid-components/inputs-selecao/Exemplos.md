@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-selecao, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: ad30fc11de
+analisado-em: 2026-10-14
 description: "Exemplos TSX (React) de Inputs de seleção e valores, validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---

@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-midia, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: bb0ad1f
+analisado-em: 2026-11-04
 description: "Exemplos TSX (React) de Data e hora, arquivo, imagem e câmera, copiados dos samples do showcase do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---

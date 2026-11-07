@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, exemplos, plataforma-flutter]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 314cb5a
+analisado-em: 2026-10-25
 ---
 
 # Exemplos Flutter: Inputs de número, escolha e seleção
