@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Alterado
+- KB do `subdomain-tenancy`: aviso de que até a 2026.11.09 o pool do tenant fecha por ociosidade e não volta (`This pool is closed` até reiniciar), contorno (subir `cache.idle-eviction`) e correção na 2026.11.10; o relógio e o motivo `closed` das métricas descritos na tabela de propriedades (P158). Sem release.
 - `rules/documentos.md`: o INDEX do work ganha a coluna "Depende de" (planos citados em `depende-de` das tarefas e o campo opcional `depende-de-planos` do cabeçalho). Sem release.
 
 ## [0.7.10] — 2026-11-07
