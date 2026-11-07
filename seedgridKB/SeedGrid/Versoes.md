@@ -45,19 +45,19 @@ gerado-em: 2026-11-07
 
 | Pacote | Documentada | Atual | Situação |
 |---|---|---|---|
-| `@seedgrid/fe-apikeys` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-apikeys` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 22 commit(s) |
 | `@seedgrid/fe-audit` | `2026.7.0` | `2026.7.0` | em dia |
-| `@seedgrid/fe-backup` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-billing-platform` | `2026.7.0` | `2026.7.0` | **defasada**: 3 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-billing-user` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-login-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-security` | `2026.7.3` | `2026.7.3` | **defasada**: 10 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 21 commit(s) |
-| `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-backup` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-billing-platform` | `2026.7.0` | `2026.7.0` | **defasada**: 3 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-billing-user` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-login-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-security` | `2026.7.3` | `2026.7.3` | **defasada**: 10 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | **defasada**: 2 arquivo(s) de código mudaram em 22 commit(s) |
+| `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | **defasada**: 1 arquivo(s) de código mudaram em 22 commit(s) |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 103 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 103 arquivo(s) de código mudaram em 22 commit(s) |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
-| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 21 commit(s) |
+| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 22 commit(s) |
 | `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | em dia |
 
 ## Rust

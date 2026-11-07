@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, extension, catalogo, configuracao]
-analisado-em: 2026-11-04
+analisado-em: 2026-11-06
 gerado-por: scripts/kb-catalogs.mjs --only properties
 gerado-de: tabelas de propriedades das notas Configuracao, Configuracao-Rust e módulos/pacotes front desta vault
 ---
@@ -30,7 +30,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | commons | 5 |
 | Quarkus | exchange | 2 |
 | Quarkus | filemanagement | 32 |
-| Quarkus | login-tenancy | 39 |
+| Quarkus | login-tenancy | 42 |
 | Quarkus | notification | 9 |
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
@@ -61,7 +61,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-playground | 9 |
 | Front | fe-security | 43 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **785** |
+| **Total** | | **788** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -295,6 +295,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.login-tenancy.modules.apikeys.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não roda as migrations de apikeys; some de activeModules | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.login-tenancy.modules.backup.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | false: não roda as migrations de backup; some de activeModules | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.login-tenancy.modules.filemanagement.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só afeta activeModules (status/log); filemanagement não tem migrations no baseline | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.ai-pricing.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só tem efeito com a extension seedgrid-ai-pricing no classpath do host (opcional desde a 2026.11.05; o host a declara… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.exchange.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só tem efeito com a extension seedgrid-exchange no classpath do host (opcional desde a 2026.11.05; o host a declara no… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.login-tenancy.modules.business-days.enabled` | Ativação lógica dos módulos | `boolean` | `true` | Runtime | Só tem efeito com a extension seedgrid-business-days no classpath do host (opcional desde a 2026.11.05; o host a… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.audit.mongodb.database` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — (deriva `<app.code>_audit_db`, ou `audit_db`) | audit]]) | Override do banco Mongo de auditoria produzido pela foundation (banco único) | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.audit.persistence.strategy` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | Runtime | Decide se as migrations db/migration/audit rodam | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.security.first-admin-user.email` | Propriedades de outros prefixos seedgrid.* lidas pela login-tenancy | `Optional<String>` | — | security]] | Só lida para decidir logs/WARN e firstAdminConfigured no status | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
@@ -566,7 +569,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.idle-timeout` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_IDLE_TIMEOUT`) | runtime | Idle timeout das conexões do pool do tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.jdbc.acquisition-timeout` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30S` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DB_ACQUISITION_TIMEOUT`) | runtime | Timeout para obter conexão do pool | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.max-active-datasources` | Datasource dos tenants (pool, cache e limite) | `int` | `200` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_MAX_ACTIVE_DATASOURCES`) | runtime | Teto de pools de tenant em cache por instância | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
-| `seedgrid.subdomain-tenancy.tenant.datasource.cache.idle-eviction` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DS_CACHE_IDLE_EVICTION`) | runtime | Pool sem acesso há esse tempo e sem conexões ativas é fechado (TTL) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.tenant.datasource.cache.idle-eviction` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT30M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DS_CACHE_IDLE_EVICTION`) | runtime | Pool sem acesso há esse tempo e sem conexões ativas é fechado (TTL); o acesso seguinte recria o pool (a partir da… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.datasource.cache.cleanup-interval` | Datasource dos tenants (pool, cache e limite) | `Duration` | `PT1M` (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_DS_CACHE_CLEANUP_INTERVAL`) | runtime | Período da thread daemon tenant-datasource-cache-evictor. ≤ 0 vira 1 min; mínimo efetivo 1 s | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.entity-packages` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_TENANT_ENTITY_PACKAGES`) | build (via expansão — Inferência) | Prefixada em quarkus.hibernate-orm.packages=${…tenant.entity-packages},br.com.seedgrid.security.entities,br.com.seedgri… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.tenant.migrations.location.additional` | Datasource dos tenants (pool, cache e limite) | `Optional<String>` (CSV) | MPC: vazio | runtime | Anexadas à base classpath:db/migration/tenant no history sg_flyway_schema_history_tenant | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |

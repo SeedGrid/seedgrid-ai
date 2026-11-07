@@ -1,6 +1,6 @@
 ---
 tags: [seedgrid, enum, catalogo]
-analisado-em: 2026-10-14
+analisado-em: 2026-11-05
 gerado-por: scripts/kb-catalogs.mjs --only enums
 gerado-de: notas Enums (Java) e seção Enums das notas Rust/Visao-geral desta vault
 ---
