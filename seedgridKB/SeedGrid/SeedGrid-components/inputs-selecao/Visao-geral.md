@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-selecao]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Inputs de seleção e valores em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---

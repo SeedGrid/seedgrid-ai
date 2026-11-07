@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, buttons, a
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Botões (Flutter)
@@ -50,14 +50,14 @@ Botao de acao com suporte a severity, appearance, shape, loading e icones para a
 ### Diferenças do React (docs/PARIDADE.md)
 
 - Nenhuma ressalva registrada na tabela de paridade; o componente está `portado`.
-- **Extras do Flutter** (o React os herda do `<button>` HTML; aqui são o conjunto fechado definido pela ADR 50): `onClick`, `disabled`, `type` (`SgButtonType.button`, `submit`, `reset`) e `child`.
+- **Extras do Flutter** (o React os herda do `<button>` HTML; aqui são o conjunto fechado definido pela ADR 50): `onClick`, `enabled`, `type` (`SgButtonType.button`, `submit`, `reset`) e `child`.
 - `child` tem precedência sobre `label`; os dois aceitam `String` ou `Widget` (convertidos por `sgNode`).
 - **Não portado:** `className` e `style` (ADR 50); use `customColors`, `size`, `shape` e `elevation`.
 
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (confirmado em `buttons/sg_button.dart`, `_SgButtonState._onTap`)
-- `onClick: VoidCallback?`: chamado ao tocar/clicar, ou ao pressionar Enter ou Espaço com o foco no botão. Não dispara com `disabled: true` nem com `loading: true` (o botão fica desabilitado nos dois casos).
+- `onClick: VoidCallback?`: chamado ao tocar/clicar, ou ao pressionar Enter ou Espaço com o foco no botão. Não dispara com `enabled: false` nem com `loading: true` (o botão fica desabilitado nos dois casos).
 - Não há controller: o estado (hover, pressionado, foco) é interno ao `State`.
 
 **Formulário**
@@ -112,19 +112,19 @@ Botao de acao com trigger principal e menu secundario acoplado para variacoes co
 
 **Eventos e callbacks** (confirmado em `buttons/sg_split_button.dart`)
 - `onClick: VoidCallback?`: chamado ao tocar no botão principal (o segmento da esquerda).
-- `SgSplitButtonItem.onClick: VoidCallback?`: chamado ao escolher o item; em seguida o menu fecha (`_itemClick`). Item com `disabled: true` não dispara nada nem fecha o menu.
-- `SgSplitButtonItem` tem `label` (obrigatório), `icon`, `onClick`, `disabled` e `separator` (linha antes do item; ignorada no primeiro).
+- `SgSplitButtonItem.onClick: VoidCallback?`: chamado ao escolher o item; em seguida o menu fecha (`_itemClick`). Item com `enabled: false` não dispara nada nem fecha o menu.
+- `SgSplitButtonItem` tem `label` (obrigatório), `icon`, `onClick`, `enabled` (padrão `true`) e `separator` (linha antes do item; ignorada no primeiro).
 - Não há callback de abrir/fechar o menu nem controller: o estado `_open` é interno.
 
 **Comportamento do menu**
-- Seta (segmento da direita) alterna o menu; não abre com `disabled` ou `loading` (`_toggle`).
+- Seta (segmento da direita) alterna o menu; não abre com `enabled: false` ou `loading` (`_toggle`).
 - Fecha ao tocar fora (`TapRegion.onTapOutside`) e ao pressionar Esc (handler em `HardwareKeyboard`, registrado só enquanto aberto).
 - O menu é desenhado no `Overlay` raiz (`OverlayPortal`, `OverlayChildLocation.rootOverlay`), então não é cortado pelo pai.
 - Abaixo de `kSgSelectNarrowWidth` (600 px, `inputs/dropdown/sg_dropdown_host.dart`) os itens têm altura mínima de 48 e o menu é um painel de baixo.
 
 **Acessibilidade**
 - Cada segmento usa `Semantics(button: true, enabled: ...)`; o da seta recebe `label` do i18n (`components.actions.openList` ou `components.actions.close`) e `expanded` conforme o menu está aberto.
-- Cada item do menu também é `Semantics(button: true, enabled: !disabled)`.
+- Cada item do menu também é `Semantics(button: true, enabled: item.enabled)`.
 - Foco e ativação por Enter/Espaço nos segmentos (`Focus` + `onKeyEvent`).
 - Não há navegação por setas dentro do menu (ver acima).
 
@@ -193,7 +193,7 @@ Botao de acao flutuante para tarefas de alto destaque, com suporte a hint, posic
 
 **Eventos e callbacks** (confirmado em `buttons/sg_float_action_button.dart`)
 - `onClick: VoidCallback?`: chamado ao tocar no botão principal **somente quando não há `actions`**; com `actions`, o toque só abre ou fecha o speed-dial (`_handleClick`).
-- `SgFABAction.onClick: VoidCallback?`: chamado ao escolher a ação (`acts[i].onClick?.call()`). `SgFABAction` tem `icon` (obrigatório), `label`, `onClick`, `severity`, `floatActionButtonStyle` e `disabled`.
+- `SgFABAction.onClick: VoidCallback?`: chamado ao escolher a ação (`acts[i].onClick?.call()`). `SgFABAction` tem `icon` (obrigatório), `label`, `onClick`, `severity`, `floatActionButtonStyle` e `enabled` (padrão `true`).
 - Não há callback de posição (`onPositionChange` não existe neste widget) nem controller.
 - Fecha o speed-dial ao tocar fora (`TapRegion`) e com Esc.
 

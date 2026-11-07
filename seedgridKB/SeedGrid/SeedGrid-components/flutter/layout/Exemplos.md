@@ -582,7 +582,7 @@ SgAccordion(
     SgAccordionItem(
       title: Text('Indisponível'),
       content: Text('Este item está desabilitado.'),
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -659,7 +659,7 @@ SgPageControl(
     SgPageControlPage(
       id: 'bloqueada',
       title: Text('Bloqueada'),
-      disabled: true,
+      enabled: false,
       child: Text('Nunca aparece.'),
     ),
   ],
@@ -1895,7 +1895,7 @@ Wrap(
     SgToolbarIconButton(
       icon: Icon(Icons.lock_outline),
       label: 'Bloqueado',
-      disabled: true,
+      enabled: false,
     ),
     SgToolbarIconButton(
       icon: Icon(Icons.sync),

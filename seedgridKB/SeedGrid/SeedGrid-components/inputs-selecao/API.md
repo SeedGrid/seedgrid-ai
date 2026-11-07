@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-selecao, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Inputs de seleção e valores (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -48,12 +48,12 @@ Props `name`/`control`/`register`/`rules`/`error` seguem o [[SeedGrid/SeedGrid-c
 
 | Tipo | Forma | Fonte |
 |---|---|---|
-| `SgAutocompleteItem` | `{ id: string \| number; label: string; value?: string; group?: string; disabled?: boolean; data?: unknown }` | `SgAutocomplete.tsx` |
+| `SgAutocompleteItem` | `{ id: string \| number; label: string; value?: string; group?: string; enabled?: boolean; data?: unknown }` | `SgAutocomplete.tsx` |
 | `SgComboboxSource<T>` | `T[] \| ((query: string) => Promise<T[]> \| T[])` | `SgCombobox.tsx` |
-| `SgCheckboxGroupOption` | `{ label: string; value: string \| number; checked?: boolean; icon?: ReactNode; disabled?: boolean }` | `SgCheckboxGroup.tsx` |
-| `SgRadioGroupOption` | `{ label: string; value: string \| number; icon?: ReactNode; disabled?: boolean }` | `SgRadioGroup.tsx` |
-| `SgMultiSelectOption` | `{ label: string; value: string \| number; chipLabel?: string; disabled?: boolean }` | `useSgMultiSelect.ts` |
-| `SgOrderListItem` / `SgPickListItem` | `{ label: string; value: string \| number; disabled?: boolean; icon?: ReactNode; data?: unknown }` | `SgOrderList.tsx` / `SgPickList.tsx` |
+| `SgCheckboxGroupOption` | `{ label: string; value: string \| number; checked?: boolean; icon?: ReactNode; enabled?: boolean }` | `SgCheckboxGroup.tsx` |
+| `SgRadioGroupOption` | `{ label: string; value: string \| number; icon?: ReactNode; enabled?: boolean }` | `SgRadioGroup.tsx` |
+| `SgMultiSelectOption` | `{ label: string; value: string \| number; chipLabel?: string; enabled?: boolean }` | `useSgMultiSelect.ts` |
+| `SgOrderListItem` / `SgPickListItem` | `{ label: string; value: string \| number; enabled?: boolean; icon?: ReactNode; data?: unknown }` | `SgOrderList.tsx` / `SgPickList.tsx` |
 | `SgPickListChangeType` | `"moveToTarget" \| "moveAllToTarget" \| "moveToSource" \| "moveAllToSource" \| "reorderSource" \| "reorderTarget" \| "dragdrop"` | `SgPickList.tsx` |
 | `ResolvedPeriod` | `{ preset: PeriodPreset; label: string; startDate: Date \| null; endDate: Date \| null }` | `SgPeriodSelector.tsx` |
 | `YearPartValue` / `ResolvedYearPart` | `{ year; kind: YearPartKind; part }` / `{ value; label; startDate: Date; endDate: Date }` | `yearPart.ts` |
@@ -67,7 +67,7 @@ Fonte: `src/inputs/SgAutocomplete.tsx`. É um componente genérico, `SgAutocompl
 | `value` | `string` | — | Não | Texto exibido (controlado). |
 | `onChange` | `((value: string) => void)` | — | Não | Texto confirmado: label (ou `formatSelection`) ao selecionar; durante digitação emite `""` (ou o texto, se `allowCustomValue`). |
 | `source` | `SgAutocompleteSource<T>` | — | Sim | `(query) => T[] \| Promise<T[]>`. |
-| `mapItem` | `((raw: T) => SgAutocompleteItem)` | identidade | Não | Converte o item cru `T` em `SgAutocompleteItem` (`{id, label, value?, group?, disabled?, data?}`). |
+| `mapItem` | `((raw: T) => SgAutocompleteItem)` | identidade | Não | Converte o item cru `T` em `SgAutocompleteItem` (`{id, label, value?, group?, enabled?, data?}`). |
 | `minLengthForSearch` | `number` | `2` | Não | Caracteres mínimos para buscar. |
 | `delay` | `number` | `300` | Não | Debounce da busca em ms. |
 | `maxResult` | `number` | `50` | Não | Máximo de itens exibidos. |
@@ -234,7 +234,7 @@ Fonte: `src/inputs/SgCheckboxGroup.tsx`. O grupo é renderizado dentro de um `Sg
 |---|---|---|---|---|
 | `id` | `string` | — | Não | Usado como `name` dos checkboxes quando `name` ausente. |
 | `title` | `string` | — | Não | Título do `SgGroupBox` (ganha ` *` se `required`). |
-| `source` | `SgCheckboxGroupOption[]` | — | Sim | Opções `{label, value, checked?, icon?, disabled?}`; `checked` define o valor inicial não controlado. |
+| `source` | `SgCheckboxGroupOption[]` | — | Sim | Opções `{label, value, checked?, icon?, enabled?}`; `checked` define o valor inicial não controlado. |
 | `value` | `(string \| number)[]` | — | Não | Valores marcados (controlado). |
 | `orientation` | `SgCheckboxGroupOrientation` | `"vertical"` | Não | `vertical` ou `horizontal`. |
 | `selectionStyle` | `SgCheckboxGroupSelectionStyle` | `"checkbox"` | Não | `checkbox` ou `highlight` (lista com destaque). |
@@ -280,7 +280,7 @@ Fonte: `src/inputs/SgRadioGroup.tsx`. Usa `SgGroupBox` e **não** tem ref.
 |---|---|---|---|---|
 | `id` | `string` | — | Não | Usado como `name` dos radios quando `name` ausente. |
 | `title` | `string` | — | Não | Título do `SgGroupBox` (` *` se `required`). |
-| `source` | `SgRadioGroupOption[]` | — | Sim | Opções `{label, value, icon?, disabled?}`. |
+| `source` | `SgRadioGroupOption[]` | — | Sim | Opções `{label, value, icon?, enabled?}`. |
 | `value` | `string \| number` | — | Não | Valor selecionado (controlado). |
 | `orientation` | `SgRadioGroupOrientation` | `"vertical"` | Não | `vertical` ou `horizontal`. |
 | `selectionStyle` | `SgRadioGroupSelectionStyle` | `"radio"` | Não | `radio` ou `highlight`. |
@@ -311,7 +311,7 @@ Fonte: `src/inputs/SgMultiSelect.tsx`, `useSgMultiSelect.ts` e `SgMultiSelectDro
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
 | `onExit` | `() => void` | — | Não | Disparado no blur, exceto quando o foco vai para o dropdown/wrapper. |
-| `options` | `SgMultiSelectOption[]` | — | Sim | `{label, value, chipLabel?, disabled?}`. |
+| `options` | `SgMultiSelectOption[]` | — | Sim | `{label, value, chipLabel?, enabled?}`. |
 | `value` | `SgMultiSelectOptionValue[]` | — | Não | Valores selecionados (controlado). |
 | `onChange` | `((value: SgMultiSelectOptionValue[]) => void)` | — | Não | Recebe o array de valores selecionados. |
 | `searchable` | `boolean` | `false` | Não | Campo de busca no dropdown. |
@@ -390,7 +390,7 @@ Fonte: `src/inputs/SgMultiSelectChips.tsx`. Mesma lógica e dropdown do `SgMulti
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
 | `enabled` | `boolean` | `true` (efetivo) | Não | `false` desabilita. |
 | `required` | `boolean` | — | Não | Exibe `*` (não injeta regra RHF). |
-| `options` | `SgMultiSelectOption[]` | — | Sim | `{label, value, chipLabel?, disabled?}`; o chip mostra `chipLabel ?? label`. |
+| `options` | `SgMultiSelectOption[]` | — | Sim | `{label, value, chipLabel?, enabled?}`; o chip mostra `chipLabel ?? label`. |
 | `value` | `SgMultiSelectOptionValue[]` | — | Não | Valores selecionados (controlado). |
 | `onChange` | `((value: SgMultiSelectOptionValue[]) => void)` | — | Não | Recebe o array de valores. |
 | `searchable` | `boolean` | `false` | Não | Busca no dropdown. |
@@ -419,7 +419,7 @@ Fonte: `src/inputs/SgOrderList.tsx`. Lista reordenável por botões, por teclado
 | `error` | `string` | — | Não | Erro exibido acima da lista. |
 | `id` | `string` | — | Não | Identificador. |
 | `title` | `string` | — | Não | Título do `SgGroupBox`. |
-| `source` | `SgOrderListItem[]` | — | Sim | Itens `{label, value, disabled?, icon?, data?}` (estado inicial e ressincronizado quando não controlado). |
+| `source` | `SgOrderListItem[]` | — | Sim | Itens `{label, value, enabled?, icon?, data?}` (estado inicial e ressincronizado quando não controlado). |
 | `value` | `SgOrderListItem[]` | — | Não | Ordem controlada. |
 | `onChange` | `((items: SgOrderListItem[]) => void)` | — | Não | Recebe o array reordenado. |
 | `selectedValues` | `(string \| number)[]` | — | Não | Seleção controlada (valores). |
@@ -430,7 +430,7 @@ Fonte: `src/inputs/SgOrderList.tsx`. Lista reordenável por botões, por teclado
 | `draggable` | `boolean` | `true` | Não | Arrastar e soltar. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `emptyMessage` | `string` | i18n `components.orderlist.empty` | Não | Texto de lista vazia. |
-| `itemTemplate` | `((item: SgOrderListItem, state: { index: number; selected: boolean; disabled: boolean; }) => ReactNode)` | — | Não | Render do item `(item, {index, selected, disabled})`. |
+| `itemTemplate` | `((item: SgOrderListItem, state: { index: number; selected: boolean; enabled: boolean; }) => ReactNode)` | — | Não | Render do item `(item, {index, selected, enabled})`. |
 | `className` | `string` | `""` | Não | Classes do wrapper. |
 | `style` | `CSSProperties` | — | Não | Estilo do wrapper. |
 | `listClassName` | `string` | `""` | Não | Classes da lista. |
@@ -483,7 +483,7 @@ Fonte: `src/inputs/SgPickList.tsx`. Duas listas, origem e destino, com transfer�
 | `draggable` | `boolean` | `true` | Não | Arrastar e soltar entre/dentro das listas. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `emptyMessage` | `string` | i18n `components.picklist.empty` | Não | Texto de lista vazia. |
-| `itemTemplate` | `((item: SgPickListItem, state: { index: number; selected: boolean; disabled: boolean; list: SgPickListListName; }) => ReactNode)` | — | Não | Render `(item, {index, selected, disabled, list})`. |
+| `itemTemplate` | `((item: SgPickListItem, state: { index: number; selected: boolean; enabled: boolean; list: SgPickListListName; }) => ReactNode)` | — | Não | Render `(item, {index, selected, enabled, list})`. |
 | `className` | `string` | `""` | Não | Classes do wrapper. |
 | `style` | `CSSProperties` | — | Não | Estilo. |
 | `listClassName` | `string` | `""` | Não | Classes das listas. |

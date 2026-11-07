@@ -289,7 +289,7 @@ const SgAccordion(
     SgAccordionItem(
       title: Text('Indisponível'),
       content: Text('Este item está desabilitado.'),
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -436,7 +436,7 @@ const SgPageControl(
     SgPageControlPage(
       id: 'bloqueada',
       title: Text('Bloqueada'),
-      disabled: true,
+      enabled: false,
       child: Text('Nunca aparece.'),
     ),
   ],
@@ -766,7 +766,7 @@ Column(
         SgTreeNode(
           id: 'bloqueado',
           label: 'Bloqueado',
-          disabled: true,
+          enabled: false,
         ),
       ],
     ),
@@ -846,7 +846,7 @@ SizedBox(
         id: 'ajustes',
         label: 'Ajustes',
         icon: Icon(Icons.settings_outlined),
-        disabled: true,
+        enabled: false,
       ),
     ],
   ),

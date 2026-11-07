@@ -53,7 +53,7 @@ import {
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.HTMLAttributes<HTMLSpanElement>, "children" \| "color"> & { ... }`; acrescenta 276 props de `@types/react` (`HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 169). Não listadas individualmente — ver contrato base `React.HTMLAttributes` em `@types/react`.
 - Aceita `ref` (via `React.forwardRef`) e `key`.
-- Atributos herdados tratados explicitamente: `onClick` (ignorado quando `disabled`), `role`, `tabIndex`, `title`, `style`, `aria-label`; o restante vai para o `<span>` raiz via `{...rest}` (Confirmado).
+- Atributos herdados tratados explicitamente: `onClick` (ignorado com `enabled={false}`), `role`, `tabIndex`, `title`, `style`, `aria-label`; o restante vai para o `<span>` raiz via `{...rest}` (Confirmado).
 
 ### Eventos e callbacks
 
@@ -169,7 +169,7 @@ import {
 
 ### Eventos e callbacks
 
-- `onClick(e: React.MouseEvent)` — torna o badge um `<button type="button">`; ignorado com `disabled`.
+- `onClick(e: React.MouseEvent)` — torna o badge um `<button type="button">`; ignorado com `enabled={false}`.
 - `onRemove()` — clique no botão interno `x` (com `stopPropagation`). Com `autoRemove`, o badge se oculta sozinho após o callback; sem ele, o pai deve removê-lo.
 
 ### Ref

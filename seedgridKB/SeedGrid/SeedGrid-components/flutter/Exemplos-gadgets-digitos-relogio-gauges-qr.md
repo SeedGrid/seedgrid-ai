@@ -864,7 +864,7 @@ Região `sgRealtimeProviderDesligado` em `sg_realtime_provider_page.snippets.g.d
 ```dart
 SgRealtimeProvider(
   channels: const ['backup'],
-  disabled: true,
+  enabled: false,
   fetchToken: _token,
   child: Builder(
     builder: (context) => Text(

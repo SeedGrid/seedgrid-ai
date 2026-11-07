@@ -34,7 +34,7 @@ analisado-em: 2026-10-30
 ## O que muda em relação ao React
 
 - O motor é o `flutter_quill` (Delta) com conversor HTML próprio; tabelas e `iframe` são descartados e há limites do modelo linear (listas e citações aninhadas).
-- Seletor de cor e diálogos de link/imagem próprios; `disabled` reativo; `onSave` entrega `SgTextEditorFile`.
+- Seletor de cor e diálogos de link/imagem próprios; `enabled` reativo (substitui o `disabled` do React); `onSave` entrega `SgTextEditorFile`.
 - Detalhes: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] (editor e defeitos do React) · [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]].
 
 ## Símbolos do React do mesmo grupo sem componente equivalente

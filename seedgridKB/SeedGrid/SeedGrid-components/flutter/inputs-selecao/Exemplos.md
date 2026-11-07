@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-sel
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Inputs de seleção e valores (Flutter)
@@ -225,7 +225,7 @@ SgCheckboxGroup(
     SgCheckboxGroupOption(
       label: 'Apagar',
       value: 'd',
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -307,7 +307,7 @@ Column(
         SgRadioGroupOption(
           label: 'Grande',
           value: 'g',
-          disabled: true,
+          enabled: false,
         ),
       ],
       onChange: (v) => setState(() => _tamanho = v),
@@ -404,8 +404,8 @@ Column(
     SizedBox(height: 16),
     SgRadioGroup(
       id: 'off',
-      title: 'disabled',
-      disabled: true,
+      title: 'enabled: false',
+      enabled: false,
       value: 'x',
       source: [
         SgRadioGroupOption(label: 'X', value: 'x'),
@@ -477,7 +477,7 @@ SgMultiSelect(
     SgMultiSelectOption(
       label: 'Cinza (indisponível)',
       value: 'cinza',
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -623,7 +623,7 @@ SgOrderList(
 ```
 
 Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, disabled: true), SgOrderListItem(label: 'Comemorar', value: 5), ];`
+- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, enabled: false), SgOrderListItem(label: 'Comemorar', value: 5), ];`
 
 ### Item personalizado
 
@@ -690,7 +690,7 @@ Column(
 ```
 
 Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, disabled: true), SgOrderListItem(label: 'Comemorar', value: 5), ];`
+- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, enabled: false), SgOrderListItem(label: 'Comemorar', value: 5), ];`
 - `final SgOrderListController _controller = SgOrderListController();`
 
 ## SgPickList
@@ -722,7 +722,7 @@ SgPickList(
 ```
 
 Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', disabled: true), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
+- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', enabled: false), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
 
 ### Item personalizado e desabilitado
 
@@ -747,7 +747,7 @@ SgPickList(
     SgPickListItem(
       label: 'Bloqueado',
       value: 3,
-      disabled: true,
+      enabled: false,
     ),
   ],
   target: const [],
@@ -810,7 +810,7 @@ Column(
 ```
 
 Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', disabled: true), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
+- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', enabled: false), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
 - `final SgPickListController _controller = SgPickListController();`
 
 ## SgPeriodSelector
@@ -1009,7 +1009,7 @@ Column(
     SgYearPartSelector(
       id: 'desabilitado',
       label: 'Desabilitado',
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -1044,8 +1044,8 @@ Column(
     SizedBox(height: 12),
     SgToggleSwitch(
       id: 'off',
-      label: 'disabled',
-      disabled: true,
+      label: 'enabled: false',
+      enabled: false,
     ),
   ],
 )
@@ -1262,7 +1262,7 @@ const Column(
       minValue: 0,
       maxValue: 10,
       defaultValue: 7,
-      disabled: true,
+      enabled: false,
     ),
     SgSlider(
       id: 'erro',
@@ -1338,7 +1338,7 @@ const Column(
       minValue: 0,
       maxValue: 10,
       defaultValue: 4,
-      disabled: true,
+      enabled: false,
       width: 160,
     ),
     SizedBox(height: 12),

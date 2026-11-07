@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, datatable,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 5188e9e
-analisado-em: 2026-11-03
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Tabela de dados (Flutter)
@@ -66,8 +66,8 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 | `groupBoxProps` | `SgListGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
 | `showColumnManager` | `bool` | `true` | não | React | — |
 | `columnManagerLabel` | `String?` | — | não | React | — |
-| `mobileMode` | `SgDatatableMobileMode?` | automático (sem valor `auto`) | não | React | Omitido: abaixo de 600 px (`kDatatableMobileBreakpoint`) de largura do contêiner vira cartões com rolagem infinita; acima, tabela. `cards` força cartões em qualquer largura; `scroll` força a tabela. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. Ver [[#Modo cartões no celular]]. |
-| `infiniteScroll` | `bool?` | `true` nos cartões, `false` na tabela | não | React | Rolagem infinita no lugar do paginador; exige `paginator` (`rows` é o tamanho da página). `infiniteScroll: false` mantém o paginador em tela estreita. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. |
+| `mobileMode` | `SgDatatableMobileMode?` | — | não | React | Omitido (`null`, sem valor `auto`; modo automático): abaixo de 600 px (`kDatatableMobileBreakpoint`) de largura do contêiner vira cartões com rolagem infinita; acima, tabela. `cards` força cartões em qualquer largura; `scroll` força a tabela. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. Ver [[#Modo cartões no celular]]. |
+| `infiniteScroll` | `bool?` | — | não | React | Omitido (`null`): `true` nos cartões e `false` na tabela. Rolagem infinita no lugar do paginador; exige `paginator` (`rows` é o tamanho da página). `infiniteScroll: false` mantém o paginador em tela estreita. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. |
 | `onLoadMore` | `ValueChanged<SgDatatablePageEvent>?` | — | não | React | Chamado a cada página extra pedida pela rolagem infinita, além de `onPage`. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. |
 | `columnManagerMaxHeight` | `Object?` | `320` | não | React | Numero (px) ou 'Npx'/'Nrem'. Tipo no React: `string \| number`. |
 | `controller` | `SgDatatableController?` | — | não | Flutter | `ref` do React. |

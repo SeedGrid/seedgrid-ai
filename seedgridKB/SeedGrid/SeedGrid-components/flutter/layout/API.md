@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, layout, ap
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Layout e containers (Flutter)
@@ -380,7 +380,7 @@ Container colapsavel por secoes para organizar conteudo em paineis expansivos, v
 **Controller, formulário e estado**
 - Sem controller. `activeIndex` controla de fora; sem ele vale o estado interno iniciado por `defaultActiveIndex` ou, com `defaultOpenFirst` (padrão `true`), pelo primeiro item.
 - `multiple` permite vários abertos; `collapsible: false` impede fechar o item aberto; `keepMounted` (padrão `true`) mantém o conteúdo montado quando fechado.
-- `orientation` `vertical` (padrão) ou `horizontal` (`horizontalHeaderWidth` 52, `horizontalMinHeight` 220). `SgAccordionItem`: `id`, `title`, `content` (obrigatórios os dois últimos), `disabled`, `icon`, `end` (só vertical), `headerBackgroundColor`.
+- `orientation` `vertical` (padrão) ou `horizontal` (`horizontalHeaderWidth` 52, `horizontalMinHeight` 220). `SgAccordionItem`: `id`, `title`, `content` (obrigatórios os dois últimos), `enabled` (padrão `true`), `icon`, `end` (só vertical), `headerBackgroundColor`.
 
 **Acessibilidade**
 - Cabeçalho: `Semantics(button, enabled, expanded)` sobre um `InkWell`.
@@ -484,7 +484,7 @@ Declaracao de uma pagina individual dentro de um SgPageControl, com titulo, hint
 - Nenhum: é só a declaração de uma página.
 
 **Controller, formulário e estado**
-- `StatelessWidget` cujo `build` devolve o próprio `child`; fora de um `SgPageControl` mostra só o conteúdo. Campos: `title` e `child` (obrigatórios), `disabled` (a aba não pode ser selecionada), `hidden`, `hint`, `icon`, `id`.
+- `StatelessWidget` cujo `build` devolve o próprio `child`; fora de um `SgPageControl` mostra só o conteúdo. Campos: `title` e `child` (obrigatórios), `enabled` (padrão `true`; com `false` a aba não pode ser selecionada), `hidden`, `hint`, `icon`, `id`.
 - `hint` é o tooltip da aba e também o texto da opção no modo `select` quando `title` não é um `Text`.
 
 **Acessibilidade**
@@ -654,7 +654,7 @@ Navegacao hierarquica compacta para indicar caminho atual e permitir retorno a n
 - `onNavigate` (`void Function(SgBreadcrumbItem item, int index)?`): ao tocar num item clicável (não desabilitado, com `href` ou `onClick`), inclusive pelo menu de colapso; o item **Home** (`showHomeIcon`) usa `index == -1`. O `onClick` do próprio `SgBreadcrumbItem` roda antes.
 
 **Controller, formulário e estado**
-- `StatelessWidget`. `items` (obrigatório): `SgBreadcrumbItem` com `id`, `label`, `href`, `icon`, `disabled`, `hidden` (não entra no caminho) e `onClick`.
+- `StatelessWidget`. `items` (obrigatório): `SgBreadcrumbItem` com `id`, `label`, `href`, `icon`, `enabled` (padrão `true`), `hidden` (não entra no caminho) e `onClick`.
 - Colapso: com `overflowBehavior: collapse` (padrão) e `maxItems >= 2`, mostra o primeiro, um menu "..." (`MenuAnchor`) e os últimos; `scroll` rola na horizontal. `separator` aceita `SgBreadcrumbSeparator` (`slash`, `chevron`, `dot`, `arrow`), o texto do enum ou um `Widget`. `variant` e `size` ajustam o visual.
 
 **Acessibilidade**
@@ -1058,11 +1058,11 @@ Botao compacto para toolbars com icone, label opcional, hint, loading e severida
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks**
-- `onClick` (`FutureOr<void> Function()?`): chamado ao tocar, ou com Enter/Espaço; ignorado se `disabled` ou carregando. Se devolver um `Future`, o botão fica em carregamento (`sg-toolbar-spinner`) até ele terminar.
+- `onClick` (`FutureOr<void> Function()?`): chamado ao tocar, ou com Enter/Espaço; ignorado se `enabled` for `false` ou carregando. Se devolver um `Future`, o botão fica em carregamento (`sg-toolbar-spinner`) até ele terminar.
 
 **Controller, formulário e estado**
 - `StatefulWidget` sem controller. Lê o `SgToolbarScope` (orientação e chave da `SgToolBar` que o contém; fora de uma toolbar vale `vertical`).
-- `loading` (externo), `disabled`, `severity` (padrão `plain`; `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `help`, `plain`), `label`, `showLabel` (padrão `true`), `hideLabel` (esconde rótulo e dica; a toolbar usa ao recolher).
+- `loading` (externo), `enabled` (padrão `true`), `severity` (padrão `plain`; `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `help`, `plain`), `label`, `showLabel` (padrão `true`), `hideLabel` (esconde rótulo e dica; a toolbar usa ao recolher).
 - `hint`: balão próprio (`OverlayPortal`) ao passar o mouse, só se `hint != null` e `!hideLabel`.
 
 **Acessibilidade**

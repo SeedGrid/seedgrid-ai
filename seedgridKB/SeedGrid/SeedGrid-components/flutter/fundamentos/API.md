@@ -1,5 +1,5 @@
 ---
-description: "API Flutter dos fundamentos: SgForm/SgFormController/SgRules, i18n (SgComponentsI18nProvider e funções), sgNode, enums compartilhados, tema (SeedThemeProvider, SgTheme, utilitários de cor), máscaras, validadores, CEP/CNPJ e SgHttpClient, com o mapa de cada símbolo do React."
+description: "API Flutter dos fundamentos: SgForm/SgFormController/SgFieldError, i18n (SgComponentsI18nProvider e funções), sgNode, enums compartilhados, tema (SeedThemeProvider, SgTheme, utilitários de cor), máscaras, validadores, CEP/CNPJ e SgHttpClient, com o mapa de cada símbolo do React."
 tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, fundamentos, api]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages
@@ -22,10 +22,10 @@ Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fu
 |---|---|---|
 | `useForm()` / `control` / `handleSubmit` / `watch` / `reset` / `setValue` / `formState` | `SgFormController` (`handleSubmit`, `watch`, `reset`, `setValue`, `errors`, `isValid`, `isDirty`, `isSubmitting`, `submitCount`) | portado, com `register` omitido |
 | `register` do RHF | não existe (todo campo é controlado) | não portado de propósito |
-| `RegisterOptions` (`rules`) | `SgRules` + `SgRuleValue` | portado |
-| `rhf.ts` `RhfFieldProps` (interno) | props `name`, `control`, `rules`, `error` de cada widget | portado como props |
+| `RegisterOptions` (`rules`) | props diretas de cada campo (`required`, `requiredMessage`, `minLength`, `maxLength`, `validation` etc.); o `SgRules` foi removido | substituído (sem objeto de regras) |
+| `rhf.ts` `RhfFieldProps` (interno) | props `name`, `control`, `error` e as props de validação de cada widget (sem `rules`) | portado como props |
 | `resolveFieldError` | `resolveFieldError(a, [b, c])` | portado |
-| `mergeRequiredRule` | `mergeRequiredRule(rules, required, message)` | portado |
+| `mergeRequiredRule` | `requiredMessageFor(required, message)`: devolve a mensagem quando `required == true`, senão `null` (o `mergeRequiredRule` e o `SgRules` foram removidos) | substituído |
 | `SgComponentsI18nProvider` | `SgComponentsI18nProvider` | portado |
 | `useComponentsI18n` | `useComponentsI18n(context)` e `context.sgI18n` | portado |
 | `setComponentsI18n`, `getComponentsI18n`, `resolveComponentsI18n` | mesmos nomes | portado |
@@ -81,11 +81,11 @@ Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fu
 | `getValue` | `Object? getValue(String name)` | `getValues(name)` do RHF. |
 | `getValues` | `Map<String, Object?> getValues()` | cópia imutável de todos os valores. |
 | `watch` | `Object? watch(String name)` | valor atual (não assina; ouça o controlador). |
-| `registerField` | `void registerField(String name, {SgRules? rules, Object? initialValue, SgFieldValidator? validator})` | declara o campo (chamado pelo widget; idempotente). Substitui as `rules` e o `validator` do nome. O valor só é definido se o nome ainda não existir (`initialValue`, que também vira o padrão do `reset`). |
+| `registerField` | `void registerField(String name, {String? required, Object? initialValue, SgFieldValidator? validator})` | declara o campo (chamado pelo widget; idempotente). `required` é a **mensagem** de obrigatório (nula = campo não obrigatório); substitui o `required` e o `validator` do nome. O valor só é definido se o nome ainda não existir (`initialValue`, que também vira o padrão do `reset`). |
 | `unregisterValidator` | `void unregisterValidator(String name, SgFieldValidator validator)` | remove o validador só se ainda for o mesmo (um campo novo com o mesmo nome não é afetado); não notifica. |
 | `setValue` | `Future<void> setValue(String name, Object? value, {bool shouldValidate = false, bool shouldTouch = false, bool shouldDirty = true})` | grava o valor, atualiza `dirty` (compara com o padrão), notifica; `shouldValidate` roda `trigger([name])`; sem ele, se o erro atual veio do validador do componente, revalida só esse validador. |
 | `markTouched` | `void markTouched(String name)` | marca o campo como tocado. |
-| `trigger` | `Future<bool> trigger([List<String>? names])` | valida os campos (todos os que têm `rules` ou validador, se `names` for nulo). Ordem: `rules` primeiro (`validateRules`); o validador do componente só roda se elas passaram. Devolve `true` se todos válidos. |
+| `trigger` | `Future<bool> trigger([List<String>? names])` | valida os campos (todos os que têm `required` ou validador, se `names` for nulo). Ordem: o `required` primeiro (vazio = nulo, `''`, `false` ou coleção vazia, erro `type: 'required'`); o validador do componente só roda se ele passou (erro `type: 'validate'`). Devolve `true` se todos válidos. |
 | `setError` | `void setError(String name, String message, {String type = 'manual'})` | `setError` do RHF. |
 | `clearErrors` | `void clearErrors([List<String>? names])` | `clearErrors` do RHF (todos, se nulo). |
 | `reset` | `void reset([Map<String, Object?>? values])` | volta aos padrões (ou a `values`, que viram os novos padrões); limpa erros, `touched`, `dirty`, `submitCount`; incrementa `resetCount`. |
@@ -112,7 +112,7 @@ Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fu
 | `SgSubmitInvalid` | `FutureOr<void> Function(Map<String, SgFieldError> errors)` | `onInvalid`. |
 | `SgFieldValidator` | `FutureOr<String?> Function(Object? value)` | validador **próprio do componente** (CPF, CNPJ, e-mail, datas...). Devolve a mensagem ou `null`. Diverge do React por decisão do dono: roda em `trigger`/`handleSubmit` (ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]). |
 
-Em campo: `SgInputText(id: 'email', name: 'email', control: form, rules: SgRules(required: true))`. Comparação linha a linha com o React em [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
+Em campo: `SgInputText(id: 'email', name: 'email', control: form, required: true, requiredMessage: 'Informe o e-mail')` (a mensagem cai no texto de i18n `components.inputs.required` se `requiredMessage` for nulo). Comparação linha a linha com o React em [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
 
 ## SgForm
 
@@ -139,26 +139,16 @@ Métodos estáticos:
 
 Comportamento do Enter (Confirmado em `_SgFormState._onKey`): ignora tecla que não seja Enter/Enter numérico; ignora se não há botão submit nem `onValid`/`onInvalid`; só age quando o foco está num `EditableText` de `maxLines == 1`; devolve `KeyEventResult.ignored` para o `onSubmitted` do campo continuar funcionando.
 
-## SgRules, SgRuleValue, SgFieldError
+## SgFieldError e validação por props diretas
 
-> Arquivo `form/sg_rules.dart`. **Confirmado.**
+> Arquivo `form/sg_field_error.dart`. **Confirmado** (lido na main, `8a43f9d`).
 
-`SgRules({Object? required, Object? min, Object? max, Object? minLength, Object? maxLength, Object? pattern, SgValidate? validate})`, tudo opcional, `const`.
+> **Mudança (removido):** o `SgRules`, o `SgRuleValue`, a prop `rules` dos campos, o `validateRules` e o `mergeRequiredRule` foram **removidos** do Flutter (arquivo `form/sg_rules.dart` não existe mais). A validação agora é por props diretas de cada componente (`required`, `requiredMessage`, `minLength`, `maxLength`, `validation` etc., conforme o componente; veja a tabela de props de cada um). No React, a prop `rules` (react-hook-form) continua existindo.
 
-| Campo | Tipo | Efeito |
-|---|---|---|
-| `required` | `Object?` (`true`, `false` ou `String` com a mensagem) | falha com `type: 'required'` se o valor for vazio (`null`, `''`, `false`, coleção vazia). |
-| `min`, `max` | `Object?` (`num` ou `SgRuleValue<num>`) | só com valor preenchido; comparam o valor (`num` ou texto que vira `num`); `type: 'min'`/`'max'`. |
-| `minLength`, `maxLength` | `Object?` (`num` ou `SgRuleValue<num>`) | tamanho de `String` ou coleção; `type: 'minLength'`/`'maxLength'`. |
-| `pattern` | `Object?` (`RegExp` ou `SgRuleValue<RegExp>`) | só para `String`; `type: 'pattern'`. |
-| `validate` | `SgValidate?` = `FutureOr<Object?> Function(Object? value)` | roda sempre (inclusive com valor vazio, como no RHF): `true`/`null` = ok, `false` = inválido sem mensagem, `String` não vazia = mensagem (`type: 'validate'`). |
-
-- `SgRules.copyWith({Object? required, SgValidate? validate})`: copia mantendo as demais regras.
-- `SgRuleValue<T>(T value, [String? message])`: `{ value, message }` do RHF, ex.: `SgRules(maxLength: SgRuleValue(10, 'Muito longo'))`.
-- `SgFieldError(String type, [String message = ''])`: `type` com os nomes do RHF (`required`, `min`, `max`, `minLength`, `maxLength`, `pattern`, `validate`, e `manual` em `setError`); `message` pode vir vazio.
-- `Future<SgFieldError?> validateRules(SgRules rules, Object? value)`: ordem do RHF (required, min/max, maxLength/minLength, pattern, validate); `null` se válido.
-- `SgRules? mergeRequiredRule(SgRules? rules, bool? required, String message)`: se `required == true`, injeta a regra `required` (com `message`) sem sobrescrever uma que já exista.
+- `SgFieldError(String type, [String message = ''])`: `type` com os nomes do RHF (`required`, `validate`, `manual` em `setError`); `message` pode vir vazio. No formulário só o `required` e o validador do componente geram erro (`required` e `validate`); `min`, `max`, `minLength`, `maxLength` e `pattern` são tratados dentro de cada campo, pelas suas props.
+- `String? requiredMessageFor(bool? required, String message)`: devolve `message` quando `required == true`, senão `null`. É o que o campo passa em `registerField(required: ...)`.
 - `String? resolveFieldError(String? a, [String? b, String? c])`: a primeira mensagem não vazia (após `trim`).
+- `bool sgIsEmptyValue(Object? v)`: vazio para o `required`: `null`, `''`, `false` ou coleção vazia.
 
 ## SgValidationScope, SgValidationRegistry, SgSelfValidating
 
@@ -174,16 +164,15 @@ Comportamento do Enter (Confirmado em `_SgFormState._onKey`): ignora tecla que n
 
 > Porte de `src/i18n/index.ts` do React (mesmos nomes e a mesma interpolação `{param}`). Arquivo: `seedgrid_components/lib/src/i18n/i18n.dart`; mapas gerados em `messages_*.dart` por `tools/export_i18n/export.mjs`. **Confirmado.**
 
-### SgComponentsI18nProvider
+### Props de SgComponentsI18nProvider
 
 `class SgComponentsI18nProvider extends StatelessWidget`. Widgets abaixo leem o idioma com `useComponentsI18n(context)`; trocar `locale` ou `messages` reconstrói quem depende dele.
 
-| Prop | Tipo | Padrão | Descrição |
-|---|---|---|---|
-| `locale` | `SgComponentsLocale?` (`String`) | `null` → `en-US` | `'pt-BR'`, `'pt-PT'`, `'en-US'` (`'en'` vira `'en-US'`), `'es'`, `'fr'`; outro texto é aceito, mas cai nas mensagens `en-US`. |
-| `messages` | `Map<String, Object?>?` | `null` | sobrescreve chaves. Forma plana ou com a chave `components` (se houver essa chave com um mapa, só ela é usada). |
-| `child` | `Widget` | obrigatório | subárvore. |
-| `key` | `Key?` | — | padrão do Flutter. |
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `child` | `Widget` | — | sim | React | Subárvore que consome o contexto de i18n. |
+| `locale` | `SgComponentsLocale?` (`String`) | `null` → `en-US` | não | React | `'pt-BR'`, `'pt-PT'`, `'en-US'` (`'en'` vira `'en-US'`), `'es'`, `'fr'`; outro texto é aceito, mas cai nas mensagens `en-US`. |
+| `messages` | `Map<String, Object?>?` | — | não | React | Sobrescreve chaves. Forma plana ou com a chave `components` (se houver essa chave com um mapa, só ela é usada). |
 
 Diferença de comportamento (Confirmado): o provider monta as mensagens a partir do **idioma embutido + `messages`**; ele **não** herda o que foi gravado por `setComponentsI18n` (a mesclagem com o estado global só existe em `getComponentsI18n`/`resolveComponentsI18n`). Sem provider, `useComponentsI18n` cai no global (`en-US` se nunca configurado).
 

@@ -18,7 +18,7 @@ Copiados 1:1 dos `samples/*.tsx.sample` do showcase e verificados com type-check
 
 ### Básico com loading
 
-Clique ativa `loading` por 1,2 s (spinner + botão desabilitado); o segundo botão usa `disabled`.
+Clique ativa `loading` por 1,2 s (spinner + botão desabilitado); o segundo botão usa `enabled={false}`.
 
 Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-button/samples/basico.tsx.sample`
 
@@ -39,7 +39,7 @@ export default function Example() {
       <SgButton onClick={handleClick} loading={isLoading}>
         Submit
       </SgButton>
-      <SgButton disabled>Disabled</SgButton>
+      <SgButton enabled={false}>Disabled</SgButton>
     </div>
   );
 }

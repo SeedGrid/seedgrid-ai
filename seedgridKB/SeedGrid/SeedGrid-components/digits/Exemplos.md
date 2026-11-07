@@ -67,8 +67,8 @@ export default function Example() {
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground">Pagina <strong>{page}</strong> de {TOTAL_PAGES}</p>
         <div className="flex gap-2">
-          <SgButton size="sm" disabled={page <= 1} onClick={() => { ref.current?.decreasePage(); setPage((prev) => Math.max(1, prev - 1)); }}>Previous</SgButton>
-          <SgButton size="sm" disabled={page >= TOTAL_PAGES} onClick={() => { ref.current?.increasePage(); setPage((prev) => Math.min(TOTAL_PAGES, prev + 1)); }}>Proxima</SgButton>
+          <SgButton size="sm" enabled={!(page <= 1)} onClick={() => { ref.current?.decreasePage(); setPage((prev) => Math.max(1, prev - 1)); }}>Previous</SgButton>
+          <SgButton size="sm" enabled={!(page >= TOTAL_PAGES)} onClick={() => { ref.current?.increasePage(); setPage((prev) => Math.min(TOTAL_PAGES, prev + 1)); }}>Proxima</SgButton>
         </div>
       </div>
     </div>

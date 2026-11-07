@@ -250,14 +250,14 @@ Ajuste: `_pulse2` (outro `SgSimulatedPulseConnection`), `_token` e as variáveis
 
 ### Desligado
 
-Com disabled (ex.: enquanto não há usuário logado) não pede token nem conecta.
+Com `enabled: false` (ex.: enquanto não há usuário logado) não pede token nem conecta.
 
 Região `sgRealtimeProviderDesligado` em `sg_realtime_provider_page.snippets.g.dart`.
 
 ```dart
 SgRealtimeProvider(
   channels: const ['backup'],
-  disabled: true,
+  enabled: false,
   fetchToken: _token,
   child: Builder(
     builder: (context) => Text(

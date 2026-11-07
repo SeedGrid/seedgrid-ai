@@ -36,7 +36,7 @@ analisado-em: 2026-10-30
 ## O que muda em relação ao React
 
 - Flutter não tem hooks: os `use*` viram funções que recebem o `BuildContext` (`useSgEnvironment`, `useSgPersistence`, `useSgRealtimeStatus`...), `useSgRealtimeEvent` vira o widget `SgRealtimeEventListener` (ou `listenSgRealtimeEvent`) e `useSgPersistentState` vira `SgPersistentState`/`SgPersistentStateBuilder`.
-- `localStorage` vira `shared_preferences`; `enabled` do realtime vira `disabled`; `tokenEndpoint` precisa ser URL absoluta; o cliente do Pulse entra por `connectionFactory` e o adaptador do SDK não está ligado por dependência.
+- `localStorage` vira `shared_preferences`; `tokenEndpoint` precisa ser URL absoluta; o cliente do Pulse entra por `connectionFactory` e o adaptador do SDK não está ligado por dependência.
 - Resumo de decisões: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
 
 ## Símbolos do React do mesmo grupo sem componente equivalente

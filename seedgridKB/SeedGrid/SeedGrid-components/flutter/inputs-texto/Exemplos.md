@@ -547,7 +547,8 @@ Column(
       name: 'campo',
       control: _form,
       labelText: 'Campo',
-      rules: const SgRules(required: 'Preencha o campo'),
+      required: true,
+      requiredMessage: 'Preencha o campo',
     ),
     const SizedBox(height: 12),
     SgButton(
@@ -975,7 +976,7 @@ Column(
       label: 'Desabilitado',
       mask: '9999',
       defaultValue: '12',
-      disabled: true,
+      enabled: false,
     ),
     SizedBox(height: 16),
     SgInputOTP(

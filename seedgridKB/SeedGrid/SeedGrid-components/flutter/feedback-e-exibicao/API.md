@@ -46,7 +46,7 @@ Representacao visual compacta de pessoa, usuario ou entidade por imagem, iniciai
 | `title` | `String?` | — | não | Flutter | — |
 | `semanticLabel` | `String?` | — | não | Flutter | `aria-label` no React. |
 | `imageProvider` | `ImageProvider?` | — | não | Flutter | Imagem pronta (ex.: `AssetImage`); tem precedencia sobre [src]. |
-| `enabled` | `bool?` | `true` † | não | React | — |
+| `enabled` | `bool` | `true` | não | React | Com `false` o avatar fica com opacidade reduzida e não recebe foco nem toque. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -61,7 +61,7 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (Confirmado em `packages/seedgrid_components/lib/src/commons/sg_avatar.dart`, classe `_SgAvatarState`)
-- `onClick: VoidCallback?`: com ele o avatar fica interativo (cursor de mão, `Focus`, `GestureDetector.onTap`). Não dispara com `disabled: true`.
+- `onClick: VoidCallback?`: com ele o avatar fica interativo (cursor de mão, `Focus`, `GestureDetector.onTap`). Não dispara com `enabled: false` (o avatar fica com opacidade reduzida e sem foco).
 - `onImageError: void Function(Object error)?`: chamado uma vez, depois do quadro em que a imagem falhou (`errorBuilder` + `addPostFrameCallback`); em seguida o avatar cai para ícone, label ou fallback.
 
 **Controller, formulário e estado**: sem controller e sem ligação com `SgForm`. O estado interno é só `_imageFailed` e o foco visual.
@@ -151,7 +151,7 @@ Indicador compacto para status, contagens, rotulos curtos e destaque visual de p
 | `customColors` | `SgBadgeCustomColors?` | — | não | React | Tipo no React: `SgBadgeCustomColors`. |
 | `partsClassName` | `Object?` | — | não | React | className por parte (React-only, ADR 50). Ignorado. Tipo no React: `SgBadgePartsClassName`. |
 | `semanticLabel` | `String?` | — | não | React | `aria-label` no React. |
-| `enabled` | `bool?` | `true` † | não | React | — |
+| `enabled` | `bool?` | `true` † | não | React | Com `false` o badge não dispara `onClick` (nulo = habilitado). |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -166,7 +166,7 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (Confirmado em `packages/seedgrid_components/lib/src/commons/sg_badge.dart`, `_SgBadgeState.build`)
-- `onClick: VoidCallback?`: transforma o badge em botão (cursor de mão, `Focus`, toque). Não dispara se `disabled`.
+- `onClick: VoidCallback?`: transforma o badge em botão (cursor de mão, `Focus`, toque). Não dispara com `enabled: false`.
 - `onRemove: VoidCallback?`: disparado ao tocar o "x" quando `removable: true`. Com `autoRemove: true` o badge também se esconde sozinho (`_autoRemoved`).
 
 **Controller, formulário e estado**: sem controller nem formulário. `pulse` usa um `AnimationController` interno (ciclo de 1 s) no modo `dot`.
@@ -442,11 +442,11 @@ Sino de notificações do usuário logado, com os mesmos nomes de prop do React 
 | `fetcher` | `SgFetcher?` | — | não | React | Substitui o HTTP (apps sem BFF, testes, demonstração). |
 | `types` | `Map<String, SgNotificationTypeConfig>?` | — | não | React | Tipo → ícone e ação ao abrir. |
 | `eventPattern` | `String` | `sgDefaultEventPattern` (`user-notification.*`) | não | React | Evento do Pulse que dispara a leitura. |
-| `pollIntervalMs` | `num?` | 45000 | não | React | Polling de reserva, preso entre 30 e 60 s. |
-| `maxVisible` | `num?` | 100 | não | React | Máximo na lista (padrão e máximo 100). |
-| `placement` | `SgNotificationBellPlacement?` | `auto` | não | React | Lado em que o painel abre (como no `SgPopup`). |
-| `showUnreadToggle` | `bool?` | `true` | não | React | Mostra o interruptor "Não lidas"; `false` esconde só o interruptor (o sino fica). |
-| `defaultUnreadOnly` | `bool?` | `true` | não | React | O painel abre em "Não lidas"; ignorada com `showUnreadToggle: false`; não persiste entre recargas. |
+| `pollIntervalMs` | `num?` | 45000 † | não | React | Polling de reserva, preso entre 30 e 60 s. |
+| `maxVisible` | `num?` | 100 † | não | React | Máximo na lista (padrão e máximo 100). |
+| `placement` | `SgNotificationBellPlacement?` | `auto` † | não | React | Lado em que o painel abre (como no `SgPopup`). |
+| `showUnreadToggle` | `bool?` | `true` † | não | React | Mostra o interruptor "Não lidas"; `false` esconde só o interruptor (o sino fica). |
+| `defaultUnreadOnly` | `bool?` | `true` † | não | React | O painel abre em "Não lidas"; ignorada com `showUnreadToggle: false`; não persiste entre recargas. |
 | `onNotification` | `void Function(SgNotification)?` | — | não | React | Chegou uma notificação nova (aviso do Pulse). |
 | `onNotificationDelete` | `void Function(SgNotification)?` | — | não | React | O usuário excluiu uma notificação. |
 | `onOpen` | `void Function(SgNotification)?` | — | não | React | O usuário abriu uma notificação (depois do `onOpen` do tipo). |

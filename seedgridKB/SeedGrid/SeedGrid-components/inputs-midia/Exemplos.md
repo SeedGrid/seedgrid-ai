@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-midia, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: bb0ad1f
-analisado-em: 2026-11-04
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Exemplos TSX (React) de Data e hora, arquivo, imagem e câmera, copiados dos samples do showcase do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -230,7 +230,7 @@ export default function App() {
       <SgFileUpload
         id="demo-disabled"
         label="Anexo"
-        disabled
+        enabled={false}
         defaultValue={[{ name: "contrato.pdf", url: "/contrato.pdf", size: 482304 }]}
       />
     </div>
@@ -339,7 +339,7 @@ import { SgImageUpload } from "@seedgrid/fe-components";
 export default function App() {
   return (
     <div className="w-80">
-      <SgImageUpload id="demo-disabled" label="Foto" disabled />
+      <SgImageUpload id="demo-disabled" label="Foto" enabled={false} />
     </div>
   );
 }

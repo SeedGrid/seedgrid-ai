@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-sel
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Inputs de seleção e valores (Flutter)
@@ -20,7 +20,7 @@ Confirmado em `inputs/choice/choice_shared.dart` (`ChoiceFieldBinding`), `inputs
 
 - **Ligação a formulário:** com `name` (e `control`, ou o `SgForm` mais próximo via `SgForm.maybeOf`), o valor e o erro vêm do `SgFormController`; sem `name` ou sem controlador o campo funciona isolado. A gravação usa `setValue` e revalida quando o campo já tinha erro ou o formulário já foi enviado (`submitCount > 0`), como o react-hook-form. `YearPartSelector` é o único widget do grupo sem `name`/`control`.
 - **`onChange` do usuário sempre roda**, também dentro de formulário (decisão do dono, 2026-10-25; ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]); mudar o valor por fora (`setValue`, `reset`, prop `value`) não o chama.
-- **`required` e validadores:** `SgCheckboxGroup`, `SgRadioGroup`, `SgToggleSwitch`, `SgRating` e `SgAutocomplete` mesclam `required` nas `rules` (`mergeRequiredRule`); `SgCombobox`, `SgMultiSelect`, `SgMultiSelectChips`, `SgOrderList`, `SgPickList`, `SgPeriodSelector`, `SgSlider` e `SgStepperInput` registram só `rules`. Somente `SgToggleSwitch` registra `validator` próprio (`registerField(validator:)`).
+- **`required` e validadores:** `SgCheckboxGroup`, `SgRadioGroup`, `SgToggleSwitch`, `SgRating`, `SgAutocomplete` e `SgCombobox` registram a mensagem de obrigatório no formulário quando `required: true` (`requiredMessageFor`; não existe mais `rules`/`SgRules`, a validação usa props diretas como `required`, `requiredMessage` e `validation`); `SgMultiSelect` e `SgMultiSelectChips` tratam `required` só como marca visual; `SgOrderList`, `SgPickList`, `SgPeriodSelector`, `SgSlider` e `SgStepperInput` registram o campo sem obrigatório. Somente `SgToggleSwitch` registra `validator` próprio (`registerField(validator:)`).
 - **Textos padrão** (rótulos de botões, "sem resultados", "carregando") vêm do i18n do pacote (`useComponentsI18n`), em cinco idiomas.
 - **Lista em tela estreita:** abaixo de 600 px a lista de opções (combobox, autocomplete, multisseleção) vira painel de baixo (`inputs/dropdown/sg_dropdown_host.dart`; ADR 51).
 - **Nulo = não controlado:** o Dart não distingue `null` de indefinido; passar uma prop de valor de não nulo para nulo limpa o campo (`SgCombobox`, `SgAutocomplete`, `SgPeriodSelector`; no `SgToggleSwitch`, volta ao `defaultChecked`).
@@ -131,7 +131,7 @@ Campo de busca assistida com sugestoes, fonte assincrona, cache e selecao de ite
 - `source` é `SgAutocompleteSource<T>` = `FutureOr<List<T>> Function(String query)` (`select_support.dart`): pode devolver a lista direto ou um `Future`. A busca usa debounce de `delay` ms (padrão 300), exige `minLengthForSearch` caracteres (padrão 2), corta em `maxResult` (50) e guarda o resultado por consulta por `cacheTTL` ms (5 min) quando `cacheEnabled`. Respostas antigas são descartadas (`_requestId`); se a fonte lançar erro, a lista abre vazia.
 - `mapItem` converte o item bruto em `SgAutocompleteItem` (padrão `sgDefaultMapItem`). `value` é o **texto**, não o id; sem formulário, `value` nulo = não controlado, e passar de não nulo para nulo limpa o campo.
 
-**Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o texto e o campo registra `rules` com o `required` mesclado (`mergeRequiredRule`) e `initialValue: value`. Não registra `validator` próprio; `validation`/`validateOnBlur` são tratados pelo `SgInputText` interno, que não tem `name`.
+**Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o texto e o campo registra no formulário a mensagem de obrigatório (`requiredMessage` ou o texto i18n `components.inputs.required`, só quando `required: true`) e `initialValue: value`, então `required` vale no `handleSubmit`. Não registra `validator` próprio; `validation`/`validateOnBlur` são tratados pelo `SgInputText` interno, que não tem `name`.
 
 **Acessibilidade e teclado:** com a lista aberta, ↓/↑ movem o item ativo, Enter (ou Enter do teclado numérico) escolhe e Esc fecha (`_onKey`). O botão de lista (`showDropDownButton`) tem `tooltip` i18n (`components.actions.openList`) e não entra na ordem de foco. O item da lista expõe `Semantics(selected:)` (`select_support.dart`). Nenhum `Semantics` com rótulo no próprio widget; não confirmado se o `SgInputText` interno expõe o rótulo ao leitor de tela.
 
@@ -223,7 +223,7 @@ Campo de escolha assistida que combina digitacao e selecao de item com suporte a
 - `source` é `List<T>` ou `SgAutocompleteSource<T>`; a função é chamada **sempre com texto vazio** ao abrir (o Combobox não filtra por digitação: digitar faz type-ahead, com buffer que zera 700 ms após a última tecla). `mapItem` (padrão `sgDefaultMapItem`), `grouped`/`groupped`, `renderItem`, `renderValue`, `renderGroupHeader`, `renderFooter` e `itemTooltip` personalizam a lista.
 - O valor é o id (texto ou número). Se o id não está nas entradas carregadas, o widget chama a fonte para achar o rótulo (`_reconcileSelection`). Sem formulário, `value` nulo = não controlado; passar de não nulo para nulo limpa a seleção.
 
-**Formulário:** com `name`, grava o id no formulário (`setValue`, revalidando se já havia erro ou envio) e registra apenas `rules` e `initialValue: value`. Inferência: como `required` vai só ao `SgInputText` interno (que não tem `name`), ele não é regra do envio; para exigir o campo no `handleSubmit`, use `rules`.
+**Formulário:** com `name`, grava o id no formulário (`setValue`, revalidando se já havia erro ou envio) e registra a mensagem de obrigatório (`requiredMessage` ou o texto i18n `components.inputs.required`, só quando `required: true`) e `initialValue: value`; assim `required` vale também no `handleSubmit`. `required`/`requiredMessage` também vão ao `SgInputText` interno (asterisco e erro no campo).
 
 **Acessibilidade e teclado:** letras fazem type-ahead; ↓/↑ abrem a lista ou movem o item ativo; Enter, Enter numérico e Espaço abrem ou escolhem; Esc e Tab fecham (`_onKey`). `openOnFocus` abre ao focar. O botão de seta tem `tooltip` i18n (`components.actions.openList`) e não recebe foco; o item da lista tem `Semantics(selected:)`.
 
@@ -275,13 +275,13 @@ Grupo de checkboxes para multisselecao com orientacao, estilo de selecao e supor
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (confirmado em `sg_checkbox_group.dart`)
-- `onChange(List<Object>)`: com a lista completa de valores marcados, a cada alternância do usuário, "marcar todos" ou chamada ao controller. `disabled` e `readOnly` impedem alternar.
+- `onChange(List<Object>)`: com a lista completa de valores marcados, a cada alternância do usuário, "marcar todos" ou chamada ao controller. `enabled: false` e `readOnly` impedem alternar.
 
 **Controller:** `SgCheckboxGroupController` (equivale ao `ref`/`SgCheckboxGroupRef` do React): `getChecked()`, `setChecked(List<Object>)`, `checkAll()` (todos os habilitados) e `clearAll()`. `setChecked`, `checkAll` e `clearAll` passam por `_emit`, ou seja, **também chamam `onChange`**.
 
 **Estado e formulário**
 - `value` controlado quando não nulo; sem ele o estado inicial vem das opções com `checked: true`. `showCheckAll` mostra o item "marcar todos" tri-state (indeterminado quando há marcados parciais); clicar com todos os habilitados marcados desmarca tudo.
-- Com `name`, o valor do formulário é a lista (inicial `[]`); registra `rules` com o `required` mesclado (`mergeRequiredRule`) e não registra `validator` próprio. Revalida a cada mudança se já havia erro ou envio (`ChoiceFieldBinding.set`, `choice_shared.dart`). O título ganha ` *` quando `required`.
+- Com `name`, o valor do formulário é a lista (inicial `[]`); registra a mensagem de obrigatório (texto i18n `components.inputs.required`, só quando `required: true`) e não registra `validator` próprio. Revalida a cada mudança se já havia erro ou envio (`ChoiceFieldBinding.set`, `choice_shared.dart`). O título ganha ` *` quando `required`.
 
 **Acessibilidade e teclado:** cada opção é um `ChoiceTile` com `Semantics(checked, enabled, label)`; o grupo fica em `Semantics(container: true)` dentro de um `SgGroupBox` cujo título é `title`. Espaço ou Enter alternam a opção focada (`choice_tile.dart`, `_key`). Mensagem de erro em texto abaixo do grupo.
 
@@ -329,9 +329,9 @@ Grupo de radios para escolha unica com orientacao e estilo visual configuravel.
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (confirmado em `sg_radio_group.dart`)
-- `onChange(Object?)`: com o valor escolhido. Tocar no rádio que já está marcado **não** emite de novo (`_select` ignora quando `_current == v`). `disabled` e `readOnly` impedem a escolha.
+- `onChange(Object?)`: com o valor escolhido. Tocar no rádio que já está marcado **não** emite de novo (`_select` ignora quando `_current == v`). `enabled: false` e `readOnly` impedem a escolha.
 
-**Estado e formulário:** `value` controlado quando não nulo (`Object?`, texto ou número). Com `name`, o valor do formulário é o valor da opção; registra `rules` com `required` mesclado e não registra `validator`. Não há controller próprio.
+**Estado e formulário:** `value` controlado quando não nulo (`Object?`, texto ou número). Com `name`, o valor do formulário é o valor da opção; registra a mensagem de obrigatório (texto i18n `components.inputs.required`, só quando `required: true`) e não registra `validator`. Não há controller próprio.
 
 **Acessibilidade e teclado:** cada opção expõe `Semantics(selected, inMutuallyExclusiveGroup: true, enabled, label)`. Espaço escolhe a opção focada; ↓ ou → vão para a próxima e ↑ ou ← para a anterior, em ciclo e pulando as desabilitadas; mover o foco **também escolhe** a opção (`_arrow` chama `_select`). O grupo fica num `SgGroupBox` com `Semantics(container: true)`.
 
@@ -411,7 +411,7 @@ Campo de selecao multipla no estilo select: trigger com chevron que vira check a
 
 **Estado e formulário**
 - `value` controlado quando não nulo; sem ele o estado é interno (`SgMultiSelectController`, não exportado). O campo mostra os rótulos (`chipLabel ?? label`) separados por vírgula até `summaryThreshold` (padrão 2) e, acima disso, o texto de resumo i18n.
-- Com `name`, a ligação ao formulário vem do `SgMultiFormBinding` (`multi_form_binding.dart`): grava a lista (inicial `[]`) e registra **somente `rules`**. O comentário do código registra que o `required` do componente **não** vira regra do formulário (fiel ao React); para exigir o campo no envio, use `rules`.
+- Com `name`, a ligação ao formulário vem do `SgMultiFormBinding` (`multi_form_binding.dart`): grava a lista (inicial `[]`) e registra o campo sem mensagem de obrigatório (`bindingRequired` é `null`). O comentário do código registra que o `required` do componente é só visual (asterisco), fiel ao React: **não** vira regra do formulário e não bloqueia o `handleSubmit`.
 - `searchable` mostra busca no topo (filtro por "contém", sem diferenciar maiúsculas); `clearable` mostra o botão de limpar.
 
 **Acessibilidade e teclado:** os botões de abrir e de limpar têm `Semantics(button, label)` com textos i18n (`components.actions.openList`, `components.actions.clearSelection`); cada opção expõe `Semantics(selected, enabled, button)` e o painel `Semantics(container, explicitChildNodes)`. No campo: Esc fecha; ↓, Enter ou Espaço abrem. Com a lista aberta e sem busca: ↓/↑ movem o item ativo, Enter/Espaço alternam, Tab fecha; com busca, o foco vai para o campo de busca e as mesmas teclas valem sobre a lista (`handleListKey`).
@@ -469,7 +469,7 @@ Variante do multi-select onde os itens selecionados viram chips removiveis no tr
 - `onChange(List<Object>)`: igual ao `SgMultiSelect` (marcar, remover chip, limpar), inclusive dentro de formulário.
 - `onEnter()`: ao o campo ganhar o foco; `onExit()`: ao perdê-lo, **exceto** quando o foco só passa para a lista aberta (`sgMultiSelectFocusMovesToList`).
 
-**Estado e formulário:** mesma base do `SgMultiSelect` (`SgMultiFormBinding`, `SgMultiSelectController`): `value` controlado quando não nulo, `maxSelected`, `searchable`, `clearable`, `required` que **não** vira regra do formulário (use `rules`). Cada item escolhido vira um chip (`chipLabel ?? label`); se há `chipLabel`, o chip mostra um `Tooltip` com o `label` completo. O ✕ do chip remove o item (desabilitado quando `disabled`).
+**Estado e formulário:** mesma base do `SgMultiSelect` (`SgMultiFormBinding`, `SgMultiSelectController`): `value` controlado quando não nulo, `maxSelected`, `searchable`, `clearable`, `required` que é só visual e **não** vira regra do formulário. Cada item escolhido vira um chip (`chipLabel ?? label`); se há `chipLabel`, o chip mostra um `Tooltip` com o `label` completo. O ✕ do chip remove o item (desabilitado quando `enabled: false`).
 
 **Acessibilidade e teclado:** o campo é um `Semantics(container, label, expanded, enabled)`; botões de abrir/limpar com `Semantics(button, label)` i18n; o ✕ de cada chip usa o texto i18n `components.inputs.multiSelect.removeChip` com o rótulo do item. Teclas do campo e da lista: as mesmas do `SgMultiSelect` (Esc, ↓/Enter/Espaço, ↑, Tab).
 
@@ -501,7 +501,7 @@ Lista ordenavel para reordenacao manual de itens com selecao e controles de movi
 | `draggable` | `bool` | `true` | não | React | Permite arrastar itens. |
 | `readOnly` | `bool` | `false` | não | React | — |
 | `emptyMessage` | `String?` | — | não | React | — |
-| `itemTemplate` | `Widget Function(SgOrderListItem item, SgOrderListItemState state)?` | — | não | React | Tipo no React: `((item: SgOrderListItem, state: { index: number; selected: boolean; disabled: boolean; }) => React.ReactNode)`. |
+| `itemTemplate` | `Widget Function(SgOrderListItem item, SgOrderListItemState state)?` | — | não | React | Tipo no React: `((item: SgOrderListItem, state: { index: number; selected: boolean; enabled: boolean; }) => React.ReactNode)`. |
 | `listClassName` | `String?` | — | não | React | Classe CSS: nao existe no Flutter (ADR 50). Aceita so para cumprir o contrato; sem efeito. |
 | `itemClassName` | `String?` | — | não | React | Classe CSS: sem efeito (ADR 50). |
 | `groupBoxProps` | `SgListGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
@@ -525,11 +525,11 @@ Lista ordenavel para reordenacao manual de itens com selecao e controles de movi
 **Eventos e callbacks** (confirmado em `sg_order_list.dart`)
 - `onChange(List<SgOrderListItem>)`: com a nova ordem, ao mover (botões, atalhos, arrastar) ou ao chamar `controller.setItems`.
 - `onSelectionChange(List<Object>)`: com os valores selecionados; `selectedValues` torna a seleção controlada.
-- `selectionMode`: `single` seleciona um item; `multiple` alterna o clique e aceita Shift+clique para faixa (com Ctrl/Meta soma à seleção atual). Itens `disabled` não são selecionados nem movidos; `disabled`/`readOnly` bloqueiam tudo.
+- `selectionMode`: `single` seleciona um item; `multiple` alterna o clique e aceita Shift+clique para faixa (com Ctrl/Meta soma à seleção atual). Itens com `enabled: false` não são selecionados nem movidos; `enabled: false` ou `readOnly` no componente bloqueiam tudo.
 
 **Controller:** `SgOrderListController` (equivale ao `ref`): `getItems()`, `setItems(...)`, `getSelection()`, `setSelection(...)`, `moveTop()`, `moveUp()`, `moveDown()`, `moveBottom()`, `clearSelection()`. Só funciona depois que o widget está montado (devolve vazio antes).
 
-**Estado e formulário:** `value` (lista de itens) controla a ordem; sem ele o estado parte de `source`. Com `name`, o valor do formulário é a **lista de `SgOrderListItem`** (`_binding.set(next)`); registra apenas `rules` (sem `required`, sem `validator`). `showControls`/`controlsPosition` mostram os botões; `draggable` liga o arrastar.
+**Estado e formulário:** `value` (lista de itens) controla a ordem; sem ele o estado parte de `source`. Com `name`, o valor do formulário é a **lista de `SgOrderListItem`** (`_binding.set(next)`); registra o campo sem `required` e sem `validator` (`ListFieldBinding.bind` só com `name` e `control`). `showControls`/`controlsPosition` mostram os botões; `draggable` liga o arrastar.
 
 **Acessibilidade e teclado:** cada item é um `ListEntryTile` com `Semantics(container, selected, button, enabled, label: item.label)` e foco próprio; Espaço/Enter selecionam; **Ctrl/Meta + ↑/↓/Home/End** movem os itens selecionados para cima, baixo, topo e fim (`_onKey`). Os botões de mover têm `Tooltip` e `Semantics(button, label)` (`ListControlButton`).
 
@@ -572,7 +572,7 @@ Lista dual para mover itens entre origem e destino com filtros e selecao.
 | `draggable` | `bool` | `true` | não | React | — |
 | `readOnly` | `bool` | `false` | não | React | — |
 | `emptyMessage` | `String?` | — | não | React | — |
-| `itemTemplate` | `Widget Function(SgPickListItem item, SgPickListItemState state)?` | — | não | React | Tipo no React: `((item: SgPickListItem, state: { index: number; selected: boolean; disabled: boolean; list: SgPickListListName; }) => React.ReactNode)`. |
+| `itemTemplate` | `Widget Function(SgPickListItem item, SgPickListItemState state)?` | — | não | React | Tipo no React: `((item: SgPickListItem, state: { index: number; selected: boolean; enabled: boolean; list: SgPickListListName; }) => React.ReactNode)`. |
 | `listClassName` | `String?` | — | não | React | Classe CSS: nao existe no Flutter (ADR 50). Aceita so para cumprir o contrato; sem efeito. |
 | `itemClassName` | `String?` | — | não | React | Classe CSS: sem efeito (ADR 50). |
 | `groupBoxProps` | `SgListGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
@@ -600,7 +600,7 @@ Lista dual para mover itens entre origem e destino com filtros e selecao.
 
 **Controller:** `SgPickListController`: `getValue()` (`SgPickListValue` com `source` e `target`), `setValue(...)`, `moveToTarget()`, `moveAllToTarget()`, `moveToSource()`, `moveAllToSource()`, `clearSelection()`.
 
-**Estado e formulário:** `value` (`SgPickListValue`) controla as duas listas; sem ele o estado parte de `source`/`target`. Com `name`, o valor do formulário é um `SgPickListValue(source, target)` (sem o tipo do evento) e o widget registra apenas `rules`.
+**Estado e formulário:** `value` (`SgPickListValue`) controla as duas listas; sem ele o estado parte de `source`/`target`. Com `name`, o valor do formulário é um `SgPickListValue(source, target)` (sem o tipo do evento) e o widget registra o campo sem `required` e sem `validator`.
 
 **Acessibilidade e teclado:** cada item é um `ListEntryTile` com `Semantics(container, selected, button, enabled, label)`; os botões de transferência têm `Tooltip` e rótulo semântico. **Sem atalhos de teclado próprios:** o `PickList` não passa `onKeyEvent` aos itens (diferente do `SgOrderList`); a seleção e a movimentação por teclado ficam por conta do foco e do toque, não confirmado além disso.
 
@@ -654,7 +654,7 @@ Seletor de periodos pre-definidos (Este mes, Ultimo trimestre, etc.) que resolve
 
 **Estado e formulário**
 - Por dentro é um `SgCombobox` agrupado com `openOnFocus`. `value` (`SgPeriodSelectorValue?`) é a opção escolhida.
-- Com `name`, o valor do formulário é o **texto do preset** (`period.preset.value`, ex.: `THIS_WEEK`), e o widget registra apenas `rules` e `initialValue`. Inferência: `required` é repassado só ao combobox interno, sem `name`, então não é regra do envio.
+- Com `name`, o valor do formulário é o **texto do preset** (`period.preset.value`, ex.: `THIS_WEEK`), e o widget registra o campo só com `initialValue` (`value?.value`), sem mensagem de obrigatório: `required` é repassado só ao combobox interno, sem `name`, então não é regra do envio.
 - Funções públicas relacionadas: `resolvePeriod`, `buildPeriodOptions`, `periodPresetLabel`, `ResolvePeriodOptions` (`period_logic.dart`).
 
 **Acessibilidade e teclado:** herda do `SgCombobox` interno (type-ahead, ↓/↑, Enter/Espaço, Esc, Tab; botão de seta com `tooltip` i18n; `Semantics(selected)` nos itens) e do `SgInputDate` no modo personalizado. O widget não acrescenta `Semantics` próprio. A largura máxima do conjunto é 288 px.
@@ -699,7 +699,7 @@ Seletor de recorte de ano: o usuario escolhe ANO + RECORTE (semestre, trimestre 
 
 **Estado:** `value` (`YearPartValue?`) é opcional; sem ele o estado inicial é o recorte do dia atual (`today ?? DateTime.now()`) no primeiro tipo permitido. `allowedKinds` limita os recortes (`YearPartKind.semester`, `quarter`, `bimester`; padrão os três; com um só, o seletor de recorte some). `minYear`/`maxYear` (padrão: ano atual - 30 até + 10); `today` é um extra do Flutter para fixar a data de referência. Valor inconsistente é ajustado (`clampYearPart`, recorte fora de `allowedKinds` vira o primeiro permitido).
 
-**Formulário:** **sem ligação a formulário**: o widget não tem `name`, `control` nem `rules`; use o `onChange`.
+**Formulário:** **sem ligação a formulário**: o widget não tem `name` nem `control`; use o `onChange`.
 
 **Acessibilidade:** são três `SgCombobox` internos (ids `<id>-year`, `<id>-kind`, `<id>-part`), em linha quando a largura é de 640 px ou mais e em coluna abaixo disso (`kSgYearPartRowWidth`). O rótulo `label` é um `Text` simples com ` *` quando `required`; sem `Semantics` próprio. Teclado e semântica dos itens vêm do `SgCombobox`.
 
@@ -746,7 +746,7 @@ Interruptor booleano para ativar ou desativar estados, flags e configuracoes sim
 
 ### Diferenças do React registradas em docs/PARIDADE.md
 
-- `enabled` do React virou `disabled` (ADR 50; valor invertido).
+- Nota (removido): a inversão `disabled` do Flutter foi substituída por `enabled`, igual ao React (P149); não existe mais `disabled` neste widget.
 - **Não portado:** `className`/`style`, `inputProps`, `switchClassName`, `thumbClassName` e `trackClassName` (aceitos sem efeito); 3 props omitidas de propósito.
 - Os validadores do componente (`required`, `validation`) rodam também no `handleSubmit`/`trigger` (decisão do dono de 2026-10-25).
 - Limitações registradas: golden com a fonte de teste do Flutter; não testado em IME nem em dispositivo.
@@ -754,12 +754,12 @@ Interruptor booleano para ativar ou desativar estados, flags e configuracoes sim
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (confirmado em `sg_toggle_switch.dart`)
-- `onChange(bool)`: ao alternar (clique, toque, Espaço ou Enter), com o novo estado. Dentro de formulário o valor também é gravado (`setValue`). `disabled` e `readOnly` impedem alternar.
+- `onChange(bool)`: ao alternar (clique, toque, Espaço ou Enter), com o novo estado. Dentro de formulário o valor também é gravado (`setValue`). `enabled: false` e `readOnly` impedem alternar.
 - `onValidation(String?)`: com a mensagem de erro (ou `null`) a cada validação. `validation(bool)` devolve a mensagem; `validateOnBlur` vale `true` quando omitido.
 
 **Estado e formulário**
 - `checked` controlado quando não nulo (mudar `checked` reinicia o estado interno com `checked ?? defaultChecked ?? false`); `defaultChecked` é o inicial.
-- Com `name`, o valor do formulário é um `bool` (inicial `defaultChecked ?? false`). É o único do grupo que registra um **`validator` próprio** (`_formValidate`, com `required`, `requiredMessage` e `validation`; campo desabilitado nunca falha), além de `rules` com `required` mesclado. Ao perder o foco chama `markTouched` e `trigger([name])`.
+- Com `name`, o valor do formulário é um `bool` (inicial `defaultChecked ?? false`). É o único do grupo que registra um **`validator` próprio** (`_formValidate`, com `required`, `requiredMessage` e `validation`; campo desabilitado nunca falha), além da mensagem de obrigatório registrada em `registerField(required:)`. Ao perder o foco chama `markTouched` e `trigger([name])`.
 - Fora de formulário, implementa `SgSelfValidating` e se registra no `SgValidationScope` (etapa do `SgWizard`): `validateNow()`.
 - `SgSwitch` é um `typedef` para `SgToggleSwitch` (como o alias do React).
 
@@ -819,9 +819,9 @@ Controle de avaliacao ordinal para notas, estrelas e feedback rapido do usuario.
 - `onChange(num)`: a cada nota nova (clique na estrela, teclado, ou o botão de cancelar que grava `0`). `allowHalf` aceita meia nota ao clicar na metade esquerda da estrela.
 - `onHover(num?)`: com a nota sob o ponteiro e `null` ao sair.
 
-**Estado e formulário:** `value` (padrão `0`) é atualizado quando a prop muda; sem formulário o estado é interno. Com `name`, o valor do formulário é a nota (inicial **`null`**, como o React, então `required` falha até haver nota) e o widget registra `rules` com `required` mesclado (mensagem i18n `components.rating.required`). Implementa `SgSelfValidating` (etapa do `SgWizard` fora de formulário). `cancel` (padrão `true`) mostra o botão que zera, com `Tooltip` i18n (`components.rating.cancel`); `showTooltip` mostra dica por estrela.
+**Estado e formulário:** `value` (padrão `0`) é atualizado quando a prop muda; sem formulário o estado é interno. Com `name`, o valor do formulário é a nota (inicial **`null`**, como o React, então `required` falha até haver nota) e o widget registra a mensagem de obrigatório (`requiredMessage` ou o texto i18n `components.rating.required`, só quando `required: true`). Implementa `SgSelfValidating` (etapa do `SgWizard` fora de formulário). `cancel` (padrão `true`) mostra o botão que zera, com `Tooltip` i18n (`components.rating.cancel`); `showTooltip` mostra dica por estrela.
 
-**Acessibilidade e teclado:** `Semantics(label, value, increasedValue, decreasedValue, onIncrease, onDecrease)` no conjunto, o que permite ajustar a nota por tecnologia assistiva. Teclado (com o foco no conjunto): →/↑ somam um passo (1 ou 0,5), ←/↓ subtraem, Home zera, End vai ao máximo. `disabled`/`readOnly` desligam a interação.
+**Acessibilidade e teclado:** `Semantics(label, value, increasedValue, decreasedValue, onIncrease, onDecrease)` no conjunto, o que permite ajustar a nota por tecnologia assistiva. Teclado (com o foco no conjunto): →/↑ somam um passo (1 ou 0,5), ←/↓ subtraem, Home zera, End vai ao máximo. `enabled: false` ou `readOnly` desligam a interação.
 
 ## SgSlider
 
@@ -866,7 +866,7 @@ Controle deslizante para ajuste numerico continuo dentro de um intervalo definid
 **Eventos e callbacks** (confirmado em `sg_slider.dart`)
 - `onChange(num)`: a cada alteração feita pelo usuário no `Slider` (`onChanged`), com o valor limitado a `minValue..maxValue`; valor inteiro sai como `int`.
 
-**Estado e formulário:** `value` controlado quando não nulo; sem ele o estado interno parte de `defaultValue ?? minValue` (limitado ao intervalo). `step` (padrão 1) define as `divisions` (`range / step`, no mínimo 1); com `minValue == maxValue` o controle fica desabilitado. Com `name`, o valor do formulário é o número (inicial `minValue`); registra apenas `rules` (não há `required` neste componente nem `validator`).
+**Estado e formulário:** `value` controlado quando não nulo; sem ele o estado interno parte de `defaultValue ?? minValue` (limitado ao intervalo). `step` (padrão 1) define as `divisions` (`range / step`, no mínimo 1); com `minValue == maxValue` o controle fica desabilitado. Com `name`, o valor do formulário é o número (inicial `minValue`); registra o campo só com `initialValue: minValue` (não há `required` neste componente nem `validator`).
 
 **Acessibilidade e teclado:** `ariaLabel` vira `Semantics(label:)` em volta do `Slider`; o `semanticFormatterCallback` é `null`. Teclas e semântica de valor são as do `Slider` do Material (não verificado neste código). A mensagem de erro aparece em texto abaixo.
 
@@ -912,7 +912,7 @@ Campo numerico com botoes de incremento e decremento para ajuste discreto de qua
 **Eventos e callbacks** (confirmado em `sg_stepper_input.dart`)
 - `onChange(num)`: a cada mudança, vinda dos botões, das setas ↑/↓ do teclado ou da digitação; o valor é sempre limitado a `minValue..maxValue`. Texto vazio vira `0` (depois limitado); texto que não é número finito é ignorado.
 
-**Estado e formulário:** `value` controlado quando não nulo; sem ele parte de `defaultValue ?? minValue`. `step` (padrão 1) é o passo dos botões e das setas. Com `name`, o valor do formulário é o número (sem formulário preenchido, o campo mostra `minValue`); registra apenas `rules` (sem `required` nem `validator` próprios). Ao perder o foco chama `markTouched` e `trigger([name])`. `readOnly`/`disabled` bloqueiam os botões.
+**Estado e formulário:** `value` controlado quando não nulo; sem ele parte de `defaultValue ?? minValue`. `step` (padrão 1) é o passo dos botões e das setas. Com `name`, o valor do formulário é o número (sem formulário preenchido, o campo mostra `minValue`); registra o campo só com o nome (`registerField(name)`, sem `required` nem `validator` próprios). Ao perder o foco chama `markTouched` e `trigger([name])`. `readOnly` ou `enabled: false` bloqueiam os botões.
 
 **Acessibilidade e teclado:** os botões de aumentar e diminuir são `Semantics(button, enabled, label)` com textos i18n (`components.inputs.stepper.increase` e `.decrease`) e ficam desabilitados nos limites; `ariaLabel` vira o `Semantics.label` do campo. No campo, ↑ soma e ↓ subtrai um `step`; o teclado de celular é numérico (com sinal quando `minValue < 0`).
 

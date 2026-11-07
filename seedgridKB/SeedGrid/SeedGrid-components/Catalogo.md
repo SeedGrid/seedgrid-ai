@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-04
+analisado-em: 2026-11-07
 gerado-por: scripts/kb-catalogs.mjs --only catalogo
 ---
 
@@ -51,7 +51,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 |---|---|---|---|---|---|---|
 | Inputs de texto e documentos | 15 | 15 | 0 | 0 | 27 | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos\|Exemplos]] |
 | Inputs de seleção e valores | 14 | 14 | 0 | 0 | 51 | [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Exemplos\|Exemplos]] |
-| Data e hora, imagem e câmera | 4 | 2 | 2 | 0 | 0 | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 4 | 2 | 2 | 0 | 1 | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
 | Tabela de dados | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 1 | 0 | 0 | 7 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 3 | 0 | 0 | 10 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
@@ -61,7 +61,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 10 | 0 | 0 | 90 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
-| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 12 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
+| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
 | **Total Flutter** | **94** | **92** | **2** | **0** | **406** |  |
 
 ## Inputs de texto e documentos — React
@@ -484,6 +484,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgFileUpload` | parcial | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (mediaType), valida o tipo pelo… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgImageUpload` | parcial | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles > 1), dimensão mínima e… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgCameraCapture` | portado | Pré-visualização da câmera com guia de enquadramento, troca frontal/traseira e captura em JPEG | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
+| `SgColorPicker` | só Flutter | Seletor de cor #RRGGBB: área de saturação e brilho com barra de matiz (ou três sliders), campo hex… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 
 ## Tabela de dados — Flutter
 
@@ -912,7 +913,6 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 |---|---|---|---|
 | `SgForm` | apoio, substitui useForm | Mantém o SgFormController acessível aos campos e envia com Enter ou botão submit | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SgFormController` | apoio, substitui useForm | Guarda valores, regras, erros e estado do formulário: setValue, trigger, reset, handleSubmit | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
-| `SgRules` | apoio, equivalente ao React | Regras de campo no estilo RegisterOptions do react-hook-form (required, min, max, pattern, validate) | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SgValidationScope` | apoio, só no Flutter | Registra campos sem formulário para o SgWizard validá-los ao avançar de etapa | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SgComponentsI18nProvider` | portado | Define o idioma (5 embutidos) e as mensagens dos componentes abaixo dele | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `setComponentsI18n` | apoio, equivalente ao React | Define o idioma e as mensagens globais dos componentes, fora de árvore de widgets | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |

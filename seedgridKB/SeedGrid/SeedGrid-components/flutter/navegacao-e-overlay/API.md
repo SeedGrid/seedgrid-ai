@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, navegacao-
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Navegação, overlay e wizard (Flutter)
@@ -61,7 +61,7 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 
 ### Eventos, controllers e acessibilidade
 
-**Eventos e callbacks** (Confirmado em `packages/seedgrid_components/lib/src/menus/dock_menu/sg_dock_menu.dart`): o widget não tem callbacks próprios; o clique é por item (`SgDockMenuItem.onClick`, não chamado se `disabled`).
+**Eventos e callbacks** (Confirmado em `packages/seedgrid_components/lib/src/menus/dock_menu/sg_dock_menu.dart`): o widget não tem callbacks próprios; o clique é por item (`SgDockMenuItem.onClick`, não chamado se `enabled` for `false`).
 
 **Controller, formulário e estado**: sem controller. Com `enableDragDrop: true` e `dragId`, a posição é lida e gravada por `SgEnvironmentProvider` (`useSgPersistence`) ou por `SharedPreferences`, na chave de `buildDockMenuStorageKey`. O menu de contexto (`onSecondaryTapDown` ou `onLongPress`) abre um `showDialog` com Cancelar e Confirmar que apaga a posição salva, só quando `enableDragDrop` está ligado, há `dragId` e existe posição salva (`buildDockMenuContextMenuState`). Símbolos públicos: `SgDockMenuItem`, `SgDockMenuOffset`, `SgDockMenuDragPosition`, `SgDockMenuOrientation`, `buildDockMenuStorageKey`.
 
@@ -119,7 +119,7 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 **Eventos e callbacks** (Confirmado em `packages/seedgrid_components/lib/src/overlay/sg_popup.dart`, `_SgPopupState`)
 - `onOpenChange(bool)`: a cada mudança pedida (clique fora, Esc, ação com `closeOnClick`).
 - `onOpen` / `onClose`: depois que o estado de aberto mudou de fato (via `addPostFrameCallback`), como o efeito do React. O estado inicial não conta como transição.
-- `SgPopupAction.onClick`: ao tocar a ação; fecha o popup se `closeOnClick` (padrão `true`). Ação `disabled` não dispara.
+- `SgPopupAction.onClick`: ao tocar a ação; fecha o popup se `closeOnClick` (padrão `true`). Ação com `enabled: false` não dispara.
 
 **Controller, formulário e estado**: controlado quando `open` é `bool`; senão usa `defaultOpen`. O painel é desenhado no `Overlay` raiz (`OverlayPortal`), posicionado por `computePopupPosition` (`placement` `auto`, `preferPlacement`, `align`, `offset`, `padding`) e reposicionado quando um `Scrollable` ancestral da âncora rola. Clique fora e Esc são escutados globalmente (`pointerRouter` e `HardwareKeyboard`), sem bloquear o que está atrás.
 

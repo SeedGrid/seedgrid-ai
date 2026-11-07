@@ -18,8 +18,8 @@ analisado-em: 2026-10-30
 |---|---|---|
 | `<SgButton>`, `<SgInputText>`… | mesmo nome de widget, mesmas props e valores | README; ADR 50 |
 | `onChange`, `onSelect`, `onClick` | mesmo nome (`onChange`, **não** `onChanged`) | ADR 50 item 1 |
-| `disabled` | `disabled` | ADR 50 item 2 |
-| `enabled={x}` (alguns inputs) | `disabled: !x` | ADR 50 item 2 |
+| `enabled` | `enabled` (mesmo nome e mesmo valor; P149 trocou o `disabled` antigo) | ADR 50 item 2; P149 |
+| `disabled` (código antigo) | `enabled: false`; o Flutter não tem `disabled` nos componentes (só em campo de item interno que o código ainda declara, como em itens de lista) | ADR 50 item 2; P149 |
 | `className`, `style` | não existem; use `width`, `height`, `padding`, `customColors`… | ADR 50 item 5 |
 | `width`, `height`, `padding` | mesmos nomes; `num` (px) ou texto `'Npx'`, `'N%'`, `'Nrem'` conforme o componente | ADR 50 item 5; `layout/basic/sg_grid.dart`, `sg_group_box.dart` |
 | string literal (`severity="danger"`) | enum (`SgSeverity.danger`) | ADR 50 item 3; `generated/enums.g.dart` |
@@ -34,15 +34,15 @@ analisado-em: 2026-10-30
 
 ## E o formulário (react-hook-form → SgForm)?
 
-Contrato próprio, sem dependência externa: `SgForm` + `SgFormController` + `SgRules`; o campo se liga por `name` + `control` (ADR 49).
+Contrato próprio, sem dependência externa: `SgForm` + `SgFormController` (o `SgRules` e a prop `rules` foram removidos, P153.F2.T3); o campo se liga por `name` + `control` (ADR 49).
 
 | React | Dart | Origem |
 |---|---|---|
 | `useForm({ defaultValues })` | `SgFormController(defaultValues: {...})` | ADR 49; `form/sg_form.dart` |
 | `control={control}` e `name="x"` | `control: form`, `name: 'x'` | ADR 49 item 3 |
 | `register={register}` | **não existe** (todo campo é controlado) | ADR 49 item 4 |
-| `rules={{ required: 'msg', maxLength: {value: 10, message: 'm'} }}` | `rules: SgRules(required: 'msg', maxLength: SgRuleValue(10, 'm'))` | ADR 49 item 2; `form/sg_rules.dart` |
-| `required` no componente | `required: true` (+ `requiredMessage`); vira a regra com mensagem i18n | ADR 49 item 5; `mergeRequiredRule` |
+| `rules={{ required: 'msg', maxLength: {value: 10, message: 'm'} }}` | sem `rules` no Flutter: use as props diretas do componente (`required: true`, `requiredMessage: 'msg'`, `maxLength: 10`, `maxLengthMessage: 'm'`, `validation`; as que existirem em cada componente, ver a API do grupo); removido na P153.F2.T3 | ADR 49 (nota de 2026-11-07); `form/sg_form.dart` |
+| `required` no componente | `required: true` (+ `requiredMessage`); o componente registra o obrigatório no controller (`registerField(required: mensagem)`) com mensagem i18n | ADR 49 item 5; `form/sg_form.dart` |
 | `watch("x")` | `form.watch('x')` (só lê); para redesenhar use `ListenableBuilder(listenable: form, ...)` | `form/sg_form.dart` |
 | `watch()` / `getValues()` | `form.getValues()` (mapa imutável) | `form/sg_form.dart` |
 | `setValue`, `reset`, `trigger`, `setError`, `clearErrors` | mesmos nomes; `setValue` e `trigger` devolvem `Future` | `form/sg_form.dart` |
@@ -51,7 +51,7 @@ Contrato próprio, sem dependência externa: `SgForm` + `SgFormController` + `Sg
 | `handleSubmit(onValid, onInvalid)` | `form.handleSubmit(onValid, onInvalid)` **executa na hora** e devolve `Future<void>` (não devolve callback); num botão: `onClick: () => form.handleSubmit(cb)` **(T8.2)** | `form/sg_form.dart`; `test/familiarity/formulario_screen.dart` |
 | botão `type="submit"` fora de um `<form>` | `SgButton(type: SgButtonType.submit)` sem `SgForm` ancestral lança `FlutterError` ("precisa estar dentro de um SgForm"); antes não fazia nada **(ajuste T8.2)** | `buttons/sg_button.dart` (usa `SgForm.submitOf`); `form/sg_form.dart` (`submitOf`) |
 | Enter num `<input>` dentro do `<form>` envia | `SgForm` envia no Enter de campo de uma linha (`EditableText` com `maxLines == 1`) quando há `SgButton(type: submit)` dentro dele ou `onValid`/`onInvalid`; `SgInputTextArea` (multilinha) não; `submitOnEnter: false` desliga. Só a tecla Enter/numpad Enter (o "concluir" do teclado de tela não é interceptado por este código) **(ajuste T8.2)** | `form/sg_form.dart` (`submitOnEnter`, `_onKey`); `packages/seedgrid_components/test/widgets/sg_familiarity_fixes_test.dart` |
-| validador próprio de um campo customizado | `form.registerField('x', rules: ..., initialValue: ..., validator: (value) => 'mensagem' ou null)`; `typedef SgFieldValidator = FutureOr<String?> Function(Object? value)`; `form.unregisterValidator('x', validator)` no `dispose` (só remove se ainda for o mesmo validador). Não existe no react-hook-form | `form/sg_form.dart` (`registerField`, `unregisterValidator`, `SgFieldValidator`); `docs/DIVERGENCIAS_DO_REACT.md` decisão 2 |
+| validador próprio de um campo customizado | `form.registerField('x', required: 'mensagem', initialValue: ..., validator: (value) => 'mensagem' ou null)`; `typedef SgFieldValidator = FutureOr<String?> Function(Object? value)`; `form.unregisterValidator('x', validator)` no `dispose` (só remove se ainda for o mesmo validador). Não existe no react-hook-form | `form/sg_form.dart` (`registerField`, `unregisterValidator`, `SgFieldValidator`); `docs/DIVERGENCIAS_DO_REACT.md` decisão 2 |
 | `onSubmit(data)` recebe objeto | recebe `Map<String, Object?>` | `form/sg_form.dart` (`SgSubmitValid`) |
 
 ## E a tabela (SgDatatable)?
@@ -83,7 +83,7 @@ Decisões do dono de 2026-10-25 (`docs/DIVERGENCIAS_DO_REACT.md`, ADR 52) e dema
 | Assunto | Dart | Origem |
 |---|---|---|
 | `onChange`/`onValueChange` do usuário dentro de formulário | sempre chamado, esteja o campo ligado ao formulário ou não (o React o troca pelo `field.onChange`: Combobox, Autocomplete, MultiSelect, Slider...). Mudar o valor por fora (`setValue`, `reset`, prop `value`) continua sem chamar `onChange`, como no React. Na varredura só `SgMultiSelect` e `SgMultiSelectChips` ainda engoliam o callback e foram corrigidos | `docs/DIVERGENCIAS_DO_REACT.md` decisão 1; ADR 52 item 2; `test/widgets/sg_multi_select_test.dart` |
-| validadores do componente (CPF, CNPJ, e-mail, telefone, CEP, datas, senha, número, OTP...) | `handleSubmit` e `trigger` rodam também o validador do componente, o mesmo do blur; as `rules` rodam primeiro e vencem (erro do validador tem `type: 'validate'`); `trigger()` sem nomes cobre campos com `rules` e com validador; campo desabilitado nunca falha; vazio e não obrigatório não falha; `reset()` limpa os erros. Mecanismo: `SgFormController.registerField(name, validator:)` e `unregisterValidator` | `docs/DIVERGENCIAS_DO_REACT.md` decisão 2; ADR 52 item 3; `form/sg_form.dart`; `test/form/sg_form_component_validators_test.dart` |
+| validadores do componente (CPF, CNPJ, e-mail, telefone, CEP, datas, senha, número, OTP...) | `handleSubmit` e `trigger` rodam também o validador do componente, o mesmo do blur; o erro de `required` roda primeiro e vence (erro do validador tem `type: 'validate'`); `trigger()` sem nomes cobre campos obrigatórios e com validador; campo desabilitado nunca falha; vazio e não obrigatório não falha; `reset()` limpa os erros. Mecanismo: `SgFormController.registerField(name, validator:)` e `unregisterValidator` | `docs/DIVERGENCIAS_DO_REACT.md` decisão 2; ADR 52 item 3; `form/sg_form.dart`; `test/form/sg_form_component_validators_test.dart` |
 | `required` em CPF, CNPJ, CPF/CNPJ, CEP e data de nascimento | o React não repassa `required` ao input interno; no Dart o validador do componente também confere o obrigatório, então "obrigatório e vazio" falha no envio | `docs/DIVERGENCIAS_DO_REACT.md` decisão 2 |
 | validação com `validateWithViaCep` / `validateWithPublicaCnpj` ligados | o envio dispara a consulta de rede (memorizada pelo último valor) se o campo ainda não foi validado; validadores assíncronos são aguardados em sequência | `docs/DIVERGENCIAS_DO_REACT.md` ("Riscos conhecidos") |
 | campo com valor inicial/`setValue` | mostra sempre o valor mascarado | `docs/VALOR_PROGRAMATICO.md` (D1) |

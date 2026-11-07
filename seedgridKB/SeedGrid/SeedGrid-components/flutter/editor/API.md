@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, editor, ap
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # API — Editor de texto rico (Flutter)
@@ -59,7 +59,7 @@ Editor de texto rico para conteudo formatado, comentarios elaborados e edicao te
 - **Limites do modelo Delta (linear):** `<br>` vira U+2028; item de lista com vários parágrafos vira um item com quebra suave; citação com lista, título ou outra citação aninhada é achatada; título dentro de item de lista vira item comum; bloco de código perde marcas internas (o TipTap também as descarta).
 - **Não portado:** regras de markdown (`# `, `- `, `1. `, `> `); só valem os atalhos do próprio `flutter_quill` (incluindo Ctrl+Z).
 - Cor do texto e destaque por seletor próprio (paleta + `#rrggbb`) no lugar do `<input type="color">`; diálogos próprios de link e imagem no lugar de `window.prompt` (cancelar não remove o link).
-- `disabled` é reativo (no React só vale na criação); `onSave` recebe `SgTextEditorFile` no lugar de `File`; Salvar e Carregar HTML usam `file_picker` (extra `htmlFilePicker`).
+- `disabled` do React foi substituído por `enabled`, que é reativo (no React só vale na criação); `onSave` recebe `SgTextEditorFile` no lugar de `File`; Salvar e Carregar HTML usam `file_picker` (extra `htmlFilePicker`).
 - Não testado em dispositivo nem com IME; sem `className`/`style` (ADR 50).
 - Defeitos do React registrados (não corrigidos no React; o Dart mostra o placeholder): ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]].
 
@@ -75,14 +75,14 @@ Editor de texto rico para conteudo formatado, comentarios elaborados e edicao te
 
 **Controlado, formulário e estado**
 - `valueHtml` controla o conteúdo; `defaultValueHtml` só inicializa. `valueHtml` voltando a `null` depois de ter valor limpa o editor.
-- Com `name` e um `SgForm` (ou `control`), o campo se registra com `rules` (`registerField`), o valor do formulário manda e cada edição faz `setValue` (revalidando se já há erro ou envio). O componente **não** registra validador próprio, só as `rules`. O documento vazio vale `<p></p>`, então `required` passa depois de digitar e apagar tudo (pegadinha herdada do React).
+- Com `name` e um `SgForm` (ou `control`), o campo se registra no formulário só pelo nome (`registerField(name)`, sem regras), o valor do formulário manda e cada edição faz `setValue` (revalidando se já há erro ou envio). O componente **não** tem props de validação (`required`, `minLength` etc.) nem registra validador próprio; a prop `rules` e o `SgRules` foram removidos do Flutter (substituídos por props diretas nos demais campos, mas não aqui). Um erro só aparece pela prop `error` ou por um erro que o formulário já tenha para o `name`. O documento vazio vale `<p></p>` (não é string vazia), pegadinha herdada do React.
 - Não há controller próprio; o `QuillController` é interno.
 - `error` e o erro do formulário são combinados por `resolveFieldError`.
 
 **Conversor HTML** (`SgTextEditorHtml`, `sg_text_editor_html.dart`): `toDelta`/`fromDelta` para o corpo e `parseDocument`/`buildDocument` para o documento completo; marcas na ordem do esquema do TipTap.
 
 **Acessibilidade**
-- Área de edição: `Semantics(label: i18n 'components.textEditor.editorAriaLabel', textField: true, multiline: true, readOnly: disabled)`.
+- Área de edição: `Semantics(label: i18n 'components.textEditor.editorAriaLabel', textField: true, multiline: true, readOnly: !enabled)`.
 - Barra: botões com `Semantics` e `Tooltip` (`sg_text_editor_toolbar.dart`); amostras de cor com `Semantics(button: true, label: <cor>)`.
 - Alvos de toque de 44 px abaixo de 600 px de largura (36 px acima).
 - Atalho próprio: Shift+Enter insere quebra suave; os demais são os do `flutter_quill`.

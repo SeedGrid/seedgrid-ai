@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-sel
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Inputs de seleção e valores — Flutter (`seedgrid_components`)
@@ -148,6 +148,6 @@ Extraído por script dos arquivos exportados pelo `seedgrid_components.dart`, **
 
 - Não executei `flutter test`, `flutter analyze` nem o showcase; as notas vêm da leitura do código no commit `e9989b8`. Os exemplos são os trechos do showcase (compilados pelo `flutter test` do repositório, não por mim): conferi por script que todo argumento nomeado dos exemplos existe no construtor do widget, sem checar tipos.
 - Teclas e semântica internas do `Slider` do Material (`SgSlider`) e a semântica exposta pelo `SgInputText` interno (`SgCombobox`, `SgAutocomplete`, `SgMultiSelect`) **não foram confirmadas**.
-- Se `required` de `SgCombobox` e `SgPeriodSelector` falha no envio quando só o prop `required` é usado: a leitura aponta que não (o `required` só chega ao campo interno sem `name`), mas **não rodei** o cenário; para exigir o campo, o caminho confirmado é `rules`.
+- Se `required` de `SgPeriodSelector` falha no envio: pela leitura do código não (o `required` só chega ao combobox interno, sem `name`; o widget registra o campo só com `initialValue`), mas **não rodei** o cenário. Em `SgCombobox` o código registra a mensagem de obrigatório no formulário (`requiredMessageFor`), então `required: true` vale no `handleSubmit`; também **não rodei** o cenário.
 - Padrões marcados com † na API são os do contrato React; não confirmei, componente a componente, onde o widget os aplica.
 - Os textos de períodos e recortes do ano vêm de mapas embutidos sem acento (cinco idiomas no `SgYearPartSelector`: pt-BR, en-US, es, pt-PT e fr).

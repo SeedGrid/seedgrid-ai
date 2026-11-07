@@ -54,7 +54,7 @@ import { SgDockMenu, type SgDockMenuItem } from "@seedgrid/fe-components";
 const items: SgDockMenuItem[] = [
   { id: "home", icon: <Home size={24} />, label: "Home" },
   { id: "mail", icon: <Mail size={24} />, label: "Mail", badge: 5 },
-  { id: "settings", icon: <Settings size={24} />, label: "Settings", disabled: true }
+  { id: "settings", icon: <Settings size={24} />, label: "Settings", enabled: false }
 ];
 
 export default function Example() {

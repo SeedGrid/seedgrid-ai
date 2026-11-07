@@ -90,7 +90,7 @@ SizedBox(
             id: 'lock',
             icon: const Icon(Icons.lock),
             label: 'Bloqueado',
-            disabled: true,
+            enabled: false,
           ),
         ],
       ),
@@ -212,7 +212,7 @@ Row(
         ),
         SgPopupAction(
           label: 'Indisponível',
-          disabled: true,
+          enabled: false,
         ),
         SgPopupAction(
           label: 'Excluir',
@@ -604,13 +604,10 @@ SgWizard(
         name: 'email',
         control: _form,
         labelText: 'E-mail',
-        rules: SgRules(
-          required: 'Informe o e-mail',
-          pattern: SgRuleValue(
-            RegExp(r'.+@.+\..+'),
-            'E-mail inválido',
-          ),
-        ),
+        required: true,
+        requiredMessage: 'Informe o e-mail',
+        validation: (v) =>
+            RegExp(r'.+@.+\..+').hasMatch(v) ? null : 'E-mail inválido',
       ),
     ),
   ],

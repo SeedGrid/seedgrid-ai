@@ -211,7 +211,7 @@ if (doFlutter) {
           if (dd === null && dk !== '—' && !/^(null|\(sem padr)/i.test(dk)) add(s.nome, 'flutter', grupo, 'padrao', `${nome} (linha ${r.n}): construtor sem padrão × KB ${dk}`);
         }
         const omitidas = new Set(['key', 'className', 'style']);
-        for (const n of params.keys()) if (!s.props.has(n) && !nomesManifesto.has(n) && !omitidas.has(n)) add(s.nome, 'flutter', grupo, 'extra-nova', `${n}: parâmetro do construtor Dart sem linha na KB`);
+        for (const n of (mp ? params.keys() : [])) if (!s.props.has(n) && !nomesManifesto.has(n) && !omitidas.has(n)) add(s.nome, 'flutter', grupo, 'extra-nova', `${n}: parâmetro do construtor Dart sem linha na KB`);
       }
     }
   }
@@ -272,10 +272,14 @@ if (flag('json')) {
 } else {
   for (const x of lista) {
     if (!x.itens.length) { if (only) console.log(`${x.componente} (${x.plataforma}, ${x.grupo}): ok`); continue; }
-    console.log(`${x.componente} (${x.plataforma}, ${x.grupo}): ${x.itens.length} divergência(s)`);
+    const av = x.itens.length - contam(x);
+    if (!contam(x) && !only) continue; // só avisos: não lista (use o nome do componente para vê-los)
+    console.log(`${x.componente} (${x.plataforma}, ${x.grupo}): ${contam(x)} divergência(s)${av ? `, ${av} aviso(s)` : ''}`);
     if (!flag('resumo')) for (const it of x.itens) console.log(`  [${it.tipo}] ${it.texto}`);
   }
   if (exemplos.length) { console.log(`Exemplos com legado: ${exemplos.length}`); if (!flag('resumo')) exemplos.forEach((e) => console.log(`  ${e}`)); }
-  console.log(`${lista.length} componente(s) conferido(s), ${comDiv.length} com divergência, ${total} divergência(s) no total`);
+  const comProblema = comDiv.filter((x) => contam(x)).length;
+  const avisos = comDiv.reduce((s, x) => s + x.itens.length - contam(x), 0);
+  console.log(`${lista.length} componente(s) conferido(s), ${comProblema} com divergência, ${total} divergência(s) no total, ${avisos} aviso(s) (conferir/sem-manifesto)`);
 }
 process.exit(total ? 1 : 0);

@@ -1,74 +1,153 @@
 ---
-description: "API Flutter de Data e hora, imagem e câmera: construtor, parâmetros com tipo e padrão, origem (React ou extra do Flutter), diferenças do React, callbacks, enums e erros de SgInputDateTime, SgImageUpload e SgCameraCapture."
+description: "API Flutter de Data e hora, arquivo, imagem, câmera e seletor de cor: construtor, props com tipo e padrão, origem (React ou extra do Flutter), diferenças do React, callbacks, enums e erros de SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture e SgColorPicker."
 tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-midia, api]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e5e8baf
-analisado-em: 2026-11-04
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
-# API — Data e hora, imagem e câmera (Flutter)
+# API — Data e hora, arquivo, imagem, câmera e cor (Flutter)
 
-> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-midia/API|API — Data e hora, imagem e câmera (React)]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos]].
+> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-midia/API|API — Data e hora, imagem e câmera (React)]] (o `SgColorPicker` só existe no Flutter). Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos]].
 
-> **Como ler as tabelas.** Montadas a partir dos construtores Dart (commit `6a35c93`). Os nomes e os padrões são os do React; o contrato gerado fica em `lib/src/generated/sg_input_date_time.g.dart`, `sg_file_upload.g.dart`, `sg_image_upload.g.dart` e `sg_camera_capture.g.dart`. Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
+> **Como ler as tabelas.** Montadas a partir do manifesto do Flutter e dos construtores Dart: o **tipo** é o do campo `final` do widget; o **padrão** é o do construtor (`this.x = valor`) e, quando o construtor não declara, o do contrato gerado do React (marcado com †); **Origem** = `React` (prop do contrato, nome igual ao do React) ou `Flutter` (extra do Dart, como `picker`, `backend`). O contrato gerado fica em `lib/src/generated/sg_input_date_time.g.dart`, `sg_file_upload.g.dart`, `sg_image_upload.g.dart` e `sg_camera_capture.g.dart`; o `SgColorPicker` não tem contrato gerado (props escritas à mão em `sg_color_picker_props.dart`). Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
+
+> **Validação por props diretas.** Não existem mais `SgRules` nem a prop `rules` no Flutter (removidos na P153.F2.T3): a validação usa props como `required`, `requiredMessage` e `validation`. A inversão `disabled` foi substituída por `enabled` (P149), igual ao React.
 
 ## SgInputDateTime
 
 > **Flutter** · estado de paridade: **portado** · equivalente React: `SgInputDateTime` (mesmo nome).
 
-- Arquivo: `packages/seedgrid_components/lib/src/inputs/masked/sg_input_date_time.dart` · classe `SgInputDateTime extends StatefulWidget`; lógica pura em `sg_date_time_logic.dart`.
-- Aceita as props de texto/rótulo do contrato (`labelText`, `labelPosition`, `placeholder`, `hintText`, `clearButton`, `elevation`, `borderRadius`, `readOnly`, `disabled`, `required`, `rules`, `name`/`control`, `onEnter`, `onExit`, …).
+Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto no idioma ativo e a hora no fuso escolhido.
 
-| Parâmetro | Tipo | Padrão | Origem | Descrição |
-|---|---|---|---|---|
-| `id` | `String` | obrigatório | React | Identificador único. |
-| `value` | `Object?` | — | React | Instante controlado: `String` ISO 8601 ou `DateTime`. |
-| `defaultValue` | `Object?` | — | React | Instante inicial (não controlado). |
-| `onChange` | `void Function(String? value, String local)?` | — | React | Instante ISO 8601 UTC (ou `null`) e o texto local do campo. |
-| `minDate` / `maxDate` | `Object?` | — | React | Menor e maior instante permitidos. |
-| `timeZone` | `String?` | `local` | React | `local`, `UTC` ou deslocamento fixo (`-03:00`). Nome IANA cai em `local`. |
-| `showSeconds` | `bool?` | `false` | React | Mostra e aceita segundos. |
-| `minuteStep` | `int?` | — | React | Passo dos minutos. Ignorado com `showSeconds`. |
-| `control` / `name` | `SgFormController?` / `String?` | — | React | Ligação com o formulário; `rules` rodam no submit. |
-| `alwaysFloat` | `bool?` | — | React | **Sem efeito** no Flutter. |
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/masked/sg_input_date_time.dart` · classe `class SgInputDateTime extends StatefulWidget implements SgInputDateTimeProps`; lógica pura em `sg_date_time_logic.dart`.
+- Construtor: `const SgInputDateTime({...})` com 51 parâmetros nomeados, 49 do contrato React e 2 extras do Flutter (`autofocus`, `focusNode`).
+
+### Props de SgInputDateTime
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `alwaysFloat` | `bool?` | — | não | React | Sem efeito: o rotulo do campo de data e hora e sempre estatico (igual ao React). |
+| `borderRadius` | `num?` | — | não | React | — |
+| `clearButton` | `bool?` | — | não | React | — |
+| `control` | `SgFormController?` | — | não | React | — |
+| `defaultValue` | `Object?` | — | não | React | Instante inicial (nao controlado). |
+| `elevation` | `SgInputDateTimeElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
+| `enabled` | `bool?` | — | não | React | — |
+| `error` | `String?` | — | não | React | — |
+| `filled` | `bool?` | — | não | React | — |
+| `hintText` | `String?` | — | não | React | — |
+| `iconButtons` | `List<Widget>?` | — | não | React | — |
+| `id` | `String` | — | sim | React | Identificador unico do campo. |
+| `inputProps` | `Object?` | — | não | React | Atributos do <input> do React: sem equivalente em Flutter. Ignorado. |
+| `label` | `String?` | — | não | React | Rotulo principal exibido ao usuario. |
+| `labelAlign` | `SgInputDateTimeLabelAlign?` | — | não | React | Valores: `start`, `center`, `end`. |
+| `labelPosition` | `SgInputDateTimeLabelPosition?` | — | não | React | Valores: `float`, `top`, `left`. |
+| `labelText` | `String?` | — | não | React | — |
+| `labelWidth` | `Object?` | — | não | React | — |
+| `maxDate` | `Object?` | — | não | React | Maior instante permitido. |
+| `maxLength` | `num?` | — | não | React | — |
+| `maxLengthMessage` | `String?` | — | não | React | — |
+| `minDate` | `Object?` | — | não | React | Menor instante permitido. |
+| `minLength` | `num?` | — | não | React | — |
+| `minLengthMessage` | `String?` | — | não | React | — |
+| `minNumberOfWords` | `num?` | — | não | React | — |
+| `minNumberOfWordsMessage` | `String?` | — | não | React | — |
+| `minuteStep` | `num?` | — | não | React | Passo dos minutos (5, 10, 15, 30). |
+| `name` | `String?` | — | não | React | Nome do campo para formularios. |
+| `onChange` | `void Function(String? value, String local)?` | — | não | React | Instante ISO UTC (ou null) e texto local do campo. |
+| `onClear` | `VoidCallback?` | — | não | React | — |
+| `onEnter` | `VoidCallback?` | — | não | React | Disparado ao receber foco — padrao seedgrid. |
+| `onExit` | `VoidCallback?` | — | não | React | Disparado ao perder o foco (apos validacao) — padrao seedgrid. |
+| `onValidation` | `ValueChanged<String?>?` | — | não | React | — |
+| `placeholder` | `String?` | — | não | React | — |
+| `prefixIcon` | `Widget?` | — | não | React | — |
+| `prefixText` | `String?` | — | não | React | — |
+| `readOnly` | `bool?` | — | não | React | — |
+| `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
+| `requiredMessage` | `String?` | — | não | React | — |
+| `showCharCounter` | `bool?` | — | não | React | — |
+| `showSeconds` | `bool?` | `false` † | não | React | Mostra e aceita segundos. |
+| `suffixText` | `String?` | — | não | React | — |
+| `textInputType` | `SgInputDateTimeTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
+| `timeZone` | `String?` | `local` † | não | React | Fuso do campo: local, UTC, deslocamento (+03:00) ou nome IANA. |
+| `validateOnBlur` | `bool?` | — | não | React | — |
+| `validation` | `String? Function(String local)?` | — | não | React | — |
+| `value` | `Object?` | — | não | React | Instante controlado (ISO 8601 ou Date). |
+| `width` | `Object?` | — | não | React | — |
+| `withBorder` | `bool?` | — | não | React | — |
+| `autofocus` | `bool` | `false` | não | Flutter | — |
+| `focusNode` | `FocusNode?` | — | não | Flutter | — |
+
+† padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
+
+### Eventos, formulário e comportamento
+
+- `onChange(String? value, String local)`: instante ISO 8601 UTC (ou `null`) e o texto local do campo. `value`/`defaultValue`/`minDate`/`maxDate` aceitam `String` ISO 8601 ou `DateTime`. `timeZone` é `local`, `UTC` ou deslocamento fixo (`-03:00`). `minuteStep` é ignorado com `showSeconds`. `alwaysFloat` não tem efeito (o rótulo é sempre estático, como no React).
+- **Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o instante ISO (texto). O campo registra um **`validator` próprio** (`_formValidate`) em `registerField`, que roda também no `handleSubmit`/`trigger`: obrigatório (`required`, com `requiredMessage` ou o texto i18n `components.inputs.required`), data válida e intervalo (`minDate`/`maxDate`); campo desabilitado nunca falha. A prop `rules` não existe mais.
+- **Idioma:** o texto exibido segue o idioma do `SgComponentsI18nProvider` (`sgDisplayDateTime`; a hora é sempre 24h).
 
 ## SgFileUpload
 
 > **Flutter** · estado de paridade: **parcial** (React tem o mesmo contrato, com arrastar e soltar e `File` do navegador) · é o componente **base** de arquivos; o `SgImageUpload` o compõe.
 
-- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_file_upload.dart`; lógica pura em `sg_file_logic.dart`. As props vêm do contrato gerado a partir do React (o contrato manual `contratos/P141-file-upload.json` foi removido; um componente futuro que nasça no Flutter precisa recriar o mecanismo). Vetores compartilhados: `test/widgets/file_upload_vectors`.
+Campo de anexo de arquivos com validação por tipo (conferido pelo conteúdo), tamanho e quantidade.
+
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_file_upload.dart` (linha 146) · classe `class SgFileUpload extends StatefulWidget implements SgFileUploadProps`; lógica pura em `sg_file_logic.dart`. As props vêm do contrato gerado a partir do React. Vetores compartilhados: `test/widgets/file_upload_vectors`.
+- Construtor: `const SgFileUpload({...})` com 30 parâmetros nomeados, 29 do contrato React e 1 extra do Flutter (`picker`).
 - **Sem retrocompatibilidade:** o valor é **sempre uma lista de `SgFile`** (um arquivo = lista de um). `SgImageFile` foi removido.
 
-| Parâmetro | Tipo | Padrão | Origem | Descrição |
-|---|---|---|---|---|
-| `id` | `String` | obrigatório | P141 | Identificador único. |
-| `label` / `labelText` | `String?` | — | P141 | Rótulo. |
-| `value` | `List<SgFile>?` | — | P141 | Arquivos controlados (sempre lista). |
-| `defaultValue` | `List<SgFile>?` | — | P141 | Arquivos iniciais (não controlado). `SgFile` com `url` mostra um arquivo já salvo. |
-| `onChange` | `ValueChanged<List<SgFile>>?` | — | P141 | Lista de arquivos **válidos** após escolher ou remover. |
-| `onError` | `void Function(SgFileError code, String message, String fileName)?` | — | P141 | Arquivo recusado; `message` traduzida. **Por arquivo**: os demais seguem válidos. |
-| `mediaType` | `List<SgMediaType>?` | todos | P141 | Tipos aceitos (`image`, `pdf`, `xlsx`…). **Conferido pelo conteúdo** (assinatura), não só pela extensão. |
-| `accept` | `String?` | — | P141 | Tipos extras em texto livre (`.pdf`, `image/png`, `image/*`), separados por vírgula. **Soma-se** ao `mediaType`. |
-| `maxFiles` | `num?` | `1` | P141 | Quantos arquivos o campo guarda. Com `1`, escolher outro **substitui**; maior que `1` liga a seleção múltipla e a grade. Não há prop `multiple`. |
-| `maxSizePerFile` | `Object?` | sem limite | P141 | Tamanho máximo de cada arquivo: **número (bytes)** ou **texto com unidade** (`"500KB"`, `"1.5MB"`, `"1GB"`). |
-| `maxSizeTotal` | `Object?` | sem limite | P141 | Tamanho máximo da soma dos arquivos (mesmo formato). |
-| `hintText` | `String?` | — | P141 | Texto de ajuda. |
-| `required` / `requiredMessage` | `bool?` / `String?` | — | P141 | Obrigatório e a mensagem. |
-| `disabled` / `readOnly` | `bool?` | — | P141 | Desabilita / só mostra. |
-| `name` / `control` / `rules` | — | — | P141 | Ligação com o formulário (`rules` no submit). |
-| `picker` | `SgFilePicker?` | seletor do sistema | **extra do Flutter** | Substitui o seletor (testes ou outra origem). |
-| `extraCheck` | `SgFileCheck?` | — | igual ao React | Regra extra por arquivo (é como o `SgImageUpload` confere dimensão e proporção). |
-| `thumbnailBuilder` / `thumbnailSize` | — | `96` px | igual ao React | Miniatura de cada arquivo. |
-| `keyPrefix`, `dropTextKey`, `dropManyTextKey`, `typeNames` | — | — | igual ao React | Chaves de widget e textos usados pela composição. |
+### Props de SgFileUpload
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `accept` | `String?` | — | não | React | Tipos extras em texto livre (.pdf, image/png, image/*), separados por virgula; soma-se ao mediaType. |
+| `control` | `SgFormController?` | — | não | React | — |
+| `defaultValue` | `List<SgFile>?` | — | não | React | Arquivos iniciais (campo nao controlado). |
+| `dropManyTextKey` | `String?` | — | não | React | — |
+| `dropTextKey` | `String?` | — | não | React | Chaves de i18n do texto da area vazia (um arquivo / varios). |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita a escolha e a remocao. |
+| `error` | `String?` | — | não | React | — |
+| `extraCheck` | `SgFileCheck?` | — | não | React | Regra extra, assincrona, por arquivo (depois da conferencia de tipo). E como o SgImageUpload confere dimensao. |
+| `hintText` | `String?` | — | não | React | — |
+| `id` | `String` | — | sim | React | Identificador unico do campo. |
+| `keyPrefix` | `String` | `'sg-file'` | não | React | Prefixo do `data-sg` dos elementos internos (`sg-file`, `sg-image`). |
+| `label` | `String?` | — | não | React | Rotulo exibido acima da area. |
+| `labelText` | `String?` | — | não | React | — |
+| `maxFiles` | `num?` | `1` † | não | React | Quantos arquivos o campo guarda. Com 1, escolher outro substitui; maior que 1 liga a selecao multipla. |
+| `maxSizePerFile` | `Object?` | — | não | React | Tamanho maximo de cada arquivo: bytes (numero) ou texto com unidade ("500KB", "1.5MB", "1GB"). |
+| `maxSizeTotal` | `Object?` | — | não | React | Tamanho maximo da soma dos arquivos: bytes (numero) ou texto com unidade. |
+| `mediaType` | `List<SgMediaType>?` | — | não | React | Tipos aceitos: image, video, audio, pdf, doc, docx, xls, xlsx, ppt, pptx, csv, txt, zip ou all. O tipo e conferido pelo conteudo do arquivo. |
+| `name` | `String?` | — | não | React | Nome do campo para formularios. |
+| `onChange` | `ValueChanged<List<SgFile>>?` | — | não | React | Lista de arquivos validos apos escolher ou remover. |
+| `onEnter` | `VoidCallback?` | — | não | React | — |
+| `onError` | `void Function(SgFileError code, String message, String fileName)?` | — | não | React | Arquivo recusado (type, size, total, count). Os demais seguem validos. |
+| `onExit` | `VoidCallback?` | — | não | React | — |
+| `readOnly` | `bool?` | — | não | React | — |
+| `required` | `bool?` | — | não | React | — |
+| `requiredMessage` | `String?` | — | não | React | — |
+| `thumbnailBuilder` | `SgFileThumbnailBuilder?` | — | não | React | Miniatura de cada arquivo (sem ela, a lista usa o icone do tipo). |
+| `thumbnailSize` | `double?` | `96` † | não | React | Lado da miniatura em px (padrao 96). |
+| `typeNames` | `String?` | — | não | React | Texto dos tipos aceitos na mensagem de tipo recusado (padrao: mediaType/accept). |
+| `value` | `List<SgFile>?` | — | não | React | Arquivos controlados (sempre lista; um arquivo = lista de um). Um arquivo ja salvo entra como { name, url }. |
+| `picker` | `SgFilePicker?` | — | não | Flutter | Extra do Flutter (nao existe no React): substitui o seletor do sistema (testes, ou outra origem de arquivo). |
+
+† padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
+
+### Eventos, formulário e comportamento
+
+- `onChange(List<SgFile>)`: lista de arquivos **válidos** após escolher ou remover. `onError(SgFileError code, String message, String fileName)`: arquivo recusado, com `message` traduzida; **por arquivo**, os demais seguem válidos.
+- `mediaType` é conferido pelo conteúdo (assinatura), não só pela extensão; `accept` (texto livre, ex.: `.pdf`, `image/png`, `image/*`, separado por vírgula) **soma-se** ao `mediaType`. Com `maxFiles` igual a `1` (padrão), escolher outro arquivo **substitui**; maior que `1` liga a seleção múltipla e a grade. Não há prop `multiple`.
+- **Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é a lista de `SgFile` (`null` quando vazia). O campo registra a mensagem de obrigatório em `registerField(required:)` quando `required: true`; o texto é `requiredMessage ?? ''`, ou seja, **sem `requiredMessage` a mensagem de obrigatório fica vazia** (o código não usa o texto i18n padrão aqui). Não registra `validator` próprio. `enabled: false` desabilita a escolha e a remoção; `readOnly` só mostra.
 
 **Tipos:**
 - `SgFile({name, bytes?, url?, mimeType?, size?})`: `bytes` para o arquivo escolhido; `url` para um já salvo; `size` é `bytes.length` quando há bytes.
 - `SgMediaType`: `image`, `video`, `audio` (**grupos**) e `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `csv`, `txt`, `zip` (**formatos**), mais `all`. Cada valor guarda extensões e MIME.
 - `SgFileError { type, size, total, count, dimension, aspect }`: `type` (fora do aceito), `size` (acima de `maxSizePerFile`), `total` (soma acima de `maxSizeTotal`), `count` (acima de `maxFiles`); `dimension` e `aspect` só no `SgImageUpload`.
 
-**Unidades de tamanho (decisão da F1):** `B`, `KB`, `MB`, `GB`, `TB`; **base 1024**; **sem diferenciar maiúscula/minúscula**; aceita decimal (`"1.5MB"`); número puro é bytes; **texto inválido = sem limite**.
+**Unidades de tamanho (decisão da F1):** `B`, `KB`, `MB`, `GB`, `TB`; **base 1024**; **sem diferenciar maiúscula/minúscula**; aceita decimal (`"1.5MB"`); número puro é bytes; **texto inválido = sem limite**. `maxSizePerFile` e `maxSizeTotal` aceitam número (bytes) ou texto com unidade.
 
 **Tipo pelo conteúdo:** sem extensão conhecida, o tipo é deduzido da **assinatura** do arquivo (png, jpeg, gif, webp, bmp, tiff, ico, avif, heic, svg), então `.jfif` e arquivos sem extensão passam (correção do commit `130d184`).
 
@@ -76,48 +155,127 @@ analisado-em: 2026-11-04
 
 > **Flutter** · estado de paridade: **parcial** (React tem o mesmo contrato, com arrastar e soltar e `File` do navegador) · **composição** do `SgFileUpload` (não herança): mesmas regras, mais as de imagem.
 
-- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_image_upload.dart` (`StatelessWidget` que monta um `SgFileUpload` com `mediaType: [image]`, miniaturas e `extraCheck`).
-- Tem as mesmas props de limite e valor do `SgFileUpload` (`value`/`defaultValue`/`onChange` em `List<SgFile>`, `maxFiles` padrão `1`, `maxSizePerFile`, `maxSizeTotal`, `onError` com o nome do arquivo, `picker`, formulário) **e** as de imagem abaixo. **`maxSizeBytes` foi removido** (agora `maxSizePerFile`).
+Campo de imagem com miniatura e validação de formato, tamanho, dimensão e proporção.
 
-| Parâmetro | Tipo | Padrão | Descrição |
-|---|---|---|---|
-| `accept` | `String?` | — | **Estreita** os formatos de imagem (`.png`, `image/jpeg`). No `SgFileUpload` o `accept` soma; aqui restringe. |
-| `minWidth` / `minHeight` | `num?` | — | Dimensão mínima em px (erro `dimension`). |
-| `aspect` | `num?` | — | Proporção largura/altura exigida (`1` = quadrada; erro `aspect`). |
-| `previewHeight` | `num?` | `160` | Altura da miniatura; na grade (vários), no máximo `120`. |
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/files/sg_image_upload.dart` (linha 18) · classe `class SgImageUpload extends StatelessWidget implements SgImageUploadProps`: monta um `SgFileUpload` com `mediaType: [image]`, miniaturas e `extraCheck`.
+- Construtor: `const SgImageUpload({...})` com 26 parâmetros nomeados, 25 do contrato React e 1 extra do Flutter (`picker`).
 
-`maxFiles > 1` mostra a **grade de miniaturas**. Sem recorte e sem compressão. Dimensão e proporção são lidas só quando há `minWidth`, `minHeight` ou `aspect`.
+### Props de SgImageUpload
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `accept` | `String?` | — | não | React | Restringe os formatos de imagem em texto livre (.png, image/jpeg), separados por virgula. |
+| `aspect` | `num?` | — | não | React | Proporcao largura/altura exigida (1 = quadrada). |
+| `control` | `SgFormController?` | — | não | React | — |
+| `defaultValue` | `List<SgFile>?` | — | não | React | Arquivos iniciais (campo nao controlado). |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita a escolha e a remocao. |
+| `error` | `String?` | — | não | React | — |
+| `hintText` | `String?` | — | não | React | — |
+| `id` | `String` | — | sim | React | Identificador unico do campo. |
+| `label` | `String?` | — | não | React | Rotulo exibido acima da area. |
+| `labelText` | `String?` | — | não | React | — |
+| `maxFiles` | `num?` | `1` † | não | React | Quantas imagens o campo guarda. Com 1, escolher outra substitui; maior que 1 liga a selecao multipla e a grade de miniaturas. |
+| `maxSizePerFile` | `Object?` | — | não | React | Tamanho maximo de cada imagem: bytes (numero) ou texto com unidade ("500KB", "2MB"). |
+| `maxSizeTotal` | `Object?` | — | não | React | Tamanho maximo da soma das imagens: bytes (numero) ou texto com unidade. |
+| `minHeight` | `num?` | — | não | React | Altura minima em px. |
+| `minWidth` | `num?` | — | não | React | Largura minima em px. |
+| `name` | `String?` | — | não | React | Nome do campo para formularios. |
+| `onChange` | `ValueChanged<List<SgFile>>?` | — | não | React | Lista de imagens validas apos escolher ou remover. |
+| `onEnter` | `VoidCallback?` | — | não | React | — |
+| `onError` | `void Function(SgFileError code, String message, String fileName)?` | — | não | React | Imagem recusada (type, size, total, count, dimension, aspect). As demais seguem validas. |
+| `onExit` | `VoidCallback?` | — | não | React | — |
+| `previewHeight` | `num?` | `160` † | não | React | Altura da miniatura em px (padrao 160; na grade, no maximo 120). |
+| `readOnly` | `bool?` | — | não | React | — |
+| `required` | `bool?` | — | não | React | — |
+| `requiredMessage` | `String?` | — | não | React | — |
+| `value` | `List<SgFile>?` | — | não | React | Imagens controladas (sempre lista; uma imagem = lista de uma). Uma imagem ja salva entra como { name, url }. |
+| `picker` | `SgFilePicker?` | — | não | Flutter | Extra do Flutter: substitui o seletor do sistema (testes, ou outra origem de arquivo). |
+
+† padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
+
+### Eventos, formulário e comportamento
+
+- Tem as mesmas props de limite e valor do `SgFileUpload` (`value`/`defaultValue`/`onChange` em `List<SgFile>`, `maxFiles` padrão `1`, `maxSizePerFile`, `maxSizeTotal`, `onError` com o nome do arquivo, `picker`, formulário) **e** as de imagem da tabela. **`maxSizeBytes` foi removido** (agora `maxSizePerFile`).
+- `accept` aqui **estreita** os formatos de imagem (`.png`, `image/jpeg`); no `SgFileUpload` ele soma.
+- **Formulário:** repassa `name`, `control`, `required` e `requiredMessage` ao `SgFileUpload` interno, então o comportamento de formulário e de `required` é o descrito lá (inclusive a mensagem de obrigatório vazia sem `requiredMessage`).
+- `maxFiles > 1` mostra a **grade de miniaturas** (altura da miniatura limitada a 120). Sem recorte e sem compressão. Dimensão (erro `dimension`) e proporção (erro `aspect`) são lidas só quando há `minWidth`, `minHeight` ou `aspect`.
 
 ## SgCameraCapture
 
 > **Flutter** · estado de paridade: **portado** · equivalente React: `SgCameraCapture` (mesmo nome).
 
-- Arquivo: `packages/seedgrid_components/lib/src/inputs/camera/sg_camera_capture.dart`; lógica pura em `sg_camera_logic.dart`.
+Captura de foto pela câmera, com guia de enquadramento e alternância entre frontal e traseira.
 
-| Parâmetro | Tipo | Padrão | Origem | Descrição |
-|---|---|---|---|---|
-| `id` | `String` | obrigatório | React | Identificador único. |
-| `label` / `labelText` | `String?` | — | React | Rótulo acima da pré-visualização. |
-| `facing` | `SgCameraCaptureFacing?` | `user` | React | `user` (frontal) ou `environment` (traseira). |
-| `guide` | `SgCameraCaptureGuide?` | `none` | React | `none`, `oval` ou `rect`. |
-| `resolution` | `SgCameraCaptureResolution?` | `medium` | React | `low`, `medium` ou `high`. |
-| `onCapture` | `ValueChanged<Uint8List>?` | — | React | Imagem **JPEG** capturada (bytes). |
-| `onError` | `void Function(SgCameraError code, String message)?` | — | React | Câmera indisponível; `message` já traduzida. |
-| `allowSwitch` | `bool?` | `true` | React | Botão de alternar frontal/traseira. |
-| `previewHeight` | `num?` | `320` | React | Altura da pré-visualização. |
-| `hintText` | `String?` | — | React | Texto de ajuda. |
-| `disabled` | `bool?` | — | React | Não abre a câmera. |
-| `backend` | `SgCameraBackend` | `SgSystemCameraBackend()` (pacote `camera`) | **extra do Flutter** | Origem da câmera, injetável nos testes. |
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/camera/sg_camera_capture.dart` (linha 158) · classe `class SgCameraCapture extends StatefulWidget implements SgCameraCaptureProps`; lógica pura em `sg_camera_logic.dart`.
+- Construtor: `const SgCameraCapture({...})` com 13 parâmetros nomeados, 12 do contrato React e 1 extra do Flutter (`backend`).
 
-**Web:** a prévia da câmera frontal é espelhada e a foto capturada **não** é; no Flutter web a câmera usa `getUserMedia` próprio (o `camera_web` falhava com câmeras virtuais paradas).
+### Props de SgCameraCapture
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `allowSwitch` | `bool?` | `true` † | não | React | Mostra o botao de alternar entre frontal e traseira. |
+| `enabled` | `bool?` | `true` † | não | React | Nao abre a camera nem permite capturar. |
+| `facing` | `SgCameraCaptureFacing?` | `user` † | não | React | Camera inicial: frontal (user) ou traseira (environment). Valores: `user`, `environment`. |
+| `guide` | `SgCameraCaptureGuide?` | `none` † | não | React | Guia de enquadramento sobre a pre-visualizacao. Valores: `none`, `oval`, `rect`. |
+| `hintText` | `String?` | — | não | React | — |
+| `id` | `String` | — | sim | React | Identificador unico do componente. |
+| `label` | `String?` | — | não | React | Rotulo exibido acima da pre-visualizacao. |
+| `labelText` | `String?` | — | não | React | — |
+| `onCapture` | `ValueChanged<Uint8List>?` | — | não | React | Imagem JPEG capturada. |
+| `onError` | `void Function(SgCameraError code, String message)?` | — | não | React | Camera indisponivel (permission, noCamera, failed). |
+| `previewHeight` | `num?` | `320` † | não | React | Altura da pre-visualizacao em px. |
+| `resolution` | `SgCameraCaptureResolution?` | `medium` † | não | React | Resolucao pedida (640x480, 1280x720, 1920x1080). Valores: `low`, `medium`, `high`. |
+| `backend` | `SgCameraBackend` | `const SgSystemCameraBackend()` | não | Flutter | Extra do Flutter: origem da camera (padrao: pacote `camera`). |
+
+† padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
+
+### Eventos e comportamento
+
+- `onCapture(Uint8List)`: imagem **JPEG** capturada (bytes). `onError(SgCameraError code, String message)`: câmera indisponível, com `message` já traduzida. `enabled: false` não abre a câmera nem permite capturar. **Sem ligação com formulário** (o widget não tem `name` nem `control`).
+- **Web:** a prévia da câmera frontal é espelhada e a foto capturada **não** é; no Flutter web a câmera usa `getUserMedia` próprio (o `camera_web` falhava com câmeras virtuais paradas).
 
 **Tipos:** `SgCameraError { permission, noCamera, failed }`; `SgCameraBackend` (`list()` e `open(camera, resolution)` devolvendo um `SgCameraSession` com `buildPreview()`, `capture()` e `dispose()`); `SgCameraException(code, [message])`. A classificação do erro da plataforma é `sgClassifyCameraError`. O pacote `camera` (`^0.12.0+2`) é dependência do `seedgrid_components`.
 
+## SgColorPicker
+
+> **Flutter** · estado de paridade: **somente Flutter** (não há equivalente React) · seletor de cor `#RRGGBB`.
+
+Painel de escolha de cor com prévia, área de saturação e brilho com barra de matiz (modo `gradient`) ou três sliders (modo `sliders`), campo hex com validação e cores predefinidas.
+
+- Arquivo: `packages/seedgrid_components/lib/src/inputs/color/sg_color_picker.dart` (linha 119) · classe `class SgColorPicker extends StatefulWidget`; props escritas à mão em `sg_color_picker_props.dart` (sem contrato gerado do React).
+- Construtor: `const SgColorPicker({...})` com 14 parâmetros nomeados, todos do Flutter (o componente não existe no React).
+
+### Props de SgColorPicker
+
+| Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
+|---|---|---|---|---|---|
+| `id` | `String` | — | sim | Flutter | Identificador unico (base das chaves dos sliders, do campo hex e das cores predefinidas). |
+| `ariaLabel` | `String?` | — | não | Flutter | Rótulo de acessibilidade do painel. |
+| `control` | `SgFormController?` | — | não | Flutter | Controlador do formulário (usado junto com name). |
+| `defaultValue` | `String?` | — | não | Flutter | Cor inicial '#RRGGBB' quando nao controlado. |
+| `enabled` | `bool` | `true` | não | Flutter | Padrao `true`; `false` bloqueia sliders, campo hex e cores predefinidas. |
+| `error` | `String?` | — | não | Flutter | Mensagem de erro externa, exibida abaixo do painel. |
+| `labelText` | `String?` | — | não | Flutter | Título exibido acima do painel. |
+| `mode` | `SgColorPickerMode` | `SgColorPickerMode.gradient` | não | Flutter | Forma de escolher a cor: [SgColorPickerMode.gradient] (padrao, classico) ou [SgColorPickerMode.sliders]. Valores: `gradient`, `sliders`. |
+| `name` | `String?` | — | não | Flutter | Nome do campo no formulario. |
+| `onChange` | `ValueChanged<String>?` | — | não | Flutter | Recebe a cor '#RRGGBB' maiuscula a cada mudanca valida. |
+| `presets` | `List<String>?` | — | não | Flutter | Cores predefinidas ('#RRGGBB'); tocar numa delas escolhe a cor. |
+| `showHex` | `bool` | `true` | não | Flutter | Mostra o campo de texto hex (#RRGGBB) com validação. |
+| `value` | `String?` | — | não | Flutter | Cor controlada '#RRGGBB'. |
+| `width` | `Object?` | — | não | Flutter | Numero (px) ou texto 'N%'. |
+
+### Eventos, formulário e comportamento
+
+- `onChange(String)`: com a cor `#RRGGBB` em maiúsculas, a cada mudança válida (arrastar, setas, sliders, preset ou hex válido digitado). Hex inválido ou incompleto mostra o erro i18n e **não** emite.
+- **Estado:** controlado quando `value` é informado; senão guarda o próprio estado, começando em `defaultValue` (ou `#000000`). Cores fora do formato `#RRGGBB` são ignoradas (`sgNormalizeHex`).
+- **Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o texto `#RRGGBB` (inicial `defaultValue`, depois `value`, depois `#000000`). Não registra `required` nem `validator`; o erro exibido é `error` ou o do formulário (`resolveFieldError`).
+- **Diálogo:** `showSgColorPicker(context, {id, initialValue, presets, showHex, mode, title, okLabel, cancelLabel, barrierDismissible})` abre o painel num diálogo e devolve a cor escolhida (`null` se cancelar), como `showDatePicker`.
+- **Acessibilidade e teclado:** a prévia tem `Semantics(label, value: hex)`; as cores predefinidas são `Semantics(button, selected)`; a área de saturação/brilho aceita setas (passo 1%, 10% com Shift) e a barra de matiz aceita setas (passo 1, 10 com Shift). `enabled: false` bloqueia sliders, campo hex e predefinidas. Textos nos cinco idiomas (`pt-BR`, `pt-PT`, `en-US`, `es`, `fr`), num mapa interno do componente.
+
 ## Internacionalização
 
-Chaves `components.inputs.datetime.*`, `components.inputs.fileupload.*` (`drop`, `dropMany`, `remove`, `loading`, `type`, `size`, `total`, `count`, `file`), `components.inputs.imageupload.*` e `components.inputs.camera.*` nos cinco idiomas (`messages_pt_br.dart`, `messages_pt_pt.dart`, `messages_en_us.dart`, `messages_es.dart`, `messages_fr.dart`). Os textos do showcase dos quatro componentes têm tradução em `tools/showcase_i18n/traducoes/`.
+Chaves `components.inputs.datetime.*`, `components.inputs.fileupload.*` (`drop`, `dropMany`, `remove`, `loading`, `type`, `size`, `total`, `count`, `file`), `components.inputs.imageupload.*` e `components.inputs.camera.*` nos cinco idiomas (`messages_pt_br.dart`, `messages_pt_pt.dart`, `messages_en_us.dart`, `messages_es.dart`, `messages_fr.dart`). Os textos do showcase dos componentes têm tradução em `tools/showcase_i18n/traducoes/`.
 
 ## Não verificado
 
-- Não executei o showcase nem `flutter test`; os números (3757 testes do pacote, 825 do showcase) vêm do relato da `front` antes do commit.
-- A câmera **não foi testada em dispositivo real**; só com `SgCameraBackend` simulado.
+- Não executei o showcase nem `flutter test`; a câmera **não foi testada em dispositivo real**, só com `SgCameraBackend` simulado.

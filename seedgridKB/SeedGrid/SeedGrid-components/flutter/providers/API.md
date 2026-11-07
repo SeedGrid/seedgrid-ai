@@ -97,27 +97,27 @@ Avisos em tempo real para o usuario logado pelo SeedGrid Pulse: pede o token de 
 - O adaptador para o SDK `seedgrid_pulse_subscriber` está documentado em `lib/src/providers/PULSE_ADAPTER.md`, mas **não ligado por dependência**. Decisão do dono pendente: ligar o SDK por dependência só depois de `seedgrid_pulse_subscriber` ir ao pub.dev.
 - Com o adaptador, o provider foi executado ao vivo contra o Pulse real em 2026-10-27: conectou, recebeu a mensagem do próprio usuário e não recebeu a de outro; a reconexão com mensagem pendente também foi verificada. O modo `processed`, que exige confirmação (ack), **não foi exercitado**.
 - `tokenEndpoint` precisa de URL absoluta (no Flutter não existe "mesma origem").
-- `enabled` virou `disabled` e `children` virou `child`.
+- `children` virou `child`. O `enabled` do React continua `enabled` (`bool?`, nulo = ligado), como nos demais componentes depois da troca de `disabled` por `enabled`. <!-- legado-ok: `disabled` aqui é o valor do status -->
 - Os hooks viraram widget e função: `useSgRealtimeEvent` → `SgRealtimeEventListener` e `listenSgRealtimeEvent`; `useSgRealtimeStatus` → função `useSgRealtimeStatus(context)`.
 
 ### Eventos, controllers e acessibilidade
 
-**Atenção ao padrão de `disabled`**: a tabela acima mostra `true †` porque o contrato gerado copia o padrão de `enabled` do React. No Dart, `disabled` é `bool?` **sem padrão no construtor** e o código lê `!(widget.disabled ?? false)`: nulo significa **ligado**. Só `disabled: true` desliga (confirmado em `_SgRealtimeProviderState._enabled`).
+**Atenção ao padrão de `enabled`**: a tabela acima mostra `true †` porque o contrato gerado copia o padrão do React. No Dart, `enabled` é `bool?` **sem padrão no construtor** e o código lê `!(enabled ?? true)`: nulo significa **ligado**. Só `enabled: false` desliga (confirmado em `SgRealtimeProvider._disabled` e `_SgRealtimeProviderState._enabled`).
 
 **Fluxo** (`providers/sg_realtime_provider.dart`, `_connect`)
-1. Com `disabled: true` o status vira `disabled`; com `channels` vazio, `idle`. Nos dois casos não há conexão.
+1. Com `enabled: false` o status vira `disabled`; com `channels` vazio, `idle`. Nos dois casos não há conexão. <!-- legado-ok: `disabled` aqui é o valor do status -->
 2. Cria o cliente por `connectionFactory()` e ouve `states` e `messages`.
 3. Pede o token: `fetchToken()` se informado; senão `POST` em `tokenEndpoint` com `tokenRequestInit` (`SgTokenRequestInit`: `headers`, `body`) usando `tokenFetcher` ou `sgDefaultFetcher`. Falha (HTTP não 2xx, rede) vira `unavailable`.
-4. Resposta `{enabled:false}` ou sem token vira `disabled`. Sem `connectionFactory`, vira `unavailable`.
+4. Resposta `{enabled:false}` ou sem token vira `disabled`. Sem `connectionFactory`, vira `unavailable`. <!-- legado-ok: `disabled` aqui é o valor do status -->
 5. `connection.connect(getToken:, baseUrl: pulseUrl, options: connectOptions)` e depois `subscribe(channels)`. O primeiro token já pedido é reaproveitado; reconexões pedem um novo (o token vale só para entrar). O token fica só em memória.
-6. Mudar `disabled`, `channels` ou `pulseUrl` encerra e reinicia a conexão (`didUpdateWidget`).
+6. Mudar `enabled`, `channels` ou `pulseUrl` encerra e reinicia a conexão (`didUpdateWidget`).
 
-**Status** (`SgRealtimeStatus`): `idle`, `disabled`, `connecting`, `connected`, `reconnecting`, `unavailable`, `authError` (`'auth-error'`). Mapeamento a partir de `SgPulseState`: `connected`/`subscribed` → `connected`; `connecting`; `reconnecting`; `authError`; `idle`; qualquer outro (`disconnected`, `error`) → `unavailable`. Regra de uso: só `connected` dispensa o polling de reserva.
+**Status** (`SgRealtimeStatus`): `idle`, `disabled`, `connecting`, `connected`, `reconnecting`, `unavailable`, `authError` (`'auth-error'`). Mapeamento a partir de `SgPulseState`: `connected`/`subscribed` → `connected`; `connecting`; `reconnecting`; `authError`; `idle`; qualquer outro (`disconnected`, `error`) → `unavailable`. Regra de uso: só `connected` dispensa o polling de reserva. <!-- legado-ok: `disabled` aqui é o valor do status -->
 
 **Escuta de avisos**
 - `SgRealtimeEventListener(channel:, events:, handler:, child:)`: widget que ouve enquanto está montado; `events` é `String` ou `List<String>` (nome exato, `prefixo.*` ou `*`, via `matchesSgRealtimeEvent`). O `handler` é sempre o mais recente, sem reassinar a cada build.
 - `listenSgRealtimeEvent(context, channel, events, handler)`: devolve `SgRealtimeSubscription` com `cancel()` (chame em `dispose`). Fora de um `SgRealtimeProvider` não faz nada.
-- `useSgRealtimeStatus(context)`: devolve o record `({SgRealtimeStatus status, bool connected})`; sem provider, `disabled`.
+- `useSgRealtimeStatus(context)`: devolve o record `({SgRealtimeStatus status, bool connected})`; sem provider, `disabled`. <!-- legado-ok: `disabled` aqui é o valor do status -->
 - `SgRealtimeEvent`: `channel`, `event`, `data` (só identificadores), `messageId`, `publishedAt`. Exceção num handler é engolida e não derruba os outros.
 
 **Cliente do Pulse** (`providers/sg_pulse_connection.dart`): `SgPulseConnection` (`states`, `messages`, `connect`, `subscribe`, `disconnect`); `SgSimulatedPulseConnection` (sem rede, para showcase e testes, com `emitState`, `emitMessage`, `simulateReconnect`, `simulateRevoked` e contadores como `tokensRequested`, `connectCalls`); `SgPulseState`, `SgPulseToken`, `SgPulseMessage`. Resposta do backend: `SgRealtimeConnectResponse` (`enabled`, `token`, `expiresAt`, `connectUrl`, `channels`).

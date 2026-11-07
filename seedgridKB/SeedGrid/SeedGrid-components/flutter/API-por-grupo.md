@@ -29,7 +29,7 @@ Caminhos relativos a `packages/seedgrid_components/lib/src/`. Nomes de widget ig
 | Gadgets | `gadgets/calendar/`, `gadgets/clock/`, `gadgets/gauges/`, `gadgets/string_animator/` | `SgCalendar`, `SgClock`, `SgTimeProvider`, `SgClockThemeProvider`, `SgClockThemePicker`, `SgClockThemePreview`, `SgLinearGauge`, `SgRadialGauge`, `SgQRCode`, `SgStringAnimator` | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
 | Dígitos animados | `digits/simple/`, `digits/animated/` | `SgSevenSegmentDigit`, `SgSegmentDigit`, `SgMatrixDigit`, `SgNeonDigit`, `SgFadeDigit`, `SgFlipDigit`, `SgRoller3DDigit`, `SgDiscardDigit` | [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] |
 | Providers | `providers/` | `SgEnvironmentProvider`, `SgRealtimeProvider` | [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] |
-| Fundamentos (formulário, i18n, tema, commons) | `form/`, `i18n/`, `props/`, `theme_access.dart`, `generated/enums.g.dart`; pacotes `seedgrid_theme` e `seedgrid_commons` | `SgComponentsI18nProvider`, `SgForm`/`SgFormController`/`SgRules` (sem equivalente 1:1: substitui o react-hook-form, ADR 49), tema, máscaras e validadores | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
+| Fundamentos (formulário, i18n, tema, commons) | `form/`, `i18n/`, `props/`, `theme_access.dart`, `generated/enums.g.dart`; pacotes `seedgrid_theme` e `seedgrid_commons` | `SgComponentsI18nProvider`, `SgForm`/`SgFormController` (sem equivalente 1:1: substitui o react-hook-form, ADR 49; o `SgRules` foi removido, validação por props diretas), tema, máscaras e validadores | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 
 ## Como acho o contrato completo de um componente?
 

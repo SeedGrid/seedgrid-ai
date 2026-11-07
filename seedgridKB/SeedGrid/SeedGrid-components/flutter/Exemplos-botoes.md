@@ -136,7 +136,7 @@ SgSplitButton(
       separator: true,
       onClick: () {},
     ),
-    const SgSplitButtonItem(label: 'Indisponível', disabled: true),
+    const SgSplitButtonItem(label: 'Indisponível', enabled: false),
   ],
 )
 ```

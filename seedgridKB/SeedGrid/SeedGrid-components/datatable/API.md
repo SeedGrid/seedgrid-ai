@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, datatable, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx
 branch: main
-commit: 703acf6
-analisado-em: 2026-11-03
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Tabela de dados (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---

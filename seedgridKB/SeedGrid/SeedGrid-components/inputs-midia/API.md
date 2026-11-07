@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-midia, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: bb0ad1f
-analisado-em: 2026-11-04
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Data e hora, imagem e câmera (@seedgrid/fe-components): props completas de SgInputDateTime, SgFileUpload, SgImageUpload e SgCameraCapture com tipo e padrão, eventos e códigos de erro. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -20,7 +20,7 @@ Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture 
 
 ## `SgInputDateTime`
 
-Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange"> & { … }`. Além das props abaixo, **herda** as de [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato base SgInputText|SgInputText]] (rótulo, `labelPosition`, `labelWidth`, `labelAlign`, `clearButton`, `elevation`, `borderRadius`, `placeholder`, `disabled`, `readOnly`, `required`, `name`/`control`/`register`/`rules` do react-hook-form, etc.). **Confirmado** em `SgInputDateTime.tsx`.
+Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange"> & { … }`. Além das props abaixo, **herda** as de [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato base SgInputText|SgInputText]] (rótulo, `labelPosition`, `labelWidth`, `labelAlign`, `clearButton`, `elevation`, `borderRadius`, `placeholder`, `enabled`, `readOnly`, `required`, `name`/`control`/`register`/`rules` do react-hook-form, etc.). **Confirmado** em `SgInputDateTime.tsx`.
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
@@ -41,6 +41,8 @@ Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange
 
 **Comportamento do valor (Confirmado):** o campo **mostra** a hora no `timeZone` escolhido, mas o `onChange` **sempre entrega UTC**. Com `react-hook-form`, o valor fica com o RHF (a prop `value` não é necessária).
 
+**Idioma (Confirmado em `dateTimeLogic.ts` e `SgInputDateTime.tsx`):** `formatWallClock` monta os limites mínimo e máximo que aparecem nas mensagens de erro, com a data no idioma ativo (`Intl.DateTimeFormat`: pt-BR e pt-PT `05/11/2026`, en-US `11/5/2026`, es `5/11/2026`, fr `05/11/2026`) e a hora sempre em 24h; ao trocar o idioma, a mensagem de erro já exibida é recalculada com o valor atual.
+
 ## `SgFileUpload`
 
 Tipo de props: `SgFileUploadProps = RhfFieldProps & { … }` (`name`/`control` do react-hook-form; ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|Contrato RhfFieldProps]]). É o componente **base** de arquivos: o `SgImageUpload` é uma **composição** dele (não herança de classe). **Sem retrocompatibilidade** (decisão do dono, P141): o valor é **sempre uma lista**.
@@ -60,7 +62,7 @@ Tipo de props: `SgFileUploadProps = RhfFieldProps & { … }` (`name`/`control` d
 | `maxSizeTotal` | `SizeLimit` | sem limite | Não | Tamanho máximo da soma dos arquivos (mesmo formato). |
 | `hintText` | `string` | — | Não | Texto de ajuda sob a área. |
 | `required` / `requiredMessage` | `boolean` / `string` | — | Não | Obrigatório e a mensagem. |
-| `disabled` / `readOnly` | `boolean` | `false` | Não | Desabilita a escolha e a remoção / só mostra. |
+| `enabled` / `readOnly` | `boolean` | `true` / `false` | Não | `enabled: false` desabilita a escolha e a remoção / `readOnly` só mostra. |
 | `error` | `string` | — | Não | Mensagem de erro externa. |
 | `onEnter` / `onExit` | `() => void` | — | Não | Foco entrou/saiu. |
 | `pickerAccept` | `string` | derivado de `mediaType`/`accept` | Não | **Só no React:** valor do atributo `accept` do seletor do navegador. |
@@ -92,7 +94,7 @@ Tipo de props: `SgImageUploadProps = Omit<SgFileUploadProps, "mediaType" | "extr
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
-| (as do `SgFileUpload` acima, menos as omitidas) | — | — | — | `id`, `label`, `value`, `defaultValue`, `onChange`, `onError`, `maxFiles`, `maxSizePerFile`, `maxSizeTotal`, `hintText`, `required`, `requiredMessage`, `disabled`, `readOnly`, `error`, `onEnter`, `onExit`, `name`/`control`. |
+| (as do `SgFileUpload` acima, menos as omitidas) | — | — | — | `id`, `label`, `value`, `defaultValue`, `onChange`, `onError`, `maxFiles`, `maxSizePerFile`, `maxSizeTotal`, `hintText`, `required`, `requiredMessage`, `enabled`, `readOnly`, `error`, `onEnter`, `onExit`, `name`/`control`. |
 | `accept` | `string` | `"image/*"` | Não | **Estreita** os formatos de imagem (`image/png,image/jpeg`, `.png`). No `SgFileUpload` o `accept` soma; aqui restringe. |
 | `minWidth` | `number` | — | Não | Largura mínima em px. |
 | `minHeight` | `number` | — | Não | Altura mínima em px. |
@@ -119,7 +121,7 @@ Tipo de props: `SgCameraCaptureProps` (não usa `RhfFieldProps`).
 | `allowSwitch` | `boolean` | `true` | Não | Mostra o botão de alternar frontal/traseira. |
 | `previewHeight` | `number` | `320` | Não | Altura da pré-visualização em px. |
 | `hintText` | `string` | — | Não | Texto de ajuda. |
-| `disabled` | `boolean` | `false` | Não | Não abre a câmera nem permite capturar. |
+| `enabled` | `boolean` | `true` | Não | Com `false`, não abre a câmera nem permite capturar. |
 | `className` | `string` | — | Não | Classe CSS do contêiner. |
 
 **Códigos de erro** (`CameraErrorCode`): `permission` (permissão negada), `noCamera` (nenhuma câmera), `failed` (qualquer outra falha); a classificação do erro do navegador é `classifyCameraError` (`cameraLogic.ts`). A trilha da câmera é **liberada ao desmontar** o componente. **Confirmado**; `onFrame` não existe na versão 1.

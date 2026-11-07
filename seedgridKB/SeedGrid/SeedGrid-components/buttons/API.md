@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, buttons]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/buttons
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Botões (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -48,12 +48,12 @@ import { SgButton, type SgButtonProps, type SgButtonCustomColors } from "@seedgr
 - **Atributos DOM herdados**: o tipo é `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> & { ... }`; acrescenta 287 props de `@types/react` (`ButtonHTMLAttributes` 10, `HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 170), incluindo `children`. Não listadas individualmente — ver contrato base `React.ButtonHTMLAttributes` em `@types/react`.
 - Aceita `ref` (via `React.forwardRef`) e `key`.
 - Prop herdada com padrão próprio: `type` (de `ButtonHTMLAttributes`) tem padrão `"button"` na desestruturação — o botão **não** submete formulários a menos que se passe `type="submit"` (Confirmado).
-- `disabled` (herdada) é combinada com `loading`: o `<button>` fica `disabled` se qualquer um for verdadeiro (Confirmado).
+- `enabled` (`false` desabilita) é combinada com `loading`: o `<button>` fica `disabled` se `enabled` for `false` ou `loading` for verdadeiro (Confirmado em `SgButton.tsx`).
 - `children` (herdada) tem prioridade sobre `label` (`children ?? label`). Demais atributos (`onClick`, `aria-*`, `form`, `name`…) são repassados ao `<button>` via `{...rest}` (Confirmado). `style` é mesclado depois das variáveis CSS de cor.
 
 ### Eventos e callbacks
 
-- `onClick` e todos os eventos DOM de `<button>` (herdados) — repassados diretamente. Com `loading` ou `disabled`, o botão nativo fica desabilitado e não dispara cliques.
+- `onClick` e todos os eventos DOM de `<button>` (herdados) — repassados diretamente. Com `loading` ou `enabled: false`, o botão nativo fica desabilitado e não dispara cliques.
 
 ### Ref
 
@@ -126,7 +126,7 @@ import { SgSplitButton, type SgSplitButtonProps, type SgSplitButtonItem } from "
 ### Eventos e callbacks
 
 - `onClick: () => void` — clique no botão principal (repassado ao 1º `SgButton`).
-- `items[i].onClick: () => void` — clique no item; em seguida o menu fecha. Itens com `disabled` são ignorados.
+- `items[i].onClick: () => void` — clique no item; em seguida o menu fecha. Itens com `enabled: false` são ignorados.
 - O menu fecha em clique fora do container (`mousedown` no `document`) e em `Escape` (Confirmado; testado em `tests/buttons-menus-dom.test.mjs`).
 
 ### Ref
@@ -135,7 +135,7 @@ import { SgSplitButton, type SgSplitButtonProps, type SgSplitButtonItem } from "
 
 ### Children, slots e composição
 
-Sem `children`. Slots: `label`, `leftIcon` (botão principal); itens do menu via `items`. O botão de seta fica desabilitado com `disabled` **ou** `loading`.
+Sem `children`. Slots: `label`, `leftIcon` (botão principal); itens do menu via `items`. O botão de seta fica desabilitado com `enabled: false` **ou** `loading`.
 
 ### Contexto, providers e hooks
 
@@ -155,7 +155,7 @@ Usa `useComponentsI18n()` para o `aria-label` do botão de seta (`components.act
 | `label` | `string` | Sim | Texto do item |
 | `icon` | `React.ReactNode` | Não | Ícone à esquerda |
 | `onClick` | `() => void` | Não | Ação do item |
-| `disabled` | `boolean` | Não | Desabilita o item |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` desabilita o item |
 | `separator` | `boolean` | Não | Desenha uma linha divisória **antes** do item (ignorado no 1º item) |
 
 ## SgFloatActionButton
@@ -215,7 +215,7 @@ import {
 
 - `onClick: () => void` — chamado no clique do botão principal **somente se não houver `actions`**; com ações, o clique alterna o menu (Confirmado).
 - `actions[i].onClick` — chamado ao clicar na ação; o menu fecha em seguida.
-- Clique é ignorado com `disabled`/`loading` e logo após um arraste (deslocamento > 3 px).
+- Clique é ignorado com `enabled: false`/`loading` e logo após um arraste (deslocamento > 3 px).
 - Menu de ações fecha em clique fora e `Escape`.
 - Botão direito (context menu): com `enableDragDrop` + `dragId` e posição salva, abre um `SgPopup` "redefinir posição" (Sim/Não); "Sim" limpa a posição persistida (Confirmado; testado em `tests/buttons-menus-dom.test.mjs`).
 
@@ -249,7 +249,7 @@ Sem `children`. Slots: `icon`, `activeIcon` (exibido quando aberto; sem ele, o �
 | `onClick` | `() => void` | Não | Ação |
 | `severity` | `FABSeverity` | Não | Cor da ação (padrão `"plain"`) |
 | `floatActionButtonStyle` | `FABSeverity` | Não | Alias usado se `severity` ausente |
-| `disabled` | `boolean` | Não | Desabilita a ação |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` desabilita a ação |
 
 Aliases exportados: `FABPosition`, `FABSeverity`, `FABSize`, `FABShape`, `FABElevation`, `FABAnimation`, `FABAnimationTrigger`, `FABLayoutType` (valores na tabela de props).
 

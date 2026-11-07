@@ -22,7 +22,6 @@ analisado-em: 2026-10-30
 |---|---|---|---|
 | `SgForm` | apoio, substitui `useForm` | Mantém o `SgFormController` acessível aos campos e envia com Enter ou botão `submit`. | `seedgrid_components/lib/src/form/sg_form.dart` |
 | `SgFormController` | apoio, substitui `useForm` | Guarda valores, regras, erros e estado do formulário: `setValue`, `trigger`, `reset`, `handleSubmit`. | `seedgrid_components/lib/src/form/sg_form.dart` |
-| `SgRules` | apoio, equivalente ao React | Regras de campo no estilo `RegisterOptions` do react-hook-form (required, min, max, pattern, validate). | `seedgrid_components/lib/src/form/sg_rules.dart` |
 | `SgValidationScope` | apoio, só no Flutter | Registra campos sem formulário para o `SgWizard` validá-los ao avançar de etapa. | `seedgrid_components/lib/src/form/sg_validation_scope.dart` |
 | `SgComponentsI18nProvider` | portado | Define o idioma (5 embutidos) e as mensagens dos componentes abaixo dele. | `seedgrid_components/lib/src/i18n/i18n.dart` |
 | `setComponentsI18n` | apoio, equivalente ao React | Define o idioma e as mensagens globais dos componentes, fora de árvore de widgets. | `seedgrid_components/lib/src/i18n/i18n.dart` |
@@ -38,7 +37,7 @@ Estado em palavras: só `SgComponentsI18nProvider` é um dos **89 componentes** 
 
 ## Quando usar
 
-- **Formulário com validação:** `SgForm` + `SgFormController` + `control:`/`name:`/`rules:` nos campos. É o lugar do react-hook-form (ADR 49): todo campo Flutter é controlado, não existe `register`. Para o desenho de uma tela CRUD, siga o exemplo em [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos]].
+- **Formulário com validação:** `SgForm` + `SgFormController` + `control:`/`name:`/`required:`/`requiredMessage:`/`validation:` nos campos. É o lugar do react-hook-form (ADR 49): todo campo Flutter é controlado, não existe `register`. Para o desenho de uma tela CRUD, siga o exemplo em [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos]].
 - **Idioma dos componentes:** `SgComponentsI18nProvider(locale: 'pt-BR')` perto da raiz (o padrão sem provider é `en-US`). `setComponentsI18n` serve quando não há árvore de widgets à mão.
 - **Tema:** `SeedThemeProvider` logo abaixo do `MaterialApp` (em `builder:`) para o tema entrar no `ThemeData`; sem ele os widgets caem no tema padrão do React gerado na hora (`sgThemeOf`).
 - **Máscaras e validadores fora de campo:** importe `seedgrid_commons` (por exemplo para mascarar um texto de relatório ou validar um CPF vindo de API).
@@ -53,7 +52,7 @@ O pacote **não está no pub.dev**: instala-se direto do Git, com `path: package
 | Tema | React | Flutter |
 |---|---|---|
 | Formulário | `react-hook-form` (`useForm`, `control`, `register`, `Controller`) | `SgFormController` próprio; `register` não existe; ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]] |
-| Validação ao enviar | `handleSubmit`/`trigger` rodam só as `rules` | rodam também o validador do componente (`SgFieldValidator`); decisão do dono de 2026-10-25, em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] |
+| Validação ao enviar | `handleSubmit`/`trigger` rodam só o `required`/`rules` do campo | rodam também o validador do componente (`SgFieldValidator`); decisão do dono de 2026-10-25, em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] |
 | Mensagem dos validadores | `validatePassword`/`validateBirthDate` devolvem o texto traduzido | devolvem um **resultado** (`PasswordValidation`, `BirthDateValidation`); o texto sai de `passwordValidationMessage`/`birthDateValidationMessage` (`seedgrid_components`) |
 | Hooks | `useComponentsI18n()`, `useSgTheme()` | funções com `BuildContext`: `useComponentsI18n(context)`, `useSgTheme(context)`; atalho `context.sgI18n` |
 | i18n global | `globalThis.__seedgridComponentsI18n` | variável de módulo do pacote (`setComponentsI18n`); `resetComponentsI18n()` existe só no Flutter (isola testes) |

@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-midia]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: bb0ad1f
-analisado-em: 2026-11-04
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Data e hora, imagem e câmera em React (@seedgrid/fe-components): quando usar SgInputDateTime, SgFileUpload, SgImageUpload e SgCameraCapture, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---

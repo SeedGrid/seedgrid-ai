@@ -79,7 +79,7 @@ class _CadastroFormState extends State<CadastroForm> {
 
 Como `SgInputEmail` registra o validador próprio (formato e domínios descartáveis), um e-mail inválido faz o envio chamar `onInvalid`, ao contrário do React (decisão do dono de 2026-10-25, em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]).
 
-## 2. Regras com mensagem e validação própria (`SgRules`)
+## 2. Obrigatório com mensagem e validação própria (props diretas)
 
 ```dart
 final form = SgFormController(defaultValues: {'senha': '', 'confirma': ''});
@@ -90,24 +90,22 @@ SgInputPassword(
   name: 'senha',
   control: form,
   label: 'Senha',
-  rules: const SgRules(
-    required: 'Informe a senha',
-    minLength: SgRuleValue(8, 'Mínimo de 8 caracteres'),
-  ),
+  required: true,
+  requiredMessage: 'Informe a senha',
+  minLength: 8,
+  minLengthMessage: 'Mínimo de 8 caracteres',
 ),
 SgInputPassword(
   id: 'confirma',
   name: 'confirma',
   control: form,
   label: 'Confirmar senha',
-  rules: SgRules(
-    // `validate`: true/null = ok, false = inválido, String = mensagem.
-    validate: (v) => v == form.getValue('senha') ? true : 'As senhas diferem',
-  ),
+  // `validation`: devolve a mensagem de erro, ou null quando o valor é válido.
+  validation: (v) => v == form.getValue('senha') ? null : 'As senhas diferem',
 ),
 ```
 
-`SgRules` com `validate` não é `const` (usa `form`). O mesmo padrão aparece em `test/form/sg_form_test.dart` (`validate: (v) => v == f.getValue('senha') ? true : 'diferente'`).
+O `validation` usa `form`, então o campo não é `const`. O `SgRules` e a prop `rules` foram removidos do Flutter (P153.F2.T3, removido): o obrigatório e a validação própria são props do componente.
 
 ## 3. Controlador programático: `setValue`, `trigger`, `setError`, `reset`
 
@@ -115,7 +113,7 @@ SgInputPassword(
 
 ```dart
 final form = SgFormController(defaultValues: {'email': ''});
-form.registerField('email', rules: const SgRules(required: 'Obrigatório'));
+form.registerField('email', required: 'Obrigatório');
 
 Future<void> exemplo() async {
   // Muda o valor sem chamar o onChange do campo e valida em seguida.
@@ -324,4 +322,4 @@ class MeuRotulo extends StatelessWidget {
 
 - Nenhum dos exemplos foi compilado ou executado; os resultados comentados (`// 529.982.247-25` etc.) vêm da leitura das funções, não de execução.
 - `r.problems` do exemplo 7 foi deduzido da leitura de `validatePassword` (tamanho, maiúscula, número, especial e sequência `abc`); `idade.problem` depende da data de hoje.
-- Exemplos de formulário com `SgInputPassword`, `SgInputEmail` e `SgInputText` assumem os parâmetros `id`, `name`, `control`, `label`, `required`, `rules` (Confirmado nos construtores de `SgInputText`, `SgInputEmail` e `SgInputPassword`, e em `formulario_screen.dart`).
+- Exemplos de formulário com `SgInputPassword`, `SgInputEmail` e `SgInputText` assumem os parâmetros `id`, `name`, `control`, `label`, `required`, `requiredMessage` (Confirmado nos construtores de `SgInputText`, `SgInputEmail` e `SgInputPassword`, e em `formulario_screen.dart`).

@@ -159,7 +159,7 @@ SgSplitButton(
     ),
     SgSplitButtonItem(
       label: 'Indisponível',
-      disabled: true,
+      enabled: false,
     ),
   ],
 )
@@ -271,7 +271,7 @@ Página: `apps/seedgrid_showcase/lib/pages/sg_float_action_button_page.dart` (6 
 
 ### Aparência
 
-severity, size, shape, elevation, color customizada, loading e disabled.
+severity, size, shape, elevation, color customizada, loading e desabilitado (`enabled: false`).
 
 Região `sgFabAparencia` em `sg_float_action_button_page.snippets.g.dart`.
 
@@ -313,7 +313,7 @@ SizedBox(
         SgFloatActionButton(
           absolute: true,
           position: SgFloatActionButtonPosition.centerBottom,
-          disabled: true,
+          enabled: false,
         ),
       ],
     ),

@@ -107,7 +107,7 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 
 **Controller, formulário e estado**
 - Não há controller próprio. `focusNode` externo é opcional (sem ele o widget cria e descarta o seu).
-- Formulário: o campo fica ligado quando `name != null` e existe um `SgFormController` (`control` ou o `SgForm` mais próximo, `SgForm.maybeOf`). Ele chama `registerField(name, validator: _formValidate, rules: mergeRequiredRule(rules, required, requiredMessage), initialValue:)`. O validador roda em `trigger`/`handleSubmit`; campo desabilitado nunca falha e vazio opcional não falha. Cada digitação faz `setValue(name, textoCompleto, shouldValidate: erro visível || submitCount > 0)`; ao sair do campo faz `markTouched` e `trigger([name])`.
+- Formulário: o campo fica ligado quando `name != null` e existe um `SgFormController` (`control` ou o `SgForm` mais próximo, `SgForm.maybeOf`). Ele chama `registerField(name, validator: _formValidate, required: requiredMessageFor(required, requiredMessage ?? mensagem i18n), initialValue:)`: o `required` vira a mensagem de obrigatório do formulário e o validador próprio cobre os demais props (`maxLength`, `minLength`, `minNumberOfWords`, `validation`). Não existe mais `rules`/`SgRules` no Flutter (removido na P153); a validação é por props diretas. O validador roda em `trigger`/`handleSubmit`; campo desabilitado nunca falha e vazio opcional não falha. Cada digitação faz `setValue(name, textoCompleto, shouldValidate: erro visível || submitCount > 0)`; ao sair do campo faz `markTouched` e `trigger([name])`.
 - Valor: `initialValue` (sem formulário) e `value` controlado (se o pai não atualizar `value` depois do `onChange`, o texto volta ao anterior). Mudança por fora revalida um erro já visível; `reset` limpa o erro.
 - Etapas de `SgWizard`: o widget implementa `SgSelfValidating` (`validateNow`) para campos fora de formulário.
 - Parâmetros marcados como internos no código (`onValueSet`, `onExitText`, `externalValueNormalizer`, `formValidator`) existem para os derivados (CPF, e-mail, telefone etc.); não os use em código de aplicação.
@@ -289,7 +289,7 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 - `onChange: ValueChanged<String>`: imediato a cada digitação, com o valor cru completo (com prefixo/sufixo). Os demais callbacks (`onEnter`, `onExit`, `onClear`, `onValidation`, `onSubmitted`) são repassados ao `SgInputText`.
 
 **Controller, formulário e estado**
-- Compõe um `SgInputText`: `name` + `control`/`SgForm`, `rules`, validações e `focusNode` funcionam como descrito em `SgInputText`. Não repassa `value`; use `initialValue`.
+- Compõe um `SgInputText`: `name` + `control`/`SgForm`, `required`/`requiredMessage`, validações e `focusNode` funcionam como descrito em `SgInputText`. Não repassa `value`; use `initialValue`.
 
 **Acessibilidade**
 - Herdada do `SgInputText` (`Semantics(label, textField: true)`); o widget não acrescenta semântica própria (nenhum `Semantics` encontrado em `inputs/text/sg_input_text_search.dart`).
@@ -1051,7 +1051,7 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 **Eventos e callbacks** (`inputs/masked/sg_input_date.dart`, calendário em `inputs/masked/sg_date_picker.dart`)
 - `onChange: ValueChanged<String>`: data ISO `yyyy-MM-dd`, ou `''` enquanto incompleta; chamado ao digitar e ao escolher no calendário. `onSubmitted` recebe também a data ISO. `onEnter`, `onExit`, `onClear`, `onValidation` como no `SgInputText`.
 - Validação (`_messageFor`): vazio ou incompleto passa (ou devolve `requiredMessage` se `required`); data completa impossível devolve `components.inputs.date.invalid`; `validation(iso)` do usuário; `minDate`/`maxDate` (`String` ISO ou `DateTime`) devolvem `components.inputs.date.range/min/max`. Roda na saída do campo (`validateOnBlur ?? true` ou após interação); com `validateOnBlur == false` ou erro visível, roda a cada mudança.
-- O calendário (`showSgDatePicker`, exportado) devolve a data escolhida ou `null`; o botão some se o campo está `disabled` ou `readOnly`.
+- O calendário (`showSgDatePicker`, exportado) devolve a data escolhida ou `null`; o botão some se o campo está desabilitado (`enabled: false`) ou `readOnly`.
 
 **Controller, formulário e estado**
 - Liga-se ao formulário por `name` + `control`/`SgForm`, guardando a data ISO; o validador (`_formValidate`) roda em `trigger`/`handleSubmit`. `value` (`String` com a data ISO) e `initialValue` controlam; trocar por fora atualiza o texto, revalida um erro visível, e `reset` limpa o erro. Ganchos internos para o `SgInputBirthDate`: `onValueSet`, `onExitIso`, `formValidator`.

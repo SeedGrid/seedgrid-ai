@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, editor, tiptap, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgTextEditor.tsx
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Editor de texto rico (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -30,7 +30,7 @@ Import: `import { SgTextEditor, type SgTextEditorProps, type SgTextEditorSaveMet
 | `onLoad` | `((meta: SgTextEditorSaveMeta) => void)` | — | Não | Após carregar um `.html` pelo botão: recebe `SgTextEditorSaveMeta`. |
 | `height` | `number` | `320` | Não | Altura da área de edição (px). |
 | `placeholder` | `string` | i18n `components.textEditor.placeholder` | Não | Vai para `data-placeholder` do editor. |
-| `disabled` | `boolean` | — | Não | Editor não editável e toolbar desabilitada. |
+| `enabled` | `boolean` | `true` | Não | Com `false` o editor fica não editável e a toolbar desabilitada. |
 | `borderRadius` | `string \| number` | — | Não | Raio das bordas. |
 | `showCssEditor` | `boolean` | `false` | Não | Mostra textarea de CSS. |
 | `cssEditorLabel` | `string` | i18n `components.textEditor.cssEditorLabel` | Não | Rótulo do editor de CSS. |
@@ -102,7 +102,7 @@ O componente não usa `forwardRef` e não expõe a instância do TipTap (`Editor
 | Imagem por URL | `@tiptap/extension-image` (`inline: false`) via `window.prompt` |
 | Limpar formatação | `unsetAllMarks().clearNodes()` |
 
-O editor é criado com `immediatelyRender: false` (seguro para SSR) e `editable: !disabled`. **Confirmado**.
+O editor é criado com `immediatelyRender: false` (seguro para SSR) e `editable: enabled`. **Confirmado**.
 
 ## Internacionalização
 

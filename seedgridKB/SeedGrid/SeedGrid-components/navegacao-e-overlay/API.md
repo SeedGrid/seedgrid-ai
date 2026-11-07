@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, navegacao-e-overlay]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/menus, front/seedgrid-fe-components/packages/seedgrid-fe-components/src/overlay, front/seedgrid-fe-components/packages/seedgrid-fe-components/src/wizard
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Navegação, overlay e wizard (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -55,7 +55,7 @@ import { SgDockMenu, type SgDockMenuProps, type SgDockMenuItem, type SgDockMenuP
 
 ### Eventos e callbacks
 
-- Não há callback no nível do componente. Cada item tem `onClick?: () => void`, chamado no clique do botão do item, **exceto** se `item.disabled` ou se o ponteiro acabou de arrastar o dock (> 3px de movimento). **Confirmado** (`handleItemClick`).
+- Não há callback no nível do componente. Cada item tem `onClick?: () => void`, chamado no clique do botão do item, **exceto** se `item.enabled === false` ou se o ponteiro acabou de arrastar o dock (> 3px de movimento). **Confirmado** (`handleItemClick`).
 - Arraste (`enableDragDrop`): botão esquerdo do ponteiro inicia; a posição é limitada à viewport (ou ao `offsetParent` quando `style.position === "absolute"`) e salva no `pointerup` se houver `dragId`.
 - Menu de contexto (clique direito): só abre quando `enableDragDrop && dragId` e já existe posição salva/arrastada (`buildDockMenuContextMenuState`). Mostra um diálogo de confirmação "resetar posição" (textos i18n `components.dock.resetPosition`/`resetConfirm`, `components.actions.cancel`/`confirm`); confirmar apaga a posição persistida e volta à posição ancorada. **Confirmado**.
 
@@ -74,7 +74,7 @@ Não recebe `children`; o conteúdo vem de `items`. Ícones são `ReactNode` liv
 
 ### Acessibilidade
 
-- Cada item é `<button type="button">` com `aria-label={item.label}`, `title={item.label}` e `disabled={item.disabled}` (coberto por `tests/buttons-menus.test.mjs`). **Confirmado**.
+- Cada item é `<button type="button">` com `aria-label={item.label}`, `title={item.label}` e `disabled={item.enabled === false}` (coberto por `tests/buttons-menus.test.mjs`). **Confirmado**.
 - O container não tem `role` (ex.: `toolbar`/`menu`) nem navegação por setas; o diálogo de reset não tem `role="dialog"` nem tratamento de `Esc` (fecha clicando no fundo). **Confirmado** (ausência no código).
 
 ### Tipos auxiliares exportados
@@ -87,7 +87,7 @@ Não recebe `children`; o conteúdo vem de `items`. Ícones são `ReactNode` liv
 | `icon` | `React.ReactNode` | Sim | Ícone exibido |
 | `label` | `string` | Sim | Rótulo/tooltip e `aria-label` |
 | `onClick` | `() => void` | Não | Handler de clique |
-| `disabled` | `boolean` | Não | Desabilita o item (opacidade 0.5, cursor `not-allowed`) |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` desabilita o item (opacidade 0.5, cursor `not-allowed`) |
 | `badge` | `string \| number` | Não | Conteúdo da bolha de badge |
 | `className` | `string` | Não | Classe extra do item |
 
@@ -177,7 +177,7 @@ Consome `useComponentsI18n()` (aria-label padrão `components.popup.ariaLabel`).
 ### Acessibilidade
 
 - Painel com `role="dialog"`, `aria-modal="false"`, `aria-label = title ?? i18n("components.popup.ariaLabel")`. **Confirmado**.
-- `Esc` fecha (listener em `document`). Não há gestão de foco (não move o foco para o popup nem o devolve à âncora). Ações são `<button type="button">` com `title={hint}` e `disabled`. **Confirmado**.
+- `Esc` fecha (listener em `document`). Não há gestão de foco (não move o foco para o popup nem o devolve à âncora). Ações são `<button type="button">` com `title={hint}` e `disabled` quando `enabled` é `false`. **Confirmado**.
 
 ### Tipos auxiliares exportados
 
@@ -189,7 +189,7 @@ Consome `useComponentsI18n()` (aria-label padrão `components.popup.ariaLabel`).
 | `icon` | `React.ReactNode` | Não | Ícone antes do texto |
 | `hint` | `string` | Não | Tooltip nativo (`title`) |
 | `severity` | `SgPopupSeverity` | Não | Cor de fundo da ação; sem valor usa estilo neutro transparente |
-| `disabled` | `boolean` | Não | Desabilita o botão |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` desabilita o botão |
 | `closeOnClick` | `boolean` | Não | Fecha após o clique (padrão efetivo `true`) |
 | `onClick` | `() => void` | Não | Handler |
 
@@ -387,7 +387,7 @@ Herda de `SgDialog` (`role="dialog"`, `aria-modal`, `Esc`, *focus trap*, foco in
 | `severity` | `SgButtonProps["severity"]` | Não | Severidade do `SgButton` |
 | `appearance` | `SgButtonProps["appearance"]` | Não | `"solid" \| "outline" \| "ghost"` |
 | `shape` | `SgButtonProps["shape"]` | Não | Formato do `SgButton` (padrão `"rounded"`) |
-| `disabled` | `boolean` | Não | Desabilita o botão |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` desabilita o botão |
 | `className` | `string` | Não | Classe extra |
 | `onClick` | `() => void` | Não | Chamado antes de `onCancel`/`onConfirm` |
 

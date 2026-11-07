@@ -108,13 +108,19 @@ export default function Form() {
 
 ## Desabilitado
 
-Fonte: `desabilitado.tsx.sample`. Usa a prop `disabled` (confirmada no tipo).
+Fonte: `desabilitado.tsx.sample`. Usa a prop `enabled` com `false`.
 
 ```tsx
-import React from "react";
 import { SgTextEditor } from "@seedgrid/fe-components";
 
-export default function ReadOnlyPreview({ html }: { html: string }) {
-  return <SgTextEditor id="preview" valueHtml={html} disabled />;
+export default function Example() {
+  return (
+    <SgTextEditor
+      id="sg-text-editor-disabled"
+      valueHtml="<p><strong>Locked content</strong></p>"
+      enabled={false}
+      showCssEditor={false}
+    />
+  );
 }
 ```

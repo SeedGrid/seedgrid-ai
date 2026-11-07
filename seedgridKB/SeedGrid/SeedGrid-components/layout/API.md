@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, layout]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/layout
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "API React de Layout e containers (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -301,7 +301,7 @@ import { SgCard, type SgCardProps, type SgCardVariant, type SgCardSize, type SgC
 ### Eventos e callbacks
 | Callback | Assinatura | Quando dispara (Confirmado) |
 |---|---|---|
-| `onClick` | `React.MouseEventHandler<HTMLElement>` | Clique no card (desativado com `disabled`). Se o card é interativo (`clickable` ou `onClick`, e **não** `collapsible`/`draggable`), a raiz é um `<button type="button">`. |
+| `onClick` | `React.MouseEventHandler<HTMLElement>` | Clique no card (desativado com `enabled: false`). Se o card é interativo (`clickable` ou `onClick`, e **não** `collapsible`/`draggable`), a raiz é um `<button type="button">`. |
 | `onOpenChange` | `(open: boolean) => void` | Ao alternar o colapso (botão ou cabeçalho), só com `collapsible`. |
 | `onPositionChange` | `(position: SgCardPosition) => void` | Em todo commit de `dragPosition` (efeito), inclusive na montagem e ao hidratar a posição salva. |
 
@@ -360,7 +360,7 @@ import { SgAccordion, type SgAccordionProps, type SgAccordionItem, type SgAccord
 | Callback | Assinatura | Quando dispara (Confirmado) |
 |---|---|---|
 | `onActiveIndexChange` | `(indexes: number[]) => void` | A cada alternância, com os índices abertos normalizados (ordenados, únicos, dentro do intervalo; no máximo 1 se `multiple=false`). |
-| `onItemToggle` | `(index: number, isOpen: boolean) => void` | Após `onActiveIndexChange`, com o novo estado do item. Não dispara para item `disabled` nem ao tentar fechar com `collapsible=false`. |
+| `onItemToggle` | `(index: number, isOpen: boolean) => void` | Após `onActiveIndexChange`, com o novo estado do item. Não dispara para item com `enabled: false` nem ao tentar fechar com `collapsible=false`. |
 
 ### Ref
 Não aceita `ref`.
@@ -373,7 +373,7 @@ Não aceita `ref`.
 | `id` | `string \| number` | Não | Compõe os ids DOM (`<baseId>-header-<id>` etc.); padrão = índice. |
 | `title` | `React.ReactNode` | Sim | Texto do cabeçalho. |
 | `content` | `React.ReactNode` | Sim | Conteúdo do painel. |
-| `disabled` | `boolean` | Não | Bloqueia a alternância (botão `disabled`). |
+| `enabled` | `boolean` | Não | Padrão `true`. Com `false` bloqueia a alternância (o botão do cabeçalho fica `disabled`). |
 | `icon` | `React.ReactNode` | Não | Ícone no cabeçalho. |
 | `end` | `React.ReactNode` | Não | Conteúdo à direita do cabeçalho (só vertical). |
 | `className` | `string` | Não | Classe do painel do item. |
@@ -436,6 +436,8 @@ import { SgPageControl, SgPageControlPage, type SgPageControlProps, type SgPageC
 | `hint` | `string` | — | Não | Descricao curta associada a aba. |
 | `icon` | `React.ReactNode` | — | Não | Icone opcional da aba. |
 | `hidden` | `boolean` | — (tratado como `false`) | Não | Oculta a pagina sem remove-la da estrutura. |
+| `enabled` | `boolean` | — (tratado como `true`) | Não | Com `false` a aba fica desabilitada e não pode ser selecionada. |
+| `keepMounted` | `boolean` | — | Não | Declarada no tipo da página, mas o código não a lê: quem decide é `keepMounted` do `SgPageControl`. |
 | `className` | `string` | — | Não | Classes and styles for wrappers. |
 | `style` | `React.CSSProperties` | — | Não | Classes and styles for wrappers. |
 | `tabClassName` | `string` | — | Não | Classes and styles for wrappers. |
@@ -626,7 +628,7 @@ import { SgBreadcrumb, type SgBreadcrumbProps, type SgBreadcrumbItem, type SgBre
 Não aceita `ref`.
 
 ### Tipos auxiliares exportados
-`SgBreadcrumbItem`: `id: string` (obrigatório), `label: React.ReactNode` (obrigatório), `href?: string`, `icon?: React.ReactNode`, `disabled?: boolean`, `hidden?: boolean` (filtrado antes de renderizar), `onClick?: () => void`.
+`SgBreadcrumbItem`: `id: string` (obrigatório), `label: React.ReactNode` (obrigatório), `href?: string`, `icon?: React.ReactNode`, `enabled?: boolean`, `hidden?: boolean` (filtrado antes de renderizar), `onClick?: () => void`.
 `SgBreadcrumbSeparator = "slash" | "chevron" | "dot" | "arrow"`; `separator` também aceita um elemento React.
 
 ### Children, slots e composição
@@ -707,7 +709,7 @@ import {
 
 ### Eventos e callbacks
 Ao ativar um item (clique, Enter/Espaço ou seleção na busca) — `activateNode`, Confirmado:
-1. `onItemClick(node)` sempre (itens não `disabled`);
+1. `onItemClick(node)` sempre (itens com `enabled` diferente de `false`);
 2. se o item tem `url`: `onNavigate(node)` se informado; **senão o menu executa `window.location.assign(url)`**;
 3. se o item tem `onClick`: chama `node.onClick()` e depois `onAction(node)`;
 4. em `drawer`/`hybrid`, com `url`, `closeOnNavigate` e não fixado (`pinned`), fecha o overlay.
@@ -718,7 +720,7 @@ Demais: `onExpandedIdsChange(ids)` (expansão de grupos; `mode="accordion"` mant
 Não aceita `ref`.
 
 ### Tipos auxiliares exportados
-- `SgMenuNode`: `id: string`, `label: string`, `hint?: string` (tooltip), `url?: string`, `children?: SgMenuNode[]`, `disabled?: boolean`, `icon?: React.ReactNode`, `badge?: string | number`, `onClick?: () => void`.
+- `SgMenuNode`: `id: string`, `label: string`, `hint?: string` (tooltip), `url?: string`, `children?: SgMenuNode[]`, `enabled?: boolean`, `icon?: React.ReactNode`, `badge?: string | number`, `onClick?: () => void`.
 - `SgMenuSelection`: `activeId?: string`, `activeUrl?: string` (item ativo por id ou pela primeira ocorrência da URL).
 - `SgMenuBrand`: `title?: string`, `imageSrc?: string`, `image?: React.ReactNode`, `onClick?: () => void`.
 - `SgMenuUser`: `name: string`, `subtitle?: string`, `avatarSrc?: string`, `avatar?: React.ReactNode`, `onClick?: () => void`.
@@ -800,7 +802,7 @@ import {
 | `onCheckedChange` | `(ids: string[]) => void` | Mudança de marcação no modo `live` (cascata pai→filhos aplicada). |
 | `onExpandedChange` | `(ids: string[]) => void` | Expandir/recolher, `expandAll`/`collapseAll`, expansão automática da busca. |
 | `onExpand` / `onCollapse` | `(node: SgTreeNode) => void` | Ao expandir/recolher um nó pelo usuário. |
-| `onLeafClick` | `(id: string) => void` | Clique no rótulo de um nó **sem filhos** (não `disabled`). |
+| `onLeafClick` | `(id: string) => void` | Clique no rótulo de um nó **sem filhos** (com `enabled` diferente de `false`). |
 | `onSearchChange` | `(v: string) => void` | Digitação na busca (`searchable`). |
 | `confirmBar.onConfirm` | `(selectedIds: string[]) => void` | Botão confirmar (só com `checkable` + `checkMode="confirm"` + `confirmBar`); envia folhas (`confirmSelection="leafOnly"`) ou todos (`"all"`). |
 | `confirmBar.onCancel` | `() => void` | Botão cancelar (`showCancel`). |
@@ -817,14 +819,14 @@ import {
 | `clearChecked()` | `void` | Limpa a marcação. |
 
 ### Tipos auxiliares
-- `SgTreeNode`: `id: string`, `label: string`, `icon?: React.ReactNode`, `children?: SgTreeNode[]`, `disabled?: boolean`, `meta?: unknown`.
+- `SgTreeNode`: `id: string`, `label: string`, `icon?: React.ReactNode`, `children?: SgTreeNode[]`, `enabled?: boolean`, `meta?: unknown`.
 - `SgTreeNodeJson`: igual, mas `icon?: string` (chave do registro) e `checked?: boolean`.
 - `SgTreeIconRegistry = Record<string, React.ReactNode>`.
 - `SgTreeConfirmBar = false | { label?: string; hint?: string; showCancel?: boolean; cancelLabel?: string; sticky?: boolean; disabledWhenEmpty?: boolean; resetAfterConfirm?: boolean; onConfirm: (selectedIds: string[]) => void; onCancel?: () => void }` — `disabledWhenEmpty` vale `true` salvo `false` explícito; `resetAfterConfirm` limpa a marcação após confirmar.
 - `SgSize = "sm" | "md" | "lg"` · `SgDensity = "compact" | "normal" | "comfortable"` · `SgTone = "default" | "muted"`.
 - **Trilhas (`tracks`)** — o tipo `SgTreeTrack` e variantes **não são exportados pelo barrel** (só existem em `SgTreeView.tsx`): base `{ id: string; label?: string; width?: string /* padrão 110px */ }` +
-  - `SgTreeTrackBoolean`: `kind: "boolean"`, `checkedIds: string[]`, `onCheckedChange(ids)`, `disabled?(node)`, `ariaLabel?`, `adornment?(node)`;
-  - `SgTreeTrackEnum`: `kind: "enum"`, `options: { value; label }[]`, `valueByNodeId: Record<string, string | undefined>`, `onChange(next)`, `disabled?(node)`, `ariaLabel?`, `placeholder?`, `mixedLabel?`, `adornment?(node)`;
+  - `SgTreeTrackBoolean`: `kind: "boolean"`, `checkedIds: string[]`, `onCheckedChange(ids)`, `enabled?(node)`, `ariaLabel?`, `adornment?(node)`;
+  - `SgTreeTrackEnum`: `kind: "enum"`, `options: { value; label }[]`, `valueByNodeId: Record<string, string | undefined>`, `onChange(next)`, `enabled?(node)`, `ariaLabel?`, `placeholder?`, `mixedLabel?`, `adornment?(node)`;
   - `SgTreeTrackCustom`: `kind: "custom"`, `render(node)`.
   As trilhas `boolean`/`enum` são controladas de fora e têm cascata própria pai→filhos.
 
@@ -997,6 +999,7 @@ import {
 | `hint` | `string` | — | Não | Texto auxiliar usado como dica contextual. |
 | `loading` | `boolean` | `false` | Não | Indica processamento em andamento. |
 | `severity` | `SgToolBarSeverity` = `"primary" \| "secondary" \| "success" \| "info" \| "warning" \| "help" \| "danger" \| "plain"` | `"plain"` | Não | Tom visual do botao de toolbar. |
+| `enabled` | `boolean` | `true` | Não | Com `false` o botão fica desabilitado e o clique é ignorado. |
 | `onClick` | `() => void \| Promise<void>` | — | Não | Callback executado ao clicar no item. |
 | `className` | `string` | — | Não | Classes adicionais do botão. *(Inferência)* |
 | `style` | `React.CSSProperties` | — | Não | Estilo inline do botão. *(Inferência)* |
@@ -1006,7 +1009,7 @@ import {
 
 ### Eventos e callbacks
 - `SgToolBar.onCollapsedChange(collapsed)` — ao clicar no botão de colapso; dentro de dock também grava `collapsed` no estado do layout (Confirmado).
-- `SgToolbarIconButton.onClick(): void | Promise<void>` — se retornar Promise, o botão fica em loading (`aria-busy`) até ela terminar; cliques são ignorados com `disabled` ou em loading (Confirmado).
+- `SgToolbarIconButton.onClick(): void | Promise<void>` — se retornar Promise, o botão fica em loading (`aria-busy`) até ela terminar; cliques são ignorados com `enabled: false` ou em loading (Confirmado).
 
 ### Ref
 Nenhum dos dois aceita `ref`.

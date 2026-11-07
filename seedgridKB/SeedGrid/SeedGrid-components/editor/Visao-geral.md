@@ -69,7 +69,7 @@ graph LR
 - **Área de edição:** classes `prose max-w-none`. As classes `prose` vêm do plugin de tipografia do Tailwind. Se esse plugin está incluído no CSS compilado do pacote **não foi verificado**.
 - **Moldura:** a toolbar e a área usam bordas e `bg-background`.
 - **Customização:** `className`, `style`, `borderRadius`, `height` (padrão 320 px).
-- **Desabilitado:** `disabled` deixa o conteúdo não editável, com opacidade 60%.
+- **Desabilitado:** `enabled={false}` deixa o conteúdo não editável, com opacidade 60%.
 
 **Confirmado**, salvo o ponto do `prose`.
 

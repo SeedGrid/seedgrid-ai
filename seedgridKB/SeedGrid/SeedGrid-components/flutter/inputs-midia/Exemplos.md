@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-mid
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: e5e8baf
-analisado-em: 2026-11-04
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Exemplos — Data e hora, imagem e câmera (Flutter)
@@ -114,7 +114,8 @@ Column(
       control: _form,
       labelText: 'Consulta',
       timeZone: '-03:00',
-      rules: const SgRules(required: 'Informe a data e a hora'),
+      required: true,
+      requiredMessage: 'Informe a data e a hora',
     ),
     const SizedBox(height: 12),
     SgButton(
@@ -230,7 +231,8 @@ Column(
       control: _form,
       labelText: 'Comprovantes',
       maxFiles: 3,
-      rules: const SgRules(required: 'Anexe ao menos um arquivo'),
+      required: true,
+      requiredMessage: 'Anexe ao menos um arquivo',
     ),
     const SizedBox(height: 12),
     SgButton(
@@ -253,7 +255,7 @@ Column(
 const SgFileUpload(
   id: 'anexo-desabilitado',
   labelText: 'Anexo',
-  disabled: true,
+  enabled: false,
   defaultValue: [SgFile(name: 'contrato.pdf', size: 482304)],
 )
 ```
@@ -341,7 +343,8 @@ Column(
       name: 'documento',
       control: _form,
       labelText: 'Foto do documento',
-      rules: const SgRules(required: 'Escolha uma imagem'),
+      required: true,
+      requiredMessage: 'Escolha uma imagem',
     ),
     const SizedBox(height: 12),
     SgButton(
@@ -364,7 +367,7 @@ Column(
 const SgImageUpload(
   id: 'foto-desabilitada',
   labelText: 'Foto',
-  disabled: true,
+  enabled: false,
 )
 ```
 
