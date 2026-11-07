@@ -26,6 +26,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 ## Formulário
 
 - `SgFormController(defaultValues)` + `SgForm(onValid)`; cada campo se liga por `name` e `control`. Faça `dispose` do controller.
+- **Sem `setState` de página (ADR 63):** o campo ligado por `name` e `control` guarda o próprio valor; leia no envio (`handleSubmit`) ou com `form.watch('nome')`, e para reagir a uma mudança escute o controller com `ListenableBuilder(listenable: form, builder: ...)`, que reconstrói só aquele trecho. Valor solto fora do formulário (alvo da exclusão, aba, filtro): `ValueNotifier` com `ValueListenableBuilder`. Não use `setState` na tela inteira para isso: ele reconstrói a página. Se um componente só funcionar com valor controlado pela página, avise a `front` em vez de contornar com `setState`.
 - Input certo por tipo: `SgInputText`, `SgInputEmail`, `SgCombobox<String>`, `SgInputCurrency` (valor em string `"0.00"`, converta no submit), `SgToggleSwitch`. Nunca `SgInputText` para número ou dinheiro. Salvar com `SgButtonType.submit`.
 - Obrigatórios por `required: true` e `requiredMessage` no próprio campo; validação própria por `validation` (o `SgRules` e a prop `rules` não existem mais no Flutter); mensagens pelo i18n.
 

@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Alterado
+- `sg-crud-front-flutter`: orienta o host a não usar `setState` de página (ADR 63): `SgFormController` com `handleSubmit`/`watch`, `ListenableBuilder` para reagir e `ValueNotifier` com `ValueListenableBuilder` para valor solto (P156.F3.T5). Sem release.
 - KB de componentes alinhada ao código da main (P156): tabelas de API sem `disabled`/`rules`/`SgRules` (agora `enabled` e props diretas de validação), props novas do manifesto e do `generated-props.json`, seção do `SgColorPicker`, exemplos sem API que não compila, skill `sg-crud-front-flutter` sem `SgRules`; novo `scripts/kb-componentes-vs-codigo.mjs` (compara a KB com o manifesto, o `generated-props.json` e o construtor Dart). Sem release.
 - `sg-plan-goal`: todo plano (modelo, `/goal` e esqueleto do `sg-diagnostico`) diz que o goal vai até o fim sem parar entre fases para perguntar, que durante o plano só há commit e que o push é um só, no fim, com o "pode" do dono; as perguntas que sobrarem vêm na FIM.T2. Sem release.
 - KB do `subdomain-tenancy`: aviso de que até a 2026.11.09 o pool do tenant fecha por ociosidade e não volta (`This pool is closed` até reiniciar), contorno (subir `cache.idle-eviction`) e correção na 2026.11.10; o relógio e o motivo `closed` das métricas descritos na tabela de propriedades (P158). Sem release.
