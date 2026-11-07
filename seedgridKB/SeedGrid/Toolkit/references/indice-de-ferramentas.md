@@ -38,7 +38,7 @@ Caminhos abaixo: **A** = `.ai/skills/...` do produto (vem com o AIDLC); **B** = 
 | `scripts/check-pack.mjs` | Confere o que entraria no pacote npm sem publicar | `node scripts/check-pack.mjs [--release <tag>]` |
 | `scripts/sync-boilerplates.mjs` | Sincroniza `Toolkit/boilerplates/` com o repositório `boilerplate` | `node scripts/sync-boilerplates.mjs [--ref origin/main] [--dry-run]` |
 | `scripts/e2e-*.mjs` | Testes ponta a ponta do AIDLC com agente real (custam dinheiro; usam `--orcamento`) | ver o cabeçalho de cada um |
-| `scripts/kb-componentes-vs-codigo.mjs` | Compara as páginas de API da KB (React e Flutter) com o manifesto do MCP, o `generated-props.json` e o construtor Dart; acusa prop removida, nova, tipo/padrão/obrigatória divergente, extra inexistente, `disabled`, `rules` e `SgRules` (sai com 1 se houver) | `node scripts/kb-componentes-vs-codigo.mjs [Componente] [--plataforma flutter\|react\|ambas] [--exemplos] [--resumo] [--json]` |
+| `scripts/kb-componentes-vs-codigo.mjs` | Compara as páginas de API da KB (React e Flutter) com o manifesto do MCP, o `generated-props.json` e o construtor Dart; acusa prop removida, nova, tipo/padrão/obrigatória divergente, extra inexistente, `disabled`, `rules` e `SgRules` (sai com 1 se houver); com `--tipos` confere também tipo e padrão de cada prop (React: `generated-props.json`, manifesto e inicializador no `.tsx`; Flutter: campo e `this.x = v` do construtor Dart; omissões do gerador viram aviso) | `node scripts/kb-componentes-vs-codigo.mjs [Componente] [--plataforma flutter\|react\|ambas] [--tipos] [--exemplos] [--resumo] [--json]` |
 
 ## Work `seedgrid-platform-work` (C)
 | Ferramenta | Para quê | Chamada |

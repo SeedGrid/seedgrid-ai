@@ -6,6 +6,14 @@
 // tipo/padrão/obrigatoriedade divergente, extra do Flutter inexistente no construtor Dart,
 // extra novo do construtor sem linha na KB e legado (`disabled`, `rules`, `SgRules`).
 // Sai com código 1 se houver divergência. Criado na P156.F0.T1.
+// Modo `--tipos` (P156.F3.T2): confere também o TIPO e o PADRÃO de cada prop da tabela.
+//   React: tipo contra o `generated-props.json` (alias ou união, ignorando espaços, crases, `React.`, `undefined` e a ordem da união)
+//     e padrão contra o inicializador da desestruturação no .tsx (achado pelo `Fonte:` da seção) ou, sem ele, contra o `default` do manifesto.
+//     Divergência real: [tipo-ts] e [padrao-ts]. Aviso (não conta): [aviso-tipo] quando o tipo é alias/resolvido (CSS, intersecção),
+//     quando a prop falta no manifesto/gerador (ex.: `elevation`, `control`, `register`), quando o padrão é expressão/constante/prosa
+//     ou não tem inicializador no .tsx nem no manifesto.
+//   Flutter: tipo do campo `final T x;` (ou do parâmetro tipado) e padrão `this.x = v` do construtor Dart; ignora `?` (nullable), `const`,
+//     espaços, aspas, nomes de parâmetros de `Function(...)` e anotação `(...)` da KB. [tipo-dart] e [padrao-dart] contam; `super.x` vira aviso.
 //
 // Uso:
 //   node scripts/kb-componentes-vs-codigo.mjs [Componente] [opções]
@@ -16,6 +24,7 @@
 //     --flutter <pasta>                  raiz do seedgrid-fe-flutter (padrão: <platform>/front/seedgrid-fe-flutter)
 //     --platform <pasta>                 raiz do seedgrid-platform (padrão: $SEEDGRID_PLATFORM ou ../seedgrid-platform)
 //     --kb <pasta>                       pasta SeedGrid-components da KB (padrão: seedgridKB/SeedGrid/SeedGrid-components)
+//     --tipos                            também confere TIPO e PADRÃO de cada prop (React: generated-props.json e manifesto; Flutter: construtor Dart)
 //     --exemplos                         também acusa SgRules/rules:/disabled: nos Exemplos*.md
 //     --resumo                           só os totais por componente
 //     --json                             saída em JSON
@@ -84,6 +93,8 @@ function lerSecoes(arquivo, ehFlutter) {
     if (!ehFlutter && /^\|\s*Prop\s*\|/.test(l)) emProps = true;
     const a = l.match(/^- Arquivo: `([^`]+)`/);
     if (a) cur.arquivoDart = a[1];
+    const ft = !ehFlutter && !cur.arquivoTsx ? l.match(/Fonte: `([^`]+\.tsx)`/) : null;
+    if (ft) cur.arquivoTsx = ft[1];
     if (!emProps) return;
     const c = cells(l);
     if (ehFlutter && c.length >= 6 && /^`[\w.]+`$/.test(c[0])) {
@@ -146,6 +157,110 @@ function parametrosDart(texto, classe) {
   return nomes;
 }
 
+// ---------- modo --tipos: tipo e padrão de cada prop ----------
+// Flutter: tipo e padrão do construtor Dart (campo `final T x;` ou parâmetro tipado `T x = v`).
+function paramsDartTipados(texto, classe) {
+  const m = new RegExp(`\\bclass\\s+${classe}\\b`).exec(texto);
+  if (!m) return null;
+  const prox = texto.slice(m.index + 1).search(/\n(?:abstract\s+|final\s+|base\s+)?(?:class|mixin|enum|extension)\s+\w+/);
+  const corpoClasse = prox < 0 ? texto.slice(m.index) : texto.slice(m.index, m.index + 1 + prox);
+  const campos = new Map();
+  for (const f of corpoClasse.matchAll(/^\s*(?:@\w+(?:\([^)]*\))?\s*)*(?:late\s+)?final\s+([^;=\n]+?)\s+(\w+)\s*(?:;|=)/gm)) campos.set(f[2], f[1].trim());
+  const re = new RegExp(`\\b(?:const\\s+|factory\\s+)?${classe}\\s*\\(`, 'g');
+  const c = re.exec(corpoClasse);
+  if (!c) return null;
+  let i = c.index + c[0].length, prof = 1;
+  const ini = i;
+  while (i < corpoClasse.length && prof > 0) { const ch = corpoClasse[i]; if (ch === '(') prof++; else if (ch === ')') prof--; i++; }
+  const corpo = corpoClasse.slice(ini, i - 1).replace(/\/\/.*$/gm, '').replace(/^\s*[{[]/, '').replace(/[}\]]\s*$/, '');
+  const pedacos = [];
+  let pr = 0, b = 0;
+  for (let j = 0; j <= corpo.length; j++) {
+    const ch = corpo[j];
+    if (ch === undefined || (ch === ',' && pr === 0)) { pedacos.push(corpo.slice(b, j)); b = j + 1; continue; }
+    if ('([{<'.includes(ch)) pr++;
+    else if (ch === '>' && corpo[j - 1] === '=') continue; // =>
+    else if (')]}>'.includes(ch)) pr--;
+    if (pr < 0) pr = 0;
+  }
+  const out = new Map(); // nome -> { tipo: string|null, padrao: string|null }
+  for (let p of pedacos) {
+    p = p.trim().replace(/^required\s+/, '');
+    if (!p) continue;
+    const t = /^(this|super)\.(\w+)(?:\s*=\s*([\s\S]+))?$/.exec(p);
+    if (t) { out.set(t[2], { tipo: t[1] === 'this' ? (campos.get(t[2]) ?? null) : null, padrao: t[3]?.trim() ?? null, super: t[1] === 'super' }); continue; }
+    const u = /^([\s\S]+?)\s+(\w+)(?:\s*=\s*([\s\S]+))?$/.exec(p);
+    if (u) out.set(u[2], { tipo: u[1].trim(), padrao: u[3]?.trim() ?? null, super: false });
+  }
+  return out;
+}
+// forma: sem crases, espaços, `const`, `?` final (nullable) e aspas simples = duplas
+const fTipoDart = (s) => {
+  let t = norm(s);
+  const anot = /^(.*?\??)\s+\([^()]*\)$/.exec(t); // anotação da KB depois do tipo: `T? (String)`
+  if (anot && !/Function$/.test(anot[1])) t = anot[1];
+  t = t.replace(/\s+\w+(?=\s*[,)])/g, '').replace(/,\s*\)/g, ')'); // nomes dos parâmetros de Function(...)
+  return t.replace(/\s/g, '').replace(/\?(?=$|[,>)|])/g, '');
+};
+const fPadraoDart = (s) => norm(s).replace(/\s+\([^()]*\)$/, '').replace(/^const\s+/, '').replace(/\bconst\s+/g, '').replace(/\s/g, '').replace(/'/g, '"').replace(/,(?=[)\]}])/g, '');
+// React: o tipo do generated-props é o nome do alias (`Severity`); a KB mostra `Alias` = `união`
+const fTipoTs = (s) => {
+  let t = String(s ?? '').replace(/\\\|/g, '|').replace(/`/g, '').replace(/React\./g, '').replace(/\s+/g, '').replace(/'/g, '"').replace(/[()]/g, '');
+  t = t.replace(/MouseEvent<Element,MouseEvent>/g, 'MouseEvent').replace(/;(?=\})/g, '');
+  if (/ReactElement.*ReactPortal/.test(t)) t = 'ReactNode';
+  const ordena = (x) => x.replace(/[^|(){},<>;:=]+(?:\|[^|(){},<>;:=]+)+/g, (run) => [...new Set(run.split('|').map((u) => [...new Set(u.split('&'))].join('&')))].filter((u) => u !== 'undefined').sort().join('|'));
+  return ordena(t);
+};
+// devolve 'igual', 'alias' (um dos lados é só o nome de um alias/tipo resolvido: não dá para decidir) ou 'diferente'
+function compararTiposTs(gen, kb) {
+  const k = String(kb ?? '').replace(/\\\|/g, '|');
+  const partes = k.split(/`\s*=\s*`/);
+  const candidatos = partes.length > 1 ? [partes[0], partes[1], k] : [k];
+  if (candidatos.some((x) => fTipoTs(x) === fTipoTs(gen))) return 'igual';
+  const g = fTipoTs(gen);
+  const ident = (x) => /^[\w.]+$/.test(x) && !/^(string|number|boolean|bigint|null|undefined|unknown|any|void|never)$/.test(x);
+  if (ident(g) || ident(fTipoTs(partes[0])) || g.includes('&') || /^\w+\[".*"\]$/.test(fTipoTs(partes[0]))) return 'alias';
+  return 'diferente';
+}
+const fPadraoTs = (s) => norm(s).replace(/\s*\(.*\)\s*$/, '').replace(/\s/g, '').replace(/["']/g, '').toLowerCase();
+// padrões de expressão/derivados/prosa: sem comparação literal
+const PADRAO_ISENTO_TS = (kd) => /[ᶠᵇᵐˢ]|inferido|^\?\?|^\(/.test(kd) || (/\s/.test(norm(kd).replace(/\s*\(.*\)\s*$/, '')) && !/^`?["'[{]/.test(kd));
+
+// React: padrão lido do inicializador da desestruturação no .tsx (`size = "md",`)
+let indiceTsx = null;
+function achaTsx(nome, fonte) {
+  if (!indiceTsx) {
+    indiceTsx = new Map();
+    const pilha = [path.resolve(path.dirname(fGenProps), '..')];
+    while (pilha.length) {
+      const d = pilha.pop();
+      if (!existsSync(d)) continue;
+      for (const e of readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, e.name);
+        if (e.isDirectory()) { if (e.name !== 'node_modules') pilha.push(p); } else if (e.name.endsWith('.tsx') && !indiceTsx.has(e.name)) indiceTsx.set(e.name, p);
+      }
+    }
+  }
+  return indiceTsx.get(fonte ? path.basename(fonte) : `${nome}.tsx`) ?? indiceTsx.get(`${nome}.tsx`) ?? null;
+}
+function padraoNoTsx(texto, nome) {
+  // todos os inicializadores `nome = valor` do arquivo (o arquivo pode ter subcomponentes com a mesma prop)
+  const re = new RegExp(`(^[ \\t]*|[{,]\\s*)${nome}\\s*=\\s*(?!=)`, 'gm');
+  const out = [];
+  for (let m = re.exec(texto); m; m = re.exec(texto)) {
+    let j = m.index + m[0].length, pr = 0;
+    const b = j;
+    for (; j < texto.length; j++) {
+      const ch = texto[j];
+      if ('([{<'.includes(ch) && !(ch === '<' && /\s/.test(texto[j + 1] ?? ''))) pr++;
+      else if (')]}>'.includes(ch) && !(ch === '>' && texto[j - 1] === '=')) { if (pr === 0) break; pr--; } else if (ch === ',' && pr === 0) break;
+      else if (ch === '\n' && pr === 0) break;
+    }
+    const v = texto.slice(b, j).trim();
+    if (v && !/^\{[\w.]+\}$/.test(v)) out.push(v); // `{x}` é atributo JSX (`x={x}`), não padrão
+  }
+  return out;
+}
 // ---------- verificação ----------
 const resultado = new Map(); // componente -> { plataforma, grupo, itens: [{tipo, texto}] }
 const add = (comp, plataformaNome, grupo, tipo, texto) => {
@@ -171,6 +286,24 @@ function verificaLegado(secao, ehFlutter, comp, plataformaNome, grupo) {
       if (/\bdisabled\b/.test(t)) add(comp, plataformaNome, grupo, 'legado', `linha ${n}: disabled`);
       if (/\brules\b\s*:|`rules`|\brules=/.test(t)) add(comp, plataformaNome, grupo, 'legado', `linha ${n}: rules`);
     }
+  }
+}
+
+function tiposFlutter(s, dartTexto, grupo) {
+  const pt = paramsDartTipados(dartTexto, s.nome);
+  if (!pt) return;
+  for (const [nome, r] of s.props) {
+    const d = pt.get(nome);
+    if (!d) continue;
+    if (d.tipo === null) add(s.nome, 'flutter', grupo, 'aviso-tipo', `${nome} (linha ${r.n}): tipo não declarado no widget (super.${nome} ou campo herdado), KB ${norm(r.tipo)} não conferido`);
+    else if (fTipoDart(d.tipo) !== fTipoDart(r.tipo)) add(s.nome, 'flutter', grupo, 'tipo-dart', `${nome} (linha ${r.n}): Dart ${d.tipo} × KB ${norm(r.tipo)}`);
+    if (r.padrao.endsWith('†')) continue;
+    const dk = r.padrao;
+    const nuloKb = dk === '' || /^(—|null\b|\(sem padr)/i.test(dk);
+    const nuloDart = d.padrao === null || d.padrao === 'null';
+    if (nuloDart && !nuloKb) add(s.nome, 'flutter', grupo, 'padrao-dart', `${nome} (linha ${r.n}): construtor sem padrão × KB ${dk}`);
+    else if (!nuloDart && nuloKb) add(s.nome, 'flutter', grupo, 'padrao-dart', `${nome} (linha ${r.n}): construtor ${d.padrao} × KB sem padrão`);
+    else if (!nuloDart && fPadraoDart(d.padrao) !== fPadraoDart(dk)) add(s.nome, 'flutter', grupo, 'padrao-dart', `${nome} (linha ${r.n}): construtor ${d.padrao} × KB ${dk}`);
   }
 }
 
@@ -210,6 +343,7 @@ if (doFlutter) {
           if (dd !== null && chave(dd) !== chave(dk) && !chave(dk).includes(chave(dd)) && !chave(dd).includes(chave(dk))) add(s.nome, 'flutter', grupo, 'padrao', `${nome} (linha ${r.n}): construtor ${dd} × KB ${dk}`);
           if (dd === null && dk !== '—' && !/^(null|\(sem padr)/i.test(dk)) add(s.nome, 'flutter', grupo, 'padrao', `${nome} (linha ${r.n}): construtor sem padrão × KB ${dk}`);
         }
+        if (flag('tipos')) tiposFlutter(s, dartTexto, grupo);
         const omitidas = new Set(['key', 'className', 'style']);
         for (const n of (mp ? params.keys() : [])) if (!s.props.has(n) && !nomesManifesto.has(n) && !omitidas.has(n)) add(s.nome, 'flutter', grupo, 'extra-nova', `${n}: parâmetro do construtor Dart sem linha na KB`);
       }
@@ -222,7 +356,8 @@ if (doFlutter) {
 
 if (doReact) {
   const gen = lerJson(fGenProps);
-  const manR = new Set(lerJson(fReactManifest).components.map((c) => c.exportName));
+  const manRProps = new Map(lerJson(fReactManifest).components.map((c) => [c.exportName, c.sgMeta?.props ?? []]));
+  const manR = new Set(manRProps.keys());
   for (const { grupo, arquivo } of paginasApi(kb, false)) {
     for (const s of lerSecoes(arquivo, false)) {
       if (only && s.nome !== only) continue;
@@ -235,10 +370,34 @@ if (doReact) {
       // generated-props.json é lossy (ex.: `elevation` do SgButton existe no .tsx e não consta lá): só `disabled` é removida segura (`rules` do React continua no .tsx);
       // o resto é 'conferir' (aviso, não conta) e deve ser lido no .tsx
       for (const [nome, r] of s.props) if (!nomes.has(nome) && !HTML_REACT.has(nome)) add(s.nome, 'react', grupo, nome === 'disabled' ? 'removida' : 'conferir', `${nome} (linha ${r.n}): na KB, fora do generated-props.json${nome === 'disabled' ? '' : ' (conferir no .tsx)'}`);
+      let tsxTexto;
       for (const p of gp) {
         const r = s.props.get(p.name);
         if (!r) { add(s.nome, 'react', grupo, 'nova', `${p.name} (${p.type}): em generated-props.json, sem linha na KB`); continue; }
         if (!!p.required !== r.obrig) add(s.nome, 'react', grupo, 'obrigatoria', `${p.name} (linha ${r.n}): generated-props required=${!!p.required} × KB ${r.obrig ? 'sim' : 'não'}`);
+        if (flag('tipos')) {
+          const ct = compararTiposTs(p.type, r.tipo);
+          if (ct === 'diferente') add(s.nome, 'react', grupo, 'tipo-ts', `${p.name} (linha ${r.n}): generated-props ${p.type} × KB ${norm(r.tipo)}`);
+          else if (ct === 'alias') add(s.nome, 'react', grupo, 'aviso-tipo', `${p.name} (linha ${r.n}): tipo é alias/resolvido (generated-props ${p.type} × KB ${norm(r.tipo).slice(0, 80)}), conferir no .tsx`);
+          const mp = (manRProps.get(s.nome) ?? []).find((x) => x.name === p.name);
+          const kd = r.padrao;
+          const semPadraoKb = kd === '' || /^—/.test(kd);
+          const isento = PADRAO_ISENTO_TS(kd);
+          if (!semPadraoKb && !isento) {
+            if (tsxTexto === undefined) { const f = achaTsx(s.nome, s.arquivoTsx); tsxTexto = f ? readFileSync(f, 'utf8') : null; }
+            const kn = fPadraoTs(kd);
+            const dts = tsxTexto ? padraoNoTsx(tsxTexto, p.name) : [];
+            const dtOk = dts.find((x) => { const t = /^[\d\s*+\-/().]+$/.test(x) ? String(Function(`return (${x})`)()) : x; const d = fPadraoTs(t); return d === kn || d.includes(kn) || kn.includes(d); });
+            const dt = dts.length ? (dtOk ?? dts[0]) : null;
+            const defMan = mp && mp.default !== undefined ? (typeof mp.default === 'string' ? mp.default : JSON.stringify(mp.default)) : null;
+            if (dt !== null && /^[A-Z][A-Z0-9_]+$/.test(dt)) add(s.nome, 'react', grupo, 'aviso-tipo', `${p.name} (linha ${r.n}): .tsx usa a constante ${dt}, KB ${kd} não conferido`);
+            else if (dt !== null) {
+              if (dtOk === undefined) add(s.nome, 'react', grupo, 'padrao-ts', `${p.name} (linha ${r.n}): .tsx ${dt} × KB ${kd}`);
+            } else if (defMan !== null) {
+              if (fPadraoTs(defMan) !== kn) add(s.nome, 'react', grupo, 'padrao-ts', `${p.name} (linha ${r.n}): manifesto ${JSON.stringify(mp.default)} × KB ${kd}`);
+            } else add(s.nome, 'react', grupo, 'aviso-tipo', `${p.name} (linha ${r.n}): padrão da KB (${kd}) sem inicializador no .tsx nem padrão no manifesto, não conferido`);
+          } else if (semPadraoKb && mp && mp.default !== undefined) add(s.nome, 'react', grupo, 'aviso-tipo', `${p.name} (linha ${r.n}): manifesto traz padrão ${JSON.stringify(mp.default)}, KB sem padrão`);
+        }
       }
     }
   }
@@ -263,7 +422,7 @@ if (flag('exemplos')) {
 const lista = [...resultado.values()].sort((a, b) => a.componente.localeCompare(b.componente) || a.plataforma.localeCompare(b.plataforma));
 const comDiv = lista.filter((x) => x.itens.length);
 // 'sem-manifesto' e 'conferir' são avisos (SgForm e SgFormController são só do Flutter e não estão no manifesto); não conta
-const contam = (x) => x.itens.filter((i) => !['sem-manifesto', 'conferir'].includes(i.tipo)).length;
+const contam = (x) => x.itens.filter((i) => !['sem-manifesto', 'conferir', 'aviso-tipo'].includes(i.tipo)).length;
 const total = comDiv.reduce((s, x) => s + contam(x), 0) + exemplos.length;
 if (only && !lista.length) { console.error(`componente não encontrado nas páginas de API da KB: ${only}`); process.exit(2); }
 
