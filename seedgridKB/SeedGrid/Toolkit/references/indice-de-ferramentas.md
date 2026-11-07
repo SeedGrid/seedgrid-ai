@@ -10,9 +10,9 @@ Caminhos abaixo: **A** = `.ai/skills/...` do produto (vem com o AIDLC); **B** = 
 ## Planos e documentos (A)
 | Ferramenta | Para quê | Chamada |
 |---|---|---|
-| `sg-plan-goal/scripts/controle.mjs` | Controle de um plano de tarefas: progresso, conferência de checklist por fase, perguntas ao dono, tabelas de varredura e tarefas que podem rodar em paralelo | `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> status\|checklist <fase> [--completa] [--exceto-decisoes]\|pendencias\|varredura [--completa]\|proximas [--max 4] [--json]` |
+| `sg-plan-goal/scripts/controle.mjs` | Controle de um plano de tarefas: progresso, conferência de checklist por fase, perguntas ao dono, tabelas de varredura, tarefas que podem rodar em paralelo e a conferência final do plano (`fechamento`: lista o que foi pulado e a tabela de pendências para o dono) | `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> status\|checklist <fase> [--completa] [--exceto-decisoes]\|pendencias\|varredura [--completa]\|fechamento\|proximas [--max 4] [--json]` |
 | `sg-plan-goal/scripts/varredura-componentes.mjs` | Gera, atualiza e confere a tabela de varredura de componentes (uma linha por componente, lida do código; componente novo aparece sozinho) | `node .ai/skills/sg-plan-goal/scripts/varredura-componentes.mjs gerar\|atualizar <plano>\|conferir <plano> [--completa] --plataforma <seedgrid-platform>` |
-| `sg-diagnostico/scripts/diagnostico.mjs` | Diagnostica um plano livre (briefing em prosa) contra o formato do `sg-plan-goal` e gera esqueleto | `node .ai/skills/sg-diagnostico/scripts/diagnostico.mjs <plano> --saida <arquivo>` |
+| `sg-diagnostico/scripts/diagnostico.mjs` | Diagnostica um plano livre (briefing em prosa) contra o formato completo do `sg-plan-goal` (campo goal, Ferramentas, ondas, Fase FIM, checklist, Pendencia) e gera esqueleto nesse formato | `node .ai/skills/sg-diagnostico/scripts/diagnostico.mjs <plano> --saida <arquivo>` |
 | `sg-docs-index/scripts/docs-index.mjs` | Índice geral de `docs/ai/` | `node .../docs-index.mjs [--dir docs/ai] [--check]` |
 | `sg-adr/scripts/adr-index.mjs` | Índice das ADRs | `node .ai/skills/sg-adr/scripts/adr-index.mjs [--dir docs/ai/adrs] [--check]` |
 

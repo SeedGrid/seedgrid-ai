@@ -73,7 +73,7 @@ test('o bloco gerado tem uma linha por componente, n/a onde a plataforma não te
   // o bloco gerado é válido para as regras da varredura
   const v = controle.varredura(bloco);
   assert.deepEqual(v.erros, []);
-  assert.deepEqual(v.blocos, [{ nome: 'comp', total: 5, feitos: 0 }], 'toda linha nasce com marca aberta');
+  assert.deepEqual(v.blocos.map((b) => ({ nome: b.nome, total: b.total, feitos: b.feitos })), [{ nome: 'comp', total: 5, feitos: 0 }], 'toda linha nasce com marca aberta');
 });
 
 test('conferir: componente novo na fonte sem linha reprova; atualizar acrescenta sem tocar nas marcadas', () => {

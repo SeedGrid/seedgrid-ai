@@ -3,8 +3,9 @@
 // do plano adequado. So le o plano; so grava o arquivo passado em --saida (nunca o original).
 //
 //   node diagnostico.mjs <plano.md> [--json]
-//        diagnostico: cabecalho (status, aidlc), tarefas no formato (depende-de, escreve, Aceite, Evidencia), ids falantes,
-//        blocos /goal e o que o plano ja traz (hipoteses, fases da ordem de execucao, decisoes) para virar tarefa
+//        diagnostico: cabecalho (status, aidlc, campo goal), tarefas no formato (depende-de, escreve, Aceite, Evidencia), ids falantes,
+//        blocos /goal, as secoes do FORMATO COMPLETO (Ferramentas, ondas em serie e paralelo, Fase FIM com 3 tarefas, checklist da
+//        varredura, Pendencia com 'Quem resolve') e o que o plano ja traz (hipoteses, fases da ordem de execucao, decisoes)
 //   node diagnostico.mjs <plano.md> --saida <novo.md> [--plano <numero>]
 //        grava o esqueleto no formato da sg-plan-goal: fases da "Ordem de execucao", uma tarefa de prova por hipotese,
 //        decisoes do dono (.D<n>) com Pergunta e Recomendacao, blocos /goal. Aceite, escreve e testes ficam como <definir>
@@ -87,6 +88,19 @@ const diag = {
   blocosGoal: (texto.match(/^\/goal\s/gm) ?? []).length,
   encontrado: { hipoteses: hipoteses.length, fasesNaOrdemDeExecucao: fasesOrdem.length, decisoesAbertas: blocos.bloqueia.length + blocos.confirma.length, decisoesResolvidas: blocos.resolvidas.length },
 };
+const temSecao = (re) => linhas.some((l) => /^#{1,4}\s/.test(l) && re.test(l));
+const idsFim = tarefas.filter((t) => /\.FIM\.T\d+$/.test(t.id)).map((t) => t.id.replace(/^.*\.FIM\./, ''));
+const tabelaOndas = tabela(secao(/Ordem de execu[çc][ãa]o/i).length ? secao(/Ordem de execu[çc][ãa]o/i) : []);
+const cabOndas = secao(/Ordem de execu[çc][ãa]o/i).find((l) => /^\s*\|/.test(l)) ?? '';
+diag.formatoCompleto = {
+  campoGoalNoCabecalho: /^goal\s*:/m.test(fm),
+  secaoFerramentas: temSecao(/^#{1,4}\s+Ferramentas/i),
+  tabelaDeOndas: /Onda/i.test(cabOndas) && /Modo/i.test(cabOndas) && tabelaOndas.length > 0,
+  faseFimComTresTarefas: ['T1', 'T2', 'T3'].every((x) => idsFim.includes(x)),
+  transversal: /<!--\s*varredura:/.test(texto),
+  checklistPorTarefa: temSecao(/Checklist por tarefa/i),
+  pendenciaSemQuemResolve: tarefas.filter((t) => (t.estado === ' ' || t.estado === '~') && /^\s*[-*]\s+Pend[eê]ncia\s*:\s*[^<\s]/im.test(corpoDe(t)) && !/Quem resolve\s*:/i.test(corpoDe(t))).map((t) => t.id),
+};
 diag.problemas = [];
 if (!diag.aidlc) diag.problemas.push('cabecalho sem `aidlc:` (contentVersion de .ai/toolkit-lock.json)');
 if (!diag.status) diag.problemas.push('cabecalho sem `status:`');
@@ -96,7 +110,13 @@ if (diag.semDependeDe.length) diag.problemas.push(`sem depende-de: ${diag.semDep
 if (diag.semEscreve.length) diag.problemas.push(`sem escreve: ${diag.semEscreve.join(', ')}`);
 if (diag.semAceite.length) diag.problemas.push(`sem Aceite: ${diag.semAceite.join(', ')}`);
 if (diag.feitasSemEvidencia.length) diag.problemas.push(`[x] sem Evidencia: ${diag.feitasSemEvidencia.join(', ')}`);
-if (diag.blocosGoal === 0) diag.problemas.push('nenhum bloco /goal (um por fase e um do plano inteiro)');
+if (diag.blocosGoal === 0 && !diag.formatoCompleto.campoGoalNoCabecalho) diag.problemas.push('nenhum bloco /goal (um por fase e um do plano inteiro)');
+if (!diag.formatoCompleto.campoGoalNoCabecalho) diag.problemas.push('cabecalho sem o campo `goal:` (o /goal do plano inteiro fica no quadro do topo, logo abaixo de `origem`)');
+if (!diag.formatoCompleto.secaoFerramentas) diag.problemas.push('sem a secao "Ferramentas" (consultar o indice de ferramentas antes de criar uma; ferramenta que falta vira tarefa)');
+if (!diag.formatoCompleto.tabelaDeOndas) diag.problemas.push('sem a tabela de ondas em "Ordem de execucao" (colunas Onda e Modo: serie e paralelo, tipo Gantt)');
+if (!diag.formatoCompleto.faseFimComTresTarefas) diag.problemas.push('sem a Fase FIM com as tarefas FIM.T1 (conferir todos os checklists), FIM.T2 (repassar pendencias ao dono) e FIM.T3 (fechar)');
+if (diag.formatoCompleto.transversal && !diag.formatoCompleto.checklistPorTarefa) diag.problemas.push('plano transversal (tem varredura) sem a secao "Checklist por tarefa" nem o checklist repetido em cada tarefa');
+if (diag.formatoCompleto.pendenciaSemQuemResolve.length) diag.problemas.push(`"Pendencia:" sem "Quem resolve:": ${diag.formatoCompleto.pendenciaSemQuemResolve.join(', ')}`);
 
 // ---------- esqueleto ----------
 function esqueleto(numero) {
@@ -105,15 +125,18 @@ function esqueleto(numero) {
   const aidlc = raiz ? (JSON.parse(readFileSync(raiz, 'utf8')).contentVersion ?? '0.0.0') : '0.0.0';
   const titulo = /^#\s+(.+)$/m.exec(texto)?.[1].trim() ?? 'Plano';
   const hoje = new Date().toISOString().slice(0, 10);
+  const GOAL = `/goal Plano completo de <caminho deste plano>: para cada fase, rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes\` e mostre cada saída com 0 problema(s); depois rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> fechamento\` e mostre a saída. Itens com \`Pendencia:\` (motivo e quem resolve) são repassados ao dono e não contam como problema. Máximo de 150 turnos. A condição só vale com essas saídas visíveis.`;
   const o = [];
-  o.push('---', `numero: ${numero}`, 'status: proposto', `data: ${hoje}`, `aidlc: ${aidlc}   # contentVersion de .ai/toolkit-lock.json`, `origem: adequado de ${arquivo.replace(/\\/g, '/').split('/').pop()} (original intacto)`, '---', '');
+  o.push('---', `numero: ${numero}`, 'status: proposto', `data: ${hoje}`, `aidlc: ${aidlc}   # contentVersion de .ai/toolkit-lock.json`, `origem: adequado de ${arquivo.replace(/\\/g, '/').split('/').pop()} (original intacto)`, 'goal: |', `  ${GOAL}`, '---', '');
   o.push(`# Tarefas: ${titulo}`, '');
   o.push(`**Identificador (número falante):** \`${P}.F<fase>.T<tarefa>\` para tarefa e \`${P}.F<fase>.D<n>\` para decisão do dono; \`F0\` vale para o plano inteiro e a fase final é \`${P}.FIM.T1\`. Quem fala com o dono cita sempre plano, fase, tarefa **e o título**.`, '');
   o.push('Legenda: `[ ]` aberta · `[~]` em andamento · `[x]` feita (só com linha `Evidencia:`) · `[>]` adiada · `[?]` decisão do dono.', '');
   o.push('## Princípios e restrições do dono', '', `- <copie do plano original, seção de princípios: ${arquivo.replace(/\\/g, '/').split('/').pop()}>`, '');
   o.push('## Definição de pronto (vale para toda tarefa)', '', 'Testes verdes, commit, linha `Evidencia:` preenchida, documentação e KB atualizadas. Push e merge só com autorização do dono.', '');
   o.push('## Goal do plano inteiro', '', '**Regra de decisão:** se precisar do dono para uma decisão (produto, custo, dependência nova, algo irreversível), **não decida sozinho**. Marque a tarefa como `[?]`, escreva `Pergunta:` e `Recomendacao:`, siga com todas as tarefas que não dependem dela e, **ao final, faça todas as perguntas de uma vez**.', '');
-  o.push('```', `/goal Plano completo de <caminho deste plano>: para cada fase, rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes\` e mostre cada saída com 0 problema(s); depois rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> pendencias\` e mostre a saída. Se houver pergunta ao dono, liste todas numa mensagem só, com a sua recomendação, e pare. Máximo de 150 turnos. A condição só vale com essas saídas visíveis.`, '```', '');
+  o.push('(O `/goal` do plano inteiro está no quadro do topo, no campo `goal` logo abaixo de `origem`.)', '');
+  o.push('## Ferramentas (consultar o índice antes de criar)', '', 'O índice é `.ai/references/indice-de-ferramentas.md`. Preencha antes de planejar as tarefas: ferramenta que o plano usa e não existe no índice vira a primeira tarefa ("Criar a ferramenta X", com o que faz, entrada, saída, código de saída e teste) e entra no índice.', '', '| Ferramenta | Para quê neste plano | No índice? | Onde está / tarefa que cria |', '|---|---|---|---|', '| `controle.mjs` | status, checklist, proximas, fechamento | sim | `.ai/skills/sg-plan-goal/scripts/controle.mjs` |', '| <definir> | <definir> | <sim ou não> | <definir> |', '');
+  o.push('## Ordem de execução: série e paralelo (Gantt)', '', 'O que é paralelo vira agentes em paralelo (até 4, sem dois escrevendo no mesmo caminho); o que é série espera. `controle.mjs <plano> proximas` confere.', '', '| Onda | Tarefas | Modo | Agentes | Depende de | Escreve (sem sobreposição) |', '|---|---|---|---|---|---|', '| 1 | <definir> | <série ou paralelo> | <n> | nada | <definir> |', '| FIM | FIM.T1 a FIM.T3 | série | 1 | todas | este plano |', '');
 
   // Decisoes (F0): abertas viram [?]; resolvidas viram [x] com a data/origem como evidencia.
   let d = 0;
@@ -146,7 +169,10 @@ function esqueleto(numero) {
     o.push(`- [ ] **${id} ${f.conteudo.slice(0, 80)}** (\`depende-de\`: ${anterior.length ? anterior.join(', ') : 'nada'}; \`escreve\`: <definir>)`, '  - Passos: <quebre em tarefas T2, T3... conforme o plano original>', '  - Aceite: <definir>', '  - Testes: <guardiões previstos para esta fase no plano original>', ...(f.portao ? [`  - Portão humano: ${f.portao}`] : []), '  - Evidencia: <preencha só ao marcar [x]>', '');
     anterior = [id];
   }
-  o.push('## Fase FIM — Fechar', '', `- [ ] **${P}.FIM.T1 Fechar o plano** (\`depende-de\`: ${anterior.join(', ')}; \`escreve\`: este plano)`, '  - Aceite: `status: concluido`, `fechado-por` preenchido e plano arquivado.', '  - Evidencia: <preencha só ao marcar [x]>', '');
+  o.push('## Fase FIM — Conferência e fechamento', '', 'Aceite da fase: todos os checklists conferidos; só ficam abertos itens com `Pendencia:` (motivo e quem resolve).', '');
+  o.push(`- [ ] **${P}.FIM.T1 Conferir todos os checklists** (\`depende-de\`: ${anterior.join(', ')}; \`escreve\`: este plano)`, '  - Modo: série (última onda)', '  - Rodar `controle.mjs <plano> fechamento`; item aberto sem `Pendencia:` foi pulado e volta ao ciclo.', '  - Aceite: `fechamento` sem item pulado; saída colada na evidência.', '  - Evidencia: <preencha só ao marcar [x]>', '');
+  o.push(`- [ ] **${P}.FIM.T2 Repassar as pendências ao dono** (\`depende-de\`: ${P}.FIM.T1; \`escreve\`: este plano)`, '  - Modo: série', '  - Entregar ao dono a tabela Item | Motivo | Quem resolve que o `fechamento` imprime, mais as perguntas `[?]`.', '  - Aceite: tabela entregue; cada pendência tem motivo e responsável.', '  - Evidencia: <preencha só ao marcar [x]>', '');
+  o.push(`- [ ] **${P}.FIM.T3 Fechar o plano** (\`depende-de\`: ${P}.FIM.T2; \`escreve\`: este plano)`, '  - Modo: série', '  - Aceite: `status: concluido`, `fechado-por` preenchido e plano arquivado; com pendências do dono, o plano fica `em-andamento` só com os itens pendentes.', '  - Evidencia: <preencha só ao marcar [x]>', '');
   return o.join('\n');
 }
 

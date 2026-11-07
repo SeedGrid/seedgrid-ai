@@ -11,6 +11,9 @@
 //                                                          e as tarefas que ela bloqueia; sai 0 mesmo com pendencias
 //   node controle.mjs <plano.md> varredura [--completa]    confere as tabelas de varredura (uma linha por item; [x] so com
 //                                                          "Quem conferiu" e "Evidencia"; --completa falha se sobrou item aberto)
+//   node controle.mjs <plano.md> fechamento               conferencia final: roda tudo (fases e varreduras) com --completa --exceto-decisoes,
+//                                                          imprime a tabela Item | Motivo | Quem resolve das pendencias para repassar ao
+//                                                          dono e lista o que foi PULADO (aberto sem "Pendencia:"); sai 1 se houver pulado
 //   node controle.mjs <plano.md> proximas [--max 4] [--json]
 //                                                          tarefas abertas cujo depende-de ja esta todo [x], escolhidas
 //                                                          para rodar em paralelo sem dois escrevendo no mesmo caminho
@@ -21,12 +24,28 @@
 //     - Aceite: ...
 //     - Evidencia: <comando, teste ou hash>      (so quando a tarefa vira [x])
 // Estados: [ ] aberta, [~] em andamento, [x] feita, [>] adiada, [?] decisao do dono. Sai 1 se a conferencia falhar.
+// Pendencia: item aberto que nao terminou tem uma linha `Pendencia: ... Quem resolve: <quem> ...` (Motivo e Desde sao opcionais mas
+// recomendados). Com a pendencia completa o item aberto NAO e problema nas conferencias com --completa (e repassado ao dono no
+// `fechamento`); sem ela, e item esquecido e volta ao ciclo. O texto entre < > do modelo nao conta como pendencia.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const MAX_PADRAO = 4;
 const ID = /^[A-Za-z][0-9A-Za-z]*\.[0-9A-Za-z.]+$/;
+
+/** Linha `Pendencia: ...` do corpo da tarefa: { texto, motivo, quem, desde } ou null (ausente ou placeholder `<...>` do modelo). */
+export function lerPendencia(corpo) {
+  const m = /^\s*[-*]\s+Pend[eê]ncia\s*:\s*(.+)$/im.exec(corpo.join('\n'));
+  if (!m) return null;
+  const texto = m[1].trim();
+  if (/^</.test(texto)) return null;
+  const quem = /Quem resolve\s*:\s*([^;.]+)/i.exec(texto);
+  const motivoRotulado = /Motivo\s*:\s*([^;]+?)\s*(?:;|Quem resolve|$)/i.exec(texto);
+  const motivo = motivoRotulado ? motivoRotulado[1].trim() : texto.split(/Quem resolve/i)[0].trim().replace(/[.;\s]+$/, '');
+  const desde = /Desde\s*:\s*([0-9-]+)/i.exec(texto);
+  return { texto, motivo, quem: quem ? quem[1].trim() : null, desde: desde ? desde[1] : null };
+}
 
 export function lerPlano(texto) {
   const linhas = texto.replace(/^﻿/, '').split(/\r?\n/);
@@ -57,6 +76,7 @@ export function lerPlano(texto) {
     t.dependeDe = dep ? dep[1].split(/[,\s]+/).map((s) => s.replace(/[`.;]+$/g, '')).filter((s) => ID.test(s)) : [];
     const esc = /`?escreve`?\s*:\s*([^)]*)\)/i.exec(cab);
     t.escreve = esc ? esc[1].split(',').map((s) => s.replace(/[`]/g, '').trim()).filter(Boolean) : [];
+    t.pendencia = lerPendencia(t.corpo);
     t.temEvidencia = /Evid[eê]ncia\s*(\([^)]*\))?\s*:\s*\S/i.test(t.corpo.join('\n')) || /Evid[eê]ncia\s*(\([^)]*\))?\s*:\s*\S/i.test(cab);
   }
   return { fases, todas };
@@ -124,6 +144,36 @@ export function pendencias(plano) {
   }));
 }
 
+/**
+ * Conferencia final: o que foi PULADO (aberto sem Pendencia completa, ou [x] sem Evidencia) e a tabela de pendencias para o dono.
+ * Item bloqueado por decisao do dono ([?], direta ou indiretamente) entra como pendencia do dono, nao como pulado.
+ */
+export function fechamento(plano, texto) {
+  const paradas = bloqueadasPorDecisao(plano);
+  const pulados = [];
+  const pendentes = [];
+  for (const t of plano.todas) {
+    const aberta = t.estado === ' ' || t.estado === '~';
+    if (t.estado === 'x' && !t.temEvidencia) pulados.push(`${t.id}: [x] sem "Evidencia:"`);
+    if (t.estado === '?') pendentes.push({ item: t.id, motivo: 'decisao do dono (veja Pergunta/Recomendacao)', quem: 'dono', desde: '' });
+    else if (aberta && t.pendencia) {
+      if (t.pendencia.quem) pendentes.push({ item: t.id, motivo: t.pendencia.motivo, quem: t.pendencia.quem, desde: t.pendencia.desde || '' });
+      else pulados.push(`${t.id}: "Pendencia:" sem "Quem resolve:"`);
+    } else if (aberta && paradas.has(t.id)) pendentes.push({ item: t.id, motivo: 'espera uma decisao do dono', quem: 'dono', desde: '' });
+    else if (aberta) pulados.push(`${t.id}: aberta sem "Pendencia:" (foi pulada; volta ao ciclo)`);
+  }
+  let erros = [];
+  if (/<!--\s*varredura:/.test(texto)) {
+    const v = varredura(texto, false);
+    erros = v.erros.filter((e) => !/ainda nao esta \[x\]/.test(e));
+    for (const b of v.blocos) {
+      for (const x of b.pendentes) pendentes.push({ item: `${b.nome}/${x.item}`, motivo: x.texto, quem: (/quem resolve\s*:?\s*([^;.]+)/i.exec(x.texto) || [, 'ver texto'])[1].trim(), desde: '' });
+      for (const x of b.abertos) pulados.push(`${b.nome}/${x}: item da varredura aberto sem "Pendencia" (foi pulado; volta ao ciclo)`);
+    }
+  }
+  return { pulados, pendentes, erros };
+}
+
 export function checklist(plano, chave, completa, exetoDecisoes = false) {
   const fase = plano.fases.find((f) => f.chave === chave || f.titulo === chave);
   if (!fase) return { erros: [`fase "${chave}" nao encontrada`], fase: null };
@@ -131,7 +181,9 @@ export function checklist(plano, chave, completa, exetoDecisoes = false) {
   const paradas = exetoDecisoes ? bloqueadasPorDecisao(plano) : new Set();
   for (const t of fase.tarefas) {
     if (t.estado === 'x' && !t.temEvidencia) erros.push(`${t.id}: tarefa [x] sem linha "Evidencia:"`);
-    if (completa && (t.estado === ' ' || t.estado === '~') && !paradas.has(t.id)) erros.push(`${t.id}: tarefa ainda aberta`);
+    const aberta = t.estado === ' ' || t.estado === '~';
+    if (aberta && t.pendencia && !t.pendencia.quem) erros.push(`${t.id}: "Pendencia:" sem "Quem resolve:"`);
+    if (completa && aberta && !paradas.has(t.id) && !(t.pendencia && t.pendencia.quem)) erros.push(`${t.id}: tarefa ainda aberta (sem "Pendencia:" com "Quem resolve:", foi esquecida)`);
   }
   return { erros, fase };
 }
@@ -160,11 +212,13 @@ export function varredura(texto, completa = false) {
     // Colunas de "feito": todas as que comecam por "Feito" (ex.: "Feito", ou "Feito React" e "Feito Flutter" quando o item e
     // checado por plataforma). Cada uma vale [ ], [~], [x] ou n/a (a plataforma nao tem o item).
     const feitoCols = cab.map((h, i) => (h === 'feito' || h.startsWith('feito ') ? i : -1)).filter((i) => i >= 0);
-    const col = { item: 0, quem: cab.indexOf('quem conferiu'), evid: cab.indexOf('evidencia') };
+    const col = { item: 0, quem: cab.indexOf('quem conferiu'), evid: cab.indexOf('evidencia'), pend: cab.findIndex((h) => h.startsWith('pendencia')) };
     if (!['item', 'componente'].includes(cab[0]) || !feitoCols.length || col.quem < 0 || col.evid < 0) { erros.push(`varredura ${nome}: o cabecalho precisa de "Item" ou "Componente" (primeira coluna), uma ou mais colunas "Feito", "Quem conferiu" e "Evidencia"`); continue; }
     const vistos = new Set();
     let total = 0;
     let feitos = 0;
+    const pendentes = [];
+    const abertos = [];
     for (const l of tabela.slice(2)) {
       const c = celulas(l);
       const item = c[col.item];
@@ -180,10 +234,13 @@ export function varredura(texto, completa = false) {
         if (!c[col.quem]) erros.push(`varredura ${nome}: "${item}" esta [x] sem "Quem conferiu"`);
         if (!c[col.evid]) erros.push(`varredura ${nome}: "${item}" esta [x] sem "Evidencia"`);
       }
+      const pend = col.pend >= 0 ? (c[col.pend] ?? '').trim() : '';
+      const pendTratada = aberto && pend && /resolve/i.test(pend) && !pend.startsWith('<');
       if (!aberto) feitos++;
-      else if (completa) erros.push(`varredura ${nome}: "${item}" ainda nao esta [x]`);
+      else if (pendTratada) pendentes.push({ item, texto: pend });
+      else { abertos.push(item); if (completa) erros.push(`varredura ${nome}: "${item}" ainda nao esta [x] (e sem "Pendencia" com "quem resolve", foi esquecido)`); }
     }
-    blocos.push({ nome, total, feitos });
+    blocos.push({ nome, total, feitos, pendentes, abertos });
   }
   if (!blocos.length && !erros.length) erros.push('nenhum bloco "<!-- varredura:<nome>:inicio -->" no plano');
   return { blocos, erros };
@@ -192,7 +249,7 @@ export function varredura(texto, completa = false) {
 function main(argv) {
   const [arquivo, cmd, ...resto] = argv;
   if (!arquivo || !cmd) {
-    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa [--exceto-decisoes]] | pendencias | varredura [--completa] | proximas [--max N] [--json]');
+    console.error('Uso: controle.mjs <plano.md> status | checklist <fase> [--completa [--exceto-decisoes]] | pendencias | varredura [--completa] | fechamento | proximas [--max N] [--json]');
     return 2;
   }
   let texto;
@@ -236,6 +293,18 @@ function main(argv) {
     for (const b of r.blocos) console.log(`varredura ${b.nome}: ${b.feitos}/${b.total} itens conferidos`);
     console.log(`[controle] varredura: ${r.erros.length} problema(s).`);
     return r.erros.length ? 1 : 0;
+  }
+  if (cmd === 'fechamento') {
+    const f = fechamento(plano, texto);
+    for (const e of f.erros) console.error('  ' + e);
+    for (const x of f.pulados) console.error('  PULADO ' + x);
+    const sem = (x) => x || '-';
+    console.log('| Item | Motivo da pendencia | Quem resolve | Desde |');
+    console.log('|---|---|---|---|');
+    for (const x of f.pendentes) console.log(`| ${x.item} | ${x.motivo} | ${x.quem} | ${sem(x.desde)} |`);
+    const problemas = f.erros.length + f.pulados.length;
+    console.log(`[controle] fechamento: ${problemas} problema(s); ${f.pendentes.length} pendencia(s) para o dono.`);
+    return problemas ? 1 : 0;
   }
   if (cmd === 'proximas') {
     const i = resto.indexOf('--max');

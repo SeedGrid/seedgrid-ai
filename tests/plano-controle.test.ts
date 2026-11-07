@@ -14,6 +14,8 @@ const mod = (await import(pathToFileURL(SCRIPT).href)) as {
   pendencias: (p: ReturnType<typeof mod.lerPlano>) => { id: string; titulo: string; detalhe: string[]; bloqueia: string[] }[];
   bloqueadasPorDecisao: (p: ReturnType<typeof mod.lerPlano>) => Set<string>;
   varredura: (texto: string, completa?: boolean) => { blocos: { nome: string; total: number; feitos: number }[]; erros: string[] };
+  lerPendencia: (corpo: string[]) => { texto: string; motivo: string; quem: string | null; desde: string | null } | null;
+  fechamento: (p: ReturnType<typeof mod.lerPlano>, texto: string) => { pulados: string[]; pendentes: { item: string; motivo: string; quem: string; desde: string }[]; erros: string[] };
 };
 
 const PLANO = `# Tarefas: exemplo
@@ -89,7 +91,7 @@ test('checklist: [x] sem Evidencia falha; --completa falha com tarefa aberta; fa
   const p = mod.lerPlano(PLANO);
   assert.deepEqual(mod.checklist(p, '1', false).erros, ['T1.2: tarefa [x] sem linha "Evidencia:"']);
   const f2 = mod.checklist(p, '2', true).erros;
-  assert.ok(f2.includes('T2.1: tarefa ainda aberta') && f2.includes('T2.7: tarefa ainda aberta'));
+  assert.ok(f2.some((e) => e.startsWith('T2.1: tarefa ainda aberta')) && f2.some((e) => e.startsWith('T2.7: tarefa ainda aberta')));
   assert.equal(mod.checklist(p, '2', false).erros.length, 0);
   assert.match(mod.checklist(p, '9', false).erros[0] ?? '', /nao encontrada/);
 });
@@ -136,8 +138,8 @@ const PLANO_DECISAO = `# Tarefas: com decisao
 test('decisao do dono: --exceto-decisoes ignora so o que espera a [?]; pendencias lista pergunta e bloqueios', () => {
   const p = mod.lerPlano(PLANO_DECISAO);
   assert.deepEqual([...mod.bloqueadasPorDecisao(p)].sort(), ['T1.3', 'T1.4']);
-  assert.deepEqual(mod.checklist(p, '1', true).erros.sort(), ['T1.3: tarefa ainda aberta', 'T1.4: tarefa ainda aberta', 'T1.5: tarefa ainda aberta']);
-  assert.deepEqual(mod.checklist(p, '1', true, true).erros, ['T1.5: tarefa ainda aberta']);
+  assert.deepEqual(mod.checklist(p, '1', true).erros.sort(), ['T1.3','T1.4','T1.5'].map((i) => `${i}: tarefa ainda aberta (sem "Pendencia:" com "Quem resolve:", foi esquecida)`));
+  assert.deepEqual(mod.checklist(p, '1', true, true).erros, ['T1.5: tarefa ainda aberta (sem "Pendencia:" com "Quem resolve:", foi esquecida)']);
   const q = mod.pendencias(p);
   assert.equal(q.length, 1);
   assert.equal(q[0]!.id, 'T1.2');
@@ -187,9 +189,9 @@ test('varredura: item [x] precisa de quem conferiu e de evidência; aberto só r
   const ok = VARREDURA(['| SgButton | 15 | 15 | [x] | front | verificador: ok |', '| SgInputText | 19 | 15 | [ ] |  |  |']);
   let r = mod.varredura(ok);
   assert.deepEqual(r.erros, []);
-  assert.deepEqual(r.blocos, [{ nome: 'comp', total: 2, feitos: 1 }]);
+  assert.deepEqual(r.blocos, [{ nome: 'comp', total: 2, feitos: 1, pendentes: [], abertos: ['SgInputText'] }]);
   r = mod.varredura(ok, true);
-  assert.deepEqual(r.erros, ['varredura comp: "SgInputText" ainda nao esta [x]']);
+  assert.deepEqual(r.erros, ['varredura comp: "SgInputText" ainda nao esta [x] (e sem "Pendencia" com "quem resolve", foi esquecido)']);
   r = mod.varredura(VARREDURA(['| SgButton | 15 | 15 | [x] |  |  |']));
   assert.deepEqual(r.erros, ['varredura comp: "SgButton" esta [x] sem "Quem conferiu"', 'varredura comp: "SgButton" esta [x] sem "Evidencia"']);
 });
@@ -219,4 +221,92 @@ test('o modelo de varredura é um bloco válido para o controle (cabeçalho e ma
     writeFileSync(plano, PLANO + '\n' + VARREDURA(['| A | 1 | 1 | [ ] |  |  |']) + '\n', 'utf8');
     assert.equal(spawnSync(process.execPath, [SCRIPT, plano, 'varredura', '--completa'], { encoding: 'utf8' }).status, 1);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+
+// ---------- Pendencia (P157.F2.T1): item aberto com "Quem resolve" e tratado; sem ela e esquecido ----------
+test('lerPendencia: placeholder do modelo não conta; lê motivo, quem resolve e desde', () => {
+  assert.equal(mod.lerPendencia(['  - Pendencia: <só se não terminou. Motivo: ...; Quem resolve: ...; Desde: AAAA-MM-DD>']), null);
+  assert.equal(mod.lerPendencia(['  - Aceite: x']), null);
+  const a = mod.lerPendencia(['  - Pendencia: Motivo: aguardando o pode do dono; Quem resolve: dono; Desde: 2026-11-07']);
+  assert.deepEqual([a?.motivo, a?.quem, a?.desde], ['aguardando o pode do dono', 'dono', '2026-11-07']);
+  const b = mod.lerPendencia(['  - Pendencia: aguardando o "pode" do dono. Quem resolve: dono. Desde: 2026-11-07.']);
+  assert.deepEqual([b?.motivo, b?.quem], ['aguardando o "pode" do dono', 'dono']);
+  const c = mod.lerPendencia(['  - Pendencia: falta um dado']);
+  assert.equal(c?.quem, null);
+});
+
+const PLANO_PEND = `# Tarefas: pendencias
+
+## Fase 1 — A
+
+- [x] **T1.1 Feita** (\`depende-de\`: nada; \`escreve\`: a/)
+  - Evidencia: abc
+- [ ] **T1.2 Esquecida** (\`depende-de\`: nada; \`escreve\`: b/)
+  - Aceite: x
+- [ ] **T1.3 Com pendencia** (\`depende-de\`: nada; \`escreve\`: c/)
+  - Pendencia: aguardando o pode. Quem resolve: dono. Desde: 2026-11-07.
+- [ ] **T1.4 Pendencia incompleta** (\`depende-de\`: nada; \`escreve\`: d/)
+  - Pendencia: falta um dado
+`;
+
+test('checklist --completa: item aberto com Pendencia e Quem resolve não é problema; sem ela é esquecido; sem Quem resolve reprova', () => {
+  const p = mod.lerPlano(PLANO_PEND);
+  const erros = mod.checklist(p, '1', true).erros.join('\n');
+  assert.match(erros, /T1\.2: tarefa ainda aberta/);
+  assert.match(erros, /T1\.4: "Pendencia:" sem "Quem resolve:"/);
+  assert.doesNotMatch(erros, /T1\.3/);
+});
+
+test('fechamento: lista o que foi pulado, a tabela de pendências para o dono e sai 1 se houver pulado', () => {
+  const p = mod.lerPlano(PLANO_PEND);
+  const f = mod.fechamento(p, PLANO_PEND);
+  assert.ok(f.pulados.some((x) => x.startsWith('T1.2: aberta sem "Pendencia:"')));
+  assert.ok(f.pulados.some((x) => x.startsWith('T1.4: "Pendencia:" sem "Quem resolve:"')));
+  assert.deepEqual(f.pendentes.map((x) => [x.item, x.quem]), [['T1.3', 'dono']]);
+  const dir = mkdtempSync(join(tmpdir(), 'sg-fech-'));
+  try {
+    const plano = join(dir, 'plano.md');
+    writeFileSync(plano, PLANO_PEND, 'utf8');
+    const ruim = spawnSync(process.execPath, [SCRIPT, plano, 'fechamento'], { encoding: 'utf8' });
+    assert.equal(ruim.status, 1);
+    assert.match(ruim.stderr, /PULADO T1\.2/);
+    assert.match(ruim.stdout, /\| T1\.3 \| aguardando o pode \| dono \|/);
+    const limpo = PLANO_PEND.replace(/- \[ \] \*\*T1\.2 Esquecida[^\n]*\n  - Aceite: x\n/, '').replace(/- \[ \] \*\*T1\.4[^\n]*\n  - Pendencia: falta um dado\n/, '');
+    writeFileSync(plano, limpo, 'utf8');
+    const ok = spawnSync(process.execPath, [SCRIPT, plano, 'fechamento'], { encoding: 'utf8' });
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.match(ok.stdout, /0 problema\(s\); 1 pendencia\(s\) para o dono/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('fechamento: tarefa [?] e as que dependem dela vão como pendência do dono, não como pulado', () => {
+  const p = mod.lerPlano(PLANO_DECISAO);
+  const f = mod.fechamento(p, PLANO_DECISAO);
+  assert.deepEqual(f.pendentes.map((x) => x.item), ['T1.2', 'T1.3', 'T1.4']);
+  assert.deepEqual(f.pulados, ['T1.5: aberta sem "Pendencia:" (foi pulada; volta ao ciclo)']);
+});
+
+test('varredura: item aberto com coluna Pendencia (quem resolve) não reprova --completa; sem ela reprova; fechamento lista os dois', () => {
+  const tab = (linhas: string[]) => `<!-- varredura:comp:inicio -->\n| Componente | Feito | Quem conferiu | Evidencia | Pendencia (motivo e quem resolve) |\n|---|---|---|---|---|\n${linhas.join('\n')}\n<!-- varredura:comp:fim -->\n`;
+  const ok = mod.varredura(tab(['| A | [x] | doc | ok |  |', '| B | [ ] |  |  | falta o dado. Quem resolve: dono |']), true);
+  assert.deepEqual(ok.erros, []);
+  const ruim = mod.varredura(tab(['| A | [ ] |  |  |  |']), true);
+  assert.match(ruim.erros.join('\n'), /"A" ainda nao esta \[x\] \(e sem "Pendencia"/);
+  const plano = PLANO + '\n' + tab(['| A | [ ] |  |  |  |', '| B | [ ] |  |  | falta o dado. Quem resolve: dono |']);
+  const f = mod.fechamento(mod.lerPlano(plano), plano);
+  assert.ok(f.pulados.some((x) => x.startsWith('comp/A: item da varredura aberto sem "Pendencia"')));
+  assert.ok(f.pendentes.some((x) => x.item === 'comp/B' && x.quem === 'dono'));
+});
+
+test('o modelo de plano traz o campo goal no cabeçalho, Ferramentas, ondas e a Fase FIM com 3 tarefas', () => {
+  const modelo = readFileSync(resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-plan-goal/assets/plano-de-tarefas.md'), 'utf8');
+  const cab = (/^---\r?\n([\s\S]*?)\r?\n---/.exec(modelo)?.[1] ?? '').replace(/\r/g, '');
+  assert.match(cab, /^origem:/m);
+  assert.match(cab, /^goal: \|\n  \/goal /m);
+  assert.ok(cab.indexOf('origem:') < cab.indexOf('goal:'), 'o goal fica logo abaixo de origem');
+  assert.match(modelo, /^## Ferramentas/m);
+  assert.match(modelo, /^## Ordem de execução: série e paralelo/m);
+  const p = mod.lerPlano(modelo);
+  assert.deepEqual(p.fases.at(-1)?.tarefas.map((t) => t.id), ['P000.FIM.T1', 'P000.FIM.T2', 'P000.FIM.T3']);
 });
