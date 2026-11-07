@@ -300,6 +300,8 @@ Fluxo multi-etapas com stepper, validacao por etapa, navegacao controlada e fina
 | `stepper` | `SgWizardStepper` | `SgWizardStepper.none` | não | React | Modo visual do stepper. Valores: `none`, `numbered`, `icons`. |
 | `stepNavigation` | `SgWizardStepNavigation` | `SgWizardStepNavigation.previousAndNext` | não | React | Define quais etapas podem ser acessadas clicando no stepper. Valores: `none`, `previous`, `previous-and-next`. |
 | `control` | `SgFormController?` | — | não | Flutter | Extra do Flutter: formulario usado para validar a etapa (senao, o SgForm mais proximo). |
+| `child` | `Widget` | — | sim | React | Paginas do wizard renderizadas em ordem. |
+| `enabled` | `bool?` | `true` † | não | React | Quando false, o wizard inteiro fica desabilitado: Anterior, Proximo, Concluir e os passos do stepper deixam de responder; a etapa atual segue visivel. Diferente de nextDisabled, que so bloqueia o avanco. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

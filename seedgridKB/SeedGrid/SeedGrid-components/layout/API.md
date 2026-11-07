@@ -282,7 +282,6 @@ import { SgCard, type SgCardProps, type SgCardVariant, type SgCardSize, type SgC
 | `header` | `React.ReactNode` | — | Não | Areas customizaveis do layout. |
 | `footer` | `React.ReactNode` | — | Não | Areas customizaveis do layout. |
 | `clickable` | `boolean` | `false` | Não | Transforma o card em superficie clicavel. |
-| `disabled` | `boolean` | `false` | Não | Modo clicavel e estado desabilitado. |
 | `collapsible` | `boolean` | `false` | Não | Permite recolher e expandir o conteudo do card. |
 | `defaultOpen` | `boolean` | `true` | Não | Controle de colapso do conteudo. |
 | `open` | `boolean` | — (não controlado quando omitido) | Não | Controle de colapso do conteudo. |
@@ -295,6 +294,7 @@ import { SgCard, type SgCardProps, type SgCardVariant, type SgCardSize, type SgC
 | `dragPersistKey` | `string` | — | Não | Persistencia de posicao via EnvironmentProvider ou localStorage fallback. |
 | `onPositionChange` | `(position: SgCardPosition) => void` | — | Não | Persistencia de posicao via EnvironmentProvider ou localStorage fallback. |
 | `onClick` | `React.MouseEventHandler<HTMLElement>` | — | Não | Callback disparado quando o card e acionado. |
+| `enabled` | `boolean` | — | Não | — |
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.HTMLAttributes<HTMLElement>, "title" \| "onClick"> & { ... }`; acrescenta 273 props de `@types/react` (`HTMLAttributes` 52, `AriaAttributes` 53, `DOMAttributes` 168). Não listadas individualmente — ver contrato base `React.HTMLAttributes` em `@types/react`.
 
@@ -436,7 +436,6 @@ import { SgPageControl, SgPageControlPage, type SgPageControlProps, type SgPageC
 | `hint` | `string` | — | Não | Descricao curta associada a aba. |
 | `icon` | `React.ReactNode` | — | Não | Icone opcional da aba. |
 | `hidden` | `boolean` | — (tratado como `false`) | Não | Oculta a pagina sem remove-la da estrutura. |
-| `disabled` | `boolean` | — (tratado como `false`) | Não | Desabilita a selecao da pagina. |
 | `className` | `string` | — | Não | Classes and styles for wrappers. |
 | `style` | `React.CSSProperties` | — | Não | Classes and styles for wrappers. |
 | `tabClassName` | `string` | — | Não | Classes and styles for wrappers. |
@@ -998,7 +997,6 @@ import {
 | `hint` | `string` | — | Não | Texto auxiliar usado como dica contextual. |
 | `loading` | `boolean` | `false` | Não | Indica processamento em andamento. |
 | `severity` | `SgToolBarSeverity` = `"primary" \| "secondary" \| "success" \| "info" \| "warning" \| "help" \| "danger" \| "plain"` | `"plain"` | Não | Tom visual do botao de toolbar. |
-| `disabled` | `boolean` | — | Não | Desabilita interacao. |
 | `onClick` | `() => void \| Promise<void>` | — | Não | Callback executado ao clicar no item. |
 | `className` | `string` | — | Não | Classes adicionais do botão. *(Inferência)* |
 | `style` | `React.CSSProperties` | — | Não | Estilo inline do botão. *(Inferência)* |

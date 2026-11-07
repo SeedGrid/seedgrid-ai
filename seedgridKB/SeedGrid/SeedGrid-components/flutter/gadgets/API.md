@@ -49,6 +49,7 @@ Calendario mensal em formato de gadget com suporte a locale, multi-mes, regras d
 | `cardTitle` | `Widget?` | — | não | React | — |
 | `cardProps` | `SgCalendarCardProps?` | — | não | React | Tipo no React: `Omit<SgCardProps, "title" \| "children">`. |
 | `today` | `DateTime?` | — | não | Flutter | Extra do Flutter: fixa o "hoje" (no React e `new Date()` no primeiro render). |
+| `enabled` | `bool?` | `true` † | não | React | Quando false, os dias, os botoes de mes anterior/proximo e o atalho hoje ficam desabilitados (nao focaveis); a data e o mes atuais continuam legiveis. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

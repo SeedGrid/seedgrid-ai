@@ -38,7 +38,6 @@ Representacao visual compacta de pessoa, usuario ou entidade por imagem, iniciai
 | `shape` | `SgAvatarShape` | `SgAvatarShape.circle` | não | React | Forma visual do avatar. Valores: `circle`, `square`. |
 | `severity` | `SgAvatarSeverity` | `SgAvatarSeverity.primary` | não | React | Tom visual do avatar quando nao ha imagem. Valores: `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `neutral`, `custom`. |
 | `bordered` | `bool` | `true` | não | React | — |
-| `disabled` | `bool` | `false` | não | React | — |
 | `customColors` | `SgAvatarCustomColors?` | — | não | React | Tipo no React: `SgAvatarCustomColors`. |
 | `imageClassName` | `String?` | — | não | React | className da imagem (React-only, ADR 50). Ignorado. |
 | `child` | `Widget?` | — | não | React | `children` no React (tem precedencia sobre imagem, icone e label). |
@@ -47,6 +46,7 @@ Representacao visual compacta de pessoa, usuario ou entidade por imagem, iniciai
 | `title` | `String?` | — | não | Flutter | — |
 | `semanticLabel` | `String?` | — | não | Flutter | `aria-label` no React. |
 | `imageProvider` | `ImageProvider?` | — | não | Flutter | Imagem pronta (ex.: `AssetImage`); tem precedencia sobre [src]. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -94,6 +94,7 @@ Agrupamento visual de avatares com sobreposicao, limite de itens e contador de p
 | `size` | `SgAvatarSize` | `SgAvatarSize.md` | não | React | Escala aplicada aos avatares do grupo. Valores: `sm`, `md`, `lg`, `xs`, `xl`. |
 | `shape` | `SgAvatarShape` | `SgAvatarShape.circle` | não | React | Forma visual aplicada ao grupo de avatares. Valores: `circle`, `square`. |
 | `bordered` | `bool` | `true` | não | React | — |
+| `child` | `Widget` | — | sim | React | Lista de avatares exibidos no agrupamento. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -145,12 +146,12 @@ Indicador compacto para status, contagens, rotulos curtos e destaque visual de p
 | `removeAriaLabel` | `String?` | — | não | React | — |
 | `autoRemove` | `bool` | `false` | não | React | — |
 | `onClick` | `VoidCallback?` | — | não | React | Callback disparado quando o badge e clicado. Tipo no React: `((e: React.MouseEvent) => void)`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `title` | `String?` | — | não | React | — |
 | `hint` | `String?` | — | não | React | — |
 | `customColors` | `SgBadgeCustomColors?` | — | não | React | Tipo no React: `SgBadgeCustomColors`. |
 | `partsClassName` | `Object?` | — | não | React | className por parte (React-only, ADR 50). Ignorado. Tipo no React: `SgBadgePartsClassName`. |
 | `semanticLabel` | `String?` | — | não | React | `aria-label` no React. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

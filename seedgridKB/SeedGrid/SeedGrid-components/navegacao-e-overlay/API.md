@@ -422,6 +422,7 @@ import { SgWizard, SgWizardPage, type SgWizardProps, type SgWizardPageProps, typ
 | `stepNavigation` | `WizardStepNavigation` = `"none" \| "previous" \| "previous-and-next"` | `?? "previous-and-next"` ᶠ | Não | Define quais etapas podem ser acessadas clicando no stepper. |
 | `className` | `string` | — | Não | Classes e estilo inline do container do wizard. |
 | `style` | `React.CSSProperties` | — | Não | Classes e estilo inline do container do wizard. |
+| `enabled` | `boolean` | — | Não | Habilita o wizard como um todo (padrao `true`). Com `false` nada muda por interacao: os botoes "Anterior", "Proximo" e "Concluir" ficam desabilitados e as etapas do stepper deixam de ser clicaveis; a etapa atual continua visivel. O conteudo da pagina e' do consumidor (use `enabled` nos campos). Nao confundir com `nextDisabled`, que so' bloqueia o avanco. |
 
 ### Eventos e callbacks
 

@@ -126,6 +126,8 @@ import { SgFlipDigit, type SgFlipDigitProps } from "@seedgrid/fe-components";
 | `value` | `string` | — | Sim | The character to display (single char) |
 | `fontSize` | `number` | `70` | Não | Font size in pixels — controls overall scale |
 | `className` | `string` | — | Não | Additional CSS classes applied to the outer wrapper |
+| `height` | `number` | — | Não | — |
+| `width` | `number` | — | Não | — |
 
 ### Eventos e callbacks
 Nenhum. Mudanças de `value` são aplicadas à instância `Tick` (`tickRef.current.value = value`).

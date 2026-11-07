@@ -171,6 +171,8 @@ Digito em estilo matriz para displays compactos de numeros e caracteres com este
 | `padding` | `num` | `8` | não | React | Internal padding in pixels. |
 | `rounded` | `num` | `10` | não | React | Border radius of the matrix container in pixels. |
 | `glow` | `bool` | `true` | não | React | Add a subtle glow around active dots. |
+| `163` | `Object?` | — | não | Flutter | — |
+| `184` | `Object?` | — | não | Flutter | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

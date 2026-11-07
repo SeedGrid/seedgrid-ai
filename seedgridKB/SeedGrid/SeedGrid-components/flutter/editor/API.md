@@ -35,7 +35,6 @@ Editor de texto rico para conteudo formatado, comentarios elaborados e edicao te
 | `cssEditorLabel` | `String?` | — | não | React | — |
 | `cssText` | `String?` | `''` | não | React | — |
 | `defaultValueHtml` | `String?` | — | não | React | — |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `fileName` | `String?` | — | não | React | — |
 | `height` | `num?` | `320` | não | React | Altura do editor. |
@@ -45,10 +44,10 @@ Editor de texto rico para conteudo formatado, comentarios elaborados e edicao te
 | `onLoad` | `ValueChanged<SgTextEditorSaveMeta>?` | — | não | React | Tipo no React: `((meta: SgTextEditorSaveMeta) => void)`. |
 | `onSave` | `void Function(SgTextEditorFile file, SgTextEditorSaveMeta meta)?` | — | não | React | Callback de persistencia do conteudo. Tipo no React: `((file: File, meta: SgTextEditorSaveMeta) => void)`. |
 | `placeholder` | `String?` | — | não | React | Texto de ajuda inicial. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCssEditor` | `bool?` | `false` | não | React | — |
 | `valueHtml` | `String?` | — | não | React | — |
 | `htmlFilePicker` | `SgTextEditorHtmlFilePicker?` | — | não | Flutter | Dart: seletor do botao "Carregar HTML" (padrao: seletor de arquivos do sistema). |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

@@ -91,6 +91,43 @@ Fonte: `src/inputs/SgAutocomplete.tsx`. É um componente genérico, `SgAutocompl
 | `formatSelection` | `((item: SgAutocompleteItem) => string)` | `item.label` | Não | Texto colocado no input ao selecionar. |
 | `renderValue` | `((item: SgAutocompleteItem \| null) => ReactNode)` | — | Não | Render sobreposto do item selecionado (texto do input fica transparente). |
 | `itemTooltip` | `((item: SgAutocompleteItem) => ReactNode)` | — | Não | Tooltip à direita do item no hover. |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `error` | `string` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onEnter` | `(() => void)` | — | Não | — |
+| `onExit` | `(() => void)` | — | Não | — |
+| `onValidation` | `((message: string \| null) => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `required` | `boolean` | — | Não | — |
+| `requiredMessage` | `string` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `validateOnBlur` | `boolean` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (45):** `required`, `maxLength`, `minLength`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -134,6 +171,40 @@ Fonte: `src/inputs/SgCombobox.tsx`. É um componente genérico, `SgCombobox<T = 
 | `renderFooter` | `((query: string, hasResults: boolean) => ReactNode)` | — | Não | Rodapé (`query` sempre `""`). |
 | `itemTooltip` | `((item: SgAutocompleteItem) => ReactNode)` | — | Não | Tooltip do item. |
 | `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` (somente leitura) interno. |
+| `enabled` | `boolean` | — | Não | — |
+| `error` | `string` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onEnter` | `(() => void)` | — | Não | — |
+| `onExit` | `(() => void)` | — | Não | — |
+| `onValidation` | `((message: string \| null) => void)` | — | Não | — |
+| `openOnFocus` | `boolean` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `required` | `boolean` | — | Não | — |
+| `requiredMessage` | `string` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `validateOnBlur` | `boolean` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (39):** `required`, `maxLength`, `minLength`, `name`, `control`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -168,7 +239,6 @@ Fonte: `src/inputs/SgCheckboxGroup.tsx`. O grupo é renderizado dentro de um `Sg
 | `orientation` | `SgCheckboxGroupOrientation` | `"vertical"` | Não | `vertical` ou `horizontal`. |
 | `selectionStyle` | `SgCheckboxGroupSelectionStyle` | `"checkbox"` | Não | `checkbox` ou `highlight` (lista com destaque). |
 | `iconOnly` | `boolean` | `false` | Não | Mostra só o ícone. |
-| `disabled` | `boolean` | `false` | Não | Desabilita tudo. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `required` | `boolean` | `false` | Não | Asterisco no título, `aria-required` e regra `required` no RHF. |
 | `onChange` | `((value: (string \| number)[]) => void)` | — | Não | Recebe o array de valores marcados. |
@@ -184,6 +254,7 @@ Fonte: `src/inputs/SgCheckboxGroup.tsx`. O grupo é renderizado dentro de um `Sg
 | `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 | `error` | `string` | — | Não | Erro exibido abaixo do grupo (com `control`, combinado com `fieldState.error`). |
+| `enabled` | `boolean` | — | Não | — |
 
 **Ref (`SgCheckboxGroupRef`)**:
 
@@ -214,7 +285,6 @@ Fonte: `src/inputs/SgRadioGroup.tsx`. Usa `SgGroupBox` e **não** tem ref.
 | `orientation` | `SgRadioGroupOrientation` | `"vertical"` | Não | `vertical` ou `horizontal`. |
 | `selectionStyle` | `SgRadioGroupSelectionStyle` | `"radio"` | Não | `radio` ou `highlight`. |
 | `iconOnly` | `boolean` | `false` | Não | Só ícone. |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `required` | `boolean` | `false` | Não | Asterisco, `aria-required` e regra `required` no RHF. |
 | `onChange` | `((value: string \| number \| null) => void)` | — | Não | Recebe o valor selecionado (`string \| number \| null`). |
@@ -227,6 +297,7 @@ Fonte: `src/inputs/SgRadioGroup.tsx`. Usa `SgGroupBox` e **não** tem ref.
 | `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 | `error` | `string` | — | Não | Erro exibido abaixo do grupo. |
+| `enabled` | `boolean` | — | Não | — |
 
 - **RHF:** `control` tem precedência, com `mergeRequiredRule`. Com `register`, os `<input type="radio">` recebem o `registration`.
 - **Acessibilidade:** `role="radiogroup"`, `aria-disabled`, `aria-readonly`, `aria-required`.
@@ -249,6 +320,35 @@ Fonte: `src/inputs/SgMultiSelect.tsx`, `useSgMultiSelect.ts` e `SgMultiSelectDro
 | `maxSelected` | `number` | — | Não | Limite de seleção (opções extras ficam bloqueadas). |
 | `emptyText` | `string` | i18n `components.autocomplete.empty` | Não | Texto sem opções. |
 | `summaryThreshold` | `number` | `2` | Não | Quantos rótulos exibir antes do resumo "N selecionadas" (`components.inputs.multiSelect.summary`). |
+| `enabled` | `boolean` | — | Não | — |
+| `error` | `string` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onEnter` | `((() => void) & (() => void))` | — | Não | — |
+| `onValidation` | `((message: string \| null) => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `required` | `boolean` | — | Não | — |
+| `requiredMessage` | `string` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `validateOnBlur` | `boolean` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (34):** `required`, `name`, `control`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -328,7 +428,6 @@ Fonte: `src/inputs/SgOrderList.tsx`. Lista reordenável por botões, por teclado
 | `showControls` | `boolean` | `true` | Não | Botões Topo/Subir/Descer/Base. |
 | `controlsPosition` | `SgOrderListControlsPosition` | `"left"` | Não | `left` ou `right`. |
 | `draggable` | `boolean` | `true` | Não | Arrastar e soltar. |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `emptyMessage` | `string` | i18n `components.orderlist.empty` | Não | Texto de lista vazia. |
 | `itemTemplate` | `((item: SgOrderListItem, state: { index: number; selected: boolean; disabled: boolean; }) => ReactNode)` | — | Não | Render do item `(item, {index, selected, disabled})`. |
@@ -340,6 +439,7 @@ Fonte: `src/inputs/SgOrderList.tsx`. Lista reordenável por botões, por teclado
 | `name` | `string` | — | Não | Nome do campo no react-hook-form. Só tem efeito junto com `control` ou `register` (ver contrato RHF). |
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
+| `enabled` | `boolean` | — | Não | — |
 
 **Ref (`SgOrderListRef`)**: `getItems()`, `setItems(items)`, `getSelection()`, `setSelection(values)`, `moveTop()`, `moveUp()`, `moveDown()`, `moveBottom()`, `clearSelection()`.
 
@@ -381,7 +481,6 @@ Fonte: `src/inputs/SgPickList.tsx`. Duas listas, origem e destino, com transfer�
 | `targetFilterPlaceholder` | `string` | i18n `components.picklist.targetFilterPlaceholder` | Não | Placeholder do filtro de destino. |
 | `filterMatchMode` | `SgPickListFilterMatchMode` | `"contains"` | Não | `contains`, `startsWith`, `endsWith`. |
 | `draggable` | `boolean` | `true` | Não | Arrastar e soltar entre/dentro das listas. |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `emptyMessage` | `string` | i18n `components.picklist.empty` | Não | Texto de lista vazia. |
 | `itemTemplate` | `((item: SgPickListItem, state: { index: number; selected: boolean; disabled: boolean; list: SgPickListListName; }) => ReactNode)` | — | Não | Render `(item, {index, selected, disabled, list})`. |
@@ -393,6 +492,7 @@ Fonte: `src/inputs/SgPickList.tsx`. Duas listas, origem e destino, com transfer�
 | `name` | `string` | — | Não | Nome do campo no react-hook-form. Só tem efeito junto com `control` ou `register` (ver contrato RHF). |
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
+| `enabled` | `boolean` | — | Não | — |
 
 - **Ref (`SgPickListRef`):** `getValue()`, `setValue(value)` (emite `onChange` com `type: "dragdrop"`), `moveToTarget()`, `moveAllToTarget()`, `moveToSource()`, `moveAllToSource()`, `clearSelection()`.
 - **Evento:** `onChange({ source, target, type })`. No RHF, `field.onChange({ source, target })`, sem o `type`.
@@ -416,7 +516,6 @@ Fonte: `src/inputs/SgPeriodSelector.tsx`. É um `SgCombobox` agrupado com preset
 | `permitAll` | `boolean` | `true` | Não | Opção ALL (datas nulas). |
 | `allowCustomPeriod` | `boolean` | `true` | Não | Opção CUSTOM com dois `SgInputDate`. |
 | `locale` | `string` | `"pt-BR"` | Não | Locale dos rótulos (independe do provider i18n). |
-| `disabled` | `boolean` | — | Não | Desabilita. |
 | `required` | `boolean` | — | Não | Repassado ao `SgCombobox` (asterisco). |
 | `minDate` | `Date` | — | Não | Clamp do início do intervalo. |
 | `maxDate` | `Date` | — | Não | Clamp do fim do intervalo. |
@@ -426,6 +525,7 @@ Fonte: `src/inputs/SgPeriodSelector.tsx`. É um `SgCombobox` agrupado com preset
 | `control` | `Control<FieldValues>` | — | Não | RHF: o campo guarda o `preset` (string), não o intervalo. |
 | `name` | `string` | — | Não | Nome RHF. |
 | `rules` | `RegisterOptions` | — | Não | Regras RHF. |
+| `enabled` | `boolean` | — | Não | — |
 
 **Presets (`PeriodPreset`)**:
 - `ALL`, `CUSTOM`;
@@ -460,9 +560,9 @@ Fonte: `src/inputs/SgYearPartSelector.tsx` + `yearPart.ts`. Tem três `SgCombobo
 | `minYear` | `number` | ano atual − 30 | Não | Primeiro ano da lista. |
 | `maxYear` | `number` | ano atual + 10 | Não | Último ano. |
 | `locale` | `string` | `"pt-BR"` | Não | Locale dos rótulos. |
-| `disabled` | `boolean` | — | Não | Desabilita os três combos. |
 | `required` | `boolean` | — | Não | Asterisco no rótulo e nos combos. |
 | `className` | `string` | — | Não | Classes do wrapper. |
+| `enabled` | `boolean` | — | Não | — |
 
 - **Estado inicial:** ano corrente, primeiro recorte permitido, fatia de hoje.
 - **Normalização:** um `value` controlado inconsistente é ajustado com `clampYearPart`, e um recorte fora de `allowedKinds` vira o primeiro permitido.
@@ -521,7 +621,6 @@ Fonte: `src/inputs/SgRating.tsx`. Estrelas em SVG, com meia estrela opcional.
 | `stars` | `number` | `5` | Não | Quantidade de estrelas. |
 | `allowHalf` | `boolean` | `false` | Não | Meia estrela. |
 | `cancel` | `boolean` | `true` | Não | Botão para zerar. |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura. |
 | `size` | `SgRatingSize` | `"md"` | Não | `sm`=16, `md`=24, `lg`=32, `xl`=40 px. |
 | `className` | `string` | `""` | Não | Classes. |
@@ -540,6 +639,8 @@ Fonte: `src/inputs/SgRating.tsx`. Estrelas em SVG, com meia estrela opcional.
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 | `error` | `string` | — | Não | Erro. |
+| `enabled` | `boolean` | — | Não | Disabled state |
+| `id` | `string` | — | Não | Unique identifier |
 
 - **RHF:** via `control` + `name`, com `mergeRequiredRule`.
 - **Validação:** a regra de obrigatório interna só é avaliada em clique ou cancelamento.
@@ -561,7 +662,6 @@ Fonte: `src/inputs/SgSlider.tsx`. É um `<input type="range">` nativo.
 | `value` | `number` | — | Não | Controlado (clamp em min..max). |
 | `defaultValue` | `number` | `minValue` | Não | Inicial não controlado. |
 | `step` | `number` | `1` | Não | Passo (≤ 0 → 1). |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `onChange` | `((value: number) => void)` | — | Não | Recebe o número (clamp). |
 | `ariaLabel` | `string` | — | Não | `aria-label` do range. |
 | `className` | `string` | — | Não | Classes do `<input>`. |
@@ -572,6 +672,7 @@ Fonte: `src/inputs/SgSlider.tsx`. É um `<input type="range">` nativo.
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
+| `enabled` | `boolean` | — | Não | — |
 
 - **RHF:** `register` ou `control`, sem `mergeRequiredRule` (o tipo não tem `required`). Com `control`, `value = field.value`, convertido para número.
 - **Possível defeito (Inferência pela ordem do JSX):** `{...inputProps}` vem depois do `onChange` interno.
@@ -592,7 +693,6 @@ Fonte: `src/inputs/SgStepperInput.tsx`. Usa `<input type="number">` e dois botõ
 | `step` | `number` | `1` | Não | Passo dos botões. |
 | `value` | `number` | — | Não | Controlado. |
 | `defaultValue` | `number` | `minValue` | Não | Inicial não controlado. |
-| `disabled` | `boolean` | `false` | Não | Desabilita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura (botões desativados). |
 | `onChange` | `((value: number) => void)` | — | Não | Recebe o número (clamp). |
 | `ariaLabel` | `string` | — | Não | `aria-label` do input. |
@@ -605,6 +705,7 @@ Fonte: `src/inputs/SgStepperInput.tsx`. Usa `<input type="number">` e dois botõ
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
+| `enabled` | `boolean` | — | Não | — |
 
 - **RHF:** `register` ou `control`.
 - **Ressalva com `register` (Inferência):**

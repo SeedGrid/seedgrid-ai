@@ -72,7 +72,6 @@ Campo de busca assistida com sugestoes, fonte assincrona, cache e selecao de ite
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgAutocompleteElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -100,7 +99,6 @@ Campo de busca assistida com sugestoes, fonte assincrona, cache e selecao de ite
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | — | não | React | — |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgAutocompleteTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -109,6 +107,7 @@ Campo de busca assistida com sugestoes, fonte assincrona, cache e selecao de ite
 | `validation` | `String? Function(String value)?` | — | não | React | Tipo no React: `((value: string) => string)`. |
 | `width` | `Object?` | — | não | React | Tipo no React: `string \| number`. |
 | `withBorder` | `bool?` | — | não | React | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -171,7 +170,6 @@ Campo de escolha assistida que combina digitacao e selecao de item com suporte a
 | `borderRadius` | `num?` | — | não | React | Tipo no React: `string \| number`. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgComboboxElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -196,7 +194,6 @@ Campo de escolha assistida que combina digitacao e selecao de item com suporte a
 | `prefixText` | `String?` | — | não | React | — |
 | `required` | `bool?` | — | não | React | — |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgComboboxTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -204,6 +201,7 @@ Campo de escolha assistida que combina digitacao e selecao de item com suporte a
 | `validation` | `String? Function(String value)?` | — | não | React | Tipo no React: `((value: string) => string)`. |
 | `width` | `Object?` | — | não | React | Tipo no React: `string \| number`. |
 | `withBorder` | `bool?` | — | não | React | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -251,7 +249,6 @@ Grupo de checkboxes para multisselecao com orientacao, estilo de selecao e supor
 | `orientation` | `SgCheckboxGroupOrientation` | `SgCheckboxGroupOrientation.vertical` | não | React | Orientacao visual do grupo. Valores: `vertical`, `horizontal`. |
 | `selectionStyle` | `SgCheckboxGroupSelectionStyle` | `SgCheckboxGroupSelectionStyle.checkbox` | não | React | Estilo visual de selecao. Valores: `checkbox`, `highlight`. |
 | `iconOnly` | `bool` | `false` | não | React | — |
-| `disabled` | `bool` | `false` | não | React | — |
 | `readOnly` | `bool` | `false` | não | React | — |
 | `required` | `bool` | `false` | não | React | Marca o grupo como obrigatorio. |
 | `onChange` | `ValueChanged<List<Object>>?` | — | não | React | Callback de mudanca. Tipo no React: `((value: (string \| number)[]) => void)`. |
@@ -260,11 +257,11 @@ Grupo de checkboxes para multisselecao com orientacao, estilo de selecao e supor
 | `checkAllIcon` | `Widget?` | — | não | React | — |
 | `name` | `String?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `error` | `String?` | — | não | React | — |
 | `optionClassName` | `String?` | — | não | React | React-only (classe CSS por opcao); sem efeito no Flutter. |
 | `groupBoxProps` | `SgChoiceGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
 | `controller` | `SgCheckboxGroupController?` | — | não | Flutter | Substitui o `ref` imperativo do React. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -310,16 +307,15 @@ Grupo de radios para escolha unica com orientacao e estilo visual configuravel.
 | `orientation` | `SgRadioGroupOrientation` | `SgRadioGroupOrientation.vertical` | não | React | Orientacao visual do grupo. Valores: `vertical`, `horizontal`. |
 | `selectionStyle` | `SgRadioGroupSelectionStyle` | `SgRadioGroupSelectionStyle.radio` | não | React | Estilo visual de selecao. Valores: `radio`, `highlight`. |
 | `iconOnly` | `bool` | `false` | não | React | — |
-| `disabled` | `bool` | `false` | não | React | — |
 | `readOnly` | `bool` | `false` | não | React | Impede alteracoes no valor. |
 | `required` | `bool` | `false` | não | React | Marca o grupo como obrigatorio. |
 | `onChange` | `ValueChanged<Object?>?` | — | não | React | Callback de mudanca. Tipo no React: `((value: string \| number) => void)`. |
 | `name` | `String?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `error` | `String?` | — | não | React | — |
 | `optionClassName` | `String?` | — | não | React | React-only (classe CSS por opcao); sem efeito no Flutter. |
 | `groupBoxProps` | `SgChoiceGroupBoxProps?` | `{}` † | não | React | Tipo no React: `(Omit<Partial<SgGroupBoxProps>, "title" \| "children"> & { title?: string; })`. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -369,7 +365,6 @@ Campo de selecao multipla no estilo select: trigger com chevron que vira check a
 | `borderRadius` | `Object?` | — | não | React | Numero (px) ou texto `'Npx'`. Tipo no React: `string \| number`. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgMultiSelectElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -390,13 +385,13 @@ Campo de selecao multipla no estilo select: trigger com chevron que vira check a
 | `prefixText` | `String?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgMultiSelectTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
 | `validateOnBlur` | `bool?` | — | não | React | — |
 | `validation` | `String? Function(String value)?` | — | não | React | Tipo no React: `((value: string) => string)`. |
 | `width` | `Object?` | — | não | React | Tipo no React: `string \| number`. |
 | `withBorder` | `bool?` | — | não | React | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -452,12 +447,11 @@ Variante do multi-select onde os itens selecionados viram chips removiveis no tr
 | `labelText` | `String?` | — | não | React | — |
 | `width` | `Object?` | — | não | React | Numero (px) ou texto `'N%'`/`'Npx'`; padrao: largura toda. Tipo no React: `string \| number`. |
 | `borderRadius` | `Object?` | — | não | React | Numero (px) ou texto `'Npx'`. Tipo no React: `string \| number`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `name` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `error` | `String?` | — | não | React | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -505,7 +499,6 @@ Lista ordenavel para reordenacao manual de itens com selecao e controles de movi
 | `showControls` | `bool` | `true` | não | React | Exibe botoes de ordenacao. |
 | `controlsPosition` | `SgOrderListControlsPosition` | `SgOrderListControlsPosition.left` | não | React | Valores: `left`, `right`. |
 | `draggable` | `bool` | `true` | não | React | Permite arrastar itens. |
-| `disabled` | `bool` | `false` | não | React | Desabilita interacao. |
 | `readOnly` | `bool` | `false` | não | React | — |
 | `emptyMessage` | `String?` | — | não | React | — |
 | `itemTemplate` | `Widget Function(SgOrderListItem item, SgOrderListItemState state)?` | — | não | React | Tipo no React: `((item: SgOrderListItem, state: { index: number; selected: boolean; disabled: boolean; }) => React.ReactNode)`. |
@@ -515,8 +508,8 @@ Lista ordenavel para reordenacao manual de itens com selecao e controles de movi
 | `error` | `String?` | — | não | React | — |
 | `name` | `String?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `controller` | `SgOrderListController?` | — | não | Flutter | `ref` do React. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -577,7 +570,6 @@ Lista dual para mover itens entre origem e destino com filtros e selecao.
 | `targetFilterPlaceholder` | `String?` | — | não | React | — |
 | `filterMatchMode` | `SgPickListFilterMatchMode` | `SgPickListFilterMatchMode.contains` | não | React | Valores: `contains`, `startsWith`, `endsWith`. |
 | `draggable` | `bool` | `true` | não | React | — |
-| `disabled` | `bool` | `false` | não | React | Desabilita interacao. |
 | `readOnly` | `bool` | `false` | não | React | — |
 | `emptyMessage` | `String?` | — | não | React | — |
 | `itemTemplate` | `Widget Function(SgPickListItem item, SgPickListItemState state)?` | — | não | React | Tipo no React: `((item: SgPickListItem, state: { index: number; selected: boolean; disabled: boolean; list: SgPickListListName; }) => React.ReactNode)`. |
@@ -587,8 +579,8 @@ Lista dual para mover itens entre origem e destino com filtros e selecao.
 | `error` | `String?` | — | não | React | — |
 | `name` | `String?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `controller` | `SgPickListController?` | — | não | Flutter | `ref` do React. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -637,7 +629,6 @@ Seletor de periodos pre-definidos (Este mes, Ultimo trimestre, etc.) que resolve
 | `permitAll` | `bool` | `true` | não | React | Habilita a opcao Todos (sem limites de data). |
 | `allowCustomPeriod` | `bool` | `true` | não | React | Habilita a opcao Periodo (intervalo customizado). |
 | `locale` | `String` | `'pt-BR'` | não | React | Locale usado nos labels e formatacao. |
-| `disabled` | `bool?` | — | não | React | — |
 | `required` | `bool?` | — | não | React | — |
 | `minDate` | `DateTime?` | — | não | React | Limite inferior aplicado como clamp no intervalo. Tipo no React: `Date`. |
 | `maxDate` | `DateTime?` | — | não | React | Limite superior aplicado como clamp no intervalo. Tipo no React: `Date`. |
@@ -645,7 +636,7 @@ Seletor de periodos pre-definidos (Este mes, Ultimo trimestre, etc.) que resolve
 | `error` | `String?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Integracao react-hook-form (opcional). Tipo no React: `Control<FieldValues>`. |
 | `name` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions`. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -691,9 +682,9 @@ Seletor de recorte de ano: o usuario escolhe ANO + RECORTE (semestre, trimestre 
 | `minYear` | `int?` | `ano corrente - 30` † | não | React | Primeiro ano oferecido na lista de anos. |
 | `maxYear` | `int?` | `ano corrente + 10` † | não | React | Ultimo ano oferecido na lista de anos. |
 | `locale` | `String` | `'pt-BR'` | não | React | Locale dos rotulos de recorte e fatia. A sigla entre parenteses acompanha o idioma: Q1..Q4 em pt-BR e en-US, T1..T4 em es, fr e pt-PT; bimestre nao tem sigla e sai sem parenteses. |
-| `disabled` | `bool?` | `false` † | não | React | Desabilita os tres combos (ano, recorte e fatia). |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `today` | `DateTime?` | — | não | Flutter | "Hoje" para o estado inicial e para a faixa de anos (padrao: agora). Extra do Flutter, para testes e showcase (no React o componente le `new Date()`). |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita os tres combos (ano, recorte e fatia). |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -732,7 +723,6 @@ Interruptor booleano para ativar ou desativar estados, flags e configuracoes sim
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `defaultChecked` | `bool?` | — | não | React | — |
 | `description` | `String?` | — | não | React | — |
-| `disabled` | `bool?` | — | não | React | No React: `enabled` (valor invertido). |
 | `error` | `String?` | — | não | React | — |
 | `inputProps` | `Object?` | — | não | React | Sem equivalente no Flutter (atributos do <input>); ignorado. Tipo no React: `(React.InputHTMLAttributes<HTMLInputElement> & { ref?: React.Ref<HTMLInputElement>; })`. |
 | `label` | `String?` | — | não | React | Rotulo exibido ao usuario. |
@@ -744,13 +734,13 @@ Interruptor booleano para ativar ou desativar estados, flags e configuracoes sim
 | `readOnly` | `bool?` | `false` † | não | React | Permite visualizacao sem alteracao. |
 | `required` | `bool?` | — | não | React | — |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `switchClassName` | `String?` | — | não | React | React-only (classes CSS); sem efeito no Flutter. |
 | `thumbClassName` | `String?` | — | não | React | — |
 | `trackClassName` | `String?` | — | não | React | — |
 | `validateOnBlur` | `bool?` | — | não | React | — |
 | `validation` | `String? Function(bool checked)?` | — | não | React | Tipo no React: `((checked: boolean) => string)`. |
 | `width` | `Object?` | — | não | React | Numero (px) ou texto 'N%'. Tipo no React: `string \| number`. |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -795,7 +785,6 @@ Controle de avaliacao ordinal para notas, estrelas e feedback rapido do usuario.
 | `cancelIcon` | `Widget?` | — | não | React | Custom icon for cancel button |
 | `color` | `String?` | `hsl(var(--primary))` † | não | React | Color for filled stars |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
-| `disabled` | `bool` | `false` | não | React | Desabilita interacao. |
 | `emptyColor` | `String?` | `hsl(var(--muted-foreground))` † | não | React | Color for empty stars |
 | `error` | `String?` | — | não | React | — |
 | `id` | `String?` | — | não | React | Identificador unico do componente. |
@@ -808,11 +797,11 @@ Controle de avaliacao ordinal para notas, estrelas e feedback rapido do usuario.
 | `readOnly` | `bool` | `false` | não | React | Impede alteracao da nota. |
 | `required` | `bool` | `false` | não | React | Required field |
 | `requiredMessage` | `String?` | — | não | React | Required message |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showTooltip` | `bool` | `false` | não | React | Show tooltips with value |
 | `size` | `SgRatingSize` | `SgRatingSize.md` | não | React | Tamanho visual do controle. Valores: `sm`, `md`, `lg`, `xl`. |
 | `stars` | `num` | `5` | não | React | Number of stars |
 | `value` | `num` | `0` | não | React | Nota atual. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -855,15 +844,14 @@ Controle deslizante para ajuste numerico continuo dentro de um intervalo definid
 | `ariaLabel` | `String?` | — | não | React | Rotulo de acessibilidade (`aria-label`). |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `defaultValue` | `num?` | — | não | React | — |
-| `disabled` | `bool` | `false` | não | React | Desabilita interacao. |
 | `error` | `String?` | — | não | React | — |
 | `inputProps` | `Object?` | — | não | React | Sem equivalente no Flutter (atributos do <input>); ignorado. Tipo no React: `SliderInputProps`. |
 | `name` | `String?` | — | não | React | — |
 | `onChange` | `ValueChanged<num>?` | — | não | React | Callback de mudanca. Tipo no React: `((value: number) => void)`. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `step` | `num` | `1` | não | React | Passo entre valores. |
 | `value` | `num?` | — | não | React | Valor atual controlado. |
 | `width` | `Object?` | — | não | React | Largura do componente. Tipo no React: `string \| number`. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -903,16 +891,15 @@ Campo numerico com botoes de incremento e decremento para ajuste discreto de qua
 | `ariaLabel` | `String?` | — | não | React | Rotulo de acessibilidade (`aria-label`): vira o `Semantics.label` do campo. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `defaultValue` | `num?` | — | não | React | Valor inicial quando nao ha `value` nem formulario. Padrao: `minValue`. |
-| `disabled` | `bool?` | `false` † | não | React | Desabilita interacao. |
 | `error` | `String?` | — | não | React | — |
 | `inputProps` | `Object?` | — | não | React | Sem equivalente (atributos do `<input>`); ignorado. Tipo no React: `StepperInputProps`. |
 | `name` | `String?` | — | não | React | — |
 | `onChange` | `ValueChanged<num>?` | — | não | React | Callback de mudanca. Tipo no React: `((value: number) => void)`. |
 | `readOnly` | `bool?` | `false` † | não | React | Permite visualizacao sem edicao direta. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `step` | `num?` | `1` † | não | React | Incremento e decremento aplicados. |
 | `value` | `num?` | — | não | React | Valor atual controlado. |
 | `width` | `Object?` | — | não | React | Numero (px) ou texto ('50%', '120px'). Tipo no React: `string \| number`. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

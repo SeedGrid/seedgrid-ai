@@ -205,6 +205,43 @@ Fonte: `src/inputs/SgInputTextSearch.tsx`. Envolve o `SgInputText` e acrescenta 
 | `debounceMs` | `number` | `350` | Não | Atraso do debounce em ms. |
 | `onChange` | `((value: string) => void)` | — | Não | Disparado imediatamente a cada digitação, com o valor cru. |
 | `onSearchChange` | `(value: string) => void` | — | Sim | Disparado após o debounce com o valor normalizado (`trim`), respeitando `minChars` e sem repetir o último valor emitido (distinct). Não dispara na montagem. |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `error` | `string` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onEnter` | `(() => void)` | — | Não | — |
+| `onExit` | `(() => void)` | — | Não | — |
+| `onValidation` | `((message: string \| null) => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `required` | `boolean` | — | Não | — |
+| `requiredMessage` | `string` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `validateOnBlur` | `boolean` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (45):** `required`, `maxLength`, `minLength`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -230,6 +267,35 @@ Fonte: `src/inputs/SgInputEmail.tsx`. Fixa `type="email"` e usa `textInputType` 
 | `invalidMessage` | `string` | i18n `components.inputs.email.invalid` | Não | Mensagem de formato inválido (regex `/.+@.+\..+/`). |
 | `blockFakeMail` | `boolean` | `true` | Não | Rejeita domínios de e-mail temporário (mensagem fixa i18n `components.inputs.email.tempInvalid`). |
 | `blockedEmailDomains` | `string[]` | — | Não | Domínios extras a bloquear; somados à lista padrão `DEFAULT_BLOCKED_EMAIL_DOMAINS` e a `globalThis.__seedgridBlockedEmailDomains`. |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onEnter` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `readOnly`.
 
@@ -270,6 +336,34 @@ Fonte: `src/inputs/SgInputPassword.tsx`. Usa `type="password"` ou `"text"` confo
 | `prohibitsSequentialAscCharacters` | `boolean` | `true` | Não | Proíbe sequência crescente de 3 (`abc`, `123`). |
 | `prohibitsSequentialDescCharacters` | `boolean` | `true` | Não | Proíbe sequência decrescente de 3 (`cba`, `321`). |
 | `minSize` | `number` | `8` | Não | Tamanho mínimo. |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (36):** `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -305,6 +399,36 @@ Fonte: `src/inputs/SgInputPhone.tsx`. Aplica a máscara `maskPhone` a cada digit
 | `error` | `string` | — | Não | Erro externo; precedência sobre o interno. |
 | `lengthMessage` | `string` | i18n `components.inputs.phone.invalid` | Não | Mensagem quando não há 10 ou 11 dígitos. |
 | `invalidMessage` | `string` | i18n `components.inputs.phone.invalid` | Não | Fallback de `lengthMessage`. |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -329,6 +453,36 @@ Fonte: `src/inputs/SgInputCPF.tsx`. Aplica `maskCpf`, exige 11 dígitos e valida
 | `error` | `string` | — | Não | Erro externo; precedência sobre o interno. |
 | `lengthMessage` | `string` | i18n `components.inputs.cpf.length` | Não | Mensagem quando não há 11 dígitos. |
 | `invalidMessage` | `string` | i18n `components.inputs.cpf.invalid` | Não | Mensagem de dígito verificador inválido (`isValidCpf`). |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -358,6 +512,36 @@ Fonte: `src/inputs/SgInputCNPJ.tsx`. Aplica `maskCnpj` e aceita CNPJ **alfanumé
 | `publicaCnpjFetch` | `((cnpj: string) => Promise<unknown>)` | `fetch("https://publica.cnpj.ws/cnpj/<cnpj>")` | Não | Função de consulta substituível; retorna dados ou `null`. |
 | `onPublicaCnpjResult` | `((data: unknown) => void)` | — | Não | Recebe o retorno da consulta (ou `null`). |
 | `onPublicaCnpjError` | `((error: unknown) => void)` | — | Não | Recebe exceções da consulta (a validação então passa). |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -385,6 +569,41 @@ Fonte: `src/inputs/SgInputCPFCNPJ.tsx`. Aplica `maskCpfCnpj`. Trata o valor como
 | `error` | `string` | — | Não | Erro externo; precedência sobre o interno. |
 | `lengthMessage` | `string` | i18n (`cpf.length` / `cnpj.length`) | Não | Mensagem de tamanho (vale para os dois tipos). |
 | `invalidMessage` | `string` | i18n (`cpf.invalid` / `cnpj.invalid`) | Não | Mensagem de inválido (vale para os dois tipos). |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onPublicaCnpjError` | `((error: unknown) => void)` | — | Não | Chamado quando a consulta falha (rede ou limite da API); a validacao passa. |
+| `onPublicaCnpjResult` | `((data: unknown) => void)` | — | Não | Recebe o resultado da consulta (`null` quando nao achou). |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `publicaCnpjErrorMessage` | `string` | — | Não | Mensagem quando a base publica nao encontra o CNPJ. |
+| `publicaCnpjFetch` | `((cnpj: string) => Promise<unknown>)` | — | Não | Consulta injetavel (testes sem rede). Padrao: https://publica.cnpj.ws. |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `validateWithPublicaCnpj` | `boolean` | — | Não | Quando o documento e um CNPJ numerico valido, confirma na base publica (publica.cnpj.ws) que ele existe. |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -423,6 +642,36 @@ Fonte: `src/inputs/SgInputPostalCode.tsx` → `COUNTRY_CONFIGS`. A máscara, o t
 | `viaCepFetch` | `((cep: string) => Promise<ViaCepResponse>)` | `fetch("https://viacep.com.br/ws/<cep>/json/")` | Não | Função de consulta substituível. |
 | `onViaCepResult` | `((data: ViaCepResponse) => void)` | — | Não | Recebe o `ViaCepResponse`. |
 | `onViaCepError` | `((error: unknown) => void)` | — | Não | Recebe exceções da consulta (a validação passa). |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `type` | `HTMLInputTypeAttribute` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -443,6 +692,42 @@ Fonte: `src/inputs/SgInputDate.tsx`. Envolve um `SgInputText` com `type="date"` 
 | `onExit` | `() => void` | — | Não | Chamado ao perder o foco (após a validação). |
 | `minDate` | `string \| Date` | — | Não | Data mínima (`"yyyy-MM-dd"` ou `Date`): atributo `min` e validação (`components.inputs.date.min`/`range`). |
 | `maxDate` | `string \| Date` | — (atributo HTML `9999-12-31`) | Não | Data máxima: atributo `max` e validação. Sem valor, só o atributo recebe `9999-12-31` para conter o ano em 4 dígitos. |
+| `alwaysFloat` | `boolean` | — | Não | — |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `error` | `string` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `onValidation` | `((message: string \| null) => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `required` | `boolean` | — | Não | — |
+| `requiredMessage` | `string` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `validateOnBlur` | `boolean` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `required`, `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `prefixText`, `suffixText`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `enabled`, `textInputType`, `onClear`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -476,6 +761,37 @@ Fonte: `src/inputs/SgInputBirthDate.tsx`. Envolve o `SgInputDate` e acrescenta a
 | `maxAge` | `number` | — | Não | Idade máxima: deriva `minDate` (hoje − maxAge anos). **Sem `minAge` nem `maxAge`, qualquer data preenchida gera o erro `components.validators.birthdate.configMissing`.** |
 | `maxDate` | `string \| Date` | minAge derivado ou hoje | Não | Sobrescreve a data máxima derivada. |
 | `minDate` | `string \| Date` | maxAge derivado | Não | Sobrescreve a data mínima derivada. |
+| `alwaysFloat` | `boolean` | — | Não | — |
+| `clearButton` | `boolean` | — | Não | — |
+| `enabled` | `boolean` | — | Não | — |
+| `filled` | `boolean` | — | Não | — |
+| `hintText` | `string` | — | Não | — |
+| `iconButtons` | `ReactNode[]` | — | Não | — |
+| `id` | `string` | — | Sim | — |
+| `label` | `string` | — | Não | — |
+| `labelAlign` | `"start" \| "center" \| "end"` | — | Não | — |
+| `labelPosition` | `"top" \| "left" \| "float"` | — | Não | — |
+| `labelText` | `string` | — | Não | — |
+| `labelWidth` | `string \| number` | — | Não | — |
+| `maxLength` | `number` | — | Não | — |
+| `maxLengthMessage` | `string` | — | Não | — |
+| `minLength` | `number` | — | Não | — |
+| `minLengthMessage` | `string` | — | Não | — |
+| `minNumberOfWords` | `number` | — | Não | — |
+| `minNumberOfWordsMessage` | `string` | — | Não | — |
+| `name` | `string` | — | Não | — |
+| `onChange` | `((value: string) => void)` | — | Não | — |
+| `onClear` | `(() => void)` | — | Não | — |
+| `placeholder` | `string` | — | Não | — |
+| `prefixIcon` | `ReactNode` | — | Não | — |
+| `prefixText` | `string` | — | Não | — |
+| `readOnly` | `boolean` | — | Não | — |
+| `showCharCounter` | `boolean` | — | Não | — |
+| `suffixText` | `string` | — | Não | — |
+| `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
+| `validation` | `((value: string) => string \| null)` | — | Não | — |
+| `width` | `string \| number` | — | Não | — |
+| `withBorder` | `boolean` | — | Não | — |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (32):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `prefixText`, `suffixText`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `enabled`, `textInputType`, `onClear`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`.
 

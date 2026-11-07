@@ -84,10 +84,10 @@ Avisos em tempo real para o usuario logado pelo SeedGrid Pulse: pede o token de 
 | `tokenRequestInit` | `SgTokenRequestInit?` | — | não | React | Opções do `fetch` do token (ex.: `headers: { Authorization: ... }` quando não há cookie). Tipo no React: `RequestInit`. |
 | `fetchToken` | `Future<SgRealtimeConnectResponse> Function()?` | — | não | React | Substitui o pedido de token inteiro (apps sem BFF, testes). Tipo no React: `(() => Promise<SgRealtimeConnectResponse>)`. |
 | `pulseUrl` | `String?` | — | não | React | Endereço do Pulse, usado quando o token não traz `connectUrl` (Pulse sem endereço público). |
-| `disabled` | `bool?` | `true` † | não | React | Liga/desliga (ex.: false enquanto nao ha usuario logado). |
 | `connectOptions` | `Object?` | — | não | React | Opções avançadas do cliente do Pulse (reconexão, `webSocketImpl` em testes...). Tipo no React: `Omit<ConnectInput, "getToken" \| "accountKey" \| "baseUrl">`. |
 | `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | Cria o cliente do Pulse (ver [SgPulseConnection]). Chamado a cada (re)conexao do provider. |
 | `tokenFetcher` | `SgFetcher?` | — | não | Flutter | `fetch` injetavel do pedido de token padrao (testes). |
+| `enabled` | `bool?` | `true` † | não | React | Liga/desliga (ex.: false enquanto nao ha usuario logado). |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

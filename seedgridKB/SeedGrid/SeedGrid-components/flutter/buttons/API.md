@@ -41,9 +41,9 @@ Botao de acao com suporte a severity, appearance, shape, loading e icones para a
 | `loading` | `bool` | `false` | não | React | Exibe spinner e bloqueia interacao enquanto a acao esta em progresso. |
 | `customColors` | `SgButtonCustomColors?` | — | não | React | Tipo no React: `SgButtonCustomColors`. |
 | `onClick` | `VoidCallback?` | — | não | Flutter | `onClick` do botao HTML. |
-| `disabled` | `bool?` | — | não | Flutter | `disabled` do botao HTML. |
 | `type` | `SgButtonType` | `SgButtonType.button` | não | Flutter | `type` do botao HTML. |
 | `child` | `Object?` | — | não | Flutter | `children` no React (tem precedencia sobre [label]). `String` ou `Widget`. |
+| `enabled` | `bool?` | `true` † | não | React | Quando false, desabilita a interacao do botao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -93,10 +93,10 @@ Botao de acao com trigger principal e menu secundario acoplado para variacoes co
 | `size` | `SgSize` | `SgSize.md` | não | React | Valores: `sm`, `md`, `lg`. |
 | `shape` | `SgSplitButtonShape` | `SgSplitButtonShape.defaultValue` | não | React | Valores: `square`, `rounded`, `default`. |
 | `elevation` | `SgElevation` | `SgElevation.none` | não | React | Valores: `none`, `sm`, `md`. |
-| `disabled` | `bool` | `false` | não | React | Desabilita a acao principal e o menu secundario. |
 | `loading` | `bool` | `false` | não | React | Exibe estado de carregamento na acao principal. |
 | `onClick` | `VoidCallback?` | — | não | React | Callback disparado na acao principal. Tipo no React: `(() => void)`. |
 | `customColors` | `SgButtonCustomColors?` | — | não | React | Tipo no React: `SgButtonCustomColors`. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita a acao principal e o menu secundario. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -158,7 +158,6 @@ Botao de acao flutuante para tarefas de alto destaque, com suporte a hint, posic
 | `size` | `SgFloatActionButtonSize` | `SgFloatActionButtonSize.md` | não | React | Valores: `sm`, `md`, `lg`. |
 | `shape` | `SgFloatActionButtonShape` | `SgFloatActionButtonShape.circle` | não | React | Valores: `circle`, `square`, `rounded`. |
 | `elevation` | `SgFloatActionButtonElevation` | `SgFloatActionButtonElevation.md` | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool` | `false` | não | React | Desabilita a acao principal e as acoes derivadas. |
 | `loading` | `bool` | `false` | não | React | Exibe estado de carregamento no FAB. |
 | `autoHideOnScroll` | `bool` | `false` | não | React | — |
 | `hideDirection` | `SgFloatActionButtonHideDirection` | `SgFloatActionButtonHideDirection.down` | não | React | Valores: `down`, `up`. |
@@ -173,6 +172,7 @@ Botao de acao flutuante para tarefas de alto destaque, com suporte a hint, posic
 | `onClick` | `VoidCallback?` | — | não | React | Callback da acao principal do FAB. Tipo no React: `(() => void)`. |
 | `zIndex` | `num` | `50` | não | React | Sem efeito: a ordem das camadas e a do Overlay (ou do `Stack`, com `absolute`). |
 | `absolute` | `bool` | `false` | não | React | — |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita a acao principal e as acoes derivadas. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

@@ -45,11 +45,11 @@ import {
 | `shape` | `SgAvatarShape` = `"square" \| "circle"` | `"circle"` | Não | Forma visual do avatar. |
 | `severity` | `SgAvatarSeverity` = `"primary" \| "secondary" \| "success" \| "info" \| "warning" \| "danger" \| "neutral" \| "custom"` | `"primary"` | Não | Tom visual do avatar quando nao ha imagem. |
 | `bordered` | `boolean` | `true` | Não | Borda e estado desabilitado. |
-| `disabled` | `boolean` | `false` | Não | Borda e estado desabilitado. |
 | `customColors` | `SgAvatarCustomColors` | — | Não | Substituições de cores quando necessário. |
 | `imageClassName` | `string` | — | Não | Classes CSS para imagem e container. |
 | `children` | `React.ReactNode` | — | Não | Conteúdo visual do avatar. |
 | `onImageError` | `(event: React.SyntheticEvent<HTMLImageElement, Event>) => void` | — | Não | Callback para falha ao carregar imagem. |
+| `enabled` | `boolean` | — | Não | — |
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.HTMLAttributes<HTMLSpanElement>, "children" \| "color"> & { ... }`; acrescenta 276 props de `@types/react` (`HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 169). Não listadas individualmente — ver contrato base `React.HTMLAttributes` em `@types/react`.
 - Aceita `ref` (via `React.forwardRef`) e `key`.
@@ -157,7 +157,6 @@ import {
 | `removeAriaLabel` | `string` | texto i18n `components.badge.remove` ᶠ | Não | `aria-label` do botão interno de remover. *(Inferência)* |
 | `autoRemove` | `boolean` | `false` | Não | Comportamento de remoção. |
 | `onClick` | `(e: React.MouseEvent) => void` | — | Não | Callback de clique; quando informado o badge é renderizado como `<button>`. |
-| `disabled` | `boolean` | — | Não | Desabilita o badge clicável (só tem efeito quando `onClick` é informado). |
 | `title` | `string` | — | Não | Atributo `title` do badge (usado se `hint` não for informado). |
 | `hint` | `string` | `?? title` ᶠ | Não | Texto de dica (atributo `title`); tem prioridade sobre `title`. |
 | `customColors` | `SgBadgeCustomColors` | — | Não | Customização visual avançada. |
@@ -165,6 +164,7 @@ import {
 | `style` | `React.CSSProperties` | — | Não | Customização visual avançada. |
 | `partsClassName` | `SgBadgePartsClassName` | — | Não | Customização visual avançada. |
 | `aria-label` | `string` | — | Não | Repassado ao elemento raiz (via `...aria`). *(Inferência)* |
+| `enabled` | `boolean` | — | Não | — |
 - Tipo fechado (sem herança de atributos DOM); props não listadas acima são repassadas só se chegarem pelo resto `...aria` (na prática, `aria-label`).
 
 ### Eventos e callbacks

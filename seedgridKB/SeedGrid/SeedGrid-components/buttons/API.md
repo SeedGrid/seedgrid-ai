@@ -43,6 +43,7 @@ import { SgButton, type SgButtonProps, type SgButtonCustomColors } from "@seedgr
 | `rightIcon` | `React.ReactNode` | — | Não | Icone exibido depois do label. |
 | `loading` | `boolean` | `false` | Não | Exibe spinner e bloqueia interacao enquanto a acao esta em progresso. |
 | `customColors` | `SgButtonCustomColors` | — | Não | Sobrescreve cores de fundo, texto, borda e foco. |
+| `enabled` | `boolean` | — | Não | Quando false, desabilita o botão. Padrão: true. |
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> & { ... }`; acrescenta 287 props de `@types/react` (`ButtonHTMLAttributes` 10, `HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 170), incluindo `children`. Não listadas individualmente — ver contrato base `React.ButtonHTMLAttributes` em `@types/react`.
 - Aceita `ref` (via `React.forwardRef`) e `key`.
@@ -111,13 +112,13 @@ import { SgSplitButton, type SgSplitButtonProps, type SgSplitButtonItem } from "
 | `size` | `Size` = `"sm" \| "md" \| "lg"` | `"md"` | Não | Tamanho do componente (repassado ao `SgButton`; também ajusta o menu). |
 | `shape` | `Shape` = `"default" \| "rounded" \| "square"` | `"default"` | Não | Formato das bordas dos dois botões internos (repassado ao `SgButton`). *(Inferência)* |
 | `elevation` | `Elevation` = `"sm" \| "md" \| "none"` | `"none"` | Não | Nível de elevação/sombra dos botões. |
-| `disabled` | `boolean` | `false` | Não | Desabilita a acao principal e o menu secundario. |
 | `loading` | `boolean` | `false` | Não | Exibe estado de carregamento na acao principal. |
 | `onClick` | `() => void` | — | Não | Callback disparado na acao principal. |
 | `items` | `SgSplitButtonItem[]` | — | Sim | Lista de acoes secundarias exibidas no menu dropdown. |
 | `customColors` | `SgButtonCustomColors` | — | Não | Cores personalizadas repassadas aos dois `SgButton` internos (mesmo contrato `SgButtonCustomColors`). *(Inferência)* |
 | `className` | `string` | — | Não | Visual customization of the split button container. |
 | `style` | `React.CSSProperties` | — | Não | Estilo inline do container. |
+| `enabled` | `boolean` | — | Não | — |
 
 - Aceita `ref` (via `React.forwardRef`) e `key`.
 - Não há herança de atributos DOM: apenas `className` e `style` chegam ao `<div>` container (Confirmado).
@@ -190,7 +191,6 @@ import {
 | `size` | `FABSize` = `"sm" \| "md" \| "lg"` | `"md"` | Não | Tamanho do FAB. |
 | `shape` | `FABShape` = `"rounded" \| "square" \| "circle"` | `"circle"` | Não | Formato do botao. |
 | `elevation` | `FABElevation` = `"sm" \| "md" \| "lg" \| "none"` | `"md"` | Não | Intensidade da sombra. |
-| `disabled` | `boolean` | `false` | Não | Desabilita a acao principal e as acoes derivadas. |
 | `loading` | `boolean` | `false` | Não | Exibe estado de carregamento no FAB. |
 | `autoHideOnScroll` | `boolean` | `false` | Não | Oculta o FAB ao rolar a janela (listener em `window.scroll`, limiar de 5 px). *(Inferência)* |
 | `hideDirection` | `"down" \| "up"` | `"down"` | Não | Sentido de rolagem que oculta o FAB quando `autoHideOnScroll` está ativo (`down` = ao rolar para baixo). *(Inferência)* |
@@ -207,6 +207,8 @@ import {
 | `style` | `React.CSSProperties` | — | Não | Estilo inline do container posicionado. *(Inferência)* |
 | `zIndex` | `number` | `50` | Não | `z-index` do container do FAB. *(Inferência)* |
 | `absolute` | `boolean` | `false` | Não | Usa `position: absolute` (relativo ao ancestral posicionado) em vez de `fixed` (viewport). |
+| `enabled` | `boolean` | — | Não | — |
+| `floatActionButtonStyle` | `FABSeverity` | — | Não | — |
 - Sem herança de atributos DOM: o tipo é um objeto literal fechado (Confirmado).
 
 ### Eventos e callbacks

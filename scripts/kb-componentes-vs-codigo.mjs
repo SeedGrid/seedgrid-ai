@@ -74,7 +74,9 @@ function lerSecoes(arquivo, ehFlutter) {
   let cur = null;
   let emProps = false;
   linhas.forEach((l, i) => {
-    const h = l.match(/^## (Sg\w+)\s*$/);
+    const h2 = l.match(/^## (.*)$/);
+    if (h2 && !/^## (Sg\w+)/.test(l)) { cur = null; emProps = false; return; }
+    const h = l.match(/^## (Sg\w+)/);
     if (h) { cur = { nome: h[1], inicio: i + 1, linhas: [], props: new Map(), arquivoDart: null }; secoes.push(cur); emProps = false; return; }
     if (!cur) return;
     cur.linhas.push({ n: i + 1, t: l });
@@ -163,7 +165,7 @@ function verificaLegado(secao, ehFlutter, comp, plataformaNome, grupo) {
     if (/\bSgRules\b/.test(t)) add(comp, plataformaNome, grupo, 'legado', `linha ${n}: SgRules`);
     const c = cells(t);
     const prop = c.length >= 5 && /^`[\w.]+`$/.test(c[0]) ? norm(c[0]) : null;
-    if (prop === 'rules') add(comp, plataformaNome, grupo, 'legado', `linha ${n}: prop rules`);
+    if (prop === 'rules' && ehFlutter) add(comp, plataformaNome, grupo, 'legado', `linha ${n}: prop rules`);
     if (prop === 'disabled') add(comp, plataformaNome, grupo, 'legado', `linha ${n}: prop disabled (use enabled)`);
     if (ehFlutter && !prop) {
       if (/\bdisabled\b/.test(t)) add(comp, plataformaNome, grupo, 'legado', `linha ${n}: disabled`);
@@ -230,7 +232,9 @@ if (doReact) {
       const gp = gen[s.nome];
       if (!gp) { if (!manR.has(s.nome)) add(s.nome, 'react', grupo, 'sem-manifesto', 'componente da KB fora do generated-props.json e do manifesto do React'); continue; }
       const nomes = new Set(gp.map((p) => p.name));
-      for (const [nome, r] of s.props) if (!nomes.has(nome) && !HTML_REACT.has(nome)) add(s.nome, 'react', grupo, 'removida', `${nome} (linha ${r.n}): na KB, fora do generated-props.json`);
+      // generated-props.json é lossy (ex.: `elevation` do SgButton existe no .tsx e não consta lá): só `disabled` é removida segura (`rules` do React continua no .tsx);
+      // o resto é 'conferir' (aviso, não conta) e deve ser lido no .tsx
+      for (const [nome, r] of s.props) if (!nomes.has(nome) && !HTML_REACT.has(nome)) add(s.nome, 'react', grupo, nome === 'disabled' ? 'removida' : 'conferir', `${nome} (linha ${r.n}): na KB, fora do generated-props.json${nome === 'disabled' ? '' : ' (conferir no .tsx)'}`);
       for (const p of gp) {
         const r = s.props.get(p.name);
         if (!r) { add(s.nome, 'react', grupo, 'nova', `${p.name} (${p.type}): em generated-props.json, sem linha na KB`); continue; }
@@ -258,8 +262,8 @@ if (flag('exemplos')) {
 // ---------- saída ----------
 const lista = [...resultado.values()].sort((a, b) => a.componente.localeCompare(b.componente) || a.plataforma.localeCompare(b.plataforma));
 const comDiv = lista.filter((x) => x.itens.length);
-// 'sem-manifesto' é aviso (SgForm e SgFormController são só do Flutter e não estão no manifesto); não conta
-const contam = (x) => x.itens.filter((i) => i.tipo !== 'sem-manifesto').length;
+// 'sem-manifesto' e 'conferir' são avisos (SgForm e SgFormController são só do Flutter e não estão no manifesto); não conta
+const contam = (x) => x.itens.filter((i) => !['sem-manifesto', 'conferir'].includes(i.tipo)).length;
 const total = comDiv.reduce((s, x) => s + contam(x), 0) + exemplos.length;
 if (only && !lista.length) { console.error(`componente não encontrado nas páginas de API da KB: ${only}`); process.exit(2); }
 

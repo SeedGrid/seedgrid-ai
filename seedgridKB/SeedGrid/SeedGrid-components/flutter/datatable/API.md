@@ -71,6 +71,7 @@ Tabela de dados interativa com colunas configuraveis, paginacao, ordenacao, filt
 | `onLoadMore` | `ValueChanged<SgDatatablePageEvent>?` | — | não | React | Chamado a cada página extra pedida pela rolagem infinita, além de `onPage`. Na `main` do `fe-flutter` (commit `5188e9e`); pacote Flutter ainda não publicado. |
 | `columnManagerMaxHeight` | `Object?` | `320` | não | React | Numero (px) ou 'Npx'/'Nrem'. Tipo no React: `string \| number`. |
 | `controller` | `SgDatatableController?` | — | não | Flutter | `ref` do React. |
+| `enabled` | `bool?` | `true` † | não | React | Quando false, bloqueia as acoes que mudam estado: ordenacao, selecao de linhas, filtros (global e por coluna), limpar filtros e gerenciador de colunas. Paginacao, rolagem e carga de mais linhas continuam funcionando. Aparencia de desabilitado e aria-disabled. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

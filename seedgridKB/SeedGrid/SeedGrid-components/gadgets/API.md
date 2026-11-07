@@ -49,6 +49,7 @@ import { SgCalendar, type SgCalendarProps, type SgCalendarWeekdayFormat } from "
 | `showTodayShortcut` | `boolean` | `true` | Não | Mostra/oculta o botao de atalho para voltar para hoje. |
 | `cardTitle` | `React.ReactNode` | `?? t(i18n, "components.gadgets.calendar.title")` ᶠ | Não | Configura titulo e props do SgCard do gadget. |
 | `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Props repassadas ao `SgCard` que envolve o calendário (o componente já define `collapsible`, `defaultOpen`, `draggable`, `cardStyle="outlined"` etc., sobrescrevíveis aqui). |
+| `enabled` | `boolean` | — | Não | Habilita o calendario (padrao `true`). Com `false` os dias, os botoes de mes anterior/proximo e o atalho "hoje" ficam desabilitados (nao focaveis, sem clique); a data e o mes atuais seguem legiveis. |
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.HTMLAttributes<HTMLDivElement>, "children" \| "onChange"> & { ... }`; acrescenta 275 props de `@types/react` (`HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 168). Não listadas individualmente — ver contrato base `React.HTMLAttributes` em `@types/react`.
 

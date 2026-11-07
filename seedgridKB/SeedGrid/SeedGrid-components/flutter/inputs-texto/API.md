@@ -34,7 +34,6 @@ Campo textual de uso geral com suporte a react-hook-form, validacao, contador de
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputTextElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -63,7 +62,6 @@ Campo textual de uso geral com suporte a react-hook-form, validacao, contador de
 | `readOnly` | `bool?` | `false` † | não | React | Impede edicao mantendo foco e leitura. |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputTextTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -84,6 +82,7 @@ Campo textual de uso geral com suporte a react-hook-form, validacao, contador de
 | `onExitText` | `ValueChanged<String>?` | — | não | Flutter | Interno dos inputs derivados: chamado na perda de foco, antes de `onExit`, com o texto exibido (sem afixos), que e o que o React le do <input> no `onBlur`. |
 | `externalValueNormalizer` | `String Function(String)?` | — | não | Flutter | Interno dos inputs derivados: ajusta o valor que vem de FORA (inicial, `value`, setValue/reset) antes da mascara; ex.: telefone `+5511987654321` sem o DDI. Nao vale para o que o usuario digita. |
 | `formValidator` | `FutureOr<String?> Function(String value)?` | — | não | Flutter | Interno dos inputs derivados (CPF, e-mail, telefone...): validador do componente que roda tambem em `trigger`/`handleSubmit` do formulario (decisao do dono). Recebe o texto sem afixos e devolve a mensagem de erro ou `null`. Vence a validacao propria do SgInputText (maxLength etc.), que roda em seguida. |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -137,7 +136,6 @@ Campo textual multi-linha para descricoes, observacoes e conteudos longos com su
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputTextAreaElevation?` | — | não | React | Padrao: `sm` (como no React). Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `height` | `Object?` | — | não | React | Numero (px) ou 'N%': altura fixa; o texto rola dentro. Tipo no React: `string \| number`. |
@@ -165,7 +163,6 @@ Campo textual multi-linha para descricoes, observacoes e conteudos longos com su
 | `prefixIcon` | `Widget?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `textareaProps` | `Object?` | — | não | React | Sem equivalente (ADR 50). Ignorado. Tipo no React: `(React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement>; })`. |
 | `validateOnBlur` | `bool?` | — | não | React | — |
@@ -178,6 +175,7 @@ Campo textual multi-linha para descricoes, observacoes e conteudos longos com su
 | `autofocus` | `bool` | `false` | não | Flutter | — |
 | `inputFormatters` | `List<TextInputFormatter>?` | — | não | Flutter | — |
 | `focusNode` | `FocusNode?` | — | não | Flutter | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -228,7 +226,6 @@ Campo de busca que embrulha o SgInputText com debounce sem dependencia externa: 
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputTextSearchElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -257,7 +254,6 @@ Campo de busca que embrulha o SgInputText com debounce sem dependencia externa: 
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | — | não | React | — |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputTextSearchTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -273,6 +269,7 @@ Campo de busca que embrulha o SgInputText com debounce sem dependencia externa: 
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | — |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | — |
 | `focusNode` | `FocusNode?` | — | não | Flutter | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -319,7 +316,6 @@ Campo especializado para email com validacao de formato, bloqueio opcional de do
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputEmailElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -349,7 +345,6 @@ Campo especializado para email com validacao de formato, bloqueio opcional de do
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputEmailTextInputType?` | — | não | React | Padrao: `email`. Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -365,6 +360,7 @@ Campo especializado para email com validacao de formato, bloqueio opcional de do
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | — |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | — |
 | `focusNode` | `FocusNode?` | — | não | Flutter | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -413,7 +409,6 @@ Campo especializado para senha com validacoes de politica, alternancia de visibi
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `createNewPasswordButton` | `bool` | `false` | não | React | Exibe um botao para gerar automaticamente uma senha forte aleatoria (respeita as regras de politica). |
 | `elevation` | `SgInputPasswordElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hidePassword` | `bool?` | `true` † | não | React | Oculta a senha inicialmente. |
@@ -450,7 +445,6 @@ Campo especializado para senha com validacoes de politica, alternancia de visibi
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `showStrengthBar` | `bool` | `true` | não | React | Exibe barra de forca da senha. |
 | `specialCharacterRequired` | `bool` | `true` | não | React | — |
@@ -469,6 +463,7 @@ Campo especializado para senha com validacoes de politica, alternancia de visibi
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | — |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | — |
 | `focusNode` | `FocusNode?` | — | não | Flutter | — |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -516,7 +511,6 @@ Campo especializado para telefone com mascara, validacao de comprimento e integr
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputPhoneElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -545,7 +539,6 @@ Campo especializado para telefone com mascara, validacao de comprimento e integr
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputPhoneTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -563,6 +556,7 @@ Campo especializado para telefone com mascara, validacao de comprimento e integr
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -608,7 +602,6 @@ Campo especializado para CPF com mascara, validacao de digitos e integracao com 
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputCPFElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -637,7 +630,6 @@ Campo especializado para CPF com mascara, validacao de digitos e integracao com 
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | Mensagem para ausencia de valor. |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputCPFTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -655,6 +647,7 @@ Campo especializado para CPF com mascara, validacao de digitos e integracao com 
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -699,7 +692,6 @@ Campo especializado para CNPJ com mascara, validacao de digitos e suporte opcion
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputCNPJElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -728,7 +720,6 @@ Campo especializado para CNPJ com mascara, validacao de digitos e suporte opcion
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputCNPJTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -751,6 +742,7 @@ Campo especializado para CNPJ com mascara, validacao de digitos e suporte opcion
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -798,7 +790,6 @@ Campo hibrido para CPF ou CNPJ com mascara e validacao automatica conforme o doc
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputCPFCNPJElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -827,7 +818,6 @@ Campo hibrido para CPF ou CNPJ com mascara e validacao automatica conforme o doc
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputCPFCNPJTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -850,6 +840,7 @@ Campo hibrido para CPF ou CNPJ com mascara e validacao automatica conforme o doc
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -894,7 +885,6 @@ Campo especializado para CEP e codigos postais com suporte a multiplos paises, m
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputPostalCodeElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -923,7 +913,6 @@ Campo especializado para CEP e codigos postais com suporte a multiplos paises, m
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputPostalCodeTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -947,6 +936,7 @@ Campo especializado para CEP e codigos postais com suporte a multiplos paises, m
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -993,7 +983,6 @@ Campo de data com validacao de intervalo e suporte a selecao temporal para event
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputDateElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1022,7 +1011,6 @@ Campo de data com validacao de intervalo e suporte a selecao temporal para event
 | `readOnly` | `bool?` | `false` † | não | React | Impede edicao mantendo leitura e foco. |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputDateTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -1043,6 +1031,7 @@ Campo de data com validacao de intervalo e suporte a selecao temporal para event
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1090,7 +1079,6 @@ Campo especializado para data de nascimento com validacao de idade minima e maxi
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `elevation` | `SgInputBirthDateElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
-| `disabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1119,7 +1107,6 @@ Campo especializado para data de nascimento com validacao de idade minima e maxi
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCharCounter` | `bool?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputBirthDateTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -1139,6 +1126,7 @@ Campo especializado para data de nascimento com validacao de idade minima e maxi
 | `textInputAction` | `TextInputAction?` | — | não | Flutter | `enterKeyHint` do <input>. |
 | `onSubmitted` | `ValueChanged<String>?` | — | não | Flutter | Tecla Enter / acao do teclado; recebe o valor. |
 | `focusNode` | `FocusNode?` | — | não | Flutter | Foco externo (`ref` do <input> no React). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1186,7 +1174,6 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `decimals` | `num?` | — | não | React | Quantidade de casas decimais permitidas. |
 | `elevation` | `SgInputNumberElevation?` | — | não | React | Padrao `sm` (sombra leve), como no React. Valores: `none`, `sm`, `md`, `lg`. |
 | `emptyValue` | `SgInputNumberEmptyValue?` | — | não | React | `zero` (padrao: o campo mostra 0,00) ou `nullValue` ('null' no React: o campo comeca vazio). Valores: `null`, `zero`. |
-| `disabled` | `bool?` | — | não | React | No React a prop e `enabled` (valor invertido). |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1213,7 +1200,6 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `readOnly` | `bool?` | `false` † | não | React | Impede edicao mantendo leitura e foco. |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputNumberTextInputType?` | — | não | React | Padrao `decimal` (teclado numerico com virgula). Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
 | `type` | `Object?` | — | não | React | `type` do `<input>`; sem efeito no Flutter. Tipo no React: `React.HTMLInputTypeAttribute`. |
@@ -1223,6 +1209,7 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `withBorder` | `bool?` | — | não | React | — |
 | `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulario (no React, `inputProps.defaultValue`): "1234.5", "12,5"... |
 | `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`); mudar atualiza o campo. |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1276,7 +1263,6 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `currencySymbolPlacement` | `SgInputCurrencyCurrencySymbolPlacement?` | — | não | React | Padrao `auto` (a posicao do idioma). Valores: `prefix`, `auto`, `suffix`. |
 | `decimals` | `num?` | — | não | React | Padrao: as casas da moeda (BRL 2, JPY 0...). |
 | `emptyValue` | `SgInputCurrencyEmptyValue?` | — | não | React | Valores: `null`, `zero`. |
-| `disabled` | `bool?` | — | não | React | No React a prop e `enabled` (valor invertido). |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1301,7 +1287,6 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `readOnly` | `bool?` | — | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `showCurrencySymbol` | `bool?` | — | não | React | Padrao `true`. |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputCurrencyTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -1313,6 +1298,7 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `withBorder` | `bool?` | — | não | React | — |
 | `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulario (no React, `inputProps.defaultValue`): "1234.56". |
 | `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`). |
+| `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1356,7 +1342,6 @@ Campo OTP multi-slot para codigos de verificacao com suporte a mascara, colagem,
 | `id` | `String` | — | sim | React | Identificador unico do componente. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `defaultValue` | `String?` | — | não | React | — |
-| `disabled` | `bool?` | `true` † | não | React | No React: `enabled` (valor invertido). |
 | `error` | `String?` | — | não | React | — |
 | `groupClassName` | `String?` | — | não | React | React-only (classe CSS); sem efeito. |
 | `hintText` | `String?` | — | não | React | — |
@@ -1374,7 +1359,6 @@ Campo OTP multi-slot para codigos de verificacao com suporte a mascara, colagem,
 | `readOnly` | `bool?` | `false` † | não | React | — |
 | `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
 | `requiredMessage` | `String?` | — | não | React | — |
-| `rules` | `SgRules?` | — | não | React | Tipo no React: `RegisterOptions<any>`. |
 | `separatorClassName` | `String?` | — | não | React | React-only (classe CSS); sem efeito. |
 | `slotClassName` | `String?` | — | não | React | React-only (classe CSS); sem efeito. |
 | `validateOnBlur` | `bool?` | `true` † | não | React | Executa validacao no blur. |
@@ -1384,6 +1368,7 @@ Campo OTP multi-slot para codigos de verificacao com suporte a mascara, colagem,
 | `controller` | `SgInputOTPController?` | — | não | Flutter | Equivale ao `ref` (SgInputOTPRef) do React. |
 | `autofocus` | `bool` | `false` | não | Flutter | `inputProps.autoFocus` do primeiro slot. |
 | `autofillHints` | `Iterable<String>?` | — | não | Flutter | `inputProps.autoComplete` do primeiro slot; padrao `[AutofillHints.oneTimeCode]` (React: one-time-code). |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 

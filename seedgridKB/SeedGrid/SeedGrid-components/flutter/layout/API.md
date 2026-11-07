@@ -36,6 +36,7 @@ Primitive de layout flexivel para empilhar elementos em linha ou coluna com cont
 | `grow` | `bool?` | `false` † | não | React | Permite que o stack cresca ocupando espaco disponivel. |
 | `justify` | `SgStackJustify?` | `start` † | não | React | Distribuicao dos itens no eixo principal. Valores: `start`, `center`, `end`, `between`, `around`, `evenly`. |
 | `wrap` | `bool?` | `false` † | não | React | Permite quebra de linha quando necessario. |
+| `child` | `Widget?` | — | não | React | Itens renderizados dentro do stack. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -84,6 +85,7 @@ Primitive de layout em grade responsiva para distribuicao de cards, blocos e for
 | `minItemWidth` | `Object?` | — | não | React | Largura minima dos itens em modo auto-fit. Tipo no React: `string \| number`. |
 | `padding` | `Object?` | — | não | React | Espacamento interno do container grid. Tipo no React: `string \| number`. |
 | `rowHeight` | `Object?` | — | não | React | Altura automatica das linhas da grade. Tipo no React: `string \| number`. |
+| `child` | `Widget?` | — | não | React | Itens renderizados dentro da grade. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -144,6 +146,7 @@ Container visual e estrutural para agrupamento de conteudo, composicao de secoes
 | `scrollbarGutter` | `bool?` | `false` † | não | React | Reserva espaco visual para scrollbar. |
 | `span` | `num?` | — | não | React | Colunas ocupadas dentro de um SgGrid. |
 | `width` | `Object?` | — | não | React | Largura do painel quando dockado ou usado em composicoes controladas. Tipo no React: `SgDockPercent`. |
+| `child` | `Widget?` | — | não | React | Conteudo livre ou outros elementos de layout aninhados. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -189,6 +192,7 @@ Container estrutural de alto nivel para composicao de telas com area client, ful
 | `height` | `Object?` | — | não | React | Altura explicita quando a tela nao for fullscreen. Tipo no React: `string \| number`. |
 | `padding` | `Object?` | — | não | React | Espacamento interno aplicado ao root da tela. Tipo no React: `string \| number`. |
 | `width` | `Object?` | — | não | React | Largura explicita quando a tela nao for fullscreen. Tipo no React: `string \| number`. |
+| `child` | `Widget?` | — | não | React | Conteudo estrutural da tela, normalmente com panels dockados. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -279,7 +283,6 @@ Container visual para destacar conteudo em blocos com cabecalho, descricao, acoe
 | `defaultOpen` | `bool` | `true` | não | React | — |
 | `defaultPosition` | `SgCardPosition?` | — | não | React | Tipo no React: `SgCardPosition`. |
 | `description` | `Object?` | — | não | React | Descricao ou subtitulo complementar do cabecalho. |
-| `disabled` | `bool` | `false` | não | React | — |
 | `dragPersistKey` | `String?` | — | não | React | — |
 | `draggable` | `bool` | `false` | não | React | `draggable` do React: o cabecalho arrasta o cartao. |
 | `footer` | `Widget?` | — | não | React | — |
@@ -297,6 +300,7 @@ Container visual para destacar conteudo em blocos com cabecalho, descricao, acoe
 | `trailer` | `Widget?` | — | não | React | — |
 | `trailing` | `Widget?` | — | não | React | — |
 | `child` | `Widget?` | — | não | React | Conteudo principal exibido dentro do card. |
+| `enabled` | `bool?` | `true` † | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -417,6 +421,7 @@ Controle de paginas em abas para alternar entre paineis de conteudo relacionados
 | `size` | `SgPageControlSize` | `SgPageControlSize.md` | não | React | Escala visual das abas. Valores: `sm`, `md`, `lg`. |
 | `tabClassName` | `String?` | — | não | React | Sem efeito: `className` nao existe no Flutter (ADR 50). |
 | `tabListClassName` | `String?` | — | não | React | Sem efeito: `className` nao existe no Flutter (ADR 50). |
+| `child` | `Widget` | — | sim | React | Paginas filhas definidas por SgPageControlPage. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -458,13 +463,13 @@ Declaracao de uma pagina individual dentro de um SgPageControl, com titulo, hint
 |---|---|---|---|---|---|
 | `title` | `Widget` | — | sim | React | Titulo exibido na aba da pagina. |
 | `child` | `Widget` | — | sim | React | Conteudo exibido no painel desta pagina. |
-| `disabled` | `bool` | `false` | não | React | Desabilita a selecao da pagina. |
 | `hidden` | `bool` | `false` | não | React | Oculta a pagina sem remove-la da estrutura. |
 | `hint` | `String?` | — | não | React | Descricao curta associada a aba. |
 | `icon` | `Widget?` | — | não | React | Icone opcional da aba. |
 | `id` | `String?` | — | não | React | Identificador estavel da pagina. |
 | `keepMounted` | `bool?` | `false` † | não | React | Sem efeito (igual ao React: so o `keepMounted` do SgPageControl e lido). |
 | `tabClassName` | `String?` | — | não | React | Sem efeito: `className` nao existe no Flutter (ADR 50). |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita a selecao da pagina. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1030,7 +1035,6 @@ Botao compacto para toolbars com icone, label opcional, hint, loading e severida
 
 | Prop | Tipo (Dart) | Padrão | Obrigatória | Origem | Descrição |
 |---|---|---|---|---|---|
-| `disabled` | `bool` | `false` | não | React | Desabilita interacao. |
 | `hideLabel` | `bool` | `false` | não | React | Esconde o rotulo e a dica (a toolbar usa quando esta recolhida/compacta). |
 | `hint` | `String?` | — | não | React | Texto auxiliar usado como dica contextual. |
 | `icon` | `Widget?` | — | não | React | Icone principal exibido no botao. |
@@ -1039,6 +1043,7 @@ Botao compacto para toolbars com icone, label opcional, hint, loading e severida
 | `onClick` | `FutureOr<void> Function()?` | — | não | React | Callback executado ao clicar no item. Tipo no React: `(() => void \| Promise<void>)`. |
 | `severity` | `SgToolbarIconButtonSeverity` | `SgToolbarIconButtonSeverity.plain` | não | React | Tom visual do botao de toolbar. Valores: `primary`, `secondary`, `success`, `warning`, `danger`, `info`, `help`, `plain`. |
 | `showLabel` | `bool` | `true` | não | React | Exibe o rotulo junto do icone quando suportado pela toolbar. |
+| `enabled` | `bool?` | `true` † | não | React | Desabilita interacao. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
