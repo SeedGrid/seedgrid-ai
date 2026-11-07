@@ -8,6 +8,8 @@ autor: "<quem escreveu>"
 modulos: []
 adrs: []
 origem: "<quem pediu, quando e por quê; citação curta do pedido>"
+goal: |
+  /goal Plano completo de <caminho do plano>: para cada fase, rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes` e mostre cada saída com 0 problema(s); depois rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> varredura --completa --exceto-decisoes` (se o plano tem varredura) e a conferência final da Fase FIM, e mostre as saídas com 0 problema(s). Itens com `Pendencia:` (motivo e quem resolve) são repassados ao dono e não contam como problema. Máximo de <N> turnos. A condição só vale com essas saídas visíveis.
 ---
 
 # Tarefas: <assunto>
@@ -16,7 +18,7 @@ origem: "<quem pediu, quando e por quê; citação curta do pedido>"
 
 Legenda: `[ ]` aberta · `[~]` em andamento · `[x]` feita (só com linha `Evidencia:`) · `[>]` adiada · `[?]` decisão do dono · `n/a` não se aplica.
 
-## Goal do plano (logo após o cabeçalho; executa tudo de uma vez)
+## Goal do plano (o /goal está no campo goal do cabeçalho, logo abaixo de origem)
 
 Ordem das fases, série e paralelo vêm da seção "Ordem de execução" abaixo: **o que é paralelo vira agentes em paralelo (até 4, nunca dois escrevendo no mesmo caminho); o que é série espera**. Se o limite de turnos acabar, rode de novo: o `controle.mjs` retoma de onde parou.
 
@@ -24,9 +26,7 @@ Ordem das fases, série e paralelo vêm da seção "Ordem de execução" abaixo:
 
 **Regra de pendência:** tarefa ou item que não terminou ganha `Pendencia:` com **Motivo**, **Quem resolve** e **Desde**. Sem `Pendencia:`, o item não terminou por esquecimento e **volta ao ciclo** na conferência final.
 
-```
-/goal Plano completo de <caminho do plano>: para cada fase, rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes` e mostre cada saída com 0 problema(s); depois rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> varredura --completa --exceto-decisoes` (se o plano tem varredura) e a conferência final da Fase FIM, e mostre as saídas com 0 problema(s). Itens com `Pendencia:` (motivo e quem resolve) são repassados ao dono e não contam como problema. Máximo de <N> turnos. A condição só vale com essas saídas visíveis.
-```
+(O `/goal` do plano inteiro está **no quadro do topo, no campo `goal` logo abaixo de `origem`**.)
 
 ## Princípios e restrições do dono
 

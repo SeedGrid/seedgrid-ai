@@ -76,7 +76,7 @@ O script só lê o plano; compare sempre com o git real (commits, testes), nunca
 
 Todo plano nasce no formato de `assets/plano-de-tarefas.md` (plano que percorre componentes, extensions ou telas usa também `assets/plano-varredura.md`). Não escreva plano fora dele. O que o formato exige, na ordem em que aparece:
 
-1. **Cabeçalho com `origem`** (quem pediu, quando, por quê) e, **logo depois dele, o `/goal` do plano inteiro**, com a regra de decisão e a regra de pendência.
+1. **Cabeçalho com `origem`** (quem pediu, quando, por quê) e, **no mesmo quadro do topo, logo abaixo de `origem`, o campo `goal` com o `/goal` do plano inteiro**, com a regra de decisão e a regra de pendência.
 2. **Ferramentas:** antes de planejar as tarefas, consulte o índice (`Toolkit/references/indice-de-ferramentas.md`) e preencha a tabela "Ferramentas". Ferramenta que não existe vira a **primeira tarefa** ("Criar a ferramenta X", com o que faz, entrada, saída, código de saída e teste) e entra no índice no mesmo commit. Não crie script sem olhar o índice.
 3. **Ordem de execução: série e paralelo (Gantt):** tabela de ondas com tarefas, modo, agentes, dependência e caminhos de escrita. O que é paralelo é executado com agentes em paralelo (até 4, sem dois escrevendo no mesmo caminho); o que é série espera. A divisão depende de cada plano e é decidida na hora de escrever, não na hora de executar.
 4. **Varredura e checklist por tarefa** quando o plano é transversal (percorre todos os componentes, extensions ou telas): uma linha por item da fonte única do código, e **cada tarefa repete no corpo o checklist do que conferir em cada item**, para ninguém fazer alguns itens e esquecer outros.
