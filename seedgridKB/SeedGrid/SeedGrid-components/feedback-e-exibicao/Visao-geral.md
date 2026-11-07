@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, feedback-e-exibicao]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/commons
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Feedback e exibição em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -35,7 +35,7 @@ Componentes de exibição (avatar, badge, skeleton) e de feedback (toasts e whis
 | `SgToasterHostContext` | não (interno) | Contexto booleano que faz o `SgToaster` interno do host pular a checagem de host | — |
 | `SgWhistlerHostContext` | não (interno) | Idem para whistles | — |
 
-O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica neste grupo por ser aviso ao usuário. Ele depende da extension `user-notifications` no backend ([[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral da user-notifications]]) e, para tempo real, do Pulse (serviço **pago**: precisa de chave de projeto, que fica no backend; o showcase funciona sem chave). Detalhes na seção `SgNotificationBell` da [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API]].
+O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica neste grupo por ser aviso ao usuário. Ele depende da extension `user-notifications` no backend ([[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral da user-notifications]]) e, para tempo real, do Pulse (serviço que será cobrado, decisão do dono registrada na ADR 62: precisa de chave de projeto, que fica no backend; o showcase funciona sem chave). Detalhes na seção `SgNotificationBell` da [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API]].
 
 ## Funções e tipos exportados relacionados
 
