@@ -125,7 +125,7 @@ function esqueleto(numero) {
   const aidlc = raiz ? (JSON.parse(readFileSync(raiz, 'utf8')).contentVersion ?? '0.0.0') : '0.0.0';
   const titulo = /^#\s+(.+)$/m.exec(texto)?.[1].trim() ?? 'Plano';
   const hoje = new Date().toISOString().slice(0, 10);
-  const GOAL = `/goal Plano completo de <caminho deste plano>: para cada fase, rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes\` e mostre cada saída com 0 problema(s); depois rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> fechamento\` e mostre a saída. Itens com \`Pendencia:\` (motivo e quem resolve) são repassados ao dono e não contam como problema. Máximo de 150 turnos. A condição só vale com essas saídas visíveis.`;
+  const GOAL = `/goal Plano completo de <caminho deste plano>: para cada fase, rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes\` e mostre cada saída com 0 problema(s); depois rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> fechamento\` e mostre a saída. Itens com \`Pendencia:\` (motivo e quem resolve) são repassados ao dono e não contam como problema. Não pare entre fases nem lotes para perguntar: vá até o fim e entregue no fim as perguntas que sobraram. Durante o plano só commit; push só no fim e só com o "pode" do dono. Máximo de 150 turnos. A condição só vale com essas saídas visíveis.`;
   const o = [];
   o.push('---', `numero: ${numero}`, 'status: proposto', `data: ${hoje}`, `aidlc: ${aidlc}   # contentVersion de .ai/toolkit-lock.json`, `origem: adequado de ${arquivo.replace(/\\/g, '/').split('/').pop()} (original intacto)`, 'goal: |', `  ${GOAL}`, '---', '');
   o.push(`# Tarefas: ${titulo}`, '');
@@ -148,7 +148,7 @@ function esqueleto(numero) {
   const fases = fasesOrdem.length ? fasesOrdem : [{ chave: '1', conteudo: '<definir a fase>', portao: '' }];
   const ids = {};
   o.push('## Fase 0 — Decisões do dono e provas das hipóteses', '', 'Aceite da fase: toda hipótese provada (ou virada achado) e toda decisão respondida ou registrada como pergunta.', '');
-  o.push('```', `/goal Fase 0 de <caminho deste plano>: rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist 0 --completa --exceto-decisoes\` e mostre a saída com 0 problema(s). Máximo de 30 turnos. A condição só vale com essa saída visível.`, '```', '');
+  o.push('```', `/goal Fase 0 de <caminho deste plano>: rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist 0 --completa --exceto-decisoes\` e mostre a saída com 0 problema(s). Não pare entre fases nem lotes para perguntar: vá até o fim e entregue no fim as perguntas que sobraram. Durante o plano só commit; push só no fim e só com o "pode" do dono. Máximo de 30 turnos. A condição só vale com essa saída visível.`, '```', '');
   const f0 = [];
   for (const x of decisoes) {
     const id = `${P}.F0.D${x.n}`; f0.push(id);
@@ -165,7 +165,7 @@ function esqueleto(numero) {
     if (f.chave === '0') continue;
     const id = `${P}.F${f.chave}.T1`;
     o.push(`## Fase ${f.chave} — ${f.conteudo.slice(0, 70)}`, '', 'Aceite da fase: <definir>.', '');
-    o.push('```', `/goal Fase ${f.chave} de <caminho deste plano>: rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist ${f.chave} --completa\` e mostre a saída com 0 problema(s). Máximo de 20 turnos. A condição só vale com essa saída visível.`, '```', '');
+    o.push('```', `/goal Fase ${f.chave} de <caminho deste plano>: rode \`node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist ${f.chave} --completa\` e mostre a saída com 0 problema(s). Não pare entre fases nem lotes para perguntar: vá até o fim e entregue no fim as perguntas que sobraram. Durante o plano só commit; push só no fim e só com o "pode" do dono. Máximo de 20 turnos. A condição só vale com essa saída visível.`, '```', '');
     o.push(`- [ ] **${id} ${f.conteudo.slice(0, 80)}** (\`depende-de\`: ${anterior.length ? anterior.join(', ') : 'nada'}; \`escreve\`: <definir>)`, '  - Passos: <quebre em tarefas T2, T3... conforme o plano original>', '  - Aceite: <definir>', '  - Testes: <guardiões previstos para esta fase no plano original>', ...(f.portao ? [`  - Portão humano: ${f.portao}`] : []), '  - Evidencia: <preencha só ao marcar [x]>', '');
     anterior = [id];
   }

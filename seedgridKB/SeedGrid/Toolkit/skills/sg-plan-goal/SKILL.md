@@ -84,6 +84,8 @@ Todo plano nasce no formato de `assets/plano-de-tarefas.md` (plano que percorre 
 
 Todo item não terminado tem `Pendencia:` com Motivo, Quem resolve e Desde. Item aberto sem `Pendencia:` é item esquecido e volta ao ciclo.
 
+**Como o goal corre:** vai até o fim sem parar entre fases ou lotes para perguntar (as perguntas que sobrarem vêm no fim, na FIM.T2); **durante o plano só commit, push só no fim e só com o "pode" do dono** (as KBs e o work já são autorizados); revisão do dono não trava a fase seguinte; onda paralela roda com agentes em paralelo.
+
 ## Regras que nasceram de erros
 
 - **Afirmação sobre comportamento = teste, não só leitura.** Uma conclusão tirada da documentação de um framework estava errada; um spike mostrou o contrário.

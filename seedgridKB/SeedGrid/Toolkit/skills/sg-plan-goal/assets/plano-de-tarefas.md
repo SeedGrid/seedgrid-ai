@@ -9,7 +9,7 @@ modulos: []
 adrs: []
 origem: "<quem pediu, quando e por quê; citação curta do pedido>"
 goal: |
-  /goal Plano completo de <caminho do plano>: para cada fase, rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes` e mostre cada saída com 0 problema(s); depois rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> varredura --completa --exceto-decisoes` (se o plano tem varredura) e a conferência final da Fase FIM, e mostre as saídas com 0 problema(s). Itens com `Pendencia:` (motivo e quem resolve) são repassados ao dono e não contam como problema. Máximo de <N> turnos. A condição só vale com essas saídas visíveis.
+  /goal Plano completo de <caminho do plano>: para cada fase, rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist <fase> --completa --exceto-decisoes` e mostre cada saída com 0 problema(s); depois rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> varredura --completa --exceto-decisoes` (se o plano tem varredura) e a conferência final da Fase FIM, e mostre as saídas com 0 problema(s). Itens com `Pendencia:` (motivo e quem resolve) são repassados ao dono e não contam como problema. Não pare entre fases nem lotes para perguntar: vá até o fim e entregue no fim as perguntas que sobraram. Durante o plano só commit; push só no fim e só com o "pode" do dono. Máximo de <N> turnos. A condição só vale com essas saídas visíveis.
 ---
 
 # Tarefas: <assunto>
@@ -34,7 +34,15 @@ Ordem das fases, série e paralelo vêm da seção "Ordem de execução" abaixo:
 
 ## Definição de pronto (vale para toda tarefa)
 
-Testes verdes, commit, linha `Evidencia:` preenchida, documentação e KB atualizadas, checklist da tarefa todo `[x]` (ou `n/a` com motivo). Push e merge só com autorização do dono.
+Testes verdes, commit, linha `Evidencia:` preenchida, documentação e KB atualizadas, checklist da tarefa todo `[x]` (ou `n/a` com motivo). **Durante o plano só commit.** Push e merge só no fim e só com autorização do dono (exceção já autorizada: as KBs e o work).
+
+## Como o goal corre (vale para o plano inteiro)
+
+- **Vá até o fim.** Não pare ao terminar uma fase, um lote ou um grupo para perguntar nem para pedir revisão: siga para o próximo item possível.
+- **Pergunta ao dono** vira tarefa `[?]` com `Pergunta:` e `Recomendacao:`; o que não depende dela continua. As perguntas que realmente sobrarem são entregues **no fim** (P<n>.FIM.T2), numa lista só.
+- **Revisão do dono** (visual ou de conteúdo) não trava a fase seguinte: o que ele apontar volta como correção.
+- **Commit a cada tarefa, push só no fim.** O push de repositório que publica algo (npm, showcase, Maven) exige o "pode" do dono; sem ele, a tarefa de publicação fica com `Pendencia:` (Quem resolve: dono).
+- **Agentes em paralelo** sempre que a onda for paralela e os `escreve` não se cruzarem.
 
 ## Ferramentas (consultar o índice antes de criar)
 
@@ -72,7 +80,7 @@ Cada tarefa que percorre os itens da varredura carrega, no próprio corpo, a lis
 Aceite da fase: <condição verificável>.
 
 ```
-/goal Fase 1 de <caminho do plano>: rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist 1 --completa` e mostre a saída com 0 problema(s). Máximo de 20 turnos. A condição só vale com essa saída visível.
+/goal Fase 1 de <caminho do plano>: rode `node .ai/skills/sg-plan-goal/scripts/controle.mjs <plano> checklist 1 --completa` e mostre a saída com 0 problema(s). Não pare entre fases nem lotes para perguntar: vá até o fim e entregue no fim as perguntas que sobraram. Durante o plano só commit; push só no fim e só com o "pode" do dono. Máximo de 20 turnos. A condição só vale com essa saída visível.
 ```
 
 - [ ] **P000.F1.T1 <Título curto>** (`depende-de`: nada; `escreve`: src/exemplo/, tests/exemplo.test.ts)
