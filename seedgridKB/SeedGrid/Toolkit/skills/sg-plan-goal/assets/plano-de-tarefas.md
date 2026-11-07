@@ -1,5 +1,6 @@
 ---
 numero: 0
+aidlc: 0.0.0   # contentVersion de .ai/toolkit-lock.json (regra documentos)
 titulo: "<assunto, uma frase>"
 status: proposto
 data: AAAA-MM-DD
@@ -7,7 +8,6 @@ autor: "<quem escreveu>"
 modulos: []
 adrs: []
 origem: "<quem pediu, quando e por quê; citação curta do pedido>"
-aidlc: 0.0.0   # contentVersion de .ai/toolkit-lock.json (regra documentos)
 ---
 
 # Tarefas: <assunto>
