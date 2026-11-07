@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, editor]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Editor de texto rico — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/editor/API|API — Editor de texto rico (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos|Exemplos — Editor de texto rico (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-1 componente(s): **1 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+1 componente(s): **1 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -34,12 +34,12 @@ analisado-em: 2026-10-30
 ## O que muda em relação ao React
 
 - O motor é o `flutter_quill` (Delta) com conversor HTML próprio; tabelas e `iframe` são descartados e há limites do modelo linear (listas e citações aninhadas).
-- Seletor de cor e diálogos de link/imagem próprios; `enabled` reativo (substitui o `disabled` do React); `onSave` entrega `SgTextEditorFile`.
+- Seletor de cor e diálogos de link/imagem próprios; `enabled` reativo (no React só vale na criação); `onSave` entrega `SgTextEditorFile`.
 - Detalhes: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] (editor e defeitos do React) · [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]].
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. O grupo React só exporta `SgTextEditor` e seus tipos; no Dart: `SgTextEditorFile`, `SgTextEditorSaveMeta`, `SgTextEditorHtmlFilePicker`, `SgTextEditorHtml` e `SgTextEditorCommands` (tabela abaixo). Nenhum símbolo ficou sem equivalente confirmado.
+Fonte: [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. O grupo React só exporta `SgTextEditor` e seus tipos; no Dart: `SgTextEditorFile`, `SgTextEditorSaveMeta`, `SgTextEditorHtmlFilePicker` e `SgTextEditorHtml` (exportados pelo barril; tabela abaixo; `SgTextEditorCommands` e as funções `sg*` existem em arquivos internos, fora do barril). Nenhum símbolo ficou sem equivalente confirmado.
 
 ## Não verificado
 

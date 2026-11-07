@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, datatable]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx
 branch: main
-commit: 703acf6
-analisado-em: 2026-11-03
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Tabela de dados em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (v`2026.11.1`). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
+O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (`package.json` em `2026.7.1`; o modo cartões vale a partir da publicação 2026.11.1 no npm). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
 
 ## Objetivo e funcionalidades
 
@@ -69,7 +69,7 @@ Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-compo
 
 ## Testes (lidos, **não executados**)
 
-`tests/datatable-dom.test.mjs` cobre:
+O modo cartões e a rolagem infinita têm testes próprios: `tests/datatable-cards-dom.test.mjs`, `tests/datatable-cards-vectors.test.mjs` (compara com vetores do repositório Flutter) e `tests/datatable-infinite-scroll.test.mjs`. `tests/datatable-dom.test.mjs` cobre:
 - no modo `lazy`, não ordena nem pagina localmente;
 - com `columns` instável (nova identidade a cada render), um render do pai causa um render do corpo e não toca na persistência de colunas.
 

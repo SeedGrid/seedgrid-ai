@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, providers]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/environment, front/seedgrid-fe-components/packages/seedgrid-fe-components/src/realtime
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Providers (ambiente/persistência e realtime) em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -42,6 +42,7 @@ Outros providers do pacote ficam nos grupos de origem: `SgTimeProvider` e `SgClo
 | `SgRealtimeProvider` | componente (provider) | sim | Conexão ao Pulse e distribuição de avisos | `/components/providers/sg-realtime-provider` |
 | `useSgRealtimeEvent` | hook | sim | Registra handler por channel + padrão de evento | `/components/hooks/use-sg-realtime-event` |
 | `useSgRealtimeStatus` | hook | sim | `{ status, connected }` para decidir aviso × polling | `/components/hooks/use-sg-realtime-status` |
+| `useHasSgRealtimeProvider` | hook | sim | Diz se há `SgRealtimeProvider` acima (com `channel`, só conta se ele assina esse channel) | — |
 | `matchesSgRealtimeEvent` | função | sim | Casa nome exato, `prefixo.*` ou `*` | — |
 
 Tipos exportados: `NamespaceProvider`, `PersistenceStrategy`, `SgEnvironment`, `SgEnvironmentValue`, `SgPersistenceMode`, `SgPersistenceConfig`, `SgPersistenceRecordDTO`, `SgRealtimeProviderProps`, `SgRealtimeStatus`, `SgRealtimeEvent`, `SgRealtimeConnectResponse` (Confirmado em `src/index.ts`).
@@ -86,7 +87,7 @@ sequenceDiagram
 ```
 
 - Usa `PulseSubscriberClient` de `@seedgrid/pulse-subscriber-react/core` (dependência direta do pacote, `^3.0.0`).
-- Mapeamento de estado: `connected`/`subscribed` → `connected`; `connecting`, `reconnecting`, `auth-error`, `idle` mantidos; demais (`disconnected`, `error`) → `unavailable`. Falha no pedido do token → `unavailable`; resposta `enabled:false` → `disabled`.
+- Mapeamento de estado: `connected`/`subscribed` → `connected`; `connecting`, `reconnecting`, `auth-error`, `idle` mantidos; demais (`disconnected`, `error`) → `unavailable`. Falha no pedido do token → `unavailable`, e o provider tenta de novo com espera crescente (5 s até 60 s); só a resposta `enabled:false` (ou sem `token`) é definitiva → `disabled`. Com `enabled={false}` o status é `disabled`; sem `channels`, `idle`.
 - Reconexão: a cada nova conexão o provider pede um token novo (o primeiro é reaproveitado uma vez).
 - Reconecta apenas quando mudam `enabled`, `channels` (comparado por `join(",")`) ou `pulseUrl`; `tokenEndpoint`, `tokenRequestInit`, `fetchToken` e `connectOptions` são lidos por *ref* (valor mais recente, sem reconectar).
 

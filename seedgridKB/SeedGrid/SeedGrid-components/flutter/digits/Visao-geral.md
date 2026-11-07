@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, digits]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Dígitos animados — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos animados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos animados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/digits/API|API — Dígitos animados (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos|Exemplos — Dígitos animados (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-8 componente(s): **8 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+8 componente(s): **8 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -53,7 +53,7 @@ O grupo React ([[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos (React
 
 ## Símbolos públicos do grupo (além dos widgets)
 
-Extraído por script dos arquivos exportados pelo `seedgrid_components.dart` (declarações de nível superior sem `_`). Descrição = comentário `///` do código, quando existe.
+Extraído por script dos arquivos exportados pelo `seedgrid_components.dart` (classes, enums e funções de nível superior sem `_`; as constantes públicas `k...`, como `kFadeDigitMs`, `kFlipDurationMs`, `kMatrixGlyphs` e `kRollerCurve`, não estão listadas). Descrição = comentário `///` do código, quando existe.
 
 | Símbolo | Tipo | Descrição | Arquivo |
 |---|---|---|---|
@@ -98,7 +98,7 @@ Extraído por script dos arquivos exportados pelo `seedgrid_components.dart` (de
 
 ## Não verificado
 
-- Não executei `flutter test`, `tools/ci.sh` nem o showcase; as afirmações vêm da leitura do código no commit `e9989b8` e do `docs/paridade.json`.
+- Não executei `flutter test`, `tools/ci.sh` nem o showcase; as afirmações vêm da leitura do código no commit `8a43f9d` e do `docs/paridade.json`.
 - Os números de duração e curva do `SgFlipDigit` (800 ms, ease-out-bounce) são os do comentário de cabeçalho do arquivo; não medi a animação.
 - Acessibilidade: li os `Semantics`/`ExcludeSemantics` do código; não testei com leitor de tela (o `SgRoller3DDigit` ficou sem confirmação).
 - A tabela de símbolos públicos foi filtrada pelos `show` dos barris dos dígitos.

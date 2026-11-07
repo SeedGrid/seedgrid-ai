@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, datatable]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Tabela de dados — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/datatable/API|API — Tabela de dados (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos|Exemplos — Tabela de dados (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-1 componente(s): **1 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+1 componente(s): **1 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -35,12 +35,13 @@ analisado-em: 2026-10-30
 - Linhas são `Map<String, Object?>` (`SgDatatableRow`); o `ref` do React vira `SgDatatableController`; `className`/`style` não existem (ADR 50).
 - `sortField` e `selection` com `null` significam "não controlado".
 - O corpo é virtualizado com altura limitada e mais de 100 linhas; com largura menor que 600 px o painel de colunas é um painel de baixo.
+- `mobileMode` (`scroll`/`cards`; omitido = automático abaixo de 600 px de largura do contêiner) e `infiniteScroll` existem também no Dart, com o mesmo corte do React.
 - O layout das colunas só é persistido com `SgEnvironmentProvider` e `id`.
 - Mais detalhes: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]] (seção da tabela).
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. O grupo React só exporta `SgDatatable` e seus tipos; no Dart os tipos viraram `SgDatatableColumn`, `SgDatatableCellMeta`, `SgDatatablePageEvent`, `SgDatatableSortEvent`, `SgDatatableFilterEvent`, `SgDatatableController` e os enums `SgDatatableFilterMatchMode` e `SgDatatableColumnAlign` (ver tabela abaixo). Nenhum símbolo ficou sem equivalente confirmado.
+Fonte: [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. O grupo React exporta `SgDatatable`, `SG_DATATABLE_MOBILE_BREAKPOINT` e tipos (no Dart: `kDatatableMobileBreakpoint`, e `SgDatatableMobileMode`/`SgDatatableSelectionMode` em `generated/enums.g.dart`); no Dart os tipos viraram `SgDatatableColumn`, `SgDatatableCellMeta`, `SgDatatablePageEvent`, `SgDatatableSortEvent`, `SgDatatableFilterEvent`, `SgDatatableController` e os enums `SgDatatableFilterMatchMode` e `SgDatatableColumnAlign` (ver tabela abaixo). Nenhum símbolo ficou sem equivalente confirmado.
 
 ## Não verificado
 

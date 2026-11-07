@@ -60,7 +60,7 @@ flowchart LR
 - Basta **um** `SgToaster` ou `SgToastHost` montado para os toasts aparecerem; com hosts presentes, o `SgToaster` "solto" deixa de renderizar. Idem `SgWhistler`/`SgWhistleHost`.
 - Toast = sobreposição fixa (`position: fixed`, `z-index 1100`) com posição configurável; whistle = bloco no fluxo do layout, onde o componente for colocado.
 - `SgBadgeOverlay` costuma receber um `SgBadge` em `badge`; `SgAvatarGroup` recebe `SgAvatar` como filhos.
-- Nenhum provider é obrigatório; textos padrão vêm do i18n interno. Sem dependências externas além de `react`.
+- Nenhum provider é obrigatório; textos padrão vêm do i18n interno. Os componentes de `src/commons` não têm dependências externas além de `react`; o `SgNotificationBell` usa também `lucide-react` e o `SgRealtimeProvider` (Pulse).
 
 ## Testes existentes (não executados)
 

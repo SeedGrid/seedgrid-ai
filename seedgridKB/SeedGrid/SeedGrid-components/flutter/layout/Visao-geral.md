@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, layout]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Layout e containers — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout e containers — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout e containers — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/layout/API|API — Layout e containers (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos|Exemplos — Layout e containers (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-19 componente(s): **19 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+19 componente(s): **19 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -86,7 +86,7 @@ Fonte do lado React: [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout e 
 | `useSgDockLayout` | `useSgDockLayout(context)` e `SgDockLayout.maybeOf`/`maybeReadOf` (`dock/sg_dock_layout.dart`) | Portado e exportado |
 | `renderDockContent`, `getDefaultContentDirection`, `getDefaultContentAlign`, `getDefaultContentGap` e tipos `SgDockAlign`/`SgDockContent*` (`sgDocking.tsx`) | `SgDockContent`, `getDefaultContent*`, `toSpacePx`, `toDockSize`, `SgDockItem`/`SgDockable` (`dock/sg_docking.dart`) | Portado e exportado. `SgPanel`/`SgScreen` usam um motor próprio não exportado (`basic/dock_content.dart`, `sgDockContent`); `SgDockContent` só aparece no teste do pacote (`sg_docking_test.dart`) |
 | `parseStoredPanelDragPosition`, `buildToolbarStorageKey`, `resolveToolbarOrientationDirection`, `resolveToolbarDockOrientationDirection`, `buildToolbarLayoutState` | `menu/toolbar_logic.dart` | Portado, **não exportado** (uso interno do `SgToolBar`) |
-| `buildDockMenuStorageKey` | `menus/dock_menu/dock_menu_logic.dart` | Portado junto do `SgDockMenu` (grupo [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral\|Navegação, overlay e wizard (Flutter)]]); não conferi se é exportado |
+| `buildDockMenuStorageKey` | `menus/dock_menu/dock_menu_logic.dart` | Portado junto do `SgDockMenu` (grupo [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral\|Navegação, overlay e wizard (Flutter)]]); exportado (`menus/menus_dock.dart` exporta `buildDockMenuStorageKey` com `show`) |
 | Lógica do menu: `buildMenuMaps`, `collectParentChain`, `computeActiveSets`, `resolveEffectiveActiveId`, `mergeExpandedIdsForActivePath`, `resolveTiered*`, `resolveMenuLayoutState`, `resolveMenuNodeActionIntent`, `resolveExpandedIdsToggle`, `resolveHorizontalDockAlign`, `resolveMegaMenu*`, `resolveMenuAutocompleteItems`, `resolveMenuSearchSelectionState`, `filterMenuNodes`, `collectMenuSearchEntries`, `flattenVisibleNodes`, `resolveMenuKeyboardAction` | `menu/menu_logic.dart` | Portado, **não exportado** (o barril só exporta `SgMenuStyleKind`) |
 | `resolveMenuHintPosition` | não encontrado no código Flutter | **Não portado**: a dica do menu usa `Tooltip` do Material |
 | `sgTreeFromJson`, `sgTreeFromJsonWithChecked` | mesmos nomes (`tree/sg_tree_logic.dart`), mais `computeCheckedState`, `computeCascadeValue`, `filterTreeByQuery`, `SgCheckedState`, `SgTreeFilter` | Portado e exportado |
@@ -169,7 +169,7 @@ Extraído por script dos arquivos que o barril `seedgrid_components.dart` export
 
 ## Não verificado
 
-- Não executei `flutter test`, `tools/ci.sh` nem o showcase: o comportamento descrito vem da leitura de `lib/src/layout/` no commit `e9989b8`.
+- Não executei `flutter test`, `tools/ci.sh` nem o showcase: o comportamento descrito vem da leitura de `lib/src/layout/` no commit `8a43f9d`.
 - Não conferi o aspecto visual nem o comportamento em dispositivo (a tabela de paridade também registra "não testado em IME nem em dispositivo" e goldens com a fonte de teste).
 - Comentários de cabeçalho de alguns arquivos estão defasados em relação ao código (por exemplo, `layout/menu/sg_menu.dart` diz que `collapsedWidth` não aceita `rem`, e `dock/sg_dock_layout.dart` diz que o `SgEnvironmentProvider` "ainda não foi portado"); nesta nota vale o código e o `docs/PARIDADE.md`.
 - A coluna "Para que serve" foi reescrita a partir da descrição do contrato gerado (texto original do React, sem acentos); `docs/PARIDADE.md` diz "dica sempre abaixo" para o `SgToolbarIconButton`, mas o código a posiciona também acima/à direita (ver a API).

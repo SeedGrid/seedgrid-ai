@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, buttons]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Botões — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/buttons/API|API — Botões (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos|Exemplos — Botões (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-3 componente(s): **3 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+3 componente(s): **3 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -36,7 +36,7 @@ analisado-em: 2026-10-30
 
 ## O que muda em relação ao React
 
-- `onClick`, `disabled`, `type` e `child` do `SgButton` são extras explícitos (no React vêm do `<button>`); `className`/`style` não existem (ADR 50).
+- `onClick`, `enabled`, `type` e `child` do `SgButton` são extras explícitos (no React vêm do `<button>`); `className`/`style` não existem (ADR 50).
 - Em largura menor que 600 px o menu do `SgSplitButton` vira painel de baixo (ADR 51).
 - O `SgFloatActionButton` flutua no `Overlay` raiz (`absolute: false`) e guarda a posição arrastada em `SharedPreferences` ou no `SgEnvironmentProvider`; `hint` por hover não existe no toque.
 - Resumo de todas as decisões: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · regras de tradução: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].

@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, editor, tiptap]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgTextEditor.tsx
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 557bc16
+analisado-em: 2026-11-07
 description: "Editor de texto rico em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -21,7 +21,7 @@ O editor produz e edita **documentos HTML com CSS embutido**. As funções princ
 - editor opcional de CSS;
 - botões para **salvar** o documento como `File` `.html` e **carregar** um `.html` do disco.
 
-Usos indicados: modelos de e-mail, termos e contratos, conteúdo de páginas e notas ricas. Para texto simples, use [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|SgInputTextArea]]. Essa recomendação está em `aiHints.avoidUseCases` de `SgInputText.meta.ts`. **Confirmado**.
+Usos indicados: modelos de e-mail, termos e contratos, conteúdo de páginas e notas ricas. Para texto simples, use [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|SgInputTextArea]]. Essa recomendação está em `aiHints.avoidUseCases` de `SgTextEditor.meta.ts`. **Confirmado**.
 
 ## Dependências (peers TipTap)
 
@@ -79,7 +79,7 @@ Todos os rótulos da toolbar, os prompts e o placeholder vêm de `components.tex
 
 ## Testes
 
-Só há o teste de contrato por regex (`tests/rhf-components-contract.test.mjs`), que confere o caminho `control`. Não há teste DOM do editor. **Confirmado**.
+Só há dois testes de contrato por regex/chaves: `tests/rhf-components-contract.test.mjs` (confere o caminho `control`) e `tests/i18n-components-contract.test.mjs` (confere as chaves `components.textEditor.*` usadas em `SgTextEditor.tsx`). Não há teste DOM do editor. **Confirmado**.
 
 ## Limitações e pontos de atenção
 

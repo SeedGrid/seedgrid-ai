@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, feedback-e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Feedback e exibição — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral|Feedback e exibição — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral|Feedback e exibição — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API|API — Feedback e exibição (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos|Exemplos — Feedback e exibição (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-10 componente(s): **10 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+10 componente(s): **9 portado(s)**, **1 parcial**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -28,7 +28,7 @@ analisado-em: 2026-10-30
 | `SgAvatarGroup` | portado | Avatares sobrepostos com limite visível e contador de quem ficou de fora. | `pages/sg_avatar_group_page.dart` |
 | `SgBadge` | portado | Etiqueta ou contador com severidade, ponto pulsante, ícones, clique e remoção. | `pages/sg_badge_page.dart` |
 | `SgBadgeOverlay` | portado | Posiciona um selo (badge) sobre um canto ou lado de outro widget. | `pages/sg_badge_overlay_page.dart` |
-| `SgNotificationBell` | portado | Sino de notificações do usuário logado: contador, lista de até 100, ler, excluir, interruptor "Não lidas" e aviso em tempo real pelo Pulse (cliente entra por `connectionFactory`; sem ele, polling de reserva). | `pages/sg_notification_bell_page.dart` |
+| `SgNotificationBell` | parcial | Sino de notificações do usuário logado: contador, lista de até 100, ler, excluir, interruptor "Não lidas" e aviso em tempo real pelo Pulse (cliente entra por `connectionFactory`; sem ele, polling de reserva). | `pages/sg_notification_bell_page.dart` |
 | `SgSkeleton` | portado | Placeholder de carregamento com formas e animação de onda ou pulso. | `pages/sg_skeleton_page.dart` |
 | `SgToaster` | portado | Pilha de toasts disparados por `toast(...)`, com posição, duração e cores. | `pages/sg_toaster_page.dart` |
 | `SgToastHost` | portado | Define onde os toasts aparecem; com vários hosts, vale o último montado. | `pages/sg_toast_host_page.dart` |
@@ -48,7 +48,7 @@ analisado-em: 2026-10-30
 - A API imperativa tem os mesmos nomes (`toast`, `sgWhistle`, `dismissSgToast`, `subscribeSgToasts`, `dismissSgWhistle`, `subscribeSgWhistles`); as opções são objetos Dart (`SgToastOptions`, `SgWhistleOptions`) e `default` vira `defaultValue`.
 - `SgToaster` não é `position: fixed`: preenche o pai limitado (`Stack`) ou desenha no `Overlay` quando o pai é ilimitado (`Column`, `ListView`). `SgWhistler` fica no fluxo do layout, como no React.
 - `SgAvatar`: `aria-label` vira `semanticLabel`; `SgBadge` ganhou `count`; `SgBadgeOverlay` usa `child` no lugar de `children`; `className`/`style` não existem.
-- O placar de paridade do grupo é 9 de 9 portados, sem ressalva na tabela do repositório. Detalhes e decisões gerais: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] e [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
+- O placar de paridade do grupo é 9 de 10 portados; `SgNotificationBell` está `parcial` na tabela do repositório (o Pulse entra por `connectionFactory`, `apiUrl` e `tokenEndpoint` precisam ser absolutos, o painel vira folha de baixo abaixo de 600 px e não há `className`/`style`). Detalhes e decisões gerais: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] e [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
@@ -64,7 +64,7 @@ Fonte do lado React: `feedback-e-exibicao/Visao-geral` ("Funções e tipos expor
 
 ## Não verificado
 
-- Não executei `flutter test` nem o showcase para esta nota; a leitura é estática do código no commit `e9989b8`.
+- Não executei `flutter test` nem o showcase para esta nota; a leitura é estática do código no commit `8a43f9d`.
 - Não conferi o texto de i18n efetivo dos rótulos (apenas as chaves, como `components.toaster.close`).
 - O comportamento de preencher o pai ou usar o `Overlay` no `SgToaster` foi lido no código (`LayoutBuilder` em `_SgToasterBodyState.build`), não visto em execução.
 

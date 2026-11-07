@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, gadgets]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Gadgets (relógio, calendário, gauges, QR) — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets (relógio, calendário, gauges, QR) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets (relógio, calendário, gauges, QR) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-10 componente(s): **10 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+10 componente(s): **10 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -169,7 +169,7 @@ Extraído por script dos arquivos exportados pelo `seedgrid_components.dart` (de
 
 ## Não verificado
 
-- Não executei `flutter test`, `tools/ci.sh` nem o showcase; as afirmações vêm da leitura do código no commit `e9989b8` e do `docs/paridade.json`.
+- Não executei `flutter test`, `tools/ci.sh` nem o showcase; as afirmações vêm da leitura do código no commit `8a43f9d` e do `docs/paridade.json`.
 - Os 33 locales do calendário e os 464 fusos foram conferidos por contagem nos arquivos gerados; os 33 locales de períodos do dia e as 118 matrizes de QR vêm do `docs/PARIDADE.md`, sem recontagem.
 - Acessibilidade: li os `Semantics`/`Focus` do código; não testei com leitor de tela.
-- A tabela de símbolos públicos foi filtrada pelos `show` dos barris (`gadgets_gauges.dart`, `gadgets_clock.dart`); constantes (como `kSgStringAnimatorDefaultCharset`) não entram na extração por script e foram conferidas à mão.
+- A tabela de símbolos públicos foi filtrada pelos `show` dos barris (`gadgets_gauges.dart`, `gadgets_clock.dart`); constantes (como `kSgStringAnimatorDefaultCharset` e `kGaugeTouchSlop`, esta exportada pelo barril dos medidores) não entram na extração por script e foram conferidas à mão.

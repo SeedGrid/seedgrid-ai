@@ -4,13 +4,13 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, navegacao-
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 8a43f9d
+analisado-em: 2026-11-07
 ---
 
 # Navegação, overlay e wizard — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação, overlay e wizard — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação, overlay e wizard — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API|API — Navegação, overlay e wizard (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos|Exemplos — Navegação, overlay e wizard (Flutter)]]
@@ -18,7 +18,7 @@ analisado-em: 2026-10-30
 
 ## Placar do grupo
 
-6 componente(s): **6 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `e9989b8`).
+6 componente(s): **6 portado(s)**, **0 parcial(is)**, **0 não portado(s)** (fonte: `docs/paridade.json` do repositório Flutter, commit `8a43f9d`).
 
 ## Para que serve
 
@@ -62,7 +62,7 @@ Fonte do lado React: `navegacao-e-overlay/Visao-geral` ("Funções e tipos públ
 
 ## Não verificado
 
-- Não executei `flutter test` nem o showcase para esta nota; leitura estática no commit `e9989b8`.
+- Não executei `flutter test` nem o showcase para esta nota; leitura estática no commit `8a43f9d`.
 - `parseStoredPanelDragPosition`: só confirmei que não sai pelo barril de menus; não busquei exportação em outros barris.
 - Não conferi o texto efetivo das chaves de i18n (apenas os nomes).
 
@@ -80,5 +80,5 @@ Extraído dos barris `overlay/overlay.dart` (exporta só `parseCssColor`, `relat
 | `SgConfirmationDialogButtonConfig` | class | Configuração de um dos botões do `SgConfirmationDialog` (`className` não existe). | `lib/src/overlay/sg_confirmation_dialog.dart` |
 | `SgPopupSeverity`, `SgPopupAction` | enum / class | Severidades e ação do popup. | `lib/src/overlay/sg_popup.dart` |
 | `computePopupPosition` | função | Equivale a `computePosition` + `chooseAutoPlacement` do React (devolve o canto superior esquerdo). | `lib/src/overlay/sg_popup.dart` |
-| `SgDockMenuItem` | class | Item do dock (`id`, `icon`, `label`, `onClick`, `disabled`, `badge`). | `lib/src/menus/dock_menu/sg_dock_menu.dart` |
+| `SgDockMenuItem` | class | Item do dock (`id`, `icon`, `label`, `onClick`, `enabled`, `badge`). | `lib/src/menus/dock_menu/sg_dock_menu.dart` |
 | `SgDockMenuOffset`, `SgDockMenuDragPosition`, `SgDockMenuOrientation`, `buildDockMenuStorageKey` | class / enum / função | Deslocamento, posição salva, orientação e chave de persistência do dock. | `lib/src/menus/dock_menu/dock_menu_logic.dart` |
