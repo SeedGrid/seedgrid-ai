@@ -38,7 +38,7 @@ Caminhos abaixo: **A** = `.ai/skills/...` do produto (vem com o AIDLC); **B** = 
 | `scripts/check-pack.mjs` | Confere o que entraria no pacote npm sem publicar | `node scripts/check-pack.mjs [--release <tag>]` |
 | `scripts/sync-boilerplates.mjs` | Sincroniza `Toolkit/boilerplates/` com o repositório `boilerplate` | `node scripts/sync-boilerplates.mjs [--ref origin/main] [--dry-run]` |
 | `scripts/e2e-*.mjs` | Testes ponta a ponta do AIDLC com agente real (custam dinheiro; usam `--orcamento`) | ver o cabeçalho de cada um |
-| **Planejada:** `scripts/kb-componentes-vs-codigo.mjs` | Compara as páginas de API da KB com o manifesto do MCP e o código Dart | criada na P156.F0.T1; passa a constar aqui ao terminar |
+| `scripts/kb-componentes-vs-codigo.mjs` | Compara as páginas de API da KB (React e Flutter) com o manifesto do MCP, o `generated-props.json` e o construtor Dart; acusa prop removida, nova, tipo/padrão/obrigatória divergente, extra inexistente, `disabled`, `rules` e `SgRules` (sai com 1 se houver) | `node scripts/kb-componentes-vs-codigo.mjs [Componente] [--plataforma flutter\|react\|ambas] [--exemplos] [--resumo] [--json]` |
 
 ## Work `seedgrid-platform-work` (C)
 | Ferramenta | Para quê | Chamada |
