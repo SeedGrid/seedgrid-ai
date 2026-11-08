@@ -13,7 +13,7 @@ after(cleanupAll);
 const RESPOSTAS = {
   nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', modelo: 'login-tenancy-b2b', extensoes: [],
   selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes', billingProvider: 'stripe', trialDias: 14,
-  planos: 'Basico,Pro', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br',
+  planos: 'Basico,Pro', dominioFront: 'app.acme.com.br', certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br',
 };
 
 async function* arquivos(dir: string): AsyncGenerator<string> {

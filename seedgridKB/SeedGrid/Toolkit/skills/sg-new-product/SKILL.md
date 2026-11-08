@@ -36,7 +36,8 @@ Leia `data/matriz-produto.json` e percorra `perguntas` na ordem de `ordem`.
    - **Provedor de WhatsApp (3c, obrigatório):** `evolution` (padrão) ou `whatsapp-cloud`. A `security` só traz a interface (`whatsapp-core`); o provedor é sempre do produto. Não há opção "nenhum". A Cloud deixa pendências (token da Graph API e o valor do canal).
    - **Provedor de cache (3d, opcional):** sem resposta vale `memoria` (sem dependência extra); `redis`, `valkey` ou `dragonfly` acrescentam só o módulo do provedor e o serviço do compose é pendência do dono.
 5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/P<plano>.F<fase>.DEM<n>-AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa; `F0` quando é do plano todo) e siga; não prometa nem improvise.
-6. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
+6. **Domínio do admin pela regra do certificado (pergunta 10, modelos de tenancy).** Não proponha `admin.<domínio>` pronto. Pergunte primeiro o **wildcard do certificado** do usuário (`certificadoWildcard`, ex.: `*.acme.com.br`) e explique a regra na própria pergunta: o `*` cobre **um** nível só (`admin.acme.com.br` serve; `admin.app.acme.com.br` dá `ERR_SSL_VERSION_OR_CIPHER_MISMATCH`). Depois peça o `dominioAdmin` **um nível abaixo** do wildcard; no `subdomain-tenancy` os tenants ficam em `<empresa>.<dominioFront>`, então o `dominioFront` tem de ser a base do wildcard (`acme.com.br`) ou o usuário precisa de outro wildcard para `*.<dominioFront>`. O script recusa (com a explicação) admin de dois níveis ou fora do wildcard. No `subdomain-tenancy` o front sai com `SEEDGRID_ADMIN_HOST` preenchido com o `dominioAdmin` (`frontend/.env.example`).
+7. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
 
 As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, ou o `id` de cada campo). Exemplo para o modelo `login-tenancy-b2b`:
 
@@ -47,7 +48,7 @@ As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, 
   "selfEnter": "sim", "selfEnterModo": "convite",
   "auditoria": "mongodb", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
   "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro", "diferencaPlanos": "Pro libera mais usuários",
-  "dominioFront": "app.acme.com.br", "dominioAdmin": "admin.acme.com.br",
+  "certificadoWildcard": "*.acme.com.br", "dominioFront": "app.acme.com.br", "dominioAdmin": "admin.acme.com.br",
   "emailRemetente": "noreply@acme.com.br", "emailAdmin": "dono@acme.com.br"
 }
 ```

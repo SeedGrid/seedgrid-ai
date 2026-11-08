@@ -19,7 +19,7 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
   scaffold: (o: { respostas: Record<string, unknown>; destino: string; boilerplates: string }) => Promise<{ ok: boolean; erros?: string[] }>;
 };
 
-const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
+const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
 const COMPLETA = { ...BASE, extensoes: [] as string[], selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'x', billingProvider: 'stripe', trialDias: 14, planos: 'Basico' };
 
 function arquivos(raiz: string, dir = raiz): string[] {
@@ -41,7 +41,7 @@ test('GUARDIAO determinismo da matriz: toda combinacao valida resolve sem erro e
     const { dominioAdmin: _a, selfEnter: _s, auditoria: _u, armazenamentoAvatar: _v, armazenamentoBackup: _b, billingProvider: _p, trialDias: _t, planos: _l, provedorWhatsapp: _w, ...enxuta } = COMPLETA as Record<string, unknown>;
     const r = modelo === 'modular'
       ? { ...enxuta, modelo, selfEnter: 'nao', extensoes: ['apikeys'] }
-      : { ...COMPLETA, modelo, extensoes: ['exchange'], selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
+      : { ...COMPLETA, modelo, ...(modelo === 'subdomain-tenancy' ? { dominioFront: 'acme.com.br' } : {}), extensoes: ['exchange'], selfEnter, ...(selfEnter === 'sim' ? { selfEnterModo: 'convite', selfEnterEscopo: 'ambos' } : {}), auditoria, armazenamentoAvatar: armazenamento, armazenamentoBackup: armazenamento };
     const a = lib.resolver(matriz, catalogo, r);
     const b = lib.resolver(matriz, catalogo, JSON.parse(JSON.stringify(r)));
     assert.deepEqual(a.erros, [], `${modelo}/${selfEnter}/${auditoria}/${armazenamento}`);

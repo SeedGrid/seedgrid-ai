@@ -286,6 +286,7 @@
             "env_front": {
               "SEEDGRID_APP_API_BASE_URL": "http://127.0.0.1:8085",
               "SEEDGRID_TENANCY_DOMAIN": "localhost",
+              "SEEDGRID_ADMIN_HOST": "{{dominioAdmin}}",
               "OTEL_SDK_DISABLED": "true",
               "SEEDGRID_CITIES_API_USERNAME": "${externo}",
               "SEEDGRID_CITIES_API_KEY": "${externo}"
@@ -1807,7 +1808,7 @@
       "ordem": 17,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
-      "recomendacao": "Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
+      "recomendacao": "Certificado e dominio do admin: o * de um certificado wildcard cobre UM nivel so (*.acme.com.br cobre admin.acme.com.br, mas NAO admin.app.acme.com.br: da ERR_SSL_VERSION_OR_CIPHER_MISMATCH). Informe o wildcard que voce tem; o dominio do admin tem de ficar um nivel abaixo dele e, no subdomain-tenancy, os tenants (<empresa>.<dominio do front>) tambem (dominio do front = a base do wildcard). Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
       "campos": [
         {
           "id": "dominioFront",
@@ -1822,12 +1823,31 @@
           }
         },
         {
+          "id": "certificadoWildcard",
+          "rotulo": "Certificado wildcard (ex.: *.acme.com.br)",
+          "validacao": "wildcard",
+          "efeito": {
+            "usado_em": [
+              "validacao:dominioAdmin e o padrao de tenants ficam um nivel abaixo do certificado"
+            ]
+          },
+          "se": {
+            "modelo": [
+              "login-tenancy-b2b",
+              "login-tenancy-b2c",
+              "subdomain-tenancy"
+            ]
+          }
+        },
+        {
           "id": "dominioAdmin",
-          "rotulo": "Dominio do admin",
+          "rotulo": "Dominio do admin (um nivel abaixo do wildcard, ex.: admin.acme.com.br)",
           "validacao": "dominio",
+          "umNivelAbaixoDe": "certificadoWildcard",
           "efeito": {
             "usado_em": [
               "produto.json:dominioAdmin",
+              "env_front:SEEDGRID_ADMIN_HOST (subdomain-tenancy)",
               "publicacao:workflow do EasyPanel"
             ]
           },

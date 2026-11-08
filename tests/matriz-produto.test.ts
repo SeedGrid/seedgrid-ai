@@ -15,7 +15,7 @@ const lib = (await import(pathToFileURL(join(SKILL, 'scripts/matriz.mjs')).href)
 const { matriz, catalogo } = lib.carregar();
 
 const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal' };
-const DADOS = { dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
+const DADOS = { dominioFront: 'app.acme.com.br', certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
 const B2B = { ...BASE, ...DADOS, modelo: 'login-tenancy-b2b', extensoes: [], selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
 
 test('a matriz e o catalogo sao consistentes (sem problemas)', () => {

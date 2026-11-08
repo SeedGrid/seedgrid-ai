@@ -22,11 +22,22 @@ const VALIDADORES = {
   slug: (v) => typeof v === 'string' && /^[a-z][a-z0-9-]{1,38}[a-z0-9]$/.test(v),
   'pacote-java': (v) => typeof v === 'string' && /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(v),
   dominio: (v) => typeof v === 'string' && /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(v),
+  // Wildcard do certificado do usuario (ex.: *.acme.com.br): cobre UM nivel abaixo da base.
+  wildcard: (v) => typeof v === 'string' && /^\*\.(?=.{4,251}$)([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(v),
   email: (v) => typeof v === 'string' && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(v),
   registry: (v) => typeof v === 'string' && /^[a-z0-9.-]+(:\d+)?(\/[a-z0-9._-]+)*$/.test(v),
   subdominios: (v) => { const l = Array.isArray(v) ? v : typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []; return l.length > 0 && l.length <= 10 && new Set(l).size === l.length && l.every((x) => typeof x === 'string' && /^[a-z][a-z0-9-]{1,30}[a-z0-9]$/.test(x)); },
   lista: (v) => Array.isArray(v) ? v.length > 0 && v.every((x) => typeof x === 'string' && x.trim()) : typeof v === 'string' && v.split(',').some((x) => x.trim()),
 };
+
+// Um host cabe no wildcard quando e a base mais exatamente UM rotulo (o `*.` cobre um nivel; `a.b.base` nao e coberto).
+export function umNivelAbaixo(host, wildcard) {
+  if (typeof host !== 'string' || !VALIDADORES.wildcard(wildcard)) return false;
+  const base = wildcard.slice(2);
+  const sufixo = `.${base}`;
+  if (!host.endsWith(sufixo)) return false;
+  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(host.slice(0, -sufixo.length));
+}
 
 function validar(regra, valor) {
   if (regra.startsWith('opcao:')) return regra.slice(6).split('|').includes(valor);
@@ -195,6 +206,12 @@ export function resolver(matriz, catalogo, entrada) {
         }
         if (v === undefined) { e(`pergunta ${p.numero}: falta "${c.id}"`); continue; }
         if (!validar(c.validacao, v)) { e(`pergunta ${p.numero}: valor invalido em "${c.id}": ${JSON.stringify(v)} (regra ${c.validacao})`); continue; }
+        if (c.umNivelAbaixoDe && respostas[c.umNivelAbaixoDe] !== undefined && !umNivelAbaixo(v, respostas[c.umNivelAbaixoDe])) {
+          e(`pergunta ${p.numero}: "${c.id}" (${v}) deve ficar UM nivel abaixo do certificado ${respostas[c.umNivelAbaixoDe]} (o * do certificado cobre um nivel so; ex.: admin.${String(respostas[c.umNivelAbaixoDe]).slice(2)})`); continue;
+        }
+        if (c.id === 'dominioFront' && ctx.modelo === 'subdomain-tenancy' && respostas.certificadoWildcard !== undefined && VALIDADORES.wildcard(respostas.certificadoWildcard) && v !== respostas.certificadoWildcard.slice(2)) {
+          e(`pergunta ${p.numero}: no subdomain-tenancy os tenants ficam em <empresa>.${v}, que o certificado ${respostas.certificadoWildcard} nao cobre (cobre um nivel): use dominioFront = ${respostas.certificadoWildcard.slice(2)} ou um certificado wildcard para *.${v}`); continue;
+        }
         efeitos.push({ origem: `${p.id}.${c.id}`, efeito: c.efeito });
       }
     } else if (p.tipo === 'texto') {
