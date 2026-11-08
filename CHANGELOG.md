@@ -5,6 +5,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 ## [Não publicado]
 
 ### Alterado
+- KB `Propriedades-para-subir`: novo checklist de produção do admin do subdomain-tenancy (host do admin, certificado wildcard de um nível, `SEEDGRID_ADMIN_HOST` no front do cliente e chave JWT em PKCS#8), conferido contra o `proxy.ts`, o `.env.example`, o README e o `RsaKeyProvider`; a nota de configuração do subdomain-tenancy deixa de dizer que o boilerplate não tem a variável nem o redirect (P154.F2.T2). Sem release.
 - `sg-crud-front-flutter`: orienta o host a não usar `setState` de página (ADR 63): `SgFormController` com `handleSubmit`/`watch`, `ListenableBuilder` para reagir e `ValueNotifier` com `ValueListenableBuilder` para valor solto (P156.F3.T5). Sem release.
 - KB de componentes alinhada ao código da main (P156): tabelas de API sem `disabled`/`rules`/`SgRules` (agora `enabled` e props diretas de validação), props novas do manifesto e do `generated-props.json`, seção do `SgColorPicker`, exemplos sem API que não compila, skill `sg-crud-front-flutter` sem `SgRules`; novo `scripts/kb-componentes-vs-codigo.mjs` (compara a KB com o manifesto, o `generated-props.json` e o construtor Dart). Sem release.
 - `sg-plan-goal`: todo plano (modelo, `/goal` e esqueleto do `sg-diagnostico`) diz que o goal vai até o fim sem parar entre fases para perguntar, que durante o plano só há commit e que o push é um só, no fim, com o "pode" do dono; as perguntas que sobrarem vêm na FIM.T2. Sem release.
