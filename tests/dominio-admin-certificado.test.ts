@@ -48,10 +48,31 @@ test('wildcard ausente ou malformado e rejeitado', () => {
   assert.ok(erros({ certificadoWildcard: '*.*.acme.com.br', dominioAdmin: 'admin.acme.com.br' }).some((e) => /certificadoWildcard/.test(e)));
 });
 
-test('subdomain-tenancy: o padrao de tenants <empresa>.<dominioFront> tem de caber no wildcard', () => {
-  const sub = { ...BASE, modelo: 'subdomain-tenancy', certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br' };
-  const ok = lib.resolver(matriz, catalogo, { ...sub, dominioFront: 'acme.com.br' });
-  assert.ok(!ok.erros.some((e) => /dominioFront|dominio do front|tenants/.test(e)), ok.erros.join('\n'));
-  const ruim = lib.resolver(matriz, catalogo, { ...sub, dominioFront: 'app.acme.com.br' });
-  assert.ok(ruim.erros.some((e) => /tenants ficam em <empresa>\.app\.acme\.com\.br/.test(e)), ruim.erros.join('\n'));
+test('dominioAdmin padrao: <slug>-admin.<base do wildcard>, e o padrao passa na validacao de um nivel', () => {
+  const r = lib.resolver(matriz, catalogo, { ...BASE, slug: 'report', certificadoWildcard: '*.seedgrid.com.br' }) as { erros: string[]; respostas?: Record<string, string> };
+  assert.deepEqual(r.erros, []);
+  assert.equal(r.respostas?.dominioAdmin, 'report-admin.seedgrid.com.br');
+  assert.deepEqual(erros({ certificadoWildcard: '*.seedgrid.com.br', dominioAdmin: 'report-admin.seedgrid.com.br' }), []);
+});
+
+const SUB = { ...BASE, modelo: 'subdomain-tenancy', certificadoWildcard: '*.seedgrid.com.br', dominioAdmin: 'display-admin.seedgrid.com.br' };
+const errosSub = (r: Record<string, unknown>) => lib.resolver(matriz, catalogo, { ...SUB, ...r }).erros;
+
+test('subdomain-tenancy: front igual a base nao precisa do segundo wildcard', () => {
+  assert.deepEqual(errosSub({ dominioFront: 'seedgrid.com.br' }), []);
+});
+
+test('subdomain-tenancy: front mais fundo que a base exige *.<dominioFront>; sem ele e rejeitado', () => {
+  const sem = errosSub({ dominioFront: 'display.seedgrid.com.br' });
+  assert.ok(sem.some((e) => /certificadoWildcardTenants/.test(e) && /\*\.display\.seedgrid\.com\.br/.test(e)), sem.join(' | '));
+  assert.deepEqual(errosSub({ dominioFront: 'display.seedgrid.com.br', certificadoWildcardTenants: '*.display.seedgrid.com.br' }), []);
+  const errado = errosSub({ dominioFront: 'display.seedgrid.com.br', certificadoWildcardTenants: '*.outro.seedgrid.com.br' });
+  assert.ok(errado.some((e) => /certificadoWildcardTenants/.test(e)), errado.join(' | '));
+});
+
+test('login-tenancy: dominioFront nao e validado contra o wildcard e o segundo wildcard nao se aplica', () => {
+  assert.deepEqual(erros({ certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', dominioFront: 'app.x.outra.com.br' }), []);
+  // o segundo wildcard so entra no efeito do subdomain-tenancy (nos demais, como dominioAdmin no modular, a chave e aceita e ignorada)
+  const r = lib.resolver(matriz, catalogo, { ...BASE, certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', certificadoWildcardTenants: '*.app.acme.com.br' }) as unknown as { efeitos: { origem: string }[] };
+  assert.ok(!r.efeitos.some((x) => /certificadoWildcardTenants/.test(x.origem)));
 });

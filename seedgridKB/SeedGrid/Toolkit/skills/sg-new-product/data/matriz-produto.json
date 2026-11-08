@@ -1808,7 +1808,7 @@
       "ordem": 17,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
-      "recomendacao": "Certificado e dominio do admin: o * de um certificado wildcard cobre UM nivel so (*.acme.com.br cobre admin.acme.com.br, mas NAO admin.app.acme.com.br: da ERR_SSL_VERSION_OR_CIPHER_MISMATCH). Informe o wildcard que voce tem; o dominio do admin tem de ficar um nivel abaixo dele e, no subdomain-tenancy, os tenants (<empresa>.<dominio do front>) tambem (dominio do front = a base do wildcard). Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
+      "recomendacao": "Certificado e dominio do admin: o * de um certificado wildcard cobre UM nivel so (*.acme.com.br cobre admin.acme.com.br, mas NAO admin.app.acme.com.br: da ERR_SSL_VERSION_OR_CIPHER_MISMATCH). Informe o wildcard que voce tem; o dominio do admin tem de ficar um nivel abaixo dele (sugestao: <nome-do-produto>-admin.<base>, ex.: report-admin.seedgrid.com.br). No subdomain-tenancy os tenants ficam em <empresa>.<dominio do front>: se o dominio do front for a propria base do wildcard, o certificado ja cobre; se for mais fundo (ex.: display.seedgrid.com.br), os tenants ficam dois niveis abaixo e voce precisa de um segundo certificado wildcard (*.<dominio do front>), que e especial no Cloudflare e exige configuracao no EasyPanel. Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
       "campos": [
         {
           "id": "dominioFront",
@@ -1841,8 +1841,9 @@
         },
         {
           "id": "dominioAdmin",
-          "rotulo": "Dominio do admin (um nivel abaixo do wildcard, ex.: admin.acme.com.br)",
+          "rotulo": "Dominio do admin (um nivel abaixo do wildcard; padrao <slug>-admin.<base>, ex.: report-admin.seedgrid.com.br)",
           "validacao": "dominio",
+          "padrao": "{{slug}}-admin.{{baseCertificado}}",
           "umNivelAbaixoDe": "certificadoWildcard",
           "efeito": {
             "usado_em": [
@@ -1855,6 +1856,21 @@
             "modelo": [
               "login-tenancy-b2b",
               "login-tenancy-b2c",
+              "subdomain-tenancy"
+            ]
+          }
+        },
+        {
+          "id": "certificadoWildcardTenants",
+          "rotulo": "Certificado wildcard dos tenants (*.<dominio do front>, so se o front nao for a base do wildcard)",
+          "validacao": "wildcard",
+          "efeito": {
+            "usado_em": [
+              "validacao:igual a *.<dominioFront>; obrigatorio quando dominioFront nao e a base do certificadoWildcard (subdomain-tenancy)"
+            ]
+          },
+          "se": {
+            "modelo": [
               "subdomain-tenancy"
             ]
           }

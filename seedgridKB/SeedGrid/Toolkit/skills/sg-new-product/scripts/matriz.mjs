@@ -199,18 +199,27 @@ export function resolver(matriz, catalogo, entrada) {
     if (p.tipo === 'campos') {
       for (const c of p.campos) {
         if (c.se?.modelo && !c.se.modelo.includes(ctx.modelo)) { naoAplica.set(c.id, p.numero); continue; } // campo so de alguns modelos (ex.: dominioAdmin: o modelo modular nao tem admin)
+        if (c.id === 'certificadoWildcardTenants') { // so o subdomain-tenancy tem tenants em subdominio: <empresa>.<dominioFront>
+          const w = respostas.certificadoWildcard;
+          const exige = VALIDADORES.wildcard(w) && respostas.dominioFront !== w.slice(2); // front = base: tenants a um nivel, o wildcard principal cobre
+          const t = respostas[c.id];
+          if (t === undefined || t === '') {
+            if (exige) e(`pergunta ${p.numero}: falta "${c.id}": os tenants ficam em <empresa>.${respostas.dominioFront}, dois ou mais niveis abaixo de ${w}, e o * cobre um nivel so; informe o certificado wildcard especial *.${respostas.dominioFront} (no Cloudflare e a configuracao no EasyPanel sao por sua conta)`);
+            continue;
+          }
+          if (!validar(c.validacao, t) || t !== `*.${respostas.dominioFront}`) { e(`pergunta ${p.numero}: "${c.id}" deve ser *.${respostas.dominioFront} (o wildcard dos tenants <empresa>.${respostas.dominioFront}), recebido ${JSON.stringify(t)}`); continue; }
+          efeitos.push({ origem: `${p.id}.${c.id}`, efeito: c.efeito });
+          continue;
+        }
         let v = respostas[c.id];
         if ((v === undefined || v === '') && c.padrao !== undefined) {
-          v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => respostas[n] ?? '');
+          v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => respostas[n] ?? (n === 'baseCertificado' && VALIDADORES.wildcard(respostas.certificadoWildcard) ? respostas.certificadoWildcard.slice(2) : ''));
           respostas[c.id] = v;
         }
         if (v === undefined) { e(`pergunta ${p.numero}: falta "${c.id}"`); continue; }
         if (!validar(c.validacao, v)) { e(`pergunta ${p.numero}: valor invalido em "${c.id}": ${JSON.stringify(v)} (regra ${c.validacao})`); continue; }
         if (c.umNivelAbaixoDe && respostas[c.umNivelAbaixoDe] !== undefined && !umNivelAbaixo(v, respostas[c.umNivelAbaixoDe])) {
           e(`pergunta ${p.numero}: "${c.id}" (${v}) deve ficar UM nivel abaixo do certificado ${respostas[c.umNivelAbaixoDe]} (o * do certificado cobre um nivel so; ex.: admin.${String(respostas[c.umNivelAbaixoDe]).slice(2)})`); continue;
-        }
-        if (c.id === 'dominioFront' && ctx.modelo === 'subdomain-tenancy' && respostas.certificadoWildcard !== undefined && VALIDADORES.wildcard(respostas.certificadoWildcard) && v !== respostas.certificadoWildcard.slice(2)) {
-          e(`pergunta ${p.numero}: no subdomain-tenancy os tenants ficam em <empresa>.${v}, que o certificado ${respostas.certificadoWildcard} nao cobre (cobre um nivel): use dominioFront = ${respostas.certificadoWildcard.slice(2)} ou um certificado wildcard para *.${v}`); continue;
         }
         efeitos.push({ origem: `${p.id}.${c.id}`, efeito: c.efeito });
       }
