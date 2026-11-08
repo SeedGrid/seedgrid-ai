@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, layout]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/layout
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0daf131
+analisado-em: 2026-11-08
 description: "API React de Layout e containers (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -988,6 +988,7 @@ import {
 | `collapsed` | `boolean` | — (dentro de `SgDockLayout`, usa o estado persistido do layout) | Não | Estado recolhido controlado. *(Inferência)* |
 | `defaultCollapsed` | `boolean` | `false` | Não | Estado recolhido inicial (não controlado); também semeia o estado do toolbar no `SgDockLayout`. *(Inferência)* |
 | `onCollapsedChange` | `(collapsed: boolean) => void` | — | Não | Chamado ao alternar o colapso com o novo valor. *(Inferência)* |
+| `overflow` | `boolean` | `false` | Não | Quando a barra não comporta todos os itens na largura (ou altura, na vertical) disponível, os `SgToolbarIconButton` que não cabem vão para um menu "..." (`SgMenu`); abaixo de 600 px de largura de tela o menu abre como painel inferior. Ignorado com `buttonsPerDirection`. |
 | `children` | `React.ReactNode` | — | Não | Botoes e elementos de acao da toolbar. |
 
 ### Props — `SgToolbarIconButton`

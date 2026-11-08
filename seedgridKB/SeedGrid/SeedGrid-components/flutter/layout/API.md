@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, layout, ap
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: fee58d4
+analisado-em: 2026-11-08
 ---
 
 # API — Layout e containers (Flutter)
@@ -971,7 +971,7 @@ Barra de ferramentas para agrupar acoes frequentes com suporte a orientacao, col
 - Arquivo: `packages/seedgrid_components/lib/src/layout/menu/sg_tool_bar.dart` (linha 50) · classe `class SgToolBar extends StatefulWidget`
 - Contrato gerado das props (nomes, tipos e padrões do React): `packages/seedgrid_components/lib/src/generated/sg_tool_bar.g.dart`
 - Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
-- Construtor: `const SgToolBar({...})` com 18 parâmetro(s) nomeado(s), 16 do contrato React e 2 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 2.
+- Construtor: `const SgToolBar({...})` com 18 parâmetro(s) nomeado(s), 17 do contrato React e 1 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 2.
 
 ### Props de SgToolBar
 
@@ -994,7 +994,7 @@ Barra de ferramentas para agrupar acoes frequentes com suporte a orientacao, col
 | `orientationDirection` | `SgToolBarOrientationDirection?` | — | não | React | Direcao e orientacao da toolbar. Valores: `horizontal-left`, `horizontal-right`, `vertical-up`, `vertical-down`. |
 | `size` | `SgToolBarSize?` | — | não | React | Tipo no React: `SgToolBarSize`. |
 | `title` | `Widget?` | — | não | React | Titulo opcional exibido na barra. |
-| `overflow` | `bool` | `false` | não | Flutter | EXTENSAO do Flutter (o React nao tem): itens que nao cabem vao para o menu "...". |
+| `overflow` | `bool` | `false` | não | React | Quando a barra não comporta todos os itens na largura (ou altura, na vertical) disponível, os `SgToolbarIconButton` que não cabem vão para um menu "..." (`SgMenu`); abaixo de 600 px de largura de tela o menu abre como painel inferior. Ignorado com `buttonsPerDirection`. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
 
@@ -1004,7 +1004,7 @@ Barra de ferramentas para agrupar acoes frequentes com suporte a orientacao, col
 - **Não portado:** o portal do encaixe. A toolbar se registra no `SgDockLayout` (zona, ordem, recolhida, arraste e soltura atualizam o estado), mas quem a coloca dentro do `SgDockZone` é o app; zonas horizontais mostram o conteúdo em linha.
 - `freeDrag` fora de um `Stack` vira translação a partir do lugar natural (não há `position: fixed`).
 - `size` é `SgToolBarSize`, `defaultPosition` é `Offset` e as cores (`bgColor`, `bgColorTitle`) são texto CSS.
-- **Extras do Flutter:** `children` (lista) ao lado de `child` e `overflow` (itens que não cabem vão para um menu "..." feito com `SgMenu`, painel inferior abaixo de 600 px).
+- **Extra do Flutter:** `children` (lista) ao lado de `child`. `overflow` existe nos dois (no Flutter o menu "..." é feito com `SgMenu`; no React, com o `SgMenu` também).
 
 ### Eventos, controllers e acessibilidade
 
