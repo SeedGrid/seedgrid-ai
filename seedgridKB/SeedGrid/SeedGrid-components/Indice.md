@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-07
+analisado-em: 2026-11-08
 gerado-por: scripts/kb-catalogs.mjs --only components
 ---
 
@@ -38,12 +38,12 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 | Navegação, overlay e wizard | 6 | 11 | [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos\|Exemplos]] |
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 22 | [[SeedGrid/SeedGrid-components/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 0 | [[SeedGrid/SeedGrid-components/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/digits/API\|API]] · [[SeedGrid/SeedGrid-components/digits/Exemplos\|Exemplos]] |
-| Providers (ambiente/persistência e realtime) | 2 | 16 | [[SeedGrid/SeedGrid-components/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/providers/API\|API]] · [[SeedGrid/SeedGrid-components/providers/Exemplos\|Exemplos]] |
+| Providers (ambiente/persistência e realtime) | 2 | 17 | [[SeedGrid/SeedGrid-components/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/providers/API\|API]] · [[SeedGrid/SeedGrid-components/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 0 | 8 | [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/fundamentos/Exemplos\|Exemplos]] |
 | Pacotes de apoio | 0 | 4 | [[SeedGrid/SeedGrid-components/pacotes/Visao-geral\|Visão geral]] |
 | Módulos de tela @seedgrid/fe-* | 0 | 10 | [[SeedGrid/SeedGrid-components/modulos/Visao-geral\|Visão geral]] |
 | Showcase | 0 | 1 | [[SeedGrid/SeedGrid-components/showcase\|Showcase]] |
-| **Total React** | **95** | **120** |  |
+| **Total React** | **95** | **121** |  |
 
 ## Resumo — Flutter
 
@@ -55,14 +55,14 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 | Tabela de dados | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 1 | 0 | 0 | 7 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 3 | 0 | 0 | 10 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
-| Feedback e exibição | 10 | 10 | 0 | 0 | 31 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
+| Feedback e exibição | 10 | 9 | 1 | 0 | 31 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
 | Layout e containers | 19 | 19 | 0 | 0 | 67 | [[SeedGrid/SeedGrid-components/flutter/layout/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/layout/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos\|Exemplos]] |
 | Navegação, overlay e wizard | 6 | 6 | 0 | 0 | 16 | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos\|Exemplos]] |
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 10 | 0 | 0 | 90 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **94** | **92** | **2** | **0** | **406** |  |
+| **Total Flutter** | **94** | **91** | **3** | **0** | **406** |  |
 
 ## Onde está cada símbolo
 
@@ -81,7 +81,7 @@ Procure o nome abaixo e abra só a seção dele: `Grep "^## NomeDoComponente"` n
 - **Navegação, overlay e wizard** (`navegacao-e-overlay/`, React): SgDockMenu, SgPopup, SgDialog, SgConfirmationDialog, SgWizard, SgWizardPage, resolveDockMenuOrientation, resolveDockMenuLiftDirection, buildDockMenuLayout, buildDockMenuItemMotion, buildDockMenuLabelStyle, buildDockMenuContainerStyle, buildDockMenuContextMenuState, buildDockMenuStorageKey, clampWizardStep, canNavigateToWizardStep, canProceedWizardAction
 - **Gadgets (relógio, calendário, gauges, QR)** (`gadgets/`, React): SgCalendar, SgClock, SgTimeProvider, useSgTime, SgClockThemeProvider, useSgClockThemeResolver, createThemeResolver, registerTheme, registerThemes, getTheme, hasTheme, listThemes, unregisterTheme, clearThemes, resolveTheme, ThemeLayer, useDarkFlag, sgClockThemesBuiltIn, SgClockThemePicker, SgClockThemePreview, SgLinearGauge, SgRadialGauge, SgQRCode, SgStringAnimator, SG_STRING_ANIMATOR_DEFAULT_CHARSET, useSgTimeContext, filterClockThemes, resolveClockThemeSelection, themes/search.ts, gauge/math.ts, clampGaugeValue, valueToGaugeRatio
 - **Dígitos animados** (`digits/`, React): SgDiscardDigit, SgFadeDigit, SgFlipDigit, SgMatrixDigit, SgNeonDigit, SgRoller3DDigit, SgSegmentDigit, SgSevenSegmentDigit
-- **Providers (ambiente/persistência e realtime)** (`providers/`, React): SgEnvironmentProvider, useSgEnvironment, useSgNamespaceProvider, useSgPersistence, useSgPersistentState, useHasSgEnvironmentProvider, buildSgPersistenceKey, createLocalStorageStrategy, createApiPersistenceStrategy, createCompositePersistenceStrategy, readLocalPersistentState, writeLocalPersistentState, clearLocalPersistentState, resolvePersistedStateValue, SgRealtimeProvider, useSgRealtimeEvent, useSgRealtimeStatus, matchesSgRealtimeEvent
+- **Providers (ambiente/persistência e realtime)** (`providers/`, React): SgEnvironmentProvider, useSgEnvironment, useSgNamespaceProvider, useSgPersistence, useSgPersistentState, useHasSgEnvironmentProvider, buildSgPersistenceKey, createLocalStorageStrategy, createApiPersistenceStrategy, createCompositePersistenceStrategy, readLocalPersistentState, writeLocalPersistentState, clearLocalPersistentState, resolvePersistedStateValue, SgRealtimeProvider, useSgRealtimeEvent, useSgRealtimeStatus, useHasSgRealtimeProvider, matchesSgRealtimeEvent
 - **Fundamentos do @seedgrid/fe-components** (`fundamentos/`, React): masks.ts, validators.ts, blocked-email-domains.ts, rhf.ts, i18n/, injectStyles.ts, generated/compiledStyles.ts, ai-meta/
 - **Pacotes de apoio** (`pacotes/`, React): @seedgrid/fe-theme, @seedgrid/fe-core, @seedgrid/fe-commons, @seedgrid/fe-playground
 - **Módulos de tela @seedgrid/fe-*** (`modulos/`, React): Composição do front e do admin (adicionar e remover módulos), @seedgrid/fe-apikeys, @seedgrid/fe-audit, @seedgrid/fe-backup, @seedgrid/fe-billing-platform, @seedgrid/fe-billing-user, @seedgrid/fe-login-tenancy, @seedgrid/fe-security, @seedgrid/fe-self-enter, @seedgrid/fe-subdomain-tenancy

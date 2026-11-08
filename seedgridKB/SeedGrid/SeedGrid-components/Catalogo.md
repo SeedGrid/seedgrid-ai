@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-07
+analisado-em: 2026-11-08
 gerado-por: scripts/kb-catalogs.mjs --only catalogo
 ---
 
@@ -38,12 +38,12 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Navegação, overlay e wizard | 6 | 11 | [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos\|Exemplos]] |
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 22 | [[SeedGrid/SeedGrid-components/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 0 | [[SeedGrid/SeedGrid-components/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/digits/API\|API]] · [[SeedGrid/SeedGrid-components/digits/Exemplos\|Exemplos]] |
-| Providers (ambiente/persistência e realtime) | 2 | 16 | [[SeedGrid/SeedGrid-components/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/providers/API\|API]] · [[SeedGrid/SeedGrid-components/providers/Exemplos\|Exemplos]] |
+| Providers (ambiente/persistência e realtime) | 2 | 17 | [[SeedGrid/SeedGrid-components/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/providers/API\|API]] · [[SeedGrid/SeedGrid-components/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 0 | 8 | [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/fundamentos/Exemplos\|Exemplos]] |
 | Pacotes de apoio | 0 | 4 | [[SeedGrid/SeedGrid-components/pacotes/Visao-geral\|Visão geral]] |
 | Módulos de tela @seedgrid/fe-* | 0 | 10 | [[SeedGrid/SeedGrid-components/modulos/Visao-geral\|Visão geral]] |
 | Showcase | 0 | 1 | [[SeedGrid/SeedGrid-components/showcase\|Showcase]] |
-| **Total React** | **95** | **120** |  |
+| **Total React** | **95** | **121** |  |
 
 ## Resumo — Flutter
 
@@ -55,14 +55,14 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Tabela de dados | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | 1 | 0 | 0 | 7 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | 3 | 0 | 0 | 10 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
-| Feedback e exibição | 10 | 10 | 0 | 0 | 31 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
+| Feedback e exibição | 10 | 9 | 1 | 0 | 31 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
 | Layout e containers | 19 | 19 | 0 | 0 | 67 | [[SeedGrid/SeedGrid-components/flutter/layout/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/layout/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos\|Exemplos]] |
 | Navegação, overlay e wizard | 6 | 6 | 0 | 0 | 16 | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos\|Exemplos]] |
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 10 | 0 | 0 | 90 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
 | Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **94** | **92** | **2** | **0** | **406** |  |
+| **Total Flutter** | **94** | **91** | **3** | **0** | **406** |  |
 
 ## Inputs de texto e documentos — React
 
@@ -116,7 +116,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 
 | Nome | Exportado | Resumo | Nota |
 |---|---|---|---|
-| `SgDatatable` | sim | O SgDatatable é a tabela de dados do pacote @seedgrid/fe-components (v2026.11.1) | [[SeedGrid/SeedGrid-components/datatable/API\|API]] |
+| `SgDatatable` | sim | O SgDatatable é a tabela de dados do pacote @seedgrid/fe-components (package.json em 2026.7.1; o… | [[SeedGrid/SeedGrid-components/datatable/API\|API]] |
 
 ## Editor de texto rico — React
 
@@ -314,6 +314,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgRealtimeProvider` | sim | Conexão ao Pulse e distribuição de avisos | [[SeedGrid/SeedGrid-components/providers/API\|API]] |
 | `useSgRealtimeEvent` | sim | Registra handler por channel + padrão de evento | [[SeedGrid/SeedGrid-components/providers/API\|API]] |
 | `useSgRealtimeStatus` | sim | { status, connected } para decidir aviso × polling | [[SeedGrid/SeedGrid-components/providers/API\|API]] |
+| `useHasSgRealtimeProvider` | sim | Diz se há SgRealtimeProvider acima (com channel, só conta se ele assina esse channel) | [[SeedGrid/SeedGrid-components/providers/API\|API]] |
 | `matchesSgRealtimeEvent` | sim | Casa nome exato, prefixo.* ou * | [[SeedGrid/SeedGrid-components/providers/API\|API]] |
 
 ## Fundamentos do @seedgrid/fe-components — React
@@ -542,7 +543,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgAvatarGroup` | portado | Avatares sobrepostos com limite visível e contador de quem ficou de fora | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
 | `SgBadge` | portado | Etiqueta ou contador com severidade, ponto pulsante, ícones, clique e remoção | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
 | `SgBadgeOverlay` | portado | Posiciona um selo (badge) sobre um canto ou lado de outro widget | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
-| `SgNotificationBell` | portado | Sino de notificações do usuário logado: contador, lista de até 100, ler, excluir, interruptor "Não… | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
+| `SgNotificationBell` | parcial | Sino de notificações do usuário logado: contador, lista de até 100, ler, excluir, interruptor "Não… | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
 | `SgSkeleton` | portado | Placeholder de carregamento com formas e animação de onda ou pulso | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
 | `SgToaster` | portado | Pilha de toasts disparados por toast(...), com posição, duração e cores | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
 | `SgToastHost` | portado | Define onde os toasts aparecem; com vários hosts, vale o último montado | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
@@ -692,7 +693,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgPopupSeverity` | sim | Severidades e ação do popup | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | `SgPopupAction` | sim | Severidades e ação do popup | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | `computePopupPosition` | sim | Equivale a computePosition + chooseAutoPlacement do React (devolve o canto superior esquerdo) | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
-| `SgDockMenuItem` | sim | Item do dock (id, icon, label, onClick, disabled, badge) | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
+| `SgDockMenuItem` | sim | Item do dock (id, icon, label, onClick, enabled, badge) | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | `SgDockMenuOffset` | sim | Deslocamento, posição salva, orientação e chave de persistência do dock | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | `SgDockMenuDragPosition` | sim | Deslocamento, posição salva, orientação e chave de persistência do dock | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | `SgDockMenuOrientation` | sim | Deslocamento, posição salva, orientação e chave de persistência do dock | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
