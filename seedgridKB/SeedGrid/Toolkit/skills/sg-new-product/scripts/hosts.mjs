@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Entradas do arquivo hosts para testar o produto localmente (dominioFront, dominioAdmin e, no subdomain-tenancy,
 // um tenant de exemplo, tudo -> 127.0.0.1). Edita o arquivo do sistema SO dentro de um bloco delimitado por marcas:
-//   # seedgrid:<slug> início   ...   # seedgrid:<slug> fim
+//   # seedgrid:<slug> inicio   ...   # seedgrid:<slug> fim
 // Rodar de novo substitui o bloco (nunca duplica); --remover tira o bloco. Linhas fora do bloco e o fim de linha do
 // arquivo (CRLF no Windows) ficam intactos. Sem --sim so MOSTRA o que seria gravado; sem permissao (EACCES/EPERM) imprime
 // as linhas e como aplicar com elevacao. Logica pura (montar/substituir/remover sobre uma string) + camada fina de arquivo.
@@ -19,7 +19,7 @@ export function caminhoHosts({ platform = process.platform, env = process.env } 
 
 const slugOk = (slug) => typeof slug === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(slug);
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-export const marcaInicio = (slug) => `# seedgrid:${slug} início`;
+export const marcaInicio = (slug) => `# seedgrid:${slug} inicio`;
 export const marcaFim = (slug) => `# seedgrid:${slug} fim`;
 
 /** Hosts do produto (a partir do produto.json): front, admin (se houver) e, so no subdomain-tenancy, um tenant de exemplo. */

@@ -30,13 +30,13 @@ test('caminho do hosts por plataforma, sem C:\\ fixo (usa SystemRoot)', () => {
 test('bloco criado ao fim, com marcas, preservando CRLF e as linhas de fora', () => {
   const novo = h.aplicarBloco(ORIGINAL_CRLF, 'display', HOSTS);
   assert.ok(novo.startsWith(ORIGINAL_CRLF));
-  assert.equal(novo.slice(ORIGINAL_CRLF.length), ['# seedgrid:display início', ...HOSTS.map((x) => `127.0.0.1 ${x}`), '# seedgrid:display fim', ''].join('\r\n'));
+  assert.equal(novo.slice(ORIGINAL_CRLF.length), ['# seedgrid:display inicio', ...HOSTS.map((x) => `127.0.0.1 ${x}`), '# seedgrid:display fim', ''].join('\r\n'));
   assert.ok(!/(^|[^\r])\n/.test(novo), 'nenhum LF solto num arquivo CRLF');
 });
 
 test('arquivo sem fim de linha no fim recebe o separador antes do bloco; LF e preservado', () => {
   const novo = h.aplicarBloco('127.0.0.1 localhost', 'display', ['a.test'], { eol: '\n' });
-  assert.equal(novo, '127.0.0.1 localhost\n# seedgrid:display início\n127.0.0.1 a.test\n# seedgrid:display fim\n');
+  assert.equal(novo, '127.0.0.1 localhost\n# seedgrid:display inicio\n127.0.0.1 a.test\n# seedgrid:display fim\n');
   const lf = h.aplicarBloco('# x\n127.0.0.1 localhost\n', 'display', ['a.test']);
   assert.ok(!lf.includes('\r'));
 });
@@ -44,8 +44,8 @@ test('arquivo sem fim de linha no fim recebe o separador antes do bloco; LF e pr
 test('rodar de novo substitui o bloco no lugar, sem duplicar e sem tocar no que vem depois', () => {
   const com = h.aplicarBloco(ORIGINAL_CRLF, 'display', HOSTS) + '10.0.0.5 outro\r\n';
   const de = h.aplicarBloco(com, 'display', ['display.seedgrid.com.br']);
-  assert.equal(de.split('# seedgrid:display início').length - 1, 1);
-  assert.equal(de, ORIGINAL_CRLF + '# seedgrid:display início\r\n127.0.0.1 display.seedgrid.com.br\r\n# seedgrid:display fim\r\n10.0.0.5 outro\r\n');
+  assert.equal(de.split('# seedgrid:display inicio').length - 1, 1);
+  assert.equal(de, ORIGINAL_CRLF + '# seedgrid:display inicio\r\n127.0.0.1 display.seedgrid.com.br\r\n# seedgrid:display fim\r\n10.0.0.5 outro\r\n');
   assert.equal(h.aplicarBloco(de, 'display', ['display.seedgrid.com.br']), de, 'idempotente');
 });
 
@@ -58,7 +58,7 @@ test('blocos de outros produtos ficam intactos; remover tira so o do slug', () =
 });
 
 test('bloco incompleto ou duplicado e recusado sem alterar nada', () => {
-  assert.throws(() => h.aplicarBloco('# seedgrid:display início\r\n127.0.0.1 a\r\n', 'display', ['b']), /incompleto ou duplicado/);
+  assert.throws(() => h.aplicarBloco('# seedgrid:display inicio\r\n127.0.0.1 a\r\n', 'display', ['b']), /incompleto ou duplicado/);
   assert.throws(() => h.aplicarBloco('x', 'Display Ruim', ['b']), /slug invalido/);
 });
 
