@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-tex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Inputs de texto e documentos (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, e `${context.tx('texto')}` dentro de uma string virou `texto`. Conferido em 2026-11-07 por comparação de texto com as constantes `*PageSnippets` do showcase (seedgrid-fe-flutter 8a43f9d): todos os blocos abaixo são cópia 1:1 dessas constantes, com essa única alteração. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis `_x` do estado da página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes na página. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgInputText
 
@@ -41,18 +41,22 @@ Column(
     SgButton(
       label: Text('Enviar'),
       onClick: () => _form.handleSubmit(
-        (values) => setState(() => _enviado = '${values['nome']}'),
+        (values) => _enviado.value = '${values['nome']}',
       ),
     ),
     const SizedBox(height: 8),
-    Text('Valor: $_enviado'),
+    ValueListenableBuilder<String>(
+      valueListenable: _enviado,
+      builder: (context, enviado, _) =>
+          Text('Valor: $enviado'),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final SgFormController _form = SgFormController(defaultValues: {'nome': '', 'controlled': 'Texto inicial'});`
-- `String _enviado = '';`
+- `final ValueNotifier<String> _enviado = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -145,7 +149,7 @@ SizedBox(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final SgFormController _form = SgFormController(defaultValues: {'nome': '', 'controlled': 'Texto inicial'});`
 
 ## SgInputTextArea
@@ -167,17 +171,21 @@ SizedBox(
       SgInputTextArea(
         id: 'demo-basic',
         labelText: 'Descrição',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -274,37 +282,100 @@ SizedBox(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final SgFormController _form = SgFormController(defaultValues: {'controlled': ''});`
 
 ## SgInputTextSearch
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_input_text_search_page.dart` (4 exemplo(s) na página; abaixo 3).
 
-### Básico
+### Básico (minChars 3, debounce 350ms)
 
-onSearchChange dispara 350 ms depois da última digitação, com o texto sem espaços nas pontas e só com 3 ou mais caracteres (ou vazio).
+Digite e observe: o valor imediato muda a cada tecla, o termo de busca só atualiza após parar de digitar e com 3+ caracteres.
 
 Região `sgInputTextSearchBasico` em `sg_input_text_search_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgInputTextSearch(
-      id: 'busca',
-      labelText: 'Buscar produto',
-      prefixIcon: const Icon(Icons.search),
-      onSearchChange: (valor) => setState(() => _busca = valor),
-    ),
-    const SizedBox(height: 8),
-    Text('Última busca: $_busca'),
-  ],
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputTextSearch(
+        id: 'search-basic',
+        labelText: 'Busca',
+        placeholder: 'Digite para buscar',
+        onChange: (valor) => _imediato.value = valor,
+        onSearchChange: (valor) => _busca.value = valor,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: Listenable.merge([_imediato, _busca]),
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Valor imediato (onChange): ${_imediato.value.isEmpty ? '(vazio)' : _imediato.value}',
+            ),
+            Text(
+              'Termo de busca (onSearchChange): ${_busca.value.isEmpty ? '(vazio)' : _busca.value}',
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _busca = '(nenhuma ainda)';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _imediato = ValueNotifier('');`
+- `final ValueNotifier<String> _busca = ValueNotifier('');`
+
+### minChars 1 e debounce 800ms
+
+Dispara com 1 caractere, mas com um debounce mais longo.
+
+Região `sgInputTextSearchAjuste` em `sg_input_text_search_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputTextSearch(
+        id: 'search-tuned',
+        labelText: 'Busca',
+        placeholder: 'Digite para buscar',
+        minChars: 1,
+        debounceMs: 800,
+        onChange: (valor) => _imediato2.value = valor,
+        onSearchChange: (valor) => _busca2.value = valor,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: Listenable.merge([_imediato2, _busca2]),
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Valor imediato (onChange): ${_imediato2.value.isEmpty ? '(vazio)' : _imediato2.value}',
+            ),
+            Text(
+              'Termo de busca (onSearchChange): ${_busca2.value.isEmpty ? '(vazio)' : _busca2.value}',
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _imediato2 = ValueNotifier('');`
+- `final ValueNotifier<String> _busca2 = ValueNotifier('');`
 
 ### onChange imediato x onSearchChange com debounce
 
@@ -313,51 +384,38 @@ onChange recebe cada digitação com o valor cru; onSearchChange só o valor nor
 Região `sgInputTextSearchEventos` em `sg_input_text_search_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgInputTextSearch(
-      id: 'eventos',
-      labelText: 'Digite e veja os eventos',
-      onChange: (valor) => setState(() => _crua = valor),
-      onSearchChange: (valor) => setState(() => _disparos++),
-    ),
-    const SizedBox(height: 8),
-    Text('onChange (cru): "$_crua"'),
-    Text('Buscas disparadas: $_disparos'),
-  ],
+SizedBox(
+  width: 384,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputTextSearch(
+        id: 'search-events',
+        labelText: 'Digite e veja os eventos',
+        onChange: (valor) => _crua.value = valor,
+        onSearchChange: (valor) => _disparos.value++,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: Listenable.merge([_crua, _disparos]),
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('onChange (cru): "${_crua.value}"'),
+            Text(
+              'Buscas disparadas: ${_disparos.value}',
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _crua = '';`
-- `int _disparos = 0;`
-
-### minChars e debounceMs
-
-Dispara a partir de 1 caractere e com 100 ms de espera.
-
-Região `sgInputTextSearchAjuste` em `sg_input_text_search_page.snippets.g.dart`.
-
-```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgInputTextSearch(
-      id: 'ajuste',
-      labelText: 'Resposta rápida',
-      minChars: 1,
-      debounceMs: 100,
-      onSearchChange: (valor) => setState(() => _rapida = valor),
-    ),
-    const SizedBox(height: 8),
-    Text('Última busca: $_rapida'),
-  ],
-)
-```
-
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _rapida = '(nenhuma ainda)';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _crua = ValueNotifier('');`
+- `final ValueNotifier<int> _disparos = ValueNotifier(0);`
 
 ## SgInputEmail
 
@@ -379,17 +437,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'Email',
         hintText: 'exemplo@dominio.com',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -462,17 +524,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'Senha',
         hintText: 'Digite sua senha',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -509,21 +575,25 @@ SizedBox(
         labelText: 'Mínimo 8',
         hintText: 'Mínimo 8 caracteres',
         validation: (value) => value.length < 8
-            ? 'Senha precisa ter no mínimo 8 caracteres.'
+            ? 
+                'Senha precisa ter no mínimo 8 caracteres.',
+              
             : null,
-        onValidation: (msg) => setState(() => _validationMsg = msg),
+        onValidation: (msg) => _validationMsg.value = msg,
       ),
       const SizedBox(height: 8),
-      Text(
-        'onValidation: ${_validationMsg ?? 'válido'}',
+      ValueListenableBuilder<String?>(
+        valueListenable: _validationMsg,
+        builder: (context, msg, _) =>
+            Text('onValidation: ${msg ?? 'válido'}'),
       ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String? _validationMsg;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String?> _validationMsg = ValueNotifier(null);`
 
 ## SgInputPhone
 
@@ -545,17 +615,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'Telefone',
         hintText: '(00) 00000-0000',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: "$_basico"'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: "$valor"'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -628,17 +702,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'CPF',
         hintText: '000.000.000-00',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -711,17 +789,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'CNPJ',
         hintText: '00.000.000/0000-00',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### CNPJ alfanumérico
 
@@ -780,17 +862,21 @@ SizedBox(
         id: 'demo-basic',
         labelText: 'Documento',
         hintText: 'CPF ou CNPJ',
-        onChange: (v) => setState(() => _basico = v),
+        onChange: (v) => _basico.value = v,
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_basico'),
+      ValueListenableBuilder<String>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor: $valor'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -878,7 +964,7 @@ SizedBox(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final SgFormController _form = SgFormController(defaultValues: {'cep': '', 'controlled': ''});`
 
 ### Países
@@ -977,7 +1063,7 @@ Column(
 
 ## SgInputDate
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_date_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_date_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -986,8 +1072,27 @@ Digite ou abra o calendário; o valor entregue é a data ISO.
 Região `sgInputDateBasico` em `sg_input_date_page.snippets.g.dart`.
 
 ```dart
-const SgInputDate(id: 'data', labelText: 'Data')
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDate(
+      id: 'demo-basic',
+      labelText: 'Data',
+      hintText: 'Selecione uma data',
+      onChange: (value) => _valor.value = value,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String>(
+      valueListenable: _valor,
+      builder: (context, valor, _) =>
+          Text('Valor: $valor'),
+    ),
+  ],
+)
 ```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _valor = ValueNotifier<String>('');`
 
 ### Limites de data
 
@@ -996,22 +1101,23 @@ Fora do intervalo aparece a mensagem; no calendário os dias ficam desabilitados
 Região `sgInputDateLimites` em `sg_input_date_page.snippets.g.dart`.
 
 ```dart
-const SgInputDate(
-  id: 'data-limites',
-  labelText: 'Dentro de 2026',
-  minDate: '2026-01-01',
-  maxDate: '2026-12-31',
-  initialValue: '2026-06-15',
+SgInputDate(
+  id: 'demo-range',
+  labelText: 'Período',
+  minDate: '2020-01-01',
+  maxDate: '2030-12-31',
 )
 ```
 
 ### Obrigatório
 
+Valida campo vazio.
+
 Região `sgInputDateObrigatorio` em `sg_input_date_page.snippets.g.dart`.
 
 ```dart
-const SgInputDate(
-  id: 'data-obrigatoria',
+SgInputDate(
+  id: 'demo-required',
   labelText: 'Data da consulta',
   required: true,
   requiredMessage: 'Escolha uma data',
@@ -1020,46 +1126,65 @@ const SgInputDate(
 
 ## SgInputBirthDate
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_birth_date_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_birth_date_page.dart` (5 exemplo(s) na página; abaixo 3).
 
-### Maior de idade
+### Básico
 
 minAge: 18 limita a data máxima e valida a idade.
 
-Região `sgInputBirthDateMaior` em `sg_input_birth_date_page.snippets.g.dart`.
+Região `sgInputBirthDateBasico` em `sg_input_birth_date_page.snippets.g.dart`.
 
 ```dart
-const SgInputBirthDate(
-  id: 'nascimento',
-  labelText: 'Data de nascimento',
-  minAge: 18,
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputBirthDate(
+      id: 'demo-basic',
+      labelText: 'Data de nascimento',
+      minAge: 18,
+      onValidation: (msg) => _validacao.value = msg,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String?>(
+      valueListenable: _validacao,
+      builder: (context, msg, _) =>
+          Text('onValidation: ${msg ?? 'válido'}'),
+    ),
+  ],
 )
 ```
 
-### Faixa de idade
-
-Região `sgInputBirthDateFaixa` em `sg_input_birth_date_page.snippets.g.dart`.
-
-```dart
-const SgInputBirthDate(
-  id: 'nascimento-faixa',
-  labelText: 'Entre 18 e 65 anos',
-  minAge: 18,
-  maxAge: 65,
-)
-```
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String?> _validacao = ValueNotifier<String?>(null);`
 
 ### Obrigatório
+
+Valida campo vazio.
 
 Região `sgInputBirthDateObrigatorio` em `sg_input_birth_date_page.snippets.g.dart`.
 
 ```dart
-const SgInputBirthDate(
-  id: 'nascimento-obrigatorio',
-  labelText: 'Nascimento',
-  minAge: 0,
+SgInputBirthDate(
+  id: 'demo-required',
+  labelText: 'Data de nascimento',
+  minAge: 18,
   required: true,
-  requiredMessage: 'Informe quando nasceu',
+  requiredMessage: 'Informe a data de nascimento.',
+)
+```
+
+### Faixa customizada
+
+minAge e maxAge configuráveis.
+
+Região `sgInputBirthDateFaixa` em `sg_input_birth_date_page.snippets.g.dart`.
+
+```dart
+SgInputBirthDate(
+  id: 'demo-range',
+  labelText: 'Data de nascimento',
+  minAge: 12,
+  maxAge: 80,
 )
 ```
 
@@ -1092,20 +1217,23 @@ SizedBox(
         appearance: SgAppearance.outline,
         label: Text('Enviar'),
         onClick: () => _form.handleSubmit(
-          (values) =>
-              setState(() => _enviado = '${values['valor']}'),
+          (values) => _enviado.value = '${values['valor']}',
         ),
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_enviado'),
+      ValueListenableBuilder<String>(
+        valueListenable: _enviado,
+        builder: (context, enviado, _) =>
+            Text('Valor: $enviado'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
-- `String _enviado = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _form = SgFormController(defaultValues: {'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': ''});`
+- `final ValueNotifier<String> _enviado = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -1197,8 +1325,8 @@ SizedBox(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _form = SgFormController(defaultValues: {'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': ''});`
 
 ## SgInputCurrency
 
@@ -1229,20 +1357,23 @@ SizedBox(
         appearance: SgAppearance.outline,
         label: Text('Enviar'),
         onClick: () => _form.handleSubmit(
-          (values) =>
-              setState(() => _enviado = '${values['valor']}'),
+          (values) => _enviado.value = '${values['valor']}',
         ),
       ),
       const SizedBox(height: 8),
-      Text('Valor: $_enviado'),
+      ValueListenableBuilder<String>(
+        valueListenable: _enviado,
+        builder: (context, enviado, _) =>
+            Text('Valor: $enviado'),
+      ),
     ],
   ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
-- `String _enviado = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _form = SgFormController(defaultValues: {'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': ''});`
+- `final ValueNotifier<String> _enviado = ValueNotifier('');`
 
 ### Obrigatório
 
@@ -1334,12 +1465,12 @@ SizedBox(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `final SgFormController _form = SgFormController(defaultValues: { 'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': '', });`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _form = SgFormController(defaultValues: {'valor': '', 'controlled': '', 'prefix': '', 'suffix': '', 'both': ''});`
 
 ## SgInputOTP
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_otp_page.dart` (6 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_otp_page.dart` (7 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -1352,20 +1483,36 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgInputOTP(
-      id: 'basico',
-      label: 'Código de verificação',
-      hintText: 'Enviamos 6 dígitos por SMS.',
-      onComplete: (v) => setState(() => _concluido = v),
+      id: 'otp-basic',
+      label: 'Código OTP',
+      hintText: 'Digite os 6 dígitos',
+      onChange: (value) => _mascara1.value = value,
+      onRawChange: (value) => _bruto1.value = value,
     ),
-    if (_concluido.isNotEmpty) Text('Código completo: $_concluido'),
+    const SizedBox(height: 12),
+    ListenableBuilder(
+      listenable: Listenable.merge([_mascara1, _bruto1]),
+      builder: (context, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'masked: ${_mascara1.value.isEmpty ? '(vazio)' : _mascara1.value}',
+          ),
+          Text(
+            'raw: ${_bruto1.value.isEmpty ? '(vazio)' : _bruto1.value}',
+          ),
+        ],
+      ),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _concluido = '';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _mascara1 = ValueNotifier<String>('');`
+- `final ValueNotifier<String> _bruto1 = ValueNotifier<String>('');`
 
-### Máscara com separador
+### Máscara customizada
 
 9 = dígito, # = letra ou dígito, qualquer outro caractere é separador. onChange recebe o valor com separador e onRawChange, sem.
 
@@ -1376,19 +1523,35 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgInputOTP(
-      id: 'sep',
-      label: 'Dígitos',
-      mask: '999-999',
+      id: 'otp-mask',
+      label: 'Token de acesso',
+      hintText: 'Formato: ###-###-99',
+      mask: '###-###-99',
+      onChange: (value) => _mascara2.value = value,
+      onRawChange: (value) => _bruto2.value = value,
     ),
-    SizedBox(height: 16),
-    SgInputOTP(
-      id: 'alfa',
-      label: 'Alfanumérico',
-      mask: '##-##-##',
+    const SizedBox(height: 12),
+    ListenableBuilder(
+      listenable: Listenable.merge([_mascara2, _bruto2]),
+      builder: (context, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'masked: ${_mascara2.value.isEmpty ? '(vazio)' : _mascara2.value}',
+          ),
+          Text(
+            'raw: ${_bruto2.value.isEmpty ? '(vazio)' : _bruto2.value}',
+          ),
+        ],
+      ),
     ),
   ],
 )
 ```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _mascara2 = ValueNotifier<String>('');`
+- `final ValueNotifier<String> _bruto2 = ValueNotifier<String>('');`
 
 ### Validação
 
@@ -1398,13 +1561,14 @@ Região `sgInputOtpValidacao` em `sg_input_otp_page.snippets.g.dart`.
 
 ```dart
 SgInputOTP(
-  id: 'validacao',
+  id: 'otp-validation',
   label: 'Código de convite',
   mask: '99-99',
   required: true,
   requiredMessage: 'Informe o código.',
-  validation: (raw, masked) =>
-      raw.length < 4 ? 'O código tem 4 dígitos.' : null,
+  validation: (raw, masked) => raw.length < 4
+      ? 'O código tem 4 dígitos.'
+      : null,
 )
 ```
 

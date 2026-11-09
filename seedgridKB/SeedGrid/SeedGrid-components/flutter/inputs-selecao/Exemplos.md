@@ -4,23 +4,23 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-sel
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Inputs de seleção e valores (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos — Inputs de seleção e valores (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, e `${context.tx('texto')}` dentro de uma string virou `texto`. Conferido em 2026-11-07 por comparação de texto com as constantes `*PageSnippets` do showcase (seedgrid-fe-flutter 8a43f9d): todos os blocos abaixo são cópia 1:1 dessas constantes, com essa única alteração. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis `_x` do estado da página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes na página. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgAutocomplete
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_autocomplete_page.dart` (7 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_autocomplete_page.dart` (11 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Digite ao menos 2 letras: a busca roda depois de 300 ms sem digitar. Em tela estreita a lista abre como painel de baixo.
+Digite e veja resultados conforme a busca.
 
 Região `sgAutocompleteBasico` em `sg_autocomplete_page.snippets.g.dart`.
 
@@ -39,6 +39,26 @@ SgAutocomplete<String>(
             'Uruguai',
           ]
           .where((p) => p.toLowerCase().contains(q.toLowerCase()))
+          .toList(),
+)
+```
+
+### Botão dropdown
+
+Botão para abrir/fechar a lista. Com um item selecionado, reabrir mostra a lista completa com o item destacado.
+
+Região `sgAutocompleteBotao` em `sg_autocomplete_page.snippets.g.dart`.
+
+```dart
+SgAutocomplete<String>(
+  id: 'cor',
+  labelText: 'Cor',
+  showDropDownButton: true,
+  openOnFocus: true,
+  minLengthForSearch: 0,
+  source: (q) =>
+      const ['Azul', 'Amarelo', 'Verde', 'Vermelho', 'Roxo']
+          .where((c) => c.toLowerCase().contains(q.toLowerCase()))
           .toList(),
 )
 ```
@@ -64,29 +84,105 @@ SgAutocomplete<String>(
 )
 ```
 
-### Botão de lista e abrir ao focar
+## SgCombobox
 
-Com showDropDownButton e openOnFocus a lista abre inteira (modo catálogo), sem digitar.
+Página: `apps/seedgrid_showcase/lib/pages/sg_combobox_page.dart` (6 exemplo(s) na página; abaixo 3).
 
-Região `sgAutocompleteBotao` em `sg_autocomplete_page.snippets.g.dart`.
+### Básico com lista de objetos
+
+Sem input livre: com foco no campo, digite letras e ele "pula" para o item correspondente.
+
+Região `sgComboboxItens` em `sg_combobox_page.snippets.g.dart`.
 
 ```dart
-SgAutocomplete<String>(
-  id: 'cor',
-  labelText: 'Cor',
-  showDropDownButton: true,
-  openOnFocus: true,
-  minLengthForSearch: 0,
-  source: (q) =>
-      const ['Azul', 'Amarelo', 'Verde', 'Vermelho', 'Roxo']
-          .where((c) => c.toLowerCase().contains(q.toLowerCase()))
-          .toList(),
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgCombobox<SgAutocompleteItem>(
+      id: 'cargo',
+      labelText: 'Cargo',
+      grouped: true,
+      onValueChange: (id) => _escolhido.value = id,
+      source: [
+        SgAutocompleteItem(
+          id: 1,
+          label: 'Analista',
+          group: 'TI',
+        ),
+        SgAutocompleteItem(
+          id: 2,
+          label: 'Gerente',
+          group: 'TI',
+        ),
+        SgAutocompleteItem(
+          id: 3,
+          label: 'Diretor',
+          group: 'Gestão',
+          enabled: false,
+        ),
+        SgAutocompleteItem(
+          id: 4,
+          label: 'Coordenador',
+          group: 'Gestão',
+        ),
+      ],
+    ),
+    ValueListenableBuilder<Object?>(
+      valueListenable: _escolhido,
+      builder: (context, escolhido, _) =>
+          Text('id escolhido: ${escolhido ?? '-'}'),
+    ),
+  ],
 )
 ```
 
-## SgCombobox
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<Object?> _escolhido = ValueNotifier(null);`
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_combobox_page.dart` (5 exemplo(s) na página; abaixo 3).
+### Fonte assíncrona + render personalizado
+
+Suporte a loadingText, renderItem, renderGroupHeader, renderFooter e itemTooltip.
+
+Região `sgComboboxAssincrono` em `sg_combobox_page.snippets.g.dart`.
+
+```dart
+Builder(
+  builder: (context) {
+    final concluido = 'Concluído';
+    final pendente = 'Pendente';
+    return SgCombobox<SgAutocompleteItem>(
+      id: 'status',
+      labelText: 'Status',
+      loadingText: 'Carregando status...',
+      openOnFocus: true,
+      showCharCounter: false,
+      source: (q) async {
+        await Future<void>.delayed(
+          const Duration(milliseconds: 600),
+        );
+        return [
+          SgAutocompleteItem(id: 1, label: concluido),
+          SgAutocompleteItem(id: 2, label: pendente),
+        ];
+      },
+      renderItem: (item, active) => Row(
+        children: [
+          Icon(
+            item.id == 1 ? Icons.check_circle : Icons.pending,
+            size: 16,
+            color: item.id == 1 ? Colors.green : Colors.orange,
+          ),
+          const SizedBox(width: 8),
+          Text(item.label),
+        ],
+      ),
+      renderValue: (item) => Text('● ${item?.label}'),
+      renderFooter: (q, has) =>
+          Text('Escolha o status atual'),
+    );
+  },
+)
+```
 
 ### Lista simples
 
@@ -102,57 +198,9 @@ const SgCombobox<String>(
 )
 ```
 
-### Fonte assíncrona
-
-A fonte é chamada ao abrir; enquanto espera aparece o texto de carregamento.
-
-Região `sgComboboxAssincrono` em `sg_combobox_page.snippets.g.dart`.
-
-```dart
-SgCombobox<String>(
-  id: 'estado',
-  labelText: 'Estado',
-  loadingText: 'Carregando estados...',
-  source: (q) async {
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    return const ['Paraná', 'Santa Catarina', 'Rio Grande do Sul'];
-  },
-)
-```
-
-### Item, valor e rodapé próprios
-
-Região `sgComboboxVisual` em `sg_combobox_page.snippets.g.dart`.
-
-```dart
-SgCombobox<SgAutocompleteItem>(
-  id: 'status',
-  labelText: 'Status',
-  showCharCounter: false,
-  renderItem: (item, active) => Row(
-    children: [
-      Icon(
-        item.id == 1 ? Icons.check_circle : Icons.pending,
-        size: 16,
-        color: item.id == 1 ? Colors.green : Colors.orange,
-      ),
-      const SizedBox(width: 8),
-      Text(item.label),
-    ],
-  ),
-  renderValue: (item) => Text('● ${item?.label}'),
-  renderFooter: (q, has) =>
-      Text('Escolha o status atual'),
-  source: [
-    SgAutocompleteItem(id: 1, label: 'Concluído'),
-    SgAutocompleteItem(id: 2, label: 'Pendente'),
-  ],
-)
-```
-
 ## SgCheckboxGroup
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_checkbox_group_page.dart` (16 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_checkbox_group_page.dart` (17 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
@@ -162,36 +210,42 @@ Região `sgCheckboxGroupBasico` em `sg_checkbox_group_page.snippets.g.dart`.
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgCheckboxGroup(
-      id: 'basic',
-      title: 'Escolha as opções',
-      value: _basico,
-      onChange: (v) => setState(() => _basico = v),
-      source: [
-        SgCheckboxGroupOption(
-          label: 'Opção 1',
-          value: 'option1',
-        ),
-        SgCheckboxGroupOption(
-          label: 'Opção 2',
-          value: 'option2',
-        ),
-        SgCheckboxGroupOption(
-          label: 'Opção 3',
-          value: 'option3',
-        ),
-      ],
+    ValueListenableBuilder<List<Object>>(
+      valueListenable: _basico,
+      builder: (context, valor, _) => SgCheckboxGroup(
+        id: 'basic',
+        title: 'Escolha as opções',
+        value: valor,
+        onChange: (v) => _basico.value = v,
+        source: [
+          SgCheckboxGroupOption(
+            label: 'Opção 1',
+            value: 'option1',
+          ),
+          SgCheckboxGroupOption(
+            label: 'Opção 2',
+            value: 'option2',
+          ),
+          SgCheckboxGroupOption(
+            label: 'Opção 3',
+            value: 'option3',
+          ),
+        ],
+      ),
     ),
     const SizedBox(height: 8),
-    Text(
-      'Valores selecionados: [${_basico.join(', ')}]',
+    ValueListenableBuilder<List<Object>>(
+      valueListenable: _basico,
+      builder: (context, valor, _) => Text(
+        'Valores selecionados: [${valor.join(', ')}]',
+      ),
     ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `List<Object> _basico = const ['option1'];`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _basico = ValueNotifier<List<Object>>(const ['option1']);`
 
 ### Orientação Horizontal
 
@@ -201,41 +255,47 @@ Região `sgCheckboxGroupOrientacaoHorizontal` em `sg_checkbox_group_page.snippet
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgCheckboxGroup(
-      id: 'horizontal',
-      title: 'Selecione frutas',
-      orientation: SgCheckboxGroupOrientation.horizontal,
-      value: _horizontal,
-      onChange: (v) => setState(() => _horizontal = v),
-      source: [
-        SgCheckboxGroupOption(
-          label: 'Maçã',
-          value: 'apple',
-        ),
-        SgCheckboxGroupOption(
-          label: 'Banana',
-          value: 'banana',
-        ),
-        SgCheckboxGroupOption(
-          label: 'Laranja',
-          value: 'orange',
-        ),
-        SgCheckboxGroupOption(
-          label: 'Uva',
-          value: 'grape',
-        ),
-      ],
+    ValueListenableBuilder<List<Object>>(
+      valueListenable: _horizontal,
+      builder: (context, valor, _) => SgCheckboxGroup(
+        id: 'horizontal',
+        title: 'Selecione frutas',
+        orientation: SgCheckboxGroupOrientation.horizontal,
+        value: valor,
+        onChange: (v) => _horizontal.value = v,
+        source: [
+          SgCheckboxGroupOption(
+            label: 'Maçã',
+            value: 'apple',
+          ),
+          SgCheckboxGroupOption(
+            label: 'Banana',
+            value: 'banana',
+          ),
+          SgCheckboxGroupOption(
+            label: 'Laranja',
+            value: 'orange',
+          ),
+          SgCheckboxGroupOption(
+            label: 'Uva',
+            value: 'grape',
+          ),
+        ],
+      ),
     ),
     const SizedBox(height: 8),
-    Text(
-      'Valores selecionados: [${_horizontal.join(', ')}]',
+    ValueListenableBuilder<List<Object>>(
+      valueListenable: _horizontal,
+      builder: (context, valor, _) => Text(
+        'Valores selecionados: [${valor.join(', ')}]',
+      ),
     ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `List<Object> _horizontal = const [];`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _horizontal = ValueNotifier<List<Object>>(const []);`
 
 ### Com Ícones
 
@@ -277,36 +337,44 @@ Região `sgRadioGroupBasico` em `sg_radio_group_page.snippets.g.dart`.
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgRadioGroup(
-      id: 'basic',
-      title: 'Escolha uma opção',
-      value: _basico,
-      onChange: (v) => setState(() => _basico = v),
-      source: [
-        SgRadioGroupOption(
-          label: 'Opção 1',
-          value: 'option1',
-        ),
-        SgRadioGroupOption(
-          label: 'Opção 2',
-          value: 'option2',
-        ),
-        SgRadioGroupOption(
-          label: 'Opção 3',
-          value: 'option3',
-        ),
-      ],
+    ValueListenableBuilder<Object?>(
+      valueListenable: _basico,
+      builder: (context, valor, _) => SgRadioGroup(
+        id: 'basic',
+        title: 'Escolha uma opção',
+        value: valor,
+        onChange: (v) => _basico.value = v,
+        source: [
+          SgRadioGroupOption(
+            label: 'Opção 1',
+            value: 'option1',
+          ),
+          SgRadioGroupOption(
+            label: 'Opção 2',
+            value: 'option2',
+          ),
+          SgRadioGroupOption(
+            label: 'Opção 3',
+            value: 'option3',
+          ),
+        ],
+      ),
     ),
     const SizedBox(height: 8),
-    Text('Valor selecionado: ${_basico ?? '-'}'),
+    ValueListenableBuilder<Object?>(
+      valueListenable: _basico,
+      builder: (context, valor, _) => Text(
+        'Valor selecionado: ${valor ?? '-'}',
+      ),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `Object? _basico = 'option1';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<Object?> _basico = ValueNotifier<Object?>('option1');`
 
-### Orientation Horizontal
+### Orientação Horizontal
 
 Região `sgRadioGroupOrientationHorizontal` em `sg_radio_group_page.snippets.g.dart`.
 
@@ -314,37 +382,40 @@ Região `sgRadioGroupOrientationHorizontal` em `sg_radio_group_page.snippets.g.d
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgRadioGroup(
-      id: 'horizontal',
-      title: 'Selecione uma fruta',
-      orientation: SgRadioGroupOrientation.horizontal,
-      value: _fruta,
-      onChange: (v) => setState(() => _fruta = v),
-      source: [
-        SgRadioGroupOption(
-          label: 'Maçã',
-          value: 'apple',
-        ),
-        SgRadioGroupOption(
-          label: 'Banana',
-          value: 'banana',
-        ),
-        SgRadioGroupOption(
-          label: 'Laranja',
-          value: 'orange',
-        ),
-        SgRadioGroupOption(
-          label: 'Uva',
-          value: 'grape',
-        ),
-      ],
+    ValueListenableBuilder<Object?>(
+      valueListenable: _fruta,
+      builder: (context, valor, _) => SgRadioGroup(
+        id: 'horizontal',
+        title: 'Selecione uma fruta',
+        orientation: SgRadioGroupOrientation.horizontal,
+        value: valor,
+        onChange: (v) => _fruta.value = v,
+        source: [
+          SgRadioGroupOption(
+            label: 'Maçã',
+            value: 'apple',
+          ),
+          SgRadioGroupOption(
+            label: 'Banana',
+            value: 'banana',
+          ),
+          SgRadioGroupOption(
+            label: 'Laranja',
+            value: 'orange',
+          ),
+          SgRadioGroupOption(
+            label: 'Uva',
+            value: 'grape',
+          ),
+        ],
+      ),
     ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `Object? _fruta;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<Object?> _fruta = ValueNotifier<Object?>(null);`
 
 ### Com Ícones
 
@@ -376,240 +447,429 @@ SgRadioGroup(
 
 ## SgMultiSelect
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_multi_select_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_multi_select_page.dart` (9 exemplo(s) na página; abaixo 3).
 
-### Básico
+### Básico (fechado / aberto, com e sem seleção)
 
-Toque no campo para abrir a lista e marque quantas opções quiser. Em tela estreita (menos de 600 px) a lista abre como bottom sheet.
+Clique no campo para abrir. Marque várias opções; a lista continua aberta.
 
 Região `sgMultiSelectBasico` em `sg_multi_select_page.snippets.g.dart`.
 
 ```dart
-SgMultiSelect(
-  id: 'estados',
-  labelText: 'Estados',
-  options: [
-    SgMultiSelectOption(
-      label: 'São Paulo',
-      value: 'sp',
+Wrap(
+  spacing: 16,
+  runSpacing: 16,
+  children: [
+    SizedBox(
+      width: 384,
+      child: ListenableBuilder(
+        listenable: _vazio,
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgMultiSelect(
+              id: 'ms-empty',
+              labelText: 'Empresas',
+              placeholder: 'Selecione as empresas',
+              options: [
+                SgMultiSelectOption(
+                  label: 'Empresa 1',
+                  value: 'e1',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 2',
+                  value: 'e2',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 3',
+                  value: 'e3',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 4',
+                  value: 'e4',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 5',
+                  value: 'e5',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 6',
+                  value: 'e6',
+                ),
+              ],
+              value: _vazio.value,
+              onChange: (v) => _vazio.value = v,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Selecionadas: ${_vazio.value.isEmpty ? '(nenhuma)' : _vazio.value.join(', ')}',
+            ),
+          ],
+        ),
+      ),
     ),
-    SgMultiSelectOption(
-      label: 'Rio de Janeiro',
-      value: 'rj',
+    SizedBox(
+      width: 384,
+      child: ListenableBuilder(
+        listenable: _preselecionadas,
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgMultiSelect(
+              id: 'ms-preselected',
+              labelText: 'Empresas (com seleção)',
+              placeholder: 'Selecione as empresas',
+              options: [
+                SgMultiSelectOption(
+                  label: 'Empresa 1',
+                  value: 'e1',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 2',
+                  value: 'e2',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 3',
+                  value: 'e3',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 4',
+                  value: 'e4',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 5',
+                  value: 'e5',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 6',
+                  value: 'e6',
+                ),
+              ],
+              value: _preselecionadas.value,
+              onChange: (v) => _preselecionadas.value = v,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Selecionadas: ${_preselecionadas.value.isEmpty ? '(nenhuma)' : _preselecionadas.value.join(', ')}',
+            ),
+          ],
+        ),
+      ),
     ),
-    SgMultiSelectOption(
-      label: 'Minas Gerais',
-      value: 'mg',
-    ),
-    SgMultiSelectOption(label: 'Bahia', value: 'ba'),
   ],
 )
 ```
 
-### Busca, limpar e limite
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _vazio = ValueNotifier(const []);`
+- `final ValueNotifier<List<Object>> _preselecionadas = ValueNotifier(const ['e1', 'e2', 'e4']);`
 
-searchable abre um campo de busca; clearable mostra o botão de limpar; maxSelected impede marcar mais itens.
+### Com busca
+
+searchable habilita um campo de busca no topo do dropdown.
 
 Região `sgMultiSelectBusca` em `sg_multi_select_page.snippets.g.dart`.
 
 ```dart
-SgMultiSelect(
-  id: 'cores',
-  labelText: 'Até 3 cores',
-  searchable: true,
-  clearable: true,
-  maxSelected: 3,
-  searchPlaceholder: 'Buscar cor...',
-  options: [
-    SgMultiSelectOption(label: 'Azul', value: 'azul'),
-    SgMultiSelectOption(label: 'Verde', value: 'verde'),
-    SgMultiSelectOption(
-      label: 'Vermelho',
-      value: 'vermelho',
+SizedBox(
+  width: 384,
+  child: ListenableBuilder(
+    listenable: _pesquisavel,
+    builder: (context, _) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SgMultiSelect(
+          id: 'ms-searchable',
+          labelText: 'Empresas',
+          placeholder: 'Selecione as empresas',
+          searchable: true,
+          options: [
+            SgMultiSelectOption(label: 'Empresa 1', value: 'e1'),
+            SgMultiSelectOption(label: 'Empresa 2', value: 'e2'),
+            SgMultiSelectOption(label: 'Empresa 3', value: 'e3'),
+            SgMultiSelectOption(label: 'Empresa 4', value: 'e4'),
+            SgMultiSelectOption(label: 'Empresa 5', value: 'e5'),
+            SgMultiSelectOption(label: 'Empresa 6', value: 'e6'),
+          ],
+          value: _pesquisavel.value,
+          onChange: (v) => _pesquisavel.value = v,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Selecionadas: ${_pesquisavel.value.isEmpty ? '(nenhuma)' : _pesquisavel.value.join(', ')}',
+        ),
+      ],
     ),
-    SgMultiSelectOption(
-      label: 'Amarelo',
-      value: 'amarelo',
-    ),
-    SgMultiSelectOption(label: 'Roxo', value: 'roxo'),
-    SgMultiSelectOption(
-      label: 'Cinza (indisponível)',
-      value: 'cinza',
-      enabled: false,
-    ),
-  ],
-)
-```
-
-### Resumo com chipLabel
-
-chipLabel é o texto curto do item já selecionado. Até summaryThreshold itens o campo lista os rótulos; acima disso mostra "N selecionadas".
-
-Região `sgMultiSelectResumo` em `sg_multi_select_page.snippets.g.dart`.
-
-```dart
-SgMultiSelect(
-  id: 'filiais',
-  labelText: 'Filiais',
-  summaryThreshold: 3,
-  options: [
-    SgMultiSelectOption(
-      label: '1 - Matriz',
-      value: 1,
-      chipLabel: '1',
-    ),
-    SgMultiSelectOption(
-      label: '2 - Filial Centro',
-      value: 2,
-      chipLabel: '2',
-    ),
-    SgMultiSelectOption(
-      label: '3 - Filial Norte',
-      value: 3,
-      chipLabel: '3',
-    ),
-    SgMultiSelectOption(
-      label: '4 - Filial Sul',
-      value: 4,
-      chipLabel: '4',
-    ),
-  ],
-)
-```
-
-## SgMultiSelectChips
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_multi_select_chips_page.dart` (5 exemplo(s) na página; abaixo 3).
-
-### Básico
-
-Os valores marcados viram chips removíveis. Toque no campo para abrir a lista; em tela estreita (menos de 600 px) ela abre como bottom sheet.
-
-Região `sgMultiSelectChipsBasico` em `sg_multi_select_chips_page.snippets.g.dart`.
-
-```dart
-SgMultiSelectChips(
-  id: 'linguagens',
-  labelText: 'Linguagens',
-  options: [
-    SgMultiSelectOption(label: 'Dart', value: 'dart'),
-    SgMultiSelectOption(label: 'Java', value: 'java'),
-    SgMultiSelectOption(label: 'Rust', value: 'rust'),
-    SgMultiSelectOption(
-      label: 'TypeScript',
-      value: 'ts',
-    ),
-  ],
-)
-```
-
-### Busca, limpar e limite
-
-searchable, clearable e maxSelected. O X do chip remove só aquele valor.
-
-Região `sgMultiSelectChipsBusca` em `sg_multi_select_chips_page.snippets.g.dart`.
-
-```dart
-SgMultiSelectChips(
-  id: 'paises',
-  labelText: 'Até 3 países',
-  searchable: true,
-  clearable: true,
-  maxSelected: 3,
-  searchPlaceholder: 'Buscar país...',
-  options: [
-    SgMultiSelectOption(label: 'Brasil', value: 'br'),
-    SgMultiSelectOption(label: 'Portugal', value: 'pt'),
-    SgMultiSelectOption(
-      label: 'Argentina',
-      value: 'ar',
-    ),
-    SgMultiSelectOption(label: 'Uruguai', value: 'uy'),
-    SgMultiSelectOption(label: 'Paraguai', value: 'py'),
-  ],
-)
-```
-
-### chipLabel (texto curto no chip)
-
-O chip mostra o chipLabel; o nome completo aparece como dica ao segurar o chip.
-
-Região `sgMultiSelectChipsChiplabel` em `sg_multi_select_chips_page.snippets.g.dart`.
-
-```dart
-SgMultiSelectChips(
-  id: 'filiais',
-  labelText: 'Filiais',
-  value: [1, 3],
-  options: [
-    SgMultiSelectOption(
-      label: '1 - Matriz São Paulo',
-      value: 1,
-      chipLabel: '1',
-    ),
-    SgMultiSelectOption(
-      label: '2 - Filial Centro',
-      value: 2,
-      chipLabel: '2',
-    ),
-    SgMultiSelectOption(
-      label: '3 - Filial Norte',
-      value: 3,
-      chipLabel: '3',
-    ),
-  ],
-)
-```
-
-## SgOrderList
-
-Página: `apps/seedgrid_showcase/lib/pages/sg_order_list_page.dart` (5 exemplo(s) na página; abaixo 3).
-
-### Seleção única e controles à direita
-
-selectionMode single e controlsPosition right; com Ctrl + setas, Home e End no teclado.
-
-Região `sgOrderListSingle` em `sg_order_list_page.snippets.g.dart`.
-
-```dart
-SgOrderList(
-  title: 'Prioridades',
-  source: _tarefas,
-  selectionMode: SgOrderListSelectionMode.single,
-  controlsPosition: SgOrderListControlsPosition.right,
-)
-```
-
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, enabled: false), SgOrderListItem(label: 'Comemorar', value: 5), ];`
-
-### Item personalizado
-
-itemTemplate recebe o item e o estado (índice, selecionado, desabilitado).
-
-Região `sgOrderListTemplate` em `sg_order_list_page.snippets.g.dart`.
-
-```dart
-SgOrderList(
-  title: 'Com numeração',
-  source: [
-    SgOrderListItem(
-      label: 'Um',
-      value: 1,
-      icon: Icon(Icons.looks_one, size: 16),
-    ),
-    SgOrderListItem(label: 'Dois', value: 2),
-    SgOrderListItem(label: 'Três', value: 3),
-  ],
-  itemTemplate: (item, state) => Text(
-    '#${state.index + 1} ${item.label}${state.selected ? ' *' : ''}',
   ),
 )
 ```
 
-### Controle por código
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _pesquisavel = ValueNotifier(const ['e1']);`
 
-controller seleciona, move e troca a lista (substitui o ref do React).
+### Limite do resumo (summaryThreshold)
+
+Por padrão o campo lista até 2 rótulos e depois mostra só a quantidade; summaryThreshold aumenta esse limite.
+
+Região `sgMultiSelectResumo` em `sg_multi_select_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 384,
+  child: ListenableBuilder(
+    listenable: _resumo,
+    builder: (context, _) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SgMultiSelect(
+          id: 'ms-summary',
+          labelText: 'Empresas',
+          placeholder: 'Selecione as empresas',
+          summaryThreshold: 4,
+          options: [
+            SgMultiSelectOption(label: 'Empresa 1', value: 'e1'),
+            SgMultiSelectOption(label: 'Empresa 2', value: 'e2'),
+            SgMultiSelectOption(label: 'Empresa 3', value: 'e3'),
+            SgMultiSelectOption(label: 'Empresa 4', value: 'e4'),
+            SgMultiSelectOption(label: 'Empresa 5', value: 'e5'),
+            SgMultiSelectOption(label: 'Empresa 6', value: 'e6'),
+          ],
+          value: _resumo.value,
+          onChange: (v) => _resumo.value = v,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Selecionadas: ${_resumo.value.isEmpty ? '(nenhuma)' : _resumo.value.join(', ')}',
+        ),
+      ],
+    ),
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _resumo = ValueNotifier(const ['e1', 'e2', 'e4']);`
+
+## SgMultiSelectChips
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_multi_select_chips_page.dart` (7 exemplo(s) na página; abaixo 3).
+
+### Básico (vazio / com chips)
+
+Clique no campo para abrir. Cada item selecionado vira um chip com botão de remover.
+
+Região `sgMultiSelectChipsBasico` em `sg_multi_select_chips_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 16,
+  runSpacing: 16,
+  children: [
+    SizedBox(
+      width: 384,
+      child: ListenableBuilder(
+        listenable: _vazio,
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgMultiSelectChips(
+              id: 'msc-empty',
+              labelText: 'Empresas',
+              placeholder: 'Selecione as empresas',
+              options: [
+                SgMultiSelectOption(
+                  label: 'Empresa 1',
+                  value: 'e1',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 2',
+                  value: 'e2',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 3',
+                  value: 'e3',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 4',
+                  value: 'e4',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 5',
+                  value: 'e5',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 6',
+                  value: 'e6',
+                ),
+              ],
+              value: _vazio.value,
+              onChange: (v) => _vazio.value = v,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Selecionadas: ${_vazio.value.isEmpty ? '(nenhuma)' : _vazio.value.join(', ')}',
+            ),
+          ],
+        ),
+      ),
+    ),
+    SizedBox(
+      width: 384,
+      child: ListenableBuilder(
+        listenable: _preselecionadas,
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgMultiSelectChips(
+              id: 'msc-preselected',
+              labelText: 'Empresas (com seleção)',
+              placeholder: 'Selecione as empresas',
+              options: [
+                SgMultiSelectOption(
+                  label: 'Empresa 1',
+                  value: 'e1',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 2',
+                  value: 'e2',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 3',
+                  value: 'e3',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 4',
+                  value: 'e4',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 5',
+                  value: 'e5',
+                ),
+                SgMultiSelectOption(
+                  label: 'Empresa 6',
+                  value: 'e6',
+                ),
+              ],
+              value: _preselecionadas.value,
+              onChange: (v) => _preselecionadas.value = v,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Selecionadas: ${_preselecionadas.value.isEmpty ? '(nenhuma)' : _preselecionadas.value.join(', ')}',
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _vazio = ValueNotifier(const []);`
+- `final ValueNotifier<List<Object>> _preselecionadas = ValueNotifier(const ['e1', 'e2', 'e4']);`
+
+### Com busca
+
+searchable habilita um campo de busca no topo do dropdown.
+
+Região `sgMultiSelectChipsBusca` em `sg_multi_select_chips_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 384,
+  child: ListenableBuilder(
+    listenable: _pesquisavel,
+    builder: (context, _) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SgMultiSelectChips(
+          id: 'msc-searchable',
+          labelText: 'Empresas',
+          placeholder: 'Selecione as empresas',
+          searchable: true,
+          options: [
+            SgMultiSelectOption(label: 'Empresa 1', value: 'e1'),
+            SgMultiSelectOption(label: 'Empresa 2', value: 'e2'),
+            SgMultiSelectOption(label: 'Empresa 3', value: 'e3'),
+            SgMultiSelectOption(label: 'Empresa 4', value: 'e4'),
+            SgMultiSelectOption(label: 'Empresa 5', value: 'e5'),
+            SgMultiSelectOption(label: 'Empresa 6', value: 'e6'),
+          ],
+          value: _pesquisavel.value,
+          onChange: (v) => _pesquisavel.value = v,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Selecionadas: ${_pesquisavel.value.isEmpty ? '(nenhuma)' : _pesquisavel.value.join(', ')}',
+        ),
+      ],
+    ),
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _pesquisavel = ValueNotifier(const ['e1']);`
+
+### Limpável e com limite
+
+clearable adiciona o botão de limpar; maxSelected restringe o número de itens.
+
+Região `sgMultiSelectChipsLimite` em `sg_multi_select_chips_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 384,
+  child: ListenableBuilder(
+    listenable: _limitadas,
+    builder: (context, _) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SgMultiSelectChips(
+          id: 'msc-capped',
+          labelText: 'Empresas (máx. 3)',
+          placeholder: 'Selecione até 3 empresas',
+          clearable: true,
+          maxSelected: 3,
+          options: [
+            SgMultiSelectOption(label: 'Empresa 1', value: 'e1'),
+            SgMultiSelectOption(label: 'Empresa 2', value: 'e2'),
+            SgMultiSelectOption(label: 'Empresa 3', value: 'e3'),
+            SgMultiSelectOption(label: 'Empresa 4', value: 'e4'),
+            SgMultiSelectOption(label: 'Empresa 5', value: 'e5'),
+            SgMultiSelectOption(label: 'Empresa 6', value: 'e6'),
+          ],
+          value: _limitadas.value,
+          onChange: (v) => _limitadas.value = v,
+        ),
+        const SizedBox(height: 8),
+        SgButton(
+          size: SgSize.sm,
+          appearance: SgAppearance.outline,
+          label: Text('Limpar'),
+          onClick: () => _limitadas.value = const [],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Selecionadas: ${_limitadas.value.isEmpty ? '(nenhuma)' : _limitadas.value.join(', ')}',
+        ),
+      ],
+    ),
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<Object>> _limitadas = ValueNotifier(const []);`
+
+## SgOrderList
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_order_list_page.dart` (8 exemplo(s) na página; abaixo 3).
+
+### Seleção múltipla + controles externos
+
+Com selectionMode multiple e showControls false, botões externos movem os itens selecionados e limpam a seleção.
 
 Região `sgOrderListController` em `sg_order_list_page.snippets.g.dart`.
 
@@ -618,9 +878,18 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgOrderList(
-      title: 'Controlada',
-      source: _tarefas,
-      controller: _controller,
+      id: 'order-ref',
+      title: 'Etapas do pipeline',
+      source: [
+        SgOrderListItem(label: 'Prospecção', value: 'lead'),
+        SgOrderListItem(label: 'Qualificação', value: 'qualify'),
+        SgOrderListItem(label: 'Proposta', value: 'proposal'),
+        SgOrderListItem(label: 'Negociação', value: 'negotiation'),
+        SgOrderListItem(label: 'Fechamento', value: 'close'),
+      ],
+      controller: _pipeline,
+      selectionMode: SgOrderListSelectionMode.multiple,
+      showControls: false,
     ),
     const SizedBox(height: 8),
     Wrap(
@@ -628,18 +897,24 @@ Column(
       runSpacing: 8,
       children: [
         SgButton(
-          label: Text('Selecionar a 3ª'),
-          onClick: () => _controller.setSelection(const [3]),
-        ),
-        SgButton(
           label: Text('Mover para o topo'),
-          onClick: () => _controller.moveTop(),
+          onClick: () => _pipeline.moveTop(),
         ),
         SgButton(
-          label: Text('Inverter'),
-          onClick: () => _controller.setItems(
-            _controller.getItems().reversed.toList(),
-          ),
+          label: Text('Subir'),
+          onClick: () => _pipeline.moveUp(),
+        ),
+        SgButton(
+          label: Text('Descer'),
+          onClick: () => _pipeline.moveDown(),
+        ),
+        SgButton(
+          label: Text('Mover para a base'),
+          onClick: () => _pipeline.moveBottom(),
+        ),
+        SgButton(
+          label: Text('Limpar seleção'),
+          onClick: () => _pipeline.clearSelection(),
         ),
       ],
     ),
@@ -647,90 +922,113 @@ Column(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgOrderListItem> _tarefas = [ SgOrderListItem(label: 'Escrever o plano', value: 1), SgOrderListItem(label: 'Revisar com o time', value: 2), SgOrderListItem(label: 'Publicar', value: 3), SgOrderListItem(label: 'Arquivado', value: 4, enabled: false), SgOrderListItem(label: 'Comemorar', value: 5), ];`
-- `final SgOrderListController _controller = SgOrderListController();`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgOrderListController _pipeline = SgOrderListController();`
+
+### Item personalizado e item desabilitado
+
+itemTemplate personaliza o conteúdo de cada linha; um item com enabled false aparece desabilitado.
+
+Região `sgOrderListTemplate` em `sg_order_list_page.snippets.g.dart`.
+
+```dart
+SgOrderList(
+  id: 'order-template',
+  title: 'Backlog da sprint',
+  source: [
+    SgOrderListItem(
+      label: 'Implementar filtros',
+      value: 'filtros',
+      data: {'effort': 'M', 'priority': 'Alta'},
+    ),
+    SgOrderListItem(
+      label: 'Ajustar layout mobile',
+      value: 'mobile',
+      data: {'effort': 'S', 'priority': 'Média'},
+    ),
+    SgOrderListItem(
+      label: 'Refatorar API de pedidos',
+      value: 'api',
+      data: {'effort': 'L', 'priority': 'Alta'},
+    ),
+    SgOrderListItem(
+      label: 'Atualizar testes E2E',
+      value: 'e2e',
+      data: {'effort': 'M', 'priority': 'Baixa'},
+      enabled: false,
+    ),
+  ],
+  controlsPosition: SgOrderListControlsPosition.right,
+  itemTemplate: (item, state) {
+    final meta = item.data as Map<String, String>?;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item.label,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        Text(
+          'Prioridade: ${meta?['priority'] ?? '-'} | Esforço: ${meta?['effort'] ?? '-'}',
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  },
+)
+```
+
+### Seleção única e controles à direita
+
+selectionMode single permite um item por vez e controlsPosition right move os botões para a direita.
+
+Região `sgOrderListSingle` em `sg_order_list_page.snippets.g.dart`.
+
+```dart
+SgOrderList(
+  id: 'order-single',
+  title: 'Prioridades',
+  source: [
+    SgOrderListItem(label: 'Escrever o plano', value: 1),
+    SgOrderListItem(label: 'Revisar com o time', value: 2),
+    SgOrderListItem(label: 'Publicar', value: 3),
+    SgOrderListItem(label: 'Arquivado', value: 4, enabled: false),
+    SgOrderListItem(label: 'Comemorar', value: 5),
+  ],
+  selectionMode: SgOrderListSelectionMode.single,
+  controlsPosition: SgOrderListControlsPosition.right,
+)
+```
 
 ## SgPickList
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_pick_list_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_pick_list_page.dart` (8 exemplo(s) na página; abaixo 3).
 
-### Filtros, cabeçalhos e seleção única
+### Com Filtros
 
-showSourceFilter e showTargetFilter com filterMatchMode startsWith; selectionMode single.
+showSourceFilter e showTargetFilter adicionam busca em cada lista; sourceHeader e targetHeader trocam os cabeçalhos.
 
 Região `sgPickListFiltros` em `sg_pick_list_page.snippets.g.dart`.
 
 ```dart
 SgPickList(
+  id: 'pick-filter',
   title: 'Escolha as frutas',
   source: _frutas,
-  target: [
-    SgPickListItem(label: 'Abacate', value: 'abacate'),
-  ],
-  sourceHeader: 'Disponíveis',
-  targetHeader: 'Escolhidas',
+  target: const [],
   showSourceFilter: true,
   showTargetFilter: true,
-  filterMatchMode: SgPickListFilterMatchMode.startsWith,
-  selectionMode: SgPickListSelectionMode.single,
-  showSourceControls: false,
-  showTargetControls: false,
+  sourceHeader: 'Disponíveis',
+  targetHeader: 'Escolhidas',
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', enabled: false), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `const List<SgPickListItem> _frutas = [SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', enabled: false), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva')];`
 
-### Item personalizado e desabilitado
+### Controles externos por ref
 
-itemTemplate recebe o item e o estado (índice, selecionado, desabilitado, lista).
-
-Região `sgPickListTemplate` em `sg_pick_list_page.snippets.g.dart`.
-
-```dart
-SgPickList(
-  title: 'Com ícones',
-  source: [
-    SgPickListItem(
-      label: 'Favoritos',
-      value: 1,
-      icon: Icon(Icons.star, size: 16),
-    ),
-    SgPickListItem(
-      label: 'Rápidos',
-      value: 2,
-      icon: Icon(Icons.bolt, size: 16),
-    ),
-    SgPickListItem(
-      label: 'Bloqueado',
-      value: 3,
-      enabled: false,
-    ),
-  ],
-  target: const [],
-  itemTemplate: (item, state) => Row(
-    children: [
-      Icon(
-        state.list == SgPickListListName.source
-            ? Icons.inbox
-            : Icons.check_circle,
-        size: 16,
-      ),
-      const SizedBox(width: 8),
-      Expanded(
-        child: Text(
-          '${state.index + 1}. ${item.label}${state.selected ? ' (selecionado)' : ''}',
-        ),
-      ),
-    ],
-  ),
-)
-```
-
-### Controle por código
-
-controller move e limpa a seleção sem tocar na lista (substitui o ref do React).
+Os botões de mover ficam fora do componente e chamam moveToTarget, moveAllToTarget, moveToSource e moveAllToSource.
 
 Região `sgPickListController` em `sg_pick_list_page.snippets.g.dart`.
 
@@ -739,27 +1037,38 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgPickList(
-      title: 'Controlada',
-      source: _frutas,
+      id: 'pick-ref',
+      title: 'Canais',
+      source: [
+        SgPickListItem(label: 'E-mail', value: 'email'),
+        SgPickListItem(label: 'SMS', value: 'sms'),
+        SgPickListItem(label: 'Push', value: 'push'),
+      ],
       target: const [],
       controller: _controller,
+      showTransferControls: false,
+      selectionMode: SgPickListSelectionMode.multiple,
     ),
     const SizedBox(height: 8),
-    Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    SgGrid(
+      columns: 4,
+      gap: 8,
       children: [
         SgButton(
-          label: Text('Mover todos'),
+          label: const Text('Mover >'),
+          onClick: () => _controller.moveToTarget(),
+        ),
+        SgButton(
+          label: const Text('Mover >>'),
           onClick: () => _controller.moveAllToTarget(),
         ),
         SgButton(
-          label: Text('Devolver todos'),
-          onClick: () => _controller.moveAllToSource(),
+          label: const Text('Mover <'),
+          onClick: () => _controller.moveToSource(),
         ),
         SgButton(
-          label: Text('Limpar seleção'),
-          onClick: () => _controller.clearSelection(),
+          label: const Text('Mover <<'),
+          onClick: () => _controller.moveAllToSource(),
         ),
       ],
     ),
@@ -767,17 +1076,65 @@ Column(
 )
 ```
 
-Nota: este trecho usa estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `const List<SgPickListItem> _frutas = [ SgPickListItem(label: 'Maçã', value: 'maca'), SgPickListItem(label: 'Banana', value: 'banana'), SgPickListItem(label: 'Cereja', value: 'cereja'), SgPickListItem(label: 'Damasco', value: 'damasco', enabled: false), SgPickListItem(label: 'Figo', value: 'figo'), SgPickListItem(label: 'Uva', value: 'uva'), ];`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final SgPickListController _controller = SgPickListController();`
+
+### Item template customizado
+
+itemTemplate recebe o item e o estado e desenha cada linha como você quiser.
+
+Região `sgPickListTemplate` em `sg_pick_list_page.snippets.g.dart`.
+
+```dart
+SgPickList(
+  id: 'pick-template',
+  title: 'Capacidade da equipe',
+  source: [
+    SgPickListItem(
+      label: 'Frontend',
+      value: 'frontend',
+      data: const {'responsavel': 'Ana', 'esforco': 'M'},
+    ),
+    SgPickListItem(
+      label: 'Backend',
+      value: 'backend',
+      data: const {'responsavel': 'Bruno', 'esforco': 'L'},
+    ),
+    SgPickListItem(
+      label: 'QA',
+      value: 'qa',
+      data: const {'responsavel': 'Carla', 'esforco': 'S'},
+      enabled: false,
+    ),
+  ],
+  target: const [],
+  itemTemplate: (item, state) {
+    final meta = item.data as Map<String, String>?;
+    return SgGrid(
+      columns: 2,
+      gap: 8,
+      children: [
+        Text(
+          item.label,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        Text(
+          'Responsável: ${meta?['responsavel'] ?? '-'} | Esforço: ${meta?['esforco'] ?? '-'}',
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  },
+)
+```
 
 ## SgPeriodSelector
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_period_selector_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_period_selector_page.dart` (7 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Escolha um período para receber o intervalo de datas já resolvido (início às 00:00:00 e fim às 23:59:59.999). Não dispara nada ao abrir a página.
+Flags padrão: grupos atuais e passados, mais período customizado.
 
 Região `sgPeriodSelectorBasico` em `sg_period_selector_page.snippets.g.dart`.
 
@@ -786,86 +1143,83 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgPeriodSelector(
+      id: 'ps-basic',
       label: 'Período',
-      onChange: (p) => setState(
-        () => _basico =
-            '${p.label}: ${p.startDate?.toIso8601String().substring(0, 10) ?? '-'} a ${p.endDate?.toIso8601String().substring(0, 10) ?? '-'}',
-      ),
+      onChange: (p) =>
+          _basico.value =
+              '${p.label}: ${p.startDate?.toIso8601String().substring(0, 10) ?? '-'} a ${p.endDate?.toIso8601String().substring(0, 10) ?? '-'}',
     ),
     const SizedBox(height: 8),
-    Text(_basico),
+    ValueListenableBuilder<String>(
+      valueListenable: _basico,
+      builder: (context, resumo, _) => Text(resumo),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = 'Nenhum período escolhido';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _basico = ValueNotifier<String>('Nenhum período escolhido');`
 
-### Grupos de opções
+### Todos os grupos
 
-Cada grupo liga e desliga com permitPast, permitCurrent, permitFuture, permitAll e allowCustomPeriod. Marque as caixas para ver a lista mudar.
+Ligue e desligue permitPast, permitCurrent e permitFuture para ver cada grupo entrar e sair da lista (permitAll fica desligado).
 
 Região `sgPeriodSelectorGrupos` em `sg_period_selector_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        FilterChip(
-          label: Text('Passados'),
-          selected: _passados,
-          onSelected: (v) => setState(() => _passados = v),
-        ),
-        FilterChip(
-          label: Text('Atuais'),
-          selected: _atuais,
-          onSelected: (v) => setState(() => _atuais = v),
-        ),
-        FilterChip(
-          label: Text('Futuros'),
-          selected: _futuros,
-          onSelected: (v) => setState(() => _futuros = v),
-        ),
-        FilterChip(
-          label: Text('Todos'),
-          selected: _todos,
-          onSelected: (v) => setState(() => _todos = v),
-        ),
-        FilterChip(
-          label: Text('Período'),
-          selected: _periodo,
-          onSelected: (v) => setState(() => _periodo = v),
-        ),
-      ],
-    ),
-    const SizedBox(height: 12),
-    SgPeriodSelector(
-      id: 'grupos',
-      label: 'Período',
-      permitPast: _passados,
-      permitCurrent: _atuais,
-      permitFuture: _futuros,
-      permitAll: _todos,
-      allowCustomPeriod: _periodo,
-    ),
-  ],
+ValueListenableBuilder<List<bool>>(
+  valueListenable: _grupos,
+  builder: (context, grupos, _) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Wrap(
+        spacing: 16,
+        runSpacing: 8,
+        children: [
+          SgToggleSwitch(
+            id: 'ps-flag-past',
+            label: 'permitPast',
+            checked: grupos[0],
+            onChange: (v) =>
+                _grupos.value = [v, grupos[1], grupos[2]],
+          ),
+          SgToggleSwitch(
+            id: 'ps-flag-current',
+            label: 'permitCurrent',
+            checked: grupos[1],
+            onChange: (v) =>
+                _grupos.value = [grupos[0], v, grupos[2]],
+          ),
+          SgToggleSwitch(
+            id: 'ps-flag-future',
+            label: 'permitFuture',
+            checked: grupos[2],
+            onChange: (v) =>
+                _grupos.value = [grupos[0], grupos[1], v],
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      SgPeriodSelector(
+        id: 'ps-flags',
+        label: 'Período',
+        permitPast: grupos[0],
+        permitCurrent: grupos[1],
+        permitFuture: grupos[2],
+        permitAll: false,
+      ),
+    ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `bool _passados = true;`
-- `bool _atuais = true;`
-- `bool _futuros = false;`
-- `bool _todos = true;`
-- `bool _periodo = true;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<List<bool>> _grupos = ValueNotifier<List<bool>>(const [true, true, false]);`
 
-### Período personalizado com limites
+### Período customizado
 
-Escolha "Periodo" para informar duas datas. minDate e maxDate limitam o calendário e fazem clamp nos períodos prontos. Enquanto o ano está incompleto, a data sai vazia.
+Escolha Período para informar um intervalo de data inicial e final.
 
 Região `sgPeriodSelectorPersonalizado` em `sg_period_selector_page.snippets.g.dart`.
 
@@ -874,32 +1228,34 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgPeriodSelector(
-      id: 'personalizado',
+      id: 'ps-custom',
       label: 'Período',
-      minDate: DateTime(2024, 1, 1),
-      maxDate: DateTime(2024, 12, 31),
-      referenceDate: DateTime(2024, 6, 15),
-      onChange: (p) => setState(
-        () => _personalizado =
-            '${p.label}: ${p.startDate?.toIso8601String().substring(0, 10) ?? '-'} a ${p.endDate?.toIso8601String().substring(0, 10) ?? '-'}',
-      ),
+      allowCustomPeriod: true,
+      permitCurrent: false,
+      permitPast: false,
+      onChange: (p) =>
+          _personalizado.value =
+              '${p.label}: ${p.startDate?.toIso8601String().substring(0, 10) ?? '-'} a ${p.endDate?.toIso8601String().substring(0, 10) ?? '-'}',
     ),
     const SizedBox(height: 8),
-    Text(_personalizado),
+    ValueListenableBuilder<String>(
+      valueListenable: _personalizado,
+      builder: (context, resumo, _) => Text(resumo),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _personalizado = 'Nenhum período escolhido';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<String> _personalizado = ValueNotifier<String>('Nenhum período escolhido');`
 
 ## SgYearPartSelector
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_year_part_selector_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_year_part_selector_page.dart` (6 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Escolha ano, recorte (semestre, trimestre ou bimestre) e fatia: o intervalo de datas sai resolvido. Abre no ano corrente, no primeiro recorte e na fatia em que hoje cai, sem disparar onChange.
+Os três controles: ano, recorte e fatia. Não há onChange na montagem: o intervalo resolvido aparece quando você mexe em algum deles.
 
 Região `sgYearPartSelectorBasico` em `sg_year_part_selector_page.snippets.g.dart`.
 
@@ -908,49 +1264,61 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgYearPartSelector(
+      id: 'yps-basic',
       label: 'Recorte do ano',
-      onChange: (r) => setState(
-        () => _basico =
-            '${r.value.year} - ${r.label}: ${r.startDate.toIso8601String().substring(0, 10)} a ${r.endDate.toIso8601String().substring(0, 10)}',
-      ),
+      onChange: (r) => _basico.value = r,
     ),
     const SizedBox(height: 8),
-    Text(_basico),
+    ValueListenableBuilder<ResolvedYearPart?>(
+      valueListenable: _basico,
+      builder: (context, r, _) => Text(
+        r == null
+            ? 'Nenhum recorte confirmado ainda'
+            : '${r.label}: ${r.startDate.toIso8601String().substring(0, 10)} - ${r.endDate.toIso8601String().substring(0, 10)}',
+      ),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _basico = 'Nenhum recorte escolhido';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final _basico = ValueNotifier<ResolvedYearPart?>(null);`
 
-### Só trimestres
+### Só semestre
 
-allowedKinds restringe os recortes. Com um único recorte permitido, o combo de recorte some.
+Com allowedKinds de um item só, o combo de recorte some: sobram ano e fatia, que é o que um fechamento semestral realmente pergunta.
 
-Região `sgYearPartSelectorTrimestres` em `sg_year_part_selector_page.snippets.g.dart`.
+Região `sgYearPartSelectorSemestre` em `sg_year_part_selector_page.snippets.g.dart`.
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgYearPartSelector(
-      id: 'trimestres',
-      allowedKinds: const [YearPartKind.quarter],
-      onChange: (r) => setState(
-        () => _trimestres =
-            '${r.label}: ${r.startDate.toIso8601String().substring(0, 10)} a ${r.endDate.toIso8601String().substring(0, 10)}',
-      ),
+      id: 'yps-semester',
+      label: 'Semestre de apuração',
+      allowedKinds: const [YearPartKind.semester],
+      onChange: (r) => _semestre.value = r,
     ),
     const SizedBox(height: 8),
-    Text(_trimestres),
+    ValueListenableBuilder<ResolvedYearPart?>(
+      valueListenable: _semestre,
+      builder: (context, r, _) => Text(
+        r == null
+            ? 'Nenhum recorte confirmado ainda'
+            : r.label,
+      ),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `String _trimestres = 'Nenhum recorte escolhido';`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final _semestre = ValueNotifier<ResolvedYearPart?>(null);`
 
-### Rótulo, obrigatório e desabilitado
+### Estados
+
+Desabilitado e obrigatório valem para os três controles de uma vez.
 
 Região `sgYearPartSelectorEstados` em `sg_year_part_selector_page.snippets.g.dart`.
 
@@ -959,15 +1327,15 @@ Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgYearPartSelector(
-      id: 'obrigatorio',
-      label: 'Período do relatório',
-      required: true,
-    ),
-    SizedBox(height: 16),
-    SgYearPartSelector(
-      id: 'desabilitado',
-      label: 'Desabilitado',
+      id: 'yps-disabled',
+      label: 'Recorte do ano',
       enabled: false,
+    ),
+    const SizedBox(height: 16),
+    SgYearPartSelector(
+      id: 'yps-required',
+      label: 'Recorte do ano',
+      required: true,
     ),
   ],
 )
@@ -975,59 +1343,63 @@ Column(
 
 ## SgToggleSwitch
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_toggle_switch_page.dart` (7 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_toggle_switch_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Clique no rótulo ou na chave; Tab foca e Espaço alterna.
+Exemplo simples controlado por estado; clique no rótulo ou na chave (Tab foca e Espaço alterna).
 
 Região `sgToggleSwitchBasico` em `sg_toggle_switch_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgToggleSwitch(
-      id: 'notificar',
-      label: 'Receber notificações',
-      description: 'Avisos por e-mail',
-      onChange: (v) => setState(() => _ligado = v),
-    ),
-    Text('Estado: ${_ligado ? 'ligado' : 'desligado'}'),
-  ],
+ValueListenableBuilder<bool>(
+  valueListenable: _basico,
+  builder: (context, v, _) => SgStack(
+    gap: 12,
+    align: SgStackAlign.start,
+    children: [
+      SgToggleSwitch(
+        id: 'demo-basic',
+        label: 'Ativar notificações',
+        checked: v,
+        onChange: (next) => _basico.value = next,
+      ),
+      Text('Valor atual: $v'),
+    ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `bool _ligado = false;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<bool> _basico = ValueNotifier<bool>(false);`
 
-### Ícones, somente leitura e desabilitado
+### Desabilitado e somente leitura
+
+Demonstra os estados enabled: false e readOnly.
 
 Região `sgToggleSwitchEstados` em `sg_toggle_switch_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  gap: 24,
   children: [
     SgToggleSwitch(
-      id: 'icones',
-      label: 'Com ícones',
-      defaultChecked: true,
-      onIcon: Icon(Icons.check, size: 12),
-      offIcon: Icon(Icons.close, size: 12),
-    ),
-    SizedBox(height: 12),
-    SgToggleSwitch(
-      id: 'leitura',
-      label: 'readOnly',
-      readOnly: true,
-      defaultChecked: true,
-    ),
-    SizedBox(height: 12),
-    SgToggleSwitch(
-      id: 'off',
-      label: 'disabled',
+      id: 'demo-disabled',
+      label: 'Desabilitado',
+      checked: true,
       enabled: false,
+      onIcon: const Icon(Icons.check, size: 12),
+      offIcon: const Icon(Icons.close, size: 12),
+    ),
+    SgToggleSwitch(
+      id: 'demo-readonly',
+      label: 'Somente leitura',
+      checked: false,
+      readOnly: true,
+      onIcon: const Icon(Icons.check, size: 12),
+      offIcon: const Icon(Icons.close, size: 12),
     ),
   ],
 )
@@ -1040,8 +1412,9 @@ required valida ao sair do campo (validateOnBlur) ou a cada mudança (validateOn
 Região `sgToggleSwitchValidacao` em `sg_toggle_switch_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgStack(
+  gap: 12,
+  align: SgStackAlign.start,
   children: [
     SgToggleSwitch(
       id: 'termos',
@@ -1049,13 +1422,13 @@ Column(
       required: true,
       requiredMessage: 'Aceite os termos para continuar',
     ),
-    const SizedBox(height: 12),
     SgToggleSwitch(
       id: 'regra',
       label: 'Não pode ligar',
       validateOnBlur: false,
-      validation: (ligado) =>
-          ligado ? 'Esta chave deve ficar desligada' : null,
+      validation: (ligado) => ligado
+          ? 'Esta chave deve ficar desligada'
+          : null,
     ),
   ],
 )
@@ -1081,19 +1454,26 @@ Column(
         border: Border.all(color: const Color(0x403B82F6)),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: SgRating(
-        value: _basico,
-        onChange: (v) => setState(() => _basico = v),
+      child: ValueListenableBuilder<num>(
+        valueListenable: _basico,
+        builder: (context, valor, _) => SgRating(
+          value: valor,
+          onChange: (v) => _basico.value = v,
+        ),
       ),
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: $_basico'),
+    ValueListenableBuilder<num>(
+      valueListenable: _basico,
+      builder: (context, valor, _) =>
+          Text('Valor atual: $valor'),
+    ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `num _basico = 0;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _basico = ValueNotifier<num>(0);`
 
 ### Meia estrela + tooltip
 
@@ -1105,25 +1485,33 @@ Região `sgRatingMeia` em `sg_rating_page.snippets.g.dart`.
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgRating(
-      label: 'Passe o mouse e clique nas meias estrelas',
-      value: _meia,
-      allowHalf: true,
-      showTooltip: true,
-      onChange: (v) => setState(() => _meia = v),
-      onHover: (v) => setState(() => _meiaHover = v),
+    ValueListenableBuilder<num>(
+      valueListenable: _meia,
+      builder: (context, valor, _) => SgRating(
+        label: 
+          'Passe o mouse e clique nas meias estrelas',
+        ,
+        value: valor,
+        allowHalf: true,
+        showTooltip: true,
+        onChange: (v) => _meia.value = v,
+        onHover: (v) => _meiaHover.value = v,
+      ),
     ),
     const SizedBox(height: 8),
-    Text(
-      'Selecionado: $_meia | Hover: ${_meiaHover ?? 'nenhum'}',
+    ListenableBuilder(
+      listenable: Listenable.merge([_meia, _meiaHover]),
+      builder: (context, _) => Text(
+        'Selecionado: ${_meia.value} | Hover: ${_meiaHover.value ?? 'nenhum'}',
+      ),
     ),
   ],
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `num _meia = 2.5;`
-- `num? _meiaHover;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _meia = ValueNotifier<num>(2.5);`
+- `final ValueNotifier<num?> _meiaHover = ValueNotifier<num?>(null);`
 
 ### Read-only e desabilitado
 
@@ -1153,92 +1541,134 @@ SgGrid(
 
 ## SgSlider
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_slider_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_slider_page.dart` (6 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-minValue, maxValue e defaultValue; onChange entrega o número a cada mudança.
+Define minValue e maxValue com um valor inicial via defaultValue.
 
 Região `sgSliderBasico` em `sg_slider_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgSlider(
-      id: 'volume',
-      minValue: 0,
-      maxValue: 100,
-      defaultValue: 30,
-      ariaLabel: 'Volume',
-      onChange: (v) => setState(() => _volume = v),
-    ),
-    Text('Volume: $_volume'),
-  ],
+ConstrainedBox(
+  constraints: const BoxConstraints(maxWidth: 384),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgSlider(
+        id: 'slider-basic',
+        minValue: 0,
+        maxValue: 100,
+        defaultValue: 50,
+        onChange: (v) => _basico.value = v,
+      ),
+      ValueListenableBuilder<num>(
+        valueListenable: _basico,
+        builder: (context, valor, _) =>
+            Text('Valor atual: $valor'),
+      ),
+    ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `num _volume = 30;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _basico = ValueNotifier<num>(50);`
 
-### Passo (step)
+### Controle externo
 
-O valor só assume múltiplos do passo, a partir de minValue.
+O valor pode ser definido externamente pela prop value.
 
-Região `sgSliderPasso` em `sg_slider_page.snippets.g.dart`.
+Região `sgSliderControleExterno` em `sg_slider_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgSlider(
-      id: 'passo',
-      minValue: 0,
-      maxValue: 100,
-      step: 25,
-      defaultValue: 50,
-      onChange: (v) => setState(() => _passo = v),
+ConstrainedBox(
+  constraints: const BoxConstraints(maxWidth: 384),
+  child: ValueListenableBuilder<num>(
+    valueListenable: _controlado,
+    builder: (context, valor, _) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SgSlider(
+          id: 'slider-controlled',
+          minValue: 0,
+          maxValue: 100,
+          value: valor,
+          onChange: (v) => _controlado.value = v,
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            SgButton(
+              size: SgSize.sm,
+              appearance: SgAppearance.outline,
+              label: Text('Mín'),
+              onClick: () => _controlado.value = 0,
+            ),
+            SgButton(
+              size: SgSize.sm,
+              appearance: SgAppearance.outline,
+              label: Text('Meio'),
+              onClick: () => _controlado.value = 50,
+            ),
+            SgButton(
+              size: SgSize.sm,
+              appearance: SgAppearance.outline,
+              label: Text('Máx'),
+              onClick: () => _controlado.value = 100,
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text('Valor controlado: $valor'),
+      ],
     ),
-    Text('Valor: $_passo'),
-  ],
+  ),
 )
 ```
 
-Nota: este trecho usa `setState` e estado da página do showcase (`State` de um `StatefulWidget`); para copiar, declare no seu `State`:
-- `num _passo = 50;`
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _controlado = ValueNotifier<num>(35);`
 
-### Largura, desabilitado e erro
+### Passo e largura
 
-Região `sgSliderEstados` em `sg_slider_page.snippets.g.dart`.
+Mostra step com width numérica e width em string CSS.
+
+Região `sgSliderPassoLargura` em `sg_slider_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgSlider(
-      id: 'largura',
-      minValue: 0,
-      maxValue: 10,
-      defaultValue: 4,
-      width: '50%',
-    ),
-    SgSlider(
-      id: 'off',
-      minValue: 0,
-      maxValue: 10,
-      defaultValue: 7,
-      enabled: false,
-    ),
-    SgSlider(
-      id: 'erro',
-      minValue: 0,
-      maxValue: 10,
-      defaultValue: 9,
-      error: 'Valor alto demais',
-    ),
-  ],
+ValueListenableBuilder<num>(
+  valueListenable: _passo,
+  builder: (context, valor, _) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgSlider(
+        id: 'slider-step-width-number',
+        minValue: 0,
+        maxValue: 60,
+        step: 5,
+        width: 320,
+        value: valor,
+        onChange: (v) => _passo.value = v,
+      ),
+      const SgSlider(
+        id: 'slider-step-width-string',
+        minValue: -20,
+        maxValue: 20,
+        step: 2,
+        width: '18rem',
+        defaultValue: 4,
+      ),
+      Text('Valor com step 5: $valor'),
+    ],
+  ),
 )
 ```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _passo = ValueNotifier<num>(25);`
 
 ## SgStepperInput
 
@@ -1246,19 +1676,84 @@ Página: `apps/seedgrid_showcase/lib/pages/sg_stepper_input_page.dart` (5 exempl
 
 ### Básico
 
-Botões de aumentar e diminuir; o valor fica sempre entre minValue e maxValue.
+Ajuste por setas com minValue, maxValue e step.
 
 Região `sgStepperInputBasico` em `sg_stepper_input_page.snippets.g.dart`.
 
 ```dart
-const SgStepperInput(
-  id: 'basico',
-  minValue: 0,
-  maxValue: 10,
-  defaultValue: 3,
-  width: 160,
+SgStack(
+  gap: 8,
+  align: SgStackAlign.start,
+  children: [
+    SgStepperInput(
+      id: 'stepper-basic',
+      minValue: 0,
+      maxValue: 40,
+      step: 2,
+      defaultValue: 12,
+      width: 210,
+      onChange: (v) => _atual.value = v,
+    ),
+    ValueListenableBuilder<num>(
+      valueListenable: _atual,
+      builder: (context, v, _) =>
+          Text('Valor atual: $v'),
+    ),
+  ],
 )
 ```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _atual = ValueNotifier<num>(12);`
+
+### Controle externo
+
+O valor é controlado pela prop value; os botões alteram o número de fora do campo.
+
+Região `sgStepperInputControleExterno` em `sg_stepper_input_page.snippets.g.dart`.
+
+```dart
+SgStack(
+  gap: 12,
+  align: SgStackAlign.start,
+  children: [
+    ValueListenableBuilder<num>(
+      valueListenable: _controlado,
+      builder: (context, v, _) => SgStepperInput(
+        id: 'stepper-controlled',
+        minValue: 10,
+        maxValue: 30,
+        step: 1,
+        value: v,
+        width: 210,
+        onChange: (n) => _controlado.value = n,
+      ),
+    ),
+    SgStack(
+      direction: SgStackDirection.row,
+      wrap: true,
+      gap: 8,
+      children: [
+        for (final n in [10, 20, 30])
+          SgButton(
+            label: Text('$n'),
+            size: SgSize.sm,
+            appearance: SgAppearance.outline,
+            onClick: () => _controlado.value = n,
+          ),
+      ],
+    ),
+    ValueListenableBuilder<num>(
+      valueListenable: _controlado,
+      builder: (context, v, _) =>
+          Text('Valor controlado: $v'),
+    ),
+  ],
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<num> _controlado = ValueNotifier<num>(18);`
 
 ### Passo e limites
 
@@ -1267,8 +1762,9 @@ step define o incremento (aceita decimais); no limite o botão fica desabilitado
 Região `sgStepperInputPasso` em `sg_stepper_input_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+const SgStack(
+  gap: 12,
+  align: SgStackAlign.start,
   children: [
     SgStepperInput(
       id: 'de-cinco',
@@ -1277,7 +1773,6 @@ const Column(
       step: 5,
       width: 160,
     ),
-    SizedBox(height: 12),
     SgStepperInput(
       id: 'meio',
       minValue: 0,
@@ -1285,43 +1780,6 @@ const Column(
       step: 0.5,
       defaultValue: 2.5,
       width: 160,
-    ),
-  ],
-)
-```
-
-### Estados
-
-Região `sgStepperInputEstados` em `sg_stepper_input_page.snippets.g.dart`.
-
-```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgStepperInput(
-      id: 'desabilitado',
-      minValue: 0,
-      maxValue: 10,
-      defaultValue: 4,
-      enabled: false,
-      width: 160,
-    ),
-    SizedBox(height: 12),
-    SgStepperInput(
-      id: 'leitura',
-      minValue: 0,
-      maxValue: 10,
-      defaultValue: 4,
-      readOnly: true,
-      width: 160,
-    ),
-    SizedBox(height: 12),
-    SgStepperInput(
-      id: 'erro',
-      minValue: 0,
-      maxValue: 10,
-      error: 'Escolha ao menos 1',
-      width: 200,
     ),
   ],
 )

@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, digits, ex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Dígitos animados (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/digits/Exemplos|Exemplos — Dígitos animados (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/digits/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgDiscardDigit
 
@@ -30,16 +30,20 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgDiscardDigit(value: '$_n'),
+    ValueListenableBuilder<int>(
+      valueListenable: _n,
+      builder: (context, n, _) => SgDiscardDigit(value: '$n'),
+    ),
     SgButton(
       label: Text('Próximo'),
-      onClick: () => setState(() => _n = _n % 9 + 1),
+      onClick: () => _n.value = _n.value % 9 + 1,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_n`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _n = ValueNotifier(1);`
 
 ### Entrando por baixo
 
@@ -53,20 +57,24 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgDiscardDigit(
-      value: '$_n',
-      changeAnimationMode:
-          SgDiscardDigitChangeAnimationMode.incoming,
+    ValueListenableBuilder<int>(
+      valueListenable: _n,
+      builder: (context, n, _) => SgDiscardDigit(
+        value: '$n',
+        changeAnimationMode:
+            SgDiscardDigitChangeAnimationMode.incoming,
+      ),
     ),
     SgButton(
       label: Text('Próximo'),
-      onClick: () => setState(() => _n = _n % 9 + 1),
+      onClick: () => _n.value = _n.value % 9 + 1,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_n`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _n = ValueNotifier(1);`
 
 ### Páginas de um monte
 
@@ -80,16 +88,22 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgDiscardDigit(
-      value: '$_page',
-      controller: _pages,
-      totalNumberPages: 8,
-      stackDepth: 8,
+    ValueListenableBuilder<int>(
+      valueListenable: _page,
+      builder: (context, page, _) => SgDiscardDigit(
+        value: '$page',
+        controller: _pages,
+        totalNumberPages: 8,
+        stackDepth: 8,
+      ),
     ),
     Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Página $_page de 8'),
+        ValueListenableBuilder<int>(
+          valueListenable: _page,
+          builder: (context, page, _) => Text('Página $page de 8'),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 16,
@@ -99,17 +113,17 @@ Wrap(
             SgButton(
               label: Text('Anterior'),
               appearance: SgAppearance.outline,
-              onClick: () => setState(() {
+              onClick: () {
                 _pages.decreasePage();
-                _page = _pages.page();
-              }),
+                _page.value = _pages.page();
+              },
             ),
             SgButton(
               label: Text('Próxima'),
-              onClick: () => setState(() {
+              onClick: () {
                 _pages.increasePage();
-                _page = _pages.page();
-              }),
+                _page.value = _pages.page();
+              },
             ),
           ],
         ),
@@ -119,7 +133,9 @@ Wrap(
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_page`, `_pages`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _page = ValueNotifier(1);`
+- `final SgDiscardDigitController _pages = SgDiscardDigitController();`
 
 ## SgFadeDigit
 
@@ -218,21 +234,23 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgFlipDigit(value: '${_n % 10}', fontSize: 56),
-    SgButton(
-      label: const Text('+1'),
-      onClick: () => setState(() => _n++),
+    ValueListenableBuilder<int>(
+      valueListenable: _n,
+      builder: (context, n, _) =>
+          SgFlipDigit(value: '${n % 10}', fontSize: 56),
     ),
+    SgButton(label: const Text('+1'), onClick: () => _n.value++),
     SgButton(
       label: Text('Zerar'),
       appearance: SgAppearance.outline,
-      onClick: () => setState(() => _n = 0),
+      onClick: () => _n.value = 0,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_n`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _n = ValueNotifier(0);`
 
 ### Tamanhos
 
@@ -241,19 +259,23 @@ fontSize controla a escala do conjunto: as medidas vêm de múltiplos dele.
 Região `sgFlipDigitTamanhos` em `sg_flip_digit_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 24,
-  runSpacing: 16,
-  crossAxisAlignment: WrapCrossAlignment.end,
-  children: [
-    SgFlipDigit(value: '${_n % 10}', fontSize: 28),
-    SgFlipDigit(value: '${_n % 10}', fontSize: 48),
-    SgFlipDigit(value: '${_n % 10}', fontSize: 72),
-  ],
+ValueListenableBuilder<int>(
+  valueListenable: _n,
+  builder: (context, n, _) => Wrap(
+    spacing: 24,
+    runSpacing: 16,
+    crossAxisAlignment: WrapCrossAlignment.end,
+    children: [
+      SgFlipDigit(value: '${n % 10}', fontSize: 28),
+      SgFlipDigit(value: '${n % 10}', fontSize: 48),
+      SgFlipDigit(value: '${n % 10}', fontSize: 72),
+    ],
+  ),
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_n`). Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _n = ValueNotifier(0);`
 
 ### Vários dígitos
 
@@ -262,24 +284,27 @@ Um dígito por caractere, como num relógio de cartas. Só gira quem mudou.
 Região `sgFlipDigitVarios` em `sg_flip_digit_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 16,
-  runSpacing: 12,
-  crossAxisAlignment: WrapCrossAlignment.center,
-  children: [
-    for (final ch in _clock.toString().padLeft(4, '0').split(''))
-      SgFlipDigit(value: ch, fontSize: 44),
-    SgButton(
-      label: Text('Somar 111'),
-      size: SgSize.sm,
-      onClick: () =>
-          setState(() => _clock = (_clock + 111) % 10000),
-    ),
-  ],
+ValueListenableBuilder<int>(
+  valueListenable: _clock,
+  builder: (context, clock, _) => Wrap(
+    spacing: 16,
+    runSpacing: 12,
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      for (final ch in clock.toString().padLeft(4, '0').split(''))
+        SgFlipDigit(value: ch, fontSize: 44),
+      SgButton(
+        label: Text('Somar 111'),
+        size: SgSize.sm,
+        onClick: () => _clock.value = (clock + 111) % 10000,
+      ),
+    ],
+  ),
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_clock`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _clock = ValueNotifier(1234);`
 
 ## SgMatrixDigit
 
@@ -439,7 +464,7 @@ Builder(
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_roller3d_digit_page.dart` (6 exemplo(s) na página; abaixo 3).
 
-### Dígitos de 0 a 9
+### Básico (0-9)
 
 O tambor desliza até a posição de value em 500 ms com cubic-bezier(0.22, 1, 0.36, 1).
 
@@ -451,23 +476,28 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgRoller3DDigit(value: '$_digit', fontSize: 32),
+    ValueListenableBuilder<int>(
+      valueListenable: _digit,
+      builder: (context, digit, _) =>
+          SgRoller3DDigit(value: '$digit', fontSize: 32),
+    ),
     SgButton(
       label: Text('Próximo'),
-      onClick: () => setState(() => _digit = (_digit + 1) % 10),
+      onClick: () => _digit.value = (_digit.value + 1) % 10,
     ),
     SgButton(
       label: Text('Aleatório'),
       appearance: SgAppearance.outline,
-      onClick: () => setState(() => _digit = (_digit * 7 + 3) % 10),
+      onClick: () => _digit.value = (_digit.value * 7 + 3) % 10,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_digit`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _digit = ValueNotifier(0);`
 
-### Minutos (00 a 59)
+### Valor com 2 dígitos
 
 items define os valores; a largura cresce com o maior deles.
 
@@ -479,22 +509,29 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgRoller3DDigit(
-      value: _minute.toString().padLeft(2, '0'),
-      items: List.generate(60, (i) => i.toString().padLeft(2, '0')),
-      fontSize: 22,
+    ValueListenableBuilder<int>(
+      valueListenable: _minute,
+      builder: (context, minute, _) => SgRoller3DDigit(
+        value: minute.toString().padLeft(2, '0'),
+        items: List.generate(
+          60,
+          (i) => i.toString().padLeft(2, '0'),
+        ),
+        fontSize: 22,
+      ),
     ),
     SgButton(
       label: Text('+7 minutos'),
-      onClick: () => setState(() => _minute = (_minute + 7) % 60),
+      onClick: () => _minute.value = (_minute.value + 7) % 60,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_minute`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _minute = ValueNotifier(42);`
 
-### Letras (A a Z)
+### Letras (A-Z)
 
 Região `sgRoller3dDigitLetras` em `sg_roller3d_digit_page.snippets.g.dart`.
 
@@ -504,45 +541,35 @@ Wrap(
   runSpacing: 12,
   crossAxisAlignment: WrapCrossAlignment.center,
   children: [
-    SgRoller3DDigit(
-      value: String.fromCharCode(65 + _letter),
-      items: List.generate(26, (i) => String.fromCharCode(65 + i)),
-      fontSize: 32,
+    ValueListenableBuilder<int>(
+      valueListenable: _letter,
+      builder: (context, letter, _) => SgRoller3DDigit(
+        value: String.fromCharCode(65 + letter),
+        items: List.generate(
+          26,
+          (i) => String.fromCharCode(65 + i),
+        ),
+        fontSize: 32,
+      ),
     ),
     SgButton(
       label: Text('Próxima letra'),
-      onClick: () => setState(() => _letter = (_letter + 5) % 26),
+      onClick: () => _letter.value = (_letter.value + 5) % 26,
     ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_letter`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
+- `final ValueNotifier<int> _letter = ValueNotifier(12);`
 
 ## SgSegmentDigit
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_segment_digit_page.dart` (5 exemplo(s) na página; abaixo 3).
 
-### Algarismos, sinal e dois pontos
-
-Cada glifo é um conjunto de retângulos numa grade de 6 x 10 (dois pontos: 4 x 10).
-
-Região `sgSegmentDigitAlgarismos` em `sg_segment_digit_page.snippets.g.dart`.
-
-```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
-  children: [
-    for (final c in '0123456789-:'.split(''))
-      SgSegmentDigit(value: c, size: 48),
-  ],
-)
-```
-
 ### Tamanhos
 
-size é a altura em pixels; a largura segue a proporção.
+Escala visual ajustando apenas a prop size.
 
 Região `sgSegmentDigitTamanhos` em `sg_segment_digit_page.snippets.g.dart`.
 
@@ -578,7 +605,7 @@ Wrap(
 
 ### Cores
 
-Sem color, usa a cor de texto do tema; com color, aceita #rrggbb, rgb() e rgba().
+Exemplos de color por dígito.
 
 Região `sgSegmentDigitCores` em `sg_segment_digit_page.snippets.g.dart`.
 
@@ -637,13 +664,30 @@ Wrap(
 )
 ```
 
+### Algarismos, sinal e dois pontos
+
+Cada glifo é um conjunto de retângulos numa grade de 6 x 10 (dois pontos: 4 x 10).
+
+Região `sgSegmentDigitAlgarismos` em `sg_segment_digit_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 8,
+  runSpacing: 8,
+  children: [
+    for (final c in '0123456789-:'.split(''))
+      SgSegmentDigit(value: c, size: 48),
+  ],
+)
+```
+
 ## SgSevenSegmentDigit
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_seven_segment_digit_page.dart` (9 exemplo(s) na página; abaixo 3).
 
 ### Algarismos e letras
 
-Cada caractere acende os segmentos da tabela do React; sem glifo, apaga tudo.
+Cada caractere acende os segmentos da tabela do display; sem glifo, apaga tudo.
 
 Região `sgSevenSegmentDigitAlgarismos` em `sg_seven_segment_digit_page.snippets.g.dart`.
 
