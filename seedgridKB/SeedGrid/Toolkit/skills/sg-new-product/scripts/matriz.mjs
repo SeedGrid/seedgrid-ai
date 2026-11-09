@@ -28,6 +28,13 @@ const VALIDADORES = {
   lista: (v) => Array.isArray(v) ? v.length > 0 && v.every((x) => typeof x === 'string' && x.trim()) : typeof v === 'string' && v.split(',').some((x) => x.trim()),
 };
 
+// <slug>-admin.<base>, com <base> = dominioFront sem o primeiro rotulo (display.seedgrid.com.br -> display-admin.seedgrid.com.br).
+export function dominioAdminDe(slug, dominioFront) {
+  if (typeof slug !== 'string' || typeof dominioFront !== 'string') return null;
+  const i = dominioFront.indexOf('.');
+  return i > 0 && i < dominioFront.length - 1 ? `${slug}-admin.${dominioFront.slice(i + 1)}` : null;
+}
+
 function validar(regra, valor) {
   if (regra.startsWith('opcao:')) return regra.slice(6).split('|').includes(valor);
   if (regra.startsWith('inteiro:')) {
@@ -190,11 +197,8 @@ export function resolver(matriz, catalogo, entrada) {
         if (c.se?.modelo && !c.se.modelo.includes(ctx.modelo)) { naoAplica.set(c.id, p.numero); continue; } // campo so de alguns modelos (ex.: dominioAdmin: o modelo modular nao tem admin)
         let v = respostas[c.id];
         if ((v === undefined || v === '') && c.padrao !== undefined) {
-          // {{baseFront}}: dominio-pai do dominioFront quando ele tem a forma <slug>.<base>; fora dessa forma nao ha padrao (o usuario informa)
-          const base = typeof respostas.dominioFront === 'string' && typeof respostas.slug === 'string' && respostas.dominioFront.startsWith(`${respostas.slug}.`) ? respostas.dominioFront.slice(respostas.slug.length + 1) : null;
-          if (c.padrao.includes('{{baseFront}}') && !base) v = undefined;
-          else v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => (n === 'baseFront' ? base : respostas[n]) ?? '');
-          if (v !== undefined) respostas[c.id] = v;
+          v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => respostas[n] ?? '');
+          respostas[c.id] = v;
         }
         if (v === undefined) { e(`pergunta ${p.numero}: falta "${c.id}"`); continue; }
         if (!validar(c.validacao, v)) { e(`pergunta ${p.numero}: valor invalido em "${c.id}": ${JSON.stringify(v)} (regra ${c.validacao})`); continue; }
@@ -231,11 +235,19 @@ export function resolver(matriz, catalogo, entrada) {
     }
   }
   for (const k of Object.keys(entrada)) {
+    if (k === 'dominioAdmin') continue; // legado: o admin e sempre derivado (<slug>-admin.<base>); o valor antigo e ignorado
     if (usadas.has(k) || entrada[k] === undefined) continue; // chave sem valor e o mesmo que nao responder
     if (naoAplica.has(k)) e(`"${k}" nao se aplica as respostas anteriores (pergunta ${naoAplica.get(k)})`);
     else e(`resposta desconhecida ou fora da matriz: "${k}"`);
   }
   if (ctx.modelo) respostas.modelo = ctx.modelo;
+  // dominioAdmin nunca e resposta: <slug>-admin.<dominioFront sem o primeiro rotulo> (so os modelos com admin web; o modular nao tem)
+  delete respostas.dominioAdmin;
+  if (ctx.modelo && ctx.modelo !== 'modular') {
+    const admin = dominioAdminDe(respostas.slug, respostas.dominioFront);
+    if (admin && VALIDADORES.dominio(admin)) respostas.dominioAdmin = admin;
+    else if (VALIDADORES.dominio(respostas.dominioFront)) e(`nao foi possivel derivar o dominio do admin de "${respostas.dominioFront}" (slug "${respostas.slug}")`);
+  }
   return { erros, respostas, extensoes: [...ctx.extensoes].sort(), adicionadas, efeitos };
 }
 

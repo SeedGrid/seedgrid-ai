@@ -36,7 +36,7 @@ Leia `data/matriz-produto.json` e percorra `perguntas` na ordem de `ordem`.
    - **Provedor de WhatsApp (3c, obrigatório):** `evolution` (padrão) ou `whatsapp-cloud`. A `security` só traz a interface (`whatsapp-core`); o provedor é sempre do produto. Não há opção "nenhum". A Cloud deixa pendências (token da Graph API e o valor do canal).
    - **Provedor de cache (3d, opcional):** sem resposta vale `memoria` (sem dependência extra); `redis`, `valkey` ou `dragonfly` acrescentam só o módulo do provedor e o serviço do compose é pendência do dono.
 5. **Nada fora da matriz.** Não invente pergunta nem opção. Se o usuário pedir algo que a matriz não cobre, registre como demanda em `docs/ai/demands/P<plano>.F<fase>.DEM<n>-AAAA-MM-DD-assunto.md` (o que falta, por que o produto precisa; `F0` quando é do plano todo) e siga; não prometa nem improvise.
-6. **Domínio do admin (pergunta 10, modelos de tenancy) é derivado.** Não pergunte certificado (é infraestrutura: Cloudflare/EasyPanel) e não pergunte o admin quando der para derivar: o `dominioAdmin` é `<slug>-admin.<base>`, onde `<base>` é o domínio-pai do `dominioFront` quando ele tem a forma `<slug>.<base>` (slug `display` e front `display.seedgrid.com.br` geram `display-admin.seedgrid.com.br`; no `subdomain-tenancy` os tenants ficam em `<tenant>.<slug>.<base>`). Mostre o valor derivado na confirmação. Só se o `dominioFront` **não** tiver essa forma, pergunte o `dominioAdmin` (nada é inventado); uma resposta explícita sempre vale. O modelo `modular` não tem admin. No `subdomain-tenancy` o front e o admin saem com `SEEDGRID_ADMIN_HOST` preenchido com o `dominioAdmin` (`.env.example`).
+6. **Domínio do admin não é pergunta.** O `dominioAdmin` é sempre `<slug>-admin.<base>`, com `<base>` = `dominioFront` sem o primeiro rótulo (`display.seedgrid.com.br` com slug `display` gera `display-admin.seedgrid.com.br`; `app.acme.com.br` com slug `portal-chaves` gera `portal-chaves-admin.acme.com.br`). Não peça nem aceite override: um `dominioAdmin` em respostas antigas é ignorado e rederivado. O modelo `modular` não tem admin. Certificado e DNS são infraestrutura (Cloudflare/EasyPanel); o toolkit não pergunta nada sobre isso. No `subdomain-tenancy` os tenants ficam em `<tenant>.<dominioFront>` e o front e o admin saem com `SEEDGRID_ADMIN_HOST` preenchido com o `dominioAdmin`.
 7. **Repita cada decisão em uma frase** ao registrá-la, como nas outras skills de plano.
 
 As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, ou o `id` de cada campo). Exemplo para o modelo `login-tenancy-b2b`:
@@ -69,6 +69,16 @@ node .ai/skills/sg-new-product/scripts/scaffold-produto.mjs --respostas docs/ai/
 - **E-mail em desenvolvimento:** o `docker-compose.yml` sobe o **Mailpit** local (SMTP sem autenticação; interface em `http://localhost:8025`, ou `8026` no subdomain-tenancy). O `dev.env` já aponta para ele, com um remetente por extension (`security@`, `backup@`, `subdomain.tenancy@` em `eu-dev.com.br`). Diga ao usuário que convites, confirmações e redefinições de senha chegam nessa interface, qualquer que seja o destinatário.
 - Os **segredos são gerados por produto** (senhas, chaves, par RSA do JWT) e ficam só em `backend/dev.env`, `.env` e `backend/src/main/resources/keys/*.pem`, que o `.gitignore` já ignora. **Nunca** mostre, copie nem cole esses valores no chat, no plano, em ADR ou em commit. O que vai ao git é o `.example`, com `change-me`.
 - Leia a saída: as linhas `PENDENTE` são coisas que o script não resolve (por exemplo o serviço do provedor de cache (Redis, Valkey ou Dragonfly) e o Pulse, que o dono precisa fornecer; chaves do Stripe). Elas viram a seção "Pendências" do plano.
+
+### 2b. Hosts para teste local (opcional, só com confirmação do usuário)
+
+```
+node .ai/skills/sg-new-product/scripts/hosts.mjs --destino .            # só MOSTRA as linhas
+node .ai/skills/sg-new-product/scripts/hosts.mjs --destino . --sim      # grava, depois que o usuário confirmar
+node .ai/skills/sg-new-product/scripts/hosts.mjs --destino . --remover --sim
+```
+
+Edita o arquivo hosts do sistema (Windows: `%SystemRoot%\System32\drivers\etc\hosts`; Linux e macOS: o arquivo hosts em /etc) apontando para `127.0.0.1` o `dominioFront`, o `dominioAdmin` e, só no `subdomain-tenancy`, um tenant de exemplo (`<tenant>.<dominioFront>`, `acme` ou o primeiro de `tenantsExemplo`). Tudo fica num bloco `# seedgrid:<slug> início` ... `# seedgrid:<slug> fim`: rodar de novo substitui o bloco (sem duplicar), `--remover` o tira, e o resto do arquivo e o fim de linha (CRLF no Windows) não mudam. **Mostre as linhas e só use `--sim` com a confirmação explícita do usuário.** Sem permissão (EACCES/EPERM) o script não falha em silêncio: imprime as linhas e como aplicar com elevação (Windows: terminal como administrador; Linux e macOS: `sudo`); nesse caso entregue essa instrução ao usuário, não tente contornar. `--arquivo <caminho>` aponta para outro arquivo (usado nos testes).
 
 ## 3. Documentos do produto (em `docs/ai/`)
 

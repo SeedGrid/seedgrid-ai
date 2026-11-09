@@ -33,22 +33,20 @@ test('login-tenancy (b2b e b2c) deriva do mesmo jeito', () => {
   }
 });
 
-test('dominioFront fora da forma <slug>.<base>: nao inventa, pede o dominioAdmin; informado, vale', () => {
-  const sem = resolver({ dominioFront: 'app.acme.com.br' });
-  assert.ok(sem.erros.some((e) => /falta "dominioAdmin"/.test(e)), sem.erros.join(' | '));
-  const com = resolver({ dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br' });
-  assert.deepEqual(com.erros, []);
-  assert.equal(com.respostas.dominioAdmin, 'admin.acme.com.br');
+test('o admin e sempre <slug>-admin.<dominioFront sem o primeiro rotulo>, mesmo que o front nao comece pelo slug', () => {
+  const r = resolver({ slug: 'portal-chaves', dominioFront: 'app.acme.com.br' });
+  assert.deepEqual(r.erros, []);
+  assert.equal(r.respostas.dominioAdmin, 'portal-chaves-admin.acme.com.br');
 });
 
-test('manifesto antigo (admin explicito, sem campo de certificado) continua valido; dominioAdmin explicito vence a derivacao', () => {
+test('manifesto antigo com dominioAdmin explicito: o valor antigo e ignorado e o admin e derivado', () => {
   const r = resolver({ dominioAdmin: 'admin.seedgrid.com.br' });
   assert.deepEqual(r.erros, []);
-  assert.equal(r.respostas.dominioAdmin, 'admin.seedgrid.com.br');
+  assert.equal(r.respostas.dominioAdmin, 'display-admin.seedgrid.com.br');
 });
 
 test('modular continua sem dominioAdmin', () => {
-  const { respostas, erros } = resolver({ modelo: 'modular', extensoes: [] });
+  const { respostas, erros } = resolver({ modelo: 'modular', extensoes: [], dominioAdmin: 'admin.x.com.br' });
   assert.ok(!erros.some((e) => /dominioAdmin/.test(e)), erros.join(' | '));
   assert.equal(respostas.dominioAdmin, undefined);
 });

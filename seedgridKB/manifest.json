@@ -244,6 +244,7 @@
         "data/mock-rotas.json",
         "data/modulos-front.json",
         "data/matriz-produto.schema.json",
+        "scripts/hosts.mjs",
         "scripts/matriz.mjs",
         "scripts/mockoon.mjs",
         "scripts/modulos-front.mjs",

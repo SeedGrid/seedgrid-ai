@@ -425,6 +425,7 @@ export async function scaffold({ respostas, destino, boilerplates, dataDir, seme
     gravar(destino, 'tenants-exemplo.hosts', ['# Tenants de exemplo de ' + slug + ' (sg-new-product). Acrescente estas linhas ao arquivo hosts do sistema:', '#   Windows: C:/Windows/System32/drivers/etc/hosts (abra o editor como administrador)', '#   Linux e macOS: /etc/hosts (com sudo)', ...tenantsExemplo.map((t) => `127.0.0.1 ${t}.localhost`), ''].join('\n'), criados);
     r.pendencias.push(`Tenants de exemplo (${tenantsExemplo.join(', ')}): crie cada um pelo cadastro do produto (http://localhost:${portaFront}/signup) escolhendo esse subdominio e depois acesse ${enderecos}. Navegadores modernos resolvem *.localhost sozinhos; para curl e outros programas, acrescente tenants-exemplo.hosts ao arquivo hosts do sistema (precisa de administrador; a skill nao altera arquivos fora da pasta do produto).`);
   }
+  notas.push(`Hosts para teste local (opcional, com confirmacao do usuario): node .ai/skills/sg-new-product/scripts/hosts.mjs --destino . (mostra as linhas; grave com --sim; --remover tira o bloco)`);
   const servicos = Object.entries(r.servicos).map(([nomeSvc, porta]) => ({ nome: nomeSvc, tipo: nomeSvc, porta }));
   // Planos: sem diferenca declarada entre eles, o produto tem um plano so (mais o trial), com os limites padrao de empresas e usuarios.
   const nomesPlanos = R.billingProvider ? (Array.isArray(R.planos) ? R.planos : String(R.planos ?? '').split(',')).map((x) => String(x).trim()).filter(Boolean) : [];

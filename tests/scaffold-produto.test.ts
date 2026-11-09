@@ -115,7 +115,7 @@ test('subdomain-tenancy: dominioAdmin derivado do slug e do front, e SEEDGRID_AD
 test('subdomain-tenancy: banco master, porta e artefato proprios', async () => {
   const { destino, saida } = await gerar(SUB);
   assert.equal(saida.ok, true, (saida.erros ?? []).join('\n'));
-  assert.match(ler(destino, 'frontend/.env.example'), /^SEEDGRID_ADMIN_HOST=admin.acme.com.br$/m);
+  assert.match(ler(destino, 'frontend/.env.example'), /^SEEDGRID_ADMIN_HOST=portal-chaves-admin.acme.com.br$/m);
   const e = env(ler(destino, 'backend/dev.env'));
   const raiz = env(ler(destino, '.env'));
   assert.equal(e.SEEDGRID_SUBDOMAIN_TENANCY_MASTER_DB_URL, 'jdbc:postgresql://localhost:5441/portal_chaves_master');

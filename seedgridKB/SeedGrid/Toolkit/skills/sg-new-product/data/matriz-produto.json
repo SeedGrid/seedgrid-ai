@@ -1808,7 +1808,7 @@
       "ordem": 17,
       "tipo": "campos",
       "pergunta": "Quais os dados para rodar o produto?",
-      "recomendacao": "O dominio do admin e derivado, nao se pergunta: <slug>-admin.<base>, onde <base> e o dominio-pai do dominio do front quando ele tem a forma <slug>.<base> (front display.seedgrid.com.br com slug display gera display-admin.seedgrid.com.br; no subdomain-tenancy os tenants ficam em <tenant>.<slug>.<base>). Fora dessa forma, informe o dominioAdmin. Certificados ficam por conta da infraestrutura (Cloudflare/EasyPanel). Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
+      "recomendacao": "O dominio do admin nao e pergunta: e sempre <slug>-admin.<base>, com <base> = dominio do front sem o primeiro rotulo (front display.seedgrid.com.br gera display-admin.seedgrid.com.br; front app.acme.com.br com slug portal-chaves gera portal-chaves-admin.acme.com.br). No subdomain-tenancy os tenants ficam em <tenant>.<dominio do front>. Certificados sao da infraestrutura (Cloudflare/EasyPanel). Dominios reais so no deploy; em desenvolvimento o dev.env aponta para localhost. Para testar o cadastro em desenvolvimento use enderecos de demonstracao (lazim@token-demo.com.br, joao@lck-demo.com.br, felipe@itau-demo.com.br, luciano@mycompany-demo.com.br): o Mailpit local recebe qualquer destinatario.",
       "campos": [
         {
           "id": "dominioFront",
@@ -1817,28 +1817,10 @@
           "efeito": {
             "usado_em": [
               "produto.json:dominioFront",
+              "produto.json:dominioAdmin (derivado: <slug>-admin.<dominioFront sem o primeiro rotulo>)",
+              "env_front:SEEDGRID_ADMIN_HOST (subdomain-tenancy)",
               "env:SECURITY_JWT_ISSUER",
               "publicacao:workflow do EasyPanel"
-            ]
-          }
-        },
-        {
-          "id": "dominioAdmin",
-          "rotulo": "Dominio do admin (derivado: <slug>-admin.<base>, ex.: display-admin.seedgrid.com.br; so informe se o dominio do front nao for <slug>.<base>)",
-          "validacao": "dominio",
-          "padrao": "{{slug}}-admin.{{baseFront}}",
-          "efeito": {
-            "usado_em": [
-              "produto.json:dominioAdmin",
-              "env_front:SEEDGRID_ADMIN_HOST (subdomain-tenancy)",
-              "publicacao:workflow do EasyPanel"
-            ]
-          },
-          "se": {
-            "modelo": [
-              "login-tenancy-b2b",
-              "login-tenancy-b2c",
-              "subdomain-tenancy"
             ]
           }
         },
