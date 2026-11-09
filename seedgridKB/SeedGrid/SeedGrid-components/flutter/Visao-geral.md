@@ -70,7 +70,7 @@ Do `README.md` ("Regras"):
 - No showcase, o código exibido é o trecho entre `// #region` e `// #endregion` da própria página (1:1 com o renderizado).
 - Sem `className`/`style`; `enabled` vira `disabled`; eventos mantêm o nome do React (`onChange`, não `onChanged`); valores string do React viram enum.
 - Props de **texto** (`SgButton.label`/`child`, `SgCard.title`/`description`, `SgDialog.title`/`subtitle`, `SgConfirmationDialog.title`/`message`/`subtitle` e `confirmButton.label`) são `Object?`: aceitam `String` ou `Widget`, convertidos por `sgNode` (`lib/src/props/sg_node.dart`).
-- Sem referência a PrimeFaces/PrimeReact em exemplos; arquivos em UTF-8.
+- Sem referência a bibliotecas de terceiros nos exemplos; arquivos em UTF-8.
 
 Para portar um componente novo: ler o componente React e o contrato gerado `lib/src/generated/<comp>.g.dart`, escrever o widget em `lib/src/<grupo>/`, exportar no **barril do grupo** (nunca no arquivo raiz), testar cada prop pública e criar a página de showcase (passos no `README.md`, "Como portar um componente").
 
