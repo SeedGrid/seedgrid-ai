@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, fundamentos, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "API React de Fundamentos (utilitários, i18n, tema) (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -98,7 +98,7 @@ Tipos: `SgComponentsLocale` (`"pt-BR" | "pt-PT" | "en-US" | "en" | "es" | "fr" |
 
 `messages` aceita forma plana **ou** por namespace: se o objeto tiver a chave `components`, só ela é usada (`resolveMessages`).
 
-Metadados de IA: `src/i18n/SgComponentsI18nProvider.meta.ts` e `useComponentsI18n.meta.ts` entram no manifesto (`build-ai-manifest.mjs`).
+Metadados de IA: `src/i18n/SgComponentsI18nProvider.meta.ts` e `useComponentsI18n.meta.ts` entram no manifesto (`build-ai-manifest.mjs`). Os dois declaram o Playground da página do showcase (`hasPlayground: true`) e listam os exemplos `uso-basico`, `troca-dinamica-de-locale`, `api-imperativa-setcomponentsi18n` e `sobrescrita-de-mensagens` (provider) e `uso-basico` e `componentes-conscientes-do-locale` (hook); todos estão em [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos]] (seções 9 e 10).
 
 ## Estilos — `src/injectStyles.ts` e `src/generated/compiledStyles.ts`
 

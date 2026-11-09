@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, fundamentos, exemplos]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components; front/seedgrid-fe-components/apps/showcase/src/app/samples
 branch: main
-commit: cad3105
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "Exemplos TSX (React) de Fundamentos (utilitários, i18n, tema), validados contra a API real do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -14,7 +14,7 @@ plataforma: react
 
 Referência: [[SeedGrid/SeedGrid-components/fundamentos/API|API dos utilitários]] · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Visão geral]].
 
-Cada exemplo indica a fonte. Os exemplos 3, 4 e 5 são cópia 1:1 do `.sample` do showcase (`apps/showcase/src/app/samples/`); o 2 é cópia 1:1 do `.sample` da página de tema do showcase. Os exemplos 6 e 7 foram compilados com `tsc --strict` contra o código-fonte do pacote (2026-11-07); o 1 vem do README e do `package.json` do pacote; o 8 descreve a rota real do showcase.
+Cada exemplo indica a fonte. Os exemplos 2, 3, 4 e 5 são cópia 1:1 do `.sample` do showcase (o 2 vem da página de tema, os 3, 4 e 5 da página inicial, em `apps/showcase/src/app/samples/`), regenerados por script em 2026-11-09 a partir do código `0f304bb`. Os exemplos 9 e 10 reúnem **todos** os exemplos das páginas `SgComponentsI18nProvider` e `useComponentsI18n` do showcase, cada bloco copiado 1:1 do `.sample`. Os exemplos 6 e 7 foram compilados com `tsc --strict` contra o código-fonte do pacote (2026-11-07); o 1 vem do README e do `package.json` do pacote; o 8 descreve a rota real do showcase. Nenhum bloco foi compilado nesta rodada.
 
 ## 1. Instalação e estilos
 
@@ -172,3 +172,311 @@ Compilado com `tsc --strict`. Vem de `getRuntimeBlockedEmailDomains()` em `src/v
 ## 8. Consumo do manifesto de IA
 
 Fonte: `apps/showcase/src/app/api/ai-manifest/route.ts` — lê `packages/seedgrid-fe-components/dist/ai/seedgrid-components.manifest.json` e devolve em `GET /api/ai-manifest` (`cache-control: no-store`; 404 `{"error":"AI manifest not available"}` se ausente).
+
+## 9. SgComponentsI18nProvider (página do showcase)
+
+Página `/components/providers/sg-components-i18n-provider`.
+
+### Uso básico
+
+Envolva o app com SgComponentsI18nProvider passando o locale e as mensagens do idioma desejado.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/providers/sg-components-i18n-provider/samples/uso-basico.tsx.sample`
+
+```tsx
+import {
+  SgComponentsI18nProvider,
+  SgGrid,
+  componentsMessagesEnUs,
+  tComponents,
+  useComponentsI18n,
+} from "@seedgrid/fe-components";
+
+function Mensagens() {
+  const i18n = useComponentsI18n();
+
+  return (
+    <SgGrid gap={4} className="rounded-lg border border-border bg-foreground/5 p-4 font-mono text-sm">
+      <span>locale: {i18n.locale}</span>
+      <span>components.actions.clear: {tComponents(i18n, "components.actions.clear")}</span>
+      <span>components.password.show: {tComponents(i18n, "components.password.show")}</span>
+      <span>components.inputs.required: {tComponents(i18n, "components.inputs.required")}</span>
+    </SgGrid>
+  );
+}
+
+export default function App() {
+  return (
+    <SgComponentsI18nProvider locale="en-US" messages={componentsMessagesEnUs}>
+      <Mensagens />
+    </SgComponentsI18nProvider>
+  );
+}
+```
+
+### Troca dinâmica de locale
+
+Altere o locale em runtime. Os componentes re-renderizam automaticamente com as novas mensagens.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/providers/sg-components-i18n-provider/samples/troca-dinamica-de-locale.tsx.sample`
+
+```tsx
+import * as React from "react";
+import {
+  SgButton,
+  SgComponentsI18nProvider,
+  SgGrid,
+  componentsMessagesEnUs,
+  componentsMessagesEs,
+  componentsMessagesFr,
+  componentsMessagesPtBr,
+  componentsMessagesPtPt,
+  tComponents,
+  useComponentsI18n,
+} from "@seedgrid/fe-components";
+
+const LOCALES = {
+  "pt-BR": componentsMessagesPtBr,
+  "pt-PT": componentsMessagesPtPt,
+  "en-US": componentsMessagesEnUs,
+  es: componentsMessagesEs,
+  fr: componentsMessagesFr,
+};
+
+type LocaleId = keyof typeof LOCALES;
+
+function Mensagens() {
+  const i18n = useComponentsI18n();
+
+  return (
+    <SgGrid gap={4} className="rounded-lg border border-border bg-foreground/5 p-4 font-mono text-sm">
+      <span>locale: {i18n.locale}</span>
+      <span>components.actions.clear: {tComponents(i18n, "components.actions.clear")}</span>
+      <span>components.password.show: {tComponents(i18n, "components.password.show")}</span>
+      <span>components.inputs.required: {tComponents(i18n, "components.inputs.required")}</span>
+    </SgGrid>
+  );
+}
+
+export default function App() {
+  const [locale, setLocale] = React.useState<LocaleId>("pt-BR");
+
+  return (
+    <SgGrid gap={12}>
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(LOCALES) as LocaleId[]).map((id) => (
+          <SgButton
+            key={id}
+            size="sm"
+            appearance={id === locale ? "solid" : "outline"}
+            onClick={() => setLocale(id)}
+          >
+            {id}
+          </SgButton>
+        ))}
+      </div>
+      <SgComponentsI18nProvider locale={locale} messages={LOCALES[locale]}>
+        <Mensagens />
+      </SgComponentsI18nProvider>
+    </SgGrid>
+  );
+}
+```
+
+### API imperativa (setComponentsI18n)
+
+Alternativa ao Provider. Útil para definir o idioma antes de montar a árvore de componentes.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/providers/sg-components-i18n-provider/samples/api-imperativa-setcomponentsi18n.tsx.sample`
+
+```tsx
+import * as React from "react";
+import {
+  SgButton,
+  SgGrid,
+  getComponentsI18n,
+  setComponentsI18n,
+  tComponents,
+} from "@seedgrid/fe-components";
+
+export default function App() {
+  const [resultado, setResultado] = React.useState("");
+
+  const aplicar = (locale: string) => {
+    const anterior = getComponentsI18n();
+
+    setComponentsI18n({ locale });
+    const atual = getComponentsI18n();
+    setResultado(`${atual.locale}: ${tComponents(atual, "components.actions.clear")}`);
+
+    // Devolve o estado global anterior para nao afetar o restante da pagina.
+    setComponentsI18n({ locale: anterior.locale, messages: anterior.messages });
+  };
+
+  return (
+    <SgGrid gap={12}>
+      <div className="flex flex-wrap gap-2">
+        <SgButton size="sm" onClick={() => aplicar("es")}>
+          es
+        </SgButton>
+        <SgButton size="sm" appearance="outline" onClick={() => aplicar("fr")}>
+          fr
+        </SgButton>
+      </div>
+      <span className="font-mono text-sm">{resultado || "-"}</span>
+    </SgGrid>
+  );
+}
+```
+
+### Sobrescrita de mensagens
+
+Sobrescreva apenas as chaves que deseja customizar. Mescle suas mensagens com o objeto built-in do locale.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/providers/sg-components-i18n-provider/samples/sobrescrita-de-mensagens.tsx.sample`
+
+```tsx
+import {
+  SgComponentsI18nProvider,
+  SgGrid,
+  componentsMessagesEnUs,
+  tComponents,
+  useComponentsI18n,
+} from "@seedgrid/fe-components";
+
+const meusTextos = {
+  "components.actions.clear": "Reset",
+  "components.password.show": "Reveal",
+  "components.inputs.required": "Mandatory field.",
+};
+
+function Mensagens() {
+  const i18n = useComponentsI18n();
+
+  return (
+    <SgGrid gap={4} className="rounded-lg border border-border bg-foreground/5 p-4 font-mono text-sm">
+      <span>locale: {i18n.locale}</span>
+      <span>components.actions.clear: {tComponents(i18n, "components.actions.clear")}</span>
+      <span>components.password.show: {tComponents(i18n, "components.password.show")}</span>
+      <span>components.inputs.required: {tComponents(i18n, "components.inputs.required")}</span>
+    </SgGrid>
+  );
+}
+
+export default function App() {
+  return (
+    <SgComponentsI18nProvider
+      locale="en-US"
+      messages={{ ...componentsMessagesEnUs, ...meusTextos }}
+    >
+      <Mensagens />
+    </SgComponentsI18nProvider>
+  );
+}
+```
+
+## 10. useComponentsI18n (página do showcase)
+
+Página `/components/hooks/use-components-i18n`.
+
+### Uso básico
+
+Use useComponentsI18n para ler o locale ativo e traduzir chaves com o helper t.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/hooks/use-components-i18n/samples/uso-basico.tsx.sample`
+
+```tsx
+import * as React from "react";
+import {
+  SgButton,
+  SgComponentsI18nProvider,
+  SgGrid,
+  tComponents,
+  useComponentsI18n,
+} from "@seedgrid/fe-components";
+
+const LOCALES = ["pt-BR", "pt-PT", "en-US", "es", "fr"];
+
+function Consumidor() {
+  const i18n = useComponentsI18n();
+
+  return (
+    <SgGrid gap={4} className="rounded-lg border border-border bg-foreground/5 p-4 font-mono text-sm">
+      <span>locale: {i18n.locale}</span>
+      <span>messages: {Object.keys(i18n.messages).length}</span>
+      <span>components.actions.clear: {tComponents(i18n, "components.actions.clear")}</span>
+      <span>components.password.show: {tComponents(i18n, "components.password.show")}</span>
+      <span>components.inputs.required: {tComponents(i18n, "components.inputs.required")}</span>
+    </SgGrid>
+  );
+}
+
+export default function App() {
+  const [locale, setLocale] = React.useState("pt-BR");
+
+  return (
+    <SgGrid gap={12}>
+      <div className="flex flex-wrap gap-2">
+        {LOCALES.map((id) => (
+          <SgButton
+            key={id}
+            size="sm"
+            appearance={id === locale ? "solid" : "outline"}
+            onClick={() => setLocale(id)}
+          >
+            {id}
+          </SgButton>
+        ))}
+      </div>
+      <SgComponentsI18nProvider locale={locale}>
+        <Consumidor />
+      </SgComponentsI18nProvider>
+    </SgGrid>
+  );
+}
+```
+
+### Construindo componentes cientes de locale
+
+Combine useComponentsI18n com t para construir componentes que respeitam automaticamente o locale ativo.
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/hooks/use-components-i18n/samples/componentes-conscientes-do-locale.tsx.sample`
+
+```tsx
+import * as React from "react";
+import {
+  SgButton,
+  SgComponentsI18nProvider,
+  SgGrid,
+  tComponents,
+  useComponentsI18n,
+} from "@seedgrid/fe-components";
+
+function BotaoLimpar({ onClear }: { onClear: () => void }) {
+  const i18n = useComponentsI18n();
+
+  return (
+    <SgButton
+      size="sm"
+      appearance="outline"
+      aria-label={tComponents(i18n, "components.actions.clear")}
+      onClick={onClear}
+    >
+      {tComponents(i18n, "components.actions.clear")}
+    </SgButton>
+  );
+}
+
+export default function App() {
+  const [limpezas, setLimpezas] = React.useState(0);
+
+  return (
+    <SgComponentsI18nProvider locale="es">
+      <SgGrid gap={8}>
+        <BotaoLimpar onClear={() => setLimpezas((n) => n + 1)} />
+        <span className="font-mono text-sm">onClear: {limpezas}</span>
+      </SgGrid>
+    </SgComponentsI18nProvider>
+  );
+}
+```

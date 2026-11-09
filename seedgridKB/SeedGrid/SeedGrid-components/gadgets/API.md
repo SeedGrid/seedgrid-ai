@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, gadgets]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/gadgets
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "API React de Gadgets (relógio, calendário, gauges, QR) (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -81,11 +81,11 @@ Botões de navegação com `aria-label` traduzidos (mês anterior/próximo, ir p
 
 ## SgClock
 
-Relógio digital (9 estilos, reaproveitando os [[SeedGrid/SeedGrid-components/digits/Visao-geral|dígitos animados]]) ou analógico com temas SVG, dentro de um `SgCard`. Fonte: `src/gadgets/clock/SgClock.tsx` → `SgClock`.
+Relógio digital (9 estilos prontos mais o `custom`, reaproveitando os [[SeedGrid/SeedGrid-components/digits/Visao-geral|dígitos animados]]) ou analógico com temas SVG, dentro de um `SgCard`. Fonte: `src/gadgets/clock/SgClock.tsx` → `SgClock`.
 
 ### Import
 ```tsx
-import { SgClock, type SgClockProps, type SgClockDigitalStyle } from "@seedgrid/fe-components";
+import { SgClock, type SgClockProps, type SgClockDigitalStyle, type SgClockDigitalParts, type SgClockDigitBuilder } from "@seedgrid/fe-components";
 ```
 
 ### Props
@@ -98,7 +98,8 @@ import { SgClock, type SgClockProps, type SgClockDigitalStyle } from "@seedgrid/
 | `locale` | `string` | `"pt-BR"` | Não | Locale usado para formatacao da hora. |
 | `format` | `"12h" \| "24h"` | `"24h"` | Não | Formato horario do relogio digital (`12h` exibe AM/PM localizado). |
 | `showSeconds` | `boolean` | `true` | Não | Exibe ou oculta os segundos. |
-| `digitalStyle` | `SgClockDigitalStyle` = `"default" \| "fade" \| "discard" \| "segment" \| "sevenSegment" \| "roller3d" \| "flip" \| "matrix" \| "neon"` | `"default"` | Não | Estilo visual do relogio digital. |
+| `digitalStyle` | `SgClockDigitalStyle` = `"default" \| "fade" \| "discard" \| "segment" \| "sevenSegment" \| "roller3d" \| "flip" \| "matrix" \| "neon" \| "custom"` | `"default"` | Não | Estilo visual do relogio digital. Com `"custom"`, o desenho vem do `digitBuilder`. |
+| `digitBuilder` | `SgClockDigitBuilder` = `(parts: SgClockDigitalParts) => React.ReactNode` | — | Não | Desenha o relógio digital inteiro (dígitos e separadores) quando `digitalStyle` é `"custom"`. Sem ele, o relógio cai no estilo `default`. Ignorado nos demais estilos. |
 | `secondHandMode` | `"step" \| "smooth"` | `"step"` | Não | Comportamento do ponteiro de segundos no analogico (`step` salta; `smooth` usa milissegundos). |
 | `themeId` | `string` | `"classic"` | Não | ID do tema do relógio analógico, resolvido pelo `SgClockThemeProvider` (se houver) ou pelo registro global; fallback `"classic"`. |
 | `theme` | `SgClockTheme` | — | Não | Tema inline (`SgClockTheme`) para o relógio analógico; tem precedência sobre `themeId`. |
@@ -128,7 +129,24 @@ Sem `children`. Slot `centerOverlay` (analógico). Renderiza `SgCard` com `cardP
 Analógico: SVG com `aria-label` traduzido (`components.gadgets.clock.analogAria`). Digital: contêiner com `aria-label` traduzido (`components.gadgets.clock.digitalAria`). O rótulo não inclui a hora; não há `aria-live`. Confirmado.
 
 ### Tipos auxiliares exportados
-`SgClockDigitalStyle = "default" | "segment" | "sevenSegment" | "roller3d" | "flip" | "fade" | "matrix" | "neon" | "discard"`.
+`SgClockDigitalStyle = "default" | "segment" | "sevenSegment" | "roller3d" | "flip" | "fade" | "matrix" | "neon" | "discard" | "custom"`.
+
+`SgClockDigitBuilder = (parts: SgClockDigitalParts) => React.ReactNode` — recebe as partes e devolve o desenho completo. `SgClockDigitalParts` (as mesmas do construtor do Flutter; Confirmado em `SgClock.tsx`):
+
+| Campo | Tipo | Conteúdo |
+|---|---|---|
+| `hour` | `string` | Sempre com 2 dígitos; em 12h vai de `01` a `12`. |
+| `minute` | `string` | Minutos com 2 dígitos. |
+| `second` | `string` | Segundos; vazio (`""`) quando `showSeconds` é falso. |
+| `dayPeriod` | `string \| undefined` | Só em 12h (`AM`/`PM` ou o que o `Intl` do locale devolve). |
+| `is12h` | `boolean` | `true` quando `format` é `"12h"`. |
+| `showSeconds` | `boolean` | Valor de `showSeconds`. |
+| `size` | `"sm" \| "md" \| "lg" \| number` | O `size` original do `SgClock`. |
+| `text` | `string` | `HH:MM` ou `HH:MM:SS`. |
+| `textWithPeriod` | `string` | `text` mais o período em maiúsculas. |
+| `sizePx` | `number` | Número = ele mesmo; `sm` 12, `md` 16, `lg` 28. |
+
+`registerSgClockDigitalStyle` (registro de estilos próprios) existe **só no Flutter**; no React o estilo próprio é o `digitalStyle="custom"` com `digitBuilder`.
 
 ## SgTimeProvider e `useSgTime`
 

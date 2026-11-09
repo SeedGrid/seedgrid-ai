@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, buttons]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/buttons
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "API React de Botões (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -41,19 +41,32 @@ import { SgButton, type SgButtonProps, type SgButtonCustomColors } from "@seedgr
 | `iconOnly` | `boolean` | inferido ᶠ | Não | Força o modo somente-ícone (quadrado, sem texto). Se omitido, é inferido como verdadeiro quando não há `children`/`label` e existe `leftIcon` ou `rightIcon`; afeta os padrões de `size` (`sm`) e `shape` (`circle`). *(Inferência)* |
 | `leftIcon` | `React.ReactNode` | — | Não | Icone exibido antes do label. |
 | `rightIcon` | `React.ReactNode` | — | Não | Icone exibido depois do label. |
-| `loading` | `boolean` | `false` | Não | Exibe spinner e bloqueia interacao enquanto a acao esta em progresso. |
+| `loading` | `boolean` | `false` | Não | Exibe spinner e bloqueia interacao enquanto a acao esta em progresso. Continua valendo e **vence** o loading automático do `onClick`: o loading efetivo é `loading` ou operação pendente (`Promise` devolvida pelo `onClick`). |
 | `customColors` | `SgButtonCustomColors` | — | Não | Sobrescreve cores de fundo, texto, borda e foco. |
-| `enabled` | `boolean` | — | Não | Quando false, desabilita o botão. Padrão: true. |
+| `enabled` | `boolean` | `true` | Não | Quando false, desabilita o botão. Padrão: true. |
+| `onClick` | `(event: MouseEvent<HTMLButtonElement, MouseEvent>) => unknown` | — | Não | Clique do botão; pode ser síncrono ou assíncrono. Se **devolver** uma `Promise`, o botão entra em loading sozinho (spinner, desabilitado, `aria-busy`), ignora cliques até a operação terminar e volta ao normal ao terminar ou falhar. Regras completas em «`onClick` assíncrono» abaixo. O retorno é `unknown` só para não quebrar handlers de corpo-expressão (`() => lista.push(x)`). |
 
-- **Atributos DOM herdados**: o tipo é `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> & { ... }`; acrescenta 287 props de `@types/react` (`ButtonHTMLAttributes` 10, `HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 170), incluindo `children`. Não listadas individualmente — ver contrato base `React.ButtonHTMLAttributes` em `@types/react`.
+- **Atributos DOM herdados**: o tipo é `Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color" | "disabled" | "onClick"> & { ... }` (`onClick` e `enabled` são próprios); a contagem a seguir é do conjunto antes do `Omit` de `onClick`/`disabled` (2026-11-07) e vem de `@types/react`: acrescenta 287 props de `@types/react` (`ButtonHTMLAttributes` 10, `HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 170), incluindo `children`. Não listadas individualmente — ver contrato base `React.ButtonHTMLAttributes` em `@types/react`.
 - Aceita `ref` (via `React.forwardRef`) e `key`.
 - Prop herdada com padrão próprio: `type` (de `ButtonHTMLAttributes`) tem padrão `"button"` na desestruturação — o botão **não** submete formulários a menos que se passe `type="submit"` (Confirmado).
 - `enabled` (`false` desabilita) é combinada com `loading`: o `<button>` fica `disabled` se `enabled` for `false` ou `loading` for verdadeiro (Confirmado em `SgButton.tsx`).
-- `children` (herdada) tem prioridade sobre `label` (`children ?? label`). Demais atributos (`onClick`, `aria-*`, `form`, `name`…) são repassados ao `<button>` via `{...rest}` (Confirmado). `style` é mesclado depois das variáveis CSS de cor.
+- `children` (herdada) tem prioridade sobre `label` (`children ?? label`). Demais atributos (`aria-*`, `form`, `name`…) são repassados ao `<button>` via `{...rest}` (Confirmado). `style` é mesclado depois das variáveis CSS de cor.
 
 ### Eventos e callbacks
 
-- `onClick` e todos os eventos DOM de `<button>` (herdados) — repassados diretamente. Com `loading` ou `enabled: false`, o botão nativo fica desabilitado e não dispara cliques.
+- `onClick` — tipado `(event: React.MouseEvent<HTMLButtonElement>) => unknown` (próprio do `SgButton`; sai do `Omit` dos atributos herdados). Com `loading`, operação pendente ou `enabled: false`, o botão nativo fica desabilitado e não dispara cliques. Veja «`onClick` assíncrono» logo abaixo.
+- Os demais eventos DOM de `<button>` (herdados) — repassados diretamente.
+
+#### `onClick` assíncrono (loading automático)
+
+1. **Pode ou não ser `async`.** Função síncrona (abrir modal, alternar painel) funciona como sempre; nada muda.
+2. **Se DEVOLVE uma `Promise`**, o botão entra em loading sozinho (spinner, desabilitado, `aria-busy="true"`), ignora cliques até terminar — inclusive cliques seguidos antes do re-render, porque o bloqueio usa uma ref — e volta ao normal ao terminar ou falhar. Isso protege contra duplo clique e reenvio, mas **não substitui** a chave de idempotência no servidor.
+3. **Precisa DEVOLVER a `Promise`.** `() => { salvar(); }` (chaves sem `return`) **não** protege; `() => salvar()` e `async () => { await salvar(); }` protegem.
+4. **O erro não é engolido.** O botão sai do loading e relança a falha como rejeição não tratada; trate com `try/catch` dentro do `onClick` e avise o usuário com `sgWhistle.error`.
+5. **`async` só para ação que pode demorar ou falhar** (salvar, enviar, pagar); ação instantânea fica síncrona.
+6. **`loading` manual vence:** o loading efetivo é `loading` ou operação pendente.
+
+Confirmado em `SgButton.tsx` (`handleClick`, `pendingRef`, `aria-busy`). Exemplos: «Loading automático com Future», «onClick síncrono x assíncrono» e «Tratando erro no onClick assíncrono» em [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos de botões]].
 
 ### Ref
 
@@ -72,7 +85,7 @@ Nenhum contexto consumido.
 ### Acessibilidade
 
 - Elemento nativo `<button>` (foco e teclado nativos); anel de foco `focus-visible` com a cor `ring` (Confirmado).
-- Spinner com `aria-hidden="true"`. Botões somente-ícone **não** recebem `aria-label` automático — informe `aria-label` (Confirmado: nenhum aria-label é gerado no componente).
+- `aria-busy="true"` no `<button>` enquanto o loading efetivo (`loading` ou operação pendente do `onClick`) estiver ativo. Spinner com `aria-hidden="true"`. Botões somente-ícone **não** recebem `aria-label` automático — informe `aria-label` (Confirmado: nenhum aria-label é gerado no componente).
 
 ### Tipos auxiliares exportados
 

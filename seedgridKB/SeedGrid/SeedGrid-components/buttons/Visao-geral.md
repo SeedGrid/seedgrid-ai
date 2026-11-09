@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, buttons]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/buttons
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "Botões em React (@seedgrid/fe-components): quando usar e para que serve cada símbolo do grupo, composição, testes e limitações. Plataforma React; o equivalente Flutter está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -22,7 +22,7 @@ Componentes de ação do `@seedgrid/fe-components`: botão padrão, botão divid
 
 | Componente | Exportado | Para que serve | Showcase |
 |---|---|---|---|
-| `SgButton` | sim | Botão de ação com `severity`, `appearance` (`solid`/`outline`/`ghost`), `size`, `shape`, `elevation`, ícones, `loading` e cores customizadas | `/components/sg-button` |
+| `SgButton` | sim | Botão de ação com `severity`, `appearance` (`solid`/`outline`/`ghost`), `size`, `shape`, `elevation`, ícones, `loading` (manual ou automático quando o `onClick` devolve uma `Promise`) e cores customizadas | `/components/sg-button` |
 | `SgSplitButton` | sim | Ação principal + menu dropdown de ações secundárias (`items`) | `/components/sg-split-button` |
 | `SgFloatActionButton` | sim | FAB fixo/absoluto com ações secundárias (layouts `linear`, `circle`, `semi-circle`, `quarter-circle`), tooltip, animações, auto-ocultar ao rolar e arrastar com posição persistida | `/components/sg-float-action-button` |
 
@@ -47,6 +47,18 @@ Todos estão no barrel `src/index.ts` (Confirmado). Rotas do showcase em `front/
 |---|---|
 | `packages/seedgrid-fe-components/tests/buttons-menus.test.mjs` | `SgButton` (estado disabled e label), `aria-label` traduzido do `SgSplitButton` e do `SgFloatActionButton`, helpers `buildFabStorageKey`/`parseStoredFabDragPosition` |
 | `packages/seedgrid-fe-components/tests/buttons-menus-dom.test.mjs` (jsdom) | `SgSplitButton` abre o menu, ativa item e fecha com `Escape`; `SgFloatActionButton` persiste arraste em `localStorage` e abre o popup de reset limpando a posição |
+
+## `SgButton.onClick` assíncrono
+
+O `onClick` do `SgButton` é tipado `(event) => unknown` e pode ou não ser assíncrono:
+
+- Síncrono (abrir modal, alternar painel): funciona como sempre.
+- Se **devolve** uma `Promise`, o botão entra em loading sozinho (spinner, desabilitado, `aria-busy`), ignora cliques até terminar (inclusive cliques seguidos antes do re-render) e volta ao normal ao terminar ou falhar. Protege contra duplo clique, mas **não substitui** a chave de idempotência no servidor.
+- Precisa **devolver** a `Promise`: `() => { salvar(); }` não protege; `() => salvar()` e `async () => { await salvar(); }` protegem.
+- O erro não é engolido: o botão sai do loading e relança como rejeição não tratada. Trate com `try/catch` dentro do `onClick` e avise o usuário com `sgWhistle.error`.
+- Use `async` só para ação que pode demorar ou falhar; `loading` manual vence (loading efetivo = `loading` ou operação pendente).
+
+Detalhes na [[SeedGrid/SeedGrid-components/buttons/API|API]] (seção «`onClick` assíncrono») e nos três últimos exemplos de `SgButton` em [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos]]. No Flutter os botões nativos usam `VoidCallback` e não têm loading automático; o `SgButton` Flutter aceita `FutureOr<void> Function()` e vai um passo além (veja a [[SeedGrid/SeedGrid-components/flutter/buttons/API|API Flutter]]).
 
 ## Limitações e pontos de atenção
 
