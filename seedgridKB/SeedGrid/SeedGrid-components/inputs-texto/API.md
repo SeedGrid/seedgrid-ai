@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-texto, api]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "API React de Inputs de texto e documentos (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
