@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-08
+analisado-em: 2026-11-09
 gerado-por: scripts/kb-catalogs.mjs --only catalogo
 ---
 
@@ -61,8 +61,8 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 10 | 0 | 0 | 90 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
-| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **94** | **91** | **3** | **0** | **406** |  |
+| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 12 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
+| **Total Flutter** | **94** | **91** | **3** | **0** | **407** |  |
 
 ## Inputs de texto e documentos — React
 
@@ -704,7 +704,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | Nome | Estado de paridade (componente) / Exportado (símbolo) | Resumo | Nota |
 |---|---|---|---|
 | `SgCalendar` | portado | Calendário mensal com vários meses, locale, limites e dias bloqueados | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
-| `SgClock` | portado | Relógio digital ou analógico com fuso, 12h/24h, temas e estilos de dígito | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
+| `SgClock` | portado | Relógio digital ou analógico com fuso, 12h/24h, temas, estilos de dígito e desenho próprio do… | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
 | `SgTimeProvider` | portado | Fornece a hora do servidor, com tick por segundo, a toda a árvore | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
 | `SgClockThemeProvider` | portado | Resolve temas de relógio (locais e globais) com modo e tema de recuo | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
 | `SgClockThemePicker` | portado | Seletor de tema de relógio com miniatura e busca | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |
@@ -916,6 +916,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgFormController` | apoio, substitui useForm | Guarda valores, regras, erros e estado do formulário: setValue, trigger, reset, handleSubmit | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SgValidationScope` | apoio, só no Flutter | Registra campos sem formulário para o SgWizard validá-los ao avançar de etapa | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SgComponentsI18nProvider` | portado | Define o idioma (5 embutidos) e as mensagens dos componentes abaixo dele | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
+| `useComponentsI18n` | apoio, equivalente ao React (hook vira função com BuildContext) | Lê o idioma ativo e traduz chaves com t(i18n, chave) | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `setComponentsI18n` | apoio, equivalente ao React | Define o idioma e as mensagens globais dos componentes, fora de árvore de widgets | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `sgNode` | apoio, só no Flutter | Converte String/num em Text nas props de texto que aceitam String ou Widget | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |
 | `SeedThemeProvider` | apoio, parcial (sem persistência nem applyTo) | Gera o tema SeedGrid por cor seed, claro/escuro, e o injeta no ThemeData | [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] |

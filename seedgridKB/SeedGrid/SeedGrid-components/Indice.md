@@ -5,7 +5,7 @@ branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
 commit-flutter: e9989b8
-analisado-em: 2026-11-08
+analisado-em: 2026-11-09
 gerado-por: scripts/kb-catalogs.mjs --only components
 ---
 
@@ -61,8 +61,8 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 | Gadgets (relógio, calendário, gauges, QR) | 10 | 10 | 0 | 0 | 90 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
 | Dígitos animados | 8 | 8 | 0 | 0 | 38 | [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/digits/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos\|Exemplos]] |
 | Providers (ambiente/persistência e realtime) | 2 | 2 | 0 | 0 | 46 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
-| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 11 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
-| **Total Flutter** | **94** | **91** | **3** | **0** | **406** |  |
+| Fundamentos do @seedgrid/fe-components | 1 | 1 | 0 | 0 | 12 | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
+| **Total Flutter** | **94** | **91** | **3** | **0** | **407** |  |
 
 ## Onde está cada símbolo
 
@@ -103,4 +103,4 @@ Só os widgets e símbolos principais; os de apoio ficam no Catálogo. Mesmo cri
 - **Gadgets (relógio, calendário, gauges, QR)** (`flutter/gadgets/`, Flutter): SgCalendar, SgClock, SgTimeProvider, SgClockThemeProvider, SgClockThemePicker, SgClockThemePreview, SgLinearGauge, SgRadialGauge, SgQRCode, SgStringAnimator — mais 90 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
 - **Dígitos animados** (`flutter/digits/`, Flutter): SgDiscardDigit, SgFadeDigit, SgFlipDigit, SgMatrixDigit, SgNeonDigit, SgRoller3DDigit, SgSegmentDigit, SgSevenSegmentDigit — mais 38 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
 - **Providers (ambiente/persistência e realtime)** (`flutter/providers/`, Flutter): SgEnvironmentProvider, SgRealtimeProvider — mais 46 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
-- **Fundamentos do @seedgrid/fe-components** (`flutter/fundamentos/`, Flutter): SgForm, SgFormController, SgValidationScope, SgComponentsI18nProvider, setComponentsI18n, sgNode, SeedThemeProvider, SgTheme, maskCpf, isValidCpf, buscarCep, SgHttpClient — mais 11 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
+- **Fundamentos do @seedgrid/fe-components** (`flutter/fundamentos/`, Flutter): SgForm, SgFormController, SgValidationScope, SgComponentsI18nProvider, useComponentsI18n, setComponentsI18n, sgNode, SeedThemeProvider, SgTheme, maskCpf, isValidCpf, buscarCep, SgHttpClient — mais 12 símbolo(s) de apoio (controllers, enums, funções) no [[SeedGrid/SeedGrid-components/Catalogo|Catálogo]]
