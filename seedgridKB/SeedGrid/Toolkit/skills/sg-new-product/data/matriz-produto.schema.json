@@ -39,7 +39,7 @@
           "items": {
             "type": "object",
             "required": ["id", "rotulo", "validacao", "efeito"],
-            "properties": { "id": { "type": "string" }, "rotulo": { "type": "string" }, "validacao": { "type": "string" }, "padrao": { "type": "string" }, "umNivelAbaixoDe": { "type": "string" }, "efeito": { "$ref": "#/definitions/efeito" } }
+            "properties": { "id": { "type": "string" }, "rotulo": { "type": "string" }, "validacao": { "type": "string" }, "padrao": { "type": "string" }, "efeito": { "$ref": "#/definitions/efeito" } }
           }
         },
         "opcoes": {

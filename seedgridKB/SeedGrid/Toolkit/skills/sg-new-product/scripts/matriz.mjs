@@ -22,22 +22,11 @@ const VALIDADORES = {
   slug: (v) => typeof v === 'string' && /^[a-z][a-z0-9-]{1,38}[a-z0-9]$/.test(v),
   'pacote-java': (v) => typeof v === 'string' && /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(v),
   dominio: (v) => typeof v === 'string' && /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(v),
-  // Wildcard do certificado do usuario (ex.: *.acme.com.br): cobre UM nivel abaixo da base.
-  wildcard: (v) => typeof v === 'string' && /^\*\.(?=.{4,251}$)([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(v),
   email: (v) => typeof v === 'string' && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(v),
   registry: (v) => typeof v === 'string' && /^[a-z0-9.-]+(:\d+)?(\/[a-z0-9._-]+)*$/.test(v),
   subdominios: (v) => { const l = Array.isArray(v) ? v : typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []; return l.length > 0 && l.length <= 10 && new Set(l).size === l.length && l.every((x) => typeof x === 'string' && /^[a-z][a-z0-9-]{1,30}[a-z0-9]$/.test(x)); },
   lista: (v) => Array.isArray(v) ? v.length > 0 && v.every((x) => typeof x === 'string' && x.trim()) : typeof v === 'string' && v.split(',').some((x) => x.trim()),
 };
-
-// Um host cabe no wildcard quando e a base mais exatamente UM rotulo (o `*.` cobre um nivel; `a.b.base` nao e coberto).
-export function umNivelAbaixo(host, wildcard) {
-  if (typeof host !== 'string' || !VALIDADORES.wildcard(wildcard)) return false;
-  const base = wildcard.slice(2);
-  const sufixo = `.${base}`;
-  if (!host.endsWith(sufixo)) return false;
-  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(host.slice(0, -sufixo.length));
-}
 
 function validar(regra, valor) {
   if (regra.startsWith('opcao:')) return regra.slice(6).split('|').includes(valor);
@@ -199,28 +188,16 @@ export function resolver(matriz, catalogo, entrada) {
     if (p.tipo === 'campos') {
       for (const c of p.campos) {
         if (c.se?.modelo && !c.se.modelo.includes(ctx.modelo)) { naoAplica.set(c.id, p.numero); continue; } // campo so de alguns modelos (ex.: dominioAdmin: o modelo modular nao tem admin)
-        if (c.id === 'certificadoWildcardTenants') { // so o subdomain-tenancy tem tenants em subdominio: <empresa>.<dominioFront>
-          const w = respostas.certificadoWildcard;
-          const exige = VALIDADORES.wildcard(w) && respostas.dominioFront !== w.slice(2); // front = base: tenants a um nivel, o wildcard principal cobre
-          const t = respostas[c.id];
-          if (t === undefined || t === '') {
-            if (exige) e(`pergunta ${p.numero}: falta "${c.id}": os tenants ficam em <empresa>.${respostas.dominioFront}, dois ou mais niveis abaixo de ${w}, e o * cobre um nivel so; informe o certificado wildcard especial *.${respostas.dominioFront} (no Cloudflare e a configuracao no EasyPanel sao por sua conta)`);
-            continue;
-          }
-          if (!validar(c.validacao, t) || t !== `*.${respostas.dominioFront}`) { e(`pergunta ${p.numero}: "${c.id}" deve ser *.${respostas.dominioFront} (o wildcard dos tenants <empresa>.${respostas.dominioFront}), recebido ${JSON.stringify(t)}`); continue; }
-          efeitos.push({ origem: `${p.id}.${c.id}`, efeito: c.efeito });
-          continue;
-        }
         let v = respostas[c.id];
         if ((v === undefined || v === '') && c.padrao !== undefined) {
-          v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => respostas[n] ?? (n === 'baseCertificado' && VALIDADORES.wildcard(respostas.certificadoWildcard) ? respostas.certificadoWildcard.slice(2) : ''));
-          respostas[c.id] = v;
+          // {{baseFront}}: dominio-pai do dominioFront quando ele tem a forma <slug>.<base>; fora dessa forma nao ha padrao (o usuario informa)
+          const base = typeof respostas.dominioFront === 'string' && typeof respostas.slug === 'string' && respostas.dominioFront.startsWith(`${respostas.slug}.`) ? respostas.dominioFront.slice(respostas.slug.length + 1) : null;
+          if (c.padrao.includes('{{baseFront}}') && !base) v = undefined;
+          else v = c.padrao.replace(/\{\{(\w+)\}\}/g, (_, n) => (n === 'baseFront' ? base : respostas[n]) ?? '');
+          if (v !== undefined) respostas[c.id] = v;
         }
         if (v === undefined) { e(`pergunta ${p.numero}: falta "${c.id}"`); continue; }
         if (!validar(c.validacao, v)) { e(`pergunta ${p.numero}: valor invalido em "${c.id}": ${JSON.stringify(v)} (regra ${c.validacao})`); continue; }
-        if (c.umNivelAbaixoDe && respostas[c.umNivelAbaixoDe] !== undefined && !umNivelAbaixo(v, respostas[c.umNivelAbaixoDe])) {
-          e(`pergunta ${p.numero}: "${c.id}" (${v}) deve ficar UM nivel abaixo do certificado ${respostas[c.umNivelAbaixoDe]} (o * do certificado cobre um nivel so; ex.: admin.${String(respostas[c.umNivelAbaixoDe]).slice(2)})`); continue;
-        }
         efeitos.push({ origem: `${p.id}.${c.id}`, efeito: c.efeito });
       }
     } else if (p.tipo === 'texto') {

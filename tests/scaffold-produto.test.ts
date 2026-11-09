@@ -16,9 +16,9 @@ const { scaffold } = (await import(pathToFileURL(join(SKILL, 'scripts/scaffold-p
   scaffold: (o: { respostas: Record<string, unknown>; destino: string; boilerplates: string }) => Promise<Saida>;
 };
 
-const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', certificadoWildcard: '*.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
+const BASE = { nome: 'Portal Chaves', slug: 'portal-chaves', pacote: 'br.com.acme.portal', dominioFront: 'app.acme.com.br', dominioAdmin: 'admin.acme.com.br', emailRemetente: 'noreply@acme.com.br', emailAdmin: 'dono@acme.com.br' };
 const B2B = { ...BASE, modelo: 'login-tenancy-b2b', extensoes: [] as string[], selfEnter: 'nao', provedorWhatsapp: 'evolution', auditoria: 'postgres', armazenamentoAvatar: 'filesystem', armazenamentoBackup: 'filesystem', apikeysUso: 'Integracoes internas', billingProvider: 'stripe', trialDias: 14, planos: 'Basico,Pro' };
-const SUB = { ...B2B, modelo: 'subdomain-tenancy', dominioFront: 'acme.com.br' };
+const SUB = { ...B2B, modelo: 'subdomain-tenancy' };
 const MODULAR = { ...BASE, modelo: 'modular', selfEnter: 'nao', extensoes: ['apikeys'], apikeysUso: 'x' };
 
 const dirs: string[] = [];
@@ -102,6 +102,14 @@ test('self-enter desligado, convite+cadastro (ambos) e cadastro publico', async 
   const pub = env(ler((await gerar({ ...B2B, selfEnter: 'sim', selfEnterEscopo: 'ambos', selfEnterModo: 'cadastro-publico' })).destino, 'backend/dev.env'));
   assert.equal(pub.SEEDGRID_SECURITY_SELF_ENTER_INVITE_ENABLED, 'false');
   assert.equal(pub.SEEDGRID_SECURITY_SELF_ENTER_PUBLIC_ENABLED, 'true');
+});
+
+test('subdomain-tenancy: dominioAdmin derivado do slug e do front, e SEEDGRID_ADMIN_HOST igual no front e no admin (P154.F2.T1)', async () => {
+  const { dominioAdmin: _a, ...sem } = SUB as Record<string, unknown>;
+  const { destino, saida } = await gerar({ ...sem, nome: 'Display', slug: 'display', dominioFront: 'display.seedgrid.com.br' });
+  assert.equal(saida.ok, true, (saida.erros ?? []).join(' | '));
+  assert.equal(JSON.parse(ler(destino, 'produto.json')).dominioAdmin, 'display-admin.seedgrid.com.br');
+  for (const app of ['frontend', 'admin']) assert.match(ler(destino, `${app}/.env.example`), /^SEEDGRID_ADMIN_HOST=display-admin\.seedgrid\.com\.br$/m);
 });
 
 test('subdomain-tenancy: banco master, porta e artefato proprios', async () => {
@@ -250,7 +258,7 @@ test('ai-pricing, exchange e business-days sao opcionais de verdade: so a marcad
   const tres = ['ai-pricing', 'exchange', 'business-days'];
   for (const modelo of ['login-tenancy-b2b', 'login-tenancy-b2c', 'subdomain-tenancy']) {
     for (const marcada of tres) {
-      const r = await gerar({ ...B2B, modelo, ...(modelo === 'subdomain-tenancy' ? { dominioFront: 'acme.com.br' } : {}), extensoes: [marcada] });
+      const r = await gerar({ ...B2B, modelo, extensoes: [marcada] });
       assert.equal(r.saida.ok, true, modelo + ' ' + marcada + ': ' + (r.saida.erros ?? []).join('\n'));
       const pom = ler(r.destino, 'backend/pom.xml');
       for (const x of tres) {
@@ -517,7 +525,7 @@ test('o pom declara o SDK do provider de nuvem escolhido (optional na filemanage
   const todos = [...new Set(Object.values(SDK).flat())];
   for (const [prov, esperados] of Object.entries(SDK)) {
     for (const modelo of ['login-tenancy-b2b', 'subdomain-tenancy']) {
-      const { destino } = await gerar({ ...B2B, modelo, ...(modelo === 'subdomain-tenancy' ? { dominioFront: 'acme.com.br' } : {}), armazenamentoAvatar: prov, armazenamentoBackup: prov });
+      const { destino } = await gerar({ ...B2B, modelo, armazenamentoAvatar: prov, armazenamentoBackup: prov });
       const pom = readFileSync(join(destino, 'backend/pom.xml'), 'utf8');
       for (const e of esperados) assert.ok(pom.includes(e), `${modelo}/${prov}: falta ${e}`);
       // como avatar e backup usam o mesmo provider, o SDK entra uma vez so
