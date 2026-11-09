@@ -4,83 +4,115 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, inputs-mid
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Data e hora, imagem e câmera (Flutter)
 
 > **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
-Os trechos vêm dos `*.snippets.g.dart` do showcase (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`). Os estados (`_instante`, `_info`, `_captured`, `_form`…) são campos do `State` da página; troque-os pelos do seu widget.
+Os trechos são cópia 1:1 dos `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`), na ordem e com os títulos do showcase; `context.tx(...)`/`context.txf(...)` (i18n do showcase) viraram o literal e a interpolação. O showcase não usa `setState` de página: campos de formulário usam `name` + `control: SgFormController` e o estado de exibição é local (`ValueNotifier` com `ValueListenableBuilder`/`ListenableBuilder`); a linha **Ajuste** abaixo de cada bloco mostra a declaração dos campos da página que o trecho usa. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';`.
 
 
-## SgInputDateTime: básico
+## SgInputDateTime: Básico
+
+O onChange entrega o instante em ISO 8601 UTC (ou null se o campo estiver incompleto).
+
+Região `sgInputDateTimeBasico` em `sg_input_date_time_page.snippets.g.dart`.
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgInputDateTime(
-      id: 'quando',
+      id: 'demo-basic',
       labelText: 'Quando',
-      onChange: (value, local) => setState(() => _instante = value),
+      onChange: (value, local) => _instante.value = value,
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: ${_instante ?? '-'}'),
+    ValueListenableBuilder<String?>(
+      valueListenable: _instante,
+      builder: (context, instante, _) => Text(
+        'Valor: ${instante ?? '-'}',
+      ),
+    ),
   ],
 )
 ```
 
-## SgInputDateTime: fusos horários
+Ajuste: o trecho usa estado local do exemplo (`_instante`), definido assim na página do showcase:
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgInputDateTime(
-      id: 'fuso-utc',
-      labelText: 'UTC',
-      timeZone: 'UTC',
-      value: _fuso,
-      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
-      onChange: (value, local) {
-        if (value != null) setState(() => _fuso = value);
-      },
-    ),
-    const SizedBox(height: 12),
-    SgInputDateTime(
-      id: 'fuso-sp',
-      labelText: '-03:00',
-      timeZone: '-03:00',
-      value: _fuso,
-      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
-      onChange: (value, local) {
-        if (value != null) setState(() => _fuso = value);
-      },
-    ),
-    const SizedBox(height: 12),
-    SgInputDateTime(
-      id: 'fuso-in',
-      labelText: '+05:30',
-      timeZone: '+05:30',
-      value: _fuso,
-      // Campo incompleto (null) nao mexe nos outros: so um instante valido atualiza.
-      onChange: (value, local) {
-        if (value != null) setState(() => _fuso = value);
-      },
-    ),
-    const SizedBox(height: 8),
-    Text('Valor atual: $_fuso'),
-  ],
+final ValueNotifier<String?> _instante = ValueNotifier<String?>(null);
+```
+
+## SgInputDateTime: Fusos horários
+
+O mesmo instante exibido em UTC, -03:00 e +05:30; editar um campo atualiza os outros.
+
+Região `sgInputDateTimeFusos` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+ValueListenableBuilder<String>(
+  valueListenable: _fuso,
+  builder: (context, fuso, _) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputDateTime(
+        id: 'demo-zone-utc',
+        labelText: 'UTC',
+        timeZone: 'UTC',
+        value: fuso,
+        // Campo incompleto (null) não mexe nos outros: só um instante válido atualiza.
+        onChange: (value, local) {
+          if (value != null) _fuso.value = value;
+        },
+      ),
+      const SizedBox(height: 12),
+      SgInputDateTime(
+        id: 'demo-zone-sp',
+        labelText: '-03:00',
+        timeZone: '-03:00',
+        value: fuso,
+        onChange: (value, local) {
+          if (value != null) _fuso.value = value;
+        },
+      ),
+      const SizedBox(height: 12),
+      SgInputDateTime(
+        id: 'demo-zone-in',
+        labelText: '+05:30',
+        timeZone: '+05:30',
+        value: fuso,
+        onChange: (value, local) {
+          if (value != null) _fuso.value = value;
+        },
+      ),
+      const SizedBox(height: 8),
+      Text('Valor: $fuso'),
+    ],
+  ),
 )
 ```
 
-## SgInputDateTime: limites e passo de minutos
+Ajuste: o trecho usa estado local do exemplo (`_fuso`), definido assim na página do showcase:
 
 ```dart
-const SgInputDateTime(
-  id: 'limites',
+final ValueNotifier<String> _fuso = ValueNotifier<String>(
+  '2026-11-03T17:30:00.000Z',
+);
+```
+
+## SgInputDateTime: Limites e passo de minutos
+
+minDate/maxDate validam o intervalo e minuteStep arredonda os minutos ao sair do campo.
+
+Região `sgInputDateTimeLimites` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+SgInputDateTime(
+  id: 'demo-limits',
   labelText: 'Agendamento',
   timeZone: 'UTC',
   minDate: '2026-11-01T08:00:00Z',
@@ -90,11 +122,15 @@ const SgInputDateTime(
 )
 ```
 
-## SgInputDateTime: com segundos
+## SgInputDateTime: Com segundos
+
+showSeconds mostra e aceita os segundos.
+
+Região `sgInputDateTimeSegundos` em `sg_input_date_time_page.snippets.g.dart`.
 
 ```dart
-const SgInputDateTime(
-  id: 'segundos',
+SgInputDateTime(
+  id: 'demo-seconds',
   labelText: 'Evento',
   timeZone: 'UTC',
   defaultValue: '2026-11-03T17:30:45Z',
@@ -102,55 +138,155 @@ const SgInputDateTime(
 )
 ```
 
-## SgInputDateTime: em formulário
+## SgInputDateTime: Eventos
+
+onChange (instante ou null), onEnter (foco) e onExit (saída) informam o que o usuário fez.
+
+Região `sgInputDateTimeEventos` em `sg_input_date_time_page.snippets.g.dart`.
 
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     SgInputDateTime(
-      id: 'consulta',
+      id: 'demo-events',
+      labelText: 'Quando',
+      onChange: (value, local) =>
+          _evento.value = 'onChange: ${value ?? local}',
+      onEnter: () => _evento.value = 'onEnter',
+      onExit: () => _evento.value = 'onExit',
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String>(
+      valueListenable: _evento,
+      builder: (context, evento, _) => Text(
+        'Último evento: $evento',
+      ),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_evento`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String> _evento = ValueNotifier<String>('-');
+```
+
+## SgInputDateTime: Dentro de um formulário
+
+O formulário guarda o instante ISO 8601 UTC.
+
+Região `sgInputDateTimeFormulario` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'demo-form',
       name: 'consulta',
       control: _form,
-      labelText: 'Consulta',
+      labelText: 'Agendamento',
       timeZone: '-03:00',
       required: true,
       requiredMessage: 'Informe a data e a hora',
     ),
     const SizedBox(height: 12),
     SgButton(
-      label: Text(context.tx('Enviar')),
+      label: Text('Enviar'),
       onClick: () => _form.handleSubmit(
-        (values) =>
-            setState(() => _enviado = '${values['consulta']}'),
+        (values) => _enviado.value = '${values['consulta']}',
       ),
     ),
-    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+    ValueListenableBuilder<String>(
+      valueListenable: _enviado,
+      builder: (context, enviado, _) => enviado.isEmpty
+          ? const SizedBox.shrink()
+          : Text(
+              'Enviado: $enviado',
+            ),
+    ),
   ],
 )
 ```
 
-## SgInputDateTime: eventos (`onEnter` e `onExit`)
+Ajuste: o trecho usa estado local do exemplo (`_form`, `_enviado`), definido assim na página do showcase:
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+final SgFormController _form = SgFormController();
+final ValueNotifier<String> _enviado = ValueNotifier<String>('');
+```
+
+## SgInputDateTime: Posição do rótulo
+
+Compare os modos de rótulo: flutuante, acima e à esquerda.
+
+Região `sgInputDateTimeRotulo` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 16,
+  runSpacing: 12,
   children: [
-    SgInputDateTime(
-      id: 'eventos',
-      labelText: 'Quando',
-      onChange: (value, local) =>
-          setState(() => _evento = 'onChange: ${value ?? local}'),
-      onEnter: () => setState(() => _evento = 'onEnter'),
-      onExit: () => setState(() => _evento = 'onExit'),
+    SizedBox(
+      width: 280,
+      child: SgInputDateTime(
+        id: 'sg-input-date-time-label-float',
+        labelText: 'Flutuante',
+        labelPosition: SgInputDateTimeLabelPosition.float,
+      ),
     ),
-    const SizedBox(height: 8),
-    Text('Último evento: $_evento'),
+    SizedBox(
+      width: 280,
+      child: SgInputDateTime(
+        id: 'sg-input-date-time-label-top',
+        labelText: 'Acima',
+        labelPosition: SgInputDateTimeLabelPosition.top,
+      ),
+    ),
+    SizedBox(
+      width: 360,
+      child: SgInputDateTime(
+        id: 'sg-input-date-time-label-left',
+        labelText: 'Esquerda',
+        labelPosition: SgInputDateTimeLabelPosition.left,
+        labelWidth: 140,
+        labelAlign: SgInputDateTimeLabelAlign.end,
+      ),
+    ),
   ],
 )
 ```
 
-## SgFileUpload: básico (valor é lista)
+## SgInputDateTime: Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.datetime.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Região `sgInputDateTimeIdioma` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+SgComponentsI18nProvider(
+  locale: 'fr',
+  messages: {
+    'components.inputs.datetime.min': 'Escolha uma data a partir de {min}.',
+  },
+  child: SgInputDateTime(
+    id: 'demo-i18n',
+    labelText: 'Agendamento',
+    timeZone: 'UTC',
+    minDate: '2026-11-01T08:00:00Z',
+    defaultValue: '2026-10-01T10:00:00Z',
+    required: true,
+  ),
+)
+```
+
+## SgFileUpload: Básico
+
+Um arquivo de qualquer tipo. O onChange entrega a lista (de um); o envio ao servidor é do host.
+
+Região `sgFileUploadBasico` em `sg_file_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -159,17 +295,30 @@ Column(
     SgFileUpload(
       id: 'anexo',
       labelText: 'Anexo',
-      onChange: (files) => setState(() => _um = files),
+      onChange: (files) => _um.value = files,
     ),
     const SizedBox(height: 8),
-    Text(
-      'Valor atual: ${_um.isEmpty ? '-' : _um.map((f) => f.name).join(', ')}',
+    ValueListenableBuilder<List<SgFile>>(
+      valueListenable: _um,
+      builder: (context, um, _) => Text(
+        'Valor atual: ${um.isEmpty ? '-' : um.map((f) => f.name).join(', ')}',
+      ),
     ),
   ],
 )
 ```
 
-## SgFileUpload: vários arquivos (`maxFiles > 1`)
+Ajuste: o trecho usa estado local do exemplo (`_um`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<List<SgFile>> _um = ValueNotifier(const []);
+```
+
+## SgFileUpload: Vários arquivos
+
+maxFiles maior que 1 liga a seleção múltipla; os escolhidos se somam até o limite. Cada recusa é por arquivo.
+
+Região `sgFileUploadVarios` em `sg_file_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -180,18 +329,51 @@ Column(
       labelText: 'Anexos',
       maxFiles: 3,
       hintText: 'Até 3 arquivos.',
-      onChange: (files) => setState(() => _varios = files),
+      onChange: (files) => _varios.value = files,
       onError: (code, message, fileName) =>
-          setState(() => _erro = '$fileName: ${code.name}'),
+          _erro.value = '$fileName: ${code.name}',
     ),
     const SizedBox(height: 8),
-    Text('Arquivos: ${_varios.length}'),
-    Text('Última recusa: $_erro'),
+    ValueListenableBuilder<List<SgFile>>(
+      valueListenable: _varios,
+      builder: (context, varios, _) =>
+          Text('Arquivos: ${varios.length}'),
+    ),
+    ValueListenableBuilder<String>(
+      valueListenable: _erro,
+      builder: (context, erro, _) => Text('Última recusa: $erro'),
+    ),
   ],
 )
 ```
 
-## SgFileUpload: limites de quantidade e de tamanho (texto com unidade)
+Ajuste: o trecho usa estado local do exemplo (`_varios`, `_erro`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<List<SgFile>> _varios = ValueNotifier(const []);
+final ValueNotifier<String> _erro = ValueNotifier('-');
+```
+
+## SgFileUpload: Tipos aceitos
+
+mediaType aceita grupos (image, video, audio) e formatos (pdf, xls, xlsx...). O tipo é conferido pelo conteúdo do arquivo, não só pela extensão.
+
+Região `sgFileUploadTipos` em `sg_file_upload_page.snippets.g.dart`.
+
+```dart
+const SgFileUpload(
+  id: 'planilha',
+  labelText: 'Planilha ou PDF',
+  mediaType: [SgMediaType.pdf, SgMediaType.xls, SgMediaType.xlsx],
+  maxFiles: 2,
+)
+```
+
+## SgFileUpload: Limites de tamanho
+
+maxSizePerFile e maxSizeTotal aceitam bytes ou texto com unidade ("500KB", "1.5MB", "1GB").
+
+Região `sgFileUploadLimites` em `sg_file_upload_page.snippets.g.dart`.
 
 ```dart
 const SgFileUpload(
@@ -204,22 +386,42 @@ const SgFileUpload(
 )
 ```
 
-## SgFileUpload: tipos aceitos (`mediaType`)
+## SgFileUpload: Desabilitado
+
+Não permite escolher nem remover.
+
+Região `sgFileUploadDesabilitado` em `sg_file_upload_page.snippets.g.dart`.
 
 ```dart
 const SgFileUpload(
-  id: 'planilha',
-  labelText: 'Planilha ou PDF',
-  mediaType: [
-    SgMediaType.pdf,
-    SgMediaType.xls,
-    SgMediaType.xlsx,
-  ],
-  maxFiles: 2,
+  id: 'anexo-desabilitado',
+  labelText: 'Anexo',
+  enabled: false,
+  defaultValue: [SgFile(name: 'contrato.pdf', size: 482304)],
 )
 ```
 
-## SgFileUpload: em formulário (o valor é `List<SgFile>`)
+## SgFileUpload: Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.fileupload.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Região `sgFileUploadIdioma` em `sg_file_upload_page.snippets.g.dart`.
+
+```dart
+const SgComponentsI18nProvider(
+  locale: 'fr',
+  messages: {
+    'components.inputs.fileupload.drop': 'Arraste o contrato aqui',
+  },
+  child: SgFileUpload(id: 'idioma', labelText: 'Anexo'),
+)
+```
+
+## SgFileUpload: Dentro de um formulário
+
+O formulário guarda a lista de arquivos e valida o obrigatório.
+
+Região `sgFileUploadFormulario` em `sg_file_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -236,31 +438,34 @@ Column(
     ),
     const SizedBox(height: 12),
     SgButton(
-      label: Text(context.tx('Enviar')),
+      label: Text('Enviar'),
       onClick: () => _form.handleSubmit(
-        (values) => setState(
-          () => _enviado =
-              '${(values['comprovantes'] as List).length} arquivo(s)',
-        ),
+        (values) => _enviado.value =
+            '${(values['comprovantes'] as List).length} arquivo(s)',
       ),
     ),
-    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+    ValueListenableBuilder<String>(
+      valueListenable: _enviado,
+      builder: (context, enviado, _) => enviado.isEmpty
+          ? const SizedBox()
+          : Text('Enviado: $enviado'),
+    ),
   ],
 )
 ```
 
-## SgFileUpload: desabilitado com arquivo já salvo
+Ajuste: o trecho usa estado local do exemplo (`_form`, `_enviado`), definido assim na página do showcase:
 
 ```dart
-const SgFileUpload(
-  id: 'anexo-desabilitado',
-  labelText: 'Anexo',
-  enabled: false,
-  defaultValue: [SgFile(name: 'contrato.pdf', size: 482304)],
-)
+final SgFormController _form = SgFormController();
+final ValueNotifier<String> _enviado = ValueNotifier('');
 ```
 
-## SgImageUpload: básico
+## SgImageUpload: Básico
+
+O onChange entrega a lista de imagens (de uma); o envio ao servidor é do host. O tipo é conferido pelo conteúdo do arquivo.
+
+Região `sgImageUploadBasico` em `sg_image_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -269,17 +474,65 @@ Column(
     SgImageUpload(
       id: 'foto',
       labelText: 'Foto',
-      onChange: (files) => setState(() => _uma = files),
+      onChange: (files) => _uma.value = files,
     ),
     const SizedBox(height: 8),
-    Text(
-      'Valor atual: ${_uma.isEmpty ? '-' : '${_uma.first.name} (${_uma.first.size} bytes)'}',
+    ValueListenableBuilder<List<SgFile>>(
+      valueListenable: _uma,
+      builder: (context, uma, _) => Text(
+        'Valor atual: ${uma.isEmpty ? '-' : '${uma.first.name} (${uma.first.size} bytes)'}',
+      ),
     ),
   ],
 )
 ```
 
-## SgImageUpload: regras (formato, tamanho, dimensão e proporção)
+Ajuste: o trecho usa estado local do exemplo (`_uma`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<List<SgFile>> _uma = ValueNotifier(const []);
+```
+
+## SgImageUpload: Várias imagens
+
+maxFiles maior que 1 liga a seleção múltipla e mostra a grade de miniaturas. As imagens recusadas não derrubam as demais.
+
+Região `sgImageUploadVarias` em `sg_image_upload_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgImageUpload(
+      id: 'galeria',
+      labelText: 'Galeria',
+      maxFiles: 4,
+      maxSizePerFile: '2MB',
+      maxSizeTotal: '6MB',
+      hintText: 'Até 4 imagens, 2 MB cada e 6 MB no total.',
+      onChange: (files) => _galeria.value = files,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<List<SgFile>>(
+      valueListenable: _galeria,
+      builder: (context, galeria, _) =>
+          Text('Imagens: ${galeria.length}'),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_galeria`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<List<SgFile>> _galeria = ValueNotifier(const []);
+```
+
+## SgImageUpload: Regras de validação
+
+accept, maxSizePerFile, minWidth/minHeight e aspect recusam a imagem com uma mensagem e disparam onError.
+
+Região `sgImageUploadRegras` em `sg_image_upload_page.snippets.g.dart`.
 
 ```dart
 const SgImageUpload(
@@ -294,28 +547,11 @@ const SgImageUpload(
 )
 ```
 
-## SgImageUpload: várias imagens (grade de miniaturas)
+## SgImageUpload: Imagem já salva
 
-```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    SgImageUpload(
-      id: 'galeria',
-      labelText: 'Galeria',
-      maxFiles: 4,
-      maxSizePerFile: '2MB',
-      maxSizeTotal: '6MB',
-      hintText: 'Até 4 imagens, 2 MB cada e 6 MB no total.',
-      onChange: (files) => setState(() => _galeria = files),
-    ),
-    const SizedBox(height: 8),
-    Text('Imagens: ${_galeria.length}'),
-  ],
-)
-```
+Um SgFile com url é uma imagem existente no servidor e já aparece na pré-visualização.
 
-## SgImageUpload: imagem já salva (URL)
+Região `sgImageUploadSalva` em `sg_image_upload_page.snippets.g.dart`.
 
 ```dart
 const SgImageUpload(
@@ -332,7 +568,41 @@ const SgImageUpload(
 )
 ```
 
-## SgImageUpload: em formulário (o valor é `List<SgFile>`)
+## SgImageUpload: Desabilitado
+
+Não permite escolher nem remover.
+
+Região `sgImageUploadDesabilitado` em `sg_image_upload_page.snippets.g.dart`.
+
+```dart
+const SgImageUpload(
+  id: 'foto-desabilitada',
+  labelText: 'Foto',
+  enabled: false,
+)
+```
+
+## SgImageUpload: Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.imageupload.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Região `sgImageUploadIdioma` em `sg_image_upload_page.snippets.g.dart`.
+
+```dart
+const SgComponentsI18nProvider(
+  locale: 'fr',
+  messages: {
+    'components.inputs.imageupload.drop': 'Arraste a foto aqui',
+  },
+  child: SgImageUpload(id: 'idioma', labelText: 'Foto'),
+)
+```
+
+## SgImageUpload: Dentro de um formulário
+
+O formulário guarda a lista de imagens e valida o obrigatório.
+
+Região `sgImageUploadFormulario` em `sg_image_upload_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -348,30 +618,36 @@ Column(
     ),
     const SizedBox(height: 12),
     SgButton(
-      label: Text(context.tx('Enviar')),
+      label: Text('Enviar'),
       onClick: () => _form.handleSubmit(
-        (values) => setState(
-          () => _enviado =
-              (values['documento'] as List).cast<SgFile>().first.name,
-        ),
+        (values) => _enviado.value = (values['documento'] as List)
+            .cast<SgFile>()
+            .first
+            .name,
       ),
     ),
-    if (_enviado.isNotEmpty) Text('Enviado: $_enviado'),
+    ValueListenableBuilder<String>(
+      valueListenable: _enviado,
+      builder: (context, enviado, _) => enviado.isEmpty
+          ? const SizedBox()
+          : Text('Enviado: $enviado'),
+    ),
   ],
 )
 ```
 
-## SgImageUpload: desabilitado
+Ajuste: o trecho usa estado local do exemplo (`_form`, `_enviado`), definido assim na página do showcase:
 
 ```dart
-const SgImageUpload(
-  id: 'foto-desabilitada',
-  labelText: 'Foto',
-  enabled: false,
-)
+final SgFormController _form = SgFormController();
+final ValueNotifier<String> _enviado = ValueNotifier('');
 ```
 
-## SgCameraCapture: básico
+## SgCameraCapture: Básico
+
+O onCapture entrega a imagem JPEG (bytes); o envio ao servidor é do host. Exige a permissão de câmera do sistema.
+
+Região `sgCameraCaptureBasico` em `sg_camera_capture_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -383,17 +659,35 @@ Column(
         id: 'foto',
         labelText: 'Foto',
         previewHeight: 240,
-        onCapture: (image) => setState(() => _captured = image),
+        onCapture: (image) => _captured.value = image,
       ),
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: ${_captured?.length ?? '-'} bytes'),
-    if (_captured != null) Image.memory(_captured!, width: 160),
+    ValueListenableBuilder<Uint8List?>(
+      valueListenable: _captured,
+      builder: (context, captured, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Valor atual: ${captured?.length ?? '-'} bytes'),
+          if (captured != null) Image.memory(captured, width: 160),
+        ],
+      ),
+    ),
   ],
 )
 ```
 
-## SgCameraCapture: guia oval (selfie)
+Ajuste: o trecho usa estado local do exemplo (`_captured`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<Uint8List?> _captured = ValueNotifier(null);
+```
+
+## SgCameraCapture: Guia oval (selfie)
+
+guide: oval com a câmera frontal ajuda a centralizar o rosto.
+
+Região `sgCameraCaptureOval` em `sg_camera_capture_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -407,18 +701,33 @@ Column(
         previewHeight: 280,
         facing: SgCameraCaptureFacing.user,
         guide: SgCameraCaptureGuide.oval,
-        onCapture: (image) => setState(() => _selfie = image),
+        onCapture: (image) => _selfie.value = image,
       ),
     ),
-    if (_selfie != null) ...[
-      const SizedBox(height: 8),
-      Image.memory(_selfie!, width: 160),
-    ],
+    ValueListenableBuilder<Uint8List?>(
+      valueListenable: _selfie,
+      builder: (context, selfie, _) => selfie == null
+          ? const SizedBox()
+          : Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Image.memory(selfie, width: 160),
+            ),
+    ),
   ],
 )
 ```
 
-## SgCameraCapture: guia retangular (documento)
+Ajuste: o trecho usa estado local do exemplo (`_selfie`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<Uint8List?> _selfie = ValueNotifier(null);
+```
+
+## SgCameraCapture: Guia retangular (documento)
+
+guide: rect com a câmera traseira e resolução alta, para documentos.
+
+Região `sgCameraCaptureRetangular` em `sg_camera_capture_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -433,18 +742,33 @@ Column(
         guide: SgCameraCaptureGuide.rect,
         resolution: SgCameraCaptureResolution.high,
         previewHeight: 240,
-        onCapture: (image) => setState(() => _documento = image),
+        onCapture: (image) => _documento.value = image,
       ),
     ),
-    if (_documento != null) ...[
-      const SizedBox(height: 8),
-      Image.memory(_documento!, width: 160),
-    ],
+    ValueListenableBuilder<Uint8List?>(
+      valueListenable: _documento,
+      builder: (context, documento, _) => documento == null
+          ? const SizedBox()
+          : Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Image.memory(documento, width: 160),
+            ),
+    ),
   ],
 )
 ```
 
-## SgCameraCapture: tratar erros da câmera
+Ajuste: o trecho usa estado local do exemplo (`_documento`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<Uint8List?> _documento = ValueNotifier(null);
+```
+
+## SgCameraCapture: Erros de câmera
+
+Sem permissão, sem câmera ou falha: o componente mostra o estado e chama onError com o código.
+
+Região `sgCameraCaptureErros` em `sg_camera_capture_page.snippets.g.dart`.
 
 ```dart
 Column(
@@ -457,18 +781,44 @@ Column(
         labelText: 'Foto',
         previewHeight: 240,
         onError: (code, message) =>
-            setState(() => _cameraError = '${code.name}: $message'),
+            _cameraError.value = '${code.name}: $message',
       ),
     ),
     const SizedBox(height: 8),
-    Text('Valor atual: ${_cameraError ?? '-'}'),
+    ValueListenableBuilder<String?>(
+      valueListenable: _cameraError,
+      builder: (context, cameraError, _) =>
+          Text('Valor atual: ${cameraError ?? '-'}'),
+    ),
   ],
 )
 ```
 
-## SgColorPicker: básico
+Ajuste: o trecho usa estado local do exemplo (`_cameraError`), definido assim na página do showcase:
 
-`defaultValue` define a cor inicial; `onChange` entrega a cor em `#RRGGBB` maiúsculo a cada mudança válida.
+```dart
+final ValueNotifier<String?> _cameraError = ValueNotifier(null);
+```
+
+## SgCameraCapture: Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.camera.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Região `sgCameraCaptureIdioma` em `sg_camera_capture_page.snippets.g.dart`.
+
+```dart
+const SgComponentsI18nProvider(
+  locale: 'fr',
+  messages: {
+    'components.inputs.camera.capture': 'Tirar foto agora',
+  },
+  child: SgCameraCapture(id: 'idioma', labelText: 'Foto'),
+)
+```
+
+## SgColorPicker: Básico
+
+defaultValue define a cor inicial; onChange entrega a cor em #RRGGBB maiúsculo a cada mudança válida.
 
 Região `sgColorPickerBasico` em `sg_color_picker_page.snippets.g.dart`.
 
@@ -480,18 +830,25 @@ Column(
       id: 'cor-basico',
       defaultValue: '#16803D',
       ariaLabel: 'Cor',
-      onChange: (hex) => setState(() => _basico = hex),
+      onChange: (hex) => _basico.value = hex,
     ),
-    Text(_basico),
+    ValueListenableBuilder<String>(
+      valueListenable: _basico,
+      builder: (context, hex, _) => Text(hex),
+    ),
   ],
 )
 ```
 
-Ajuste: o trecho usa `String _basico = '#16803D';` e `setState` num `State`; declare a variável no widget que contém o exemplo.
+Ajuste: o trecho usa estado local do exemplo (`_basico`), definido assim na página do showcase:
 
-## SgColorPicker: valor controlado
+```dart
+final ValueNotifier<String> _basico = ValueNotifier('#16803D');
+```
 
-Com `value`, o pai decide a cor: o painel só muda quando o `value` muda.
+## SgColorPicker: Valor controlado
+
+Com value, o pai decide a cor: o painel só muda quando o value muda.
 
 Região `sgColorPickerControlado` em `sg_color_picker_page.snippets.g.dart`.
 
@@ -499,26 +856,71 @@ Região `sgColorPickerControlado` em `sg_color_picker_page.snippets.g.dart`.
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    SgColorPicker(
-      id: 'cor-controlada',
-      labelText: 'Cor da marca',
-      value: _controlada,
-      onChange: (hex) => setState(() => _controlada = hex),
+    ValueListenableBuilder<String>(
+      valueListenable: _controlada,
+      builder: (context, hex, _) => SgColorPicker(
+        id: 'cor-controlada',
+        labelText: 'Cor da marca',
+        value: hex,
+        onChange: (novo) => _controlada.value = novo,
+      ),
     ),
     const SizedBox(height: 12),
     SgButton(
       label: Text('Voltar para azul'),
-      onClick: () => setState(() => _controlada = '#0EA5E9'),
+      onClick: () => _controlada.value = '#0EA5E9',
     ),
   ],
 )
 ```
 
-Ajuste: o trecho usa `String _controlada = '#0EA5E9';` e `setState` num `State`.
+Ajuste: o trecho usa estado local do exemplo (`_controlada`), definido assim na página do showcase:
 
-## SgColorPicker: barras (matiz, saturação e brilho)
+```dart
+final ValueNotifier<String> _controlada = ValueNotifier('#0EA5E9');
+```
 
-`mode: SgColorPickerMode.sliders` troca o gradiente por três barras.
+## SgColorPicker: Cores predefinidas
+
+presets mostra uma paleta; tocar numa cor a escolhe.
+
+Região `sgColorPickerPredefinidas` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgColorPicker(
+      id: 'cor-predefinidas',
+      defaultValue: '#EF4444',
+      presets: const [
+        '#EF4444',
+        '#F97316',
+        '#F59E0B',
+        '#10B981',
+        '#0EA5E9',
+        '#7C3AED',
+        '#EC4899',
+      ],
+      onChange: (hex) => _predefinida.value = hex,
+    ),
+    ValueListenableBuilder<String>(
+      valueListenable: _predefinida,
+      builder: (context, hex, _) => Text(hex),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_predefinida`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String> _predefinida = ValueNotifier('#EF4444');
+```
+
+## SgColorPicker: Barras (matiz, saturação e brilho)
+
+mode: SgColorPickerMode.sliders troca o gradiente por três barras: matiz, saturação e brilho.
 
 Região `sgColorPickerBarras` em `sg_color_picker_page.snippets.g.dart`.
 
@@ -531,9 +933,39 @@ const SgColorPicker(
 )
 ```
 
-## SgColorPicker: dentro de um formulário
+## SgColorPicker: Sem campo hex
 
-`name` + `control` ligam o seletor ao `SgFormController`; o valor enviado é o `#RRGGBB`.
+showHex: false esconde o campo de texto #RRGGBB.
+
+Região `sgColorPickerSemHex` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+const SgColorPicker(
+  id: 'cor-sem-hex',
+  defaultValue: '#0EA5E9',
+  showHex: false,
+  width: '80%',
+)
+```
+
+## SgColorPicker: Desabilitado
+
+enabled: false bloqueia os sliders, o campo hex e as cores predefinidas.
+
+Região `sgColorPickerDesabilitado` em `sg_color_picker_page.snippets.g.dart`.
+
+```dart
+const SgColorPicker(
+  id: 'cor-desabilitada',
+  defaultValue: '#336699',
+  presets: ['#EF4444', '#10B981'],
+  enabled: false,
+)
+```
+
+## SgColorPicker: Dentro de um formulário
+
+name + control ligam o seletor ao SgFormController; o valor enviado é o #RRGGBB.
 
 Região `sgColorPickerFormulario` em `sg_color_picker_page.snippets.g.dart`.
 
@@ -551,19 +983,30 @@ Column(
     SgButton(
       label: Text('Enviar'),
       onClick: () => _form.handleSubmit(
-        (values) => setState(() => _enviado = '${values['marca']}'),
+        (values) => _enviado.value = '${values['marca']}',
       ),
     ),
-    if (_enviado.isNotEmpty) Text(_enviado),
+    ValueListenableBuilder<String>(
+      valueListenable: _enviado,
+      builder: (context, enviado, _) =>
+          enviado.isEmpty ? const SizedBox.shrink() : Text(enviado),
+    ),
   ],
 )
 ```
 
-Ajuste: o trecho usa `_form` e `_enviado` do `State` da página: `final SgFormController _form = SgFormController(defaultValues: {'marca': '#F97316'});` (chame `_form.dispose()` no `dispose`) e `String _enviado = '';`.
+Ajuste: o trecho usa estado local do exemplo (`_form`, `_enviado`), definido assim na página do showcase:
 
-## SgColorPicker: diálogo `showSgColorPicker`
+```dart
+final SgFormController _form = SgFormController(
+  defaultValues: {'marca': '#F97316'},
+);
+final ValueNotifier<String> _enviado = ValueNotifier('');
+```
 
-Abre o seletor num diálogo e devolve o `#RRGGBB` escolhido (ou `null` se cancelar).
+## SgColorPicker: Diálogo showSgColorPicker
+
+showSgColorPicker abre o painel num diálogo e devolve a cor escolhida, ou null se cancelar.
 
 Região `sgColorPickerDialogo` em `sg_color_picker_page.snippets.g.dart`.
 
@@ -579,16 +1022,33 @@ Wrap(
         final hex = await showSgColorPicker(
           context,
           id: 'cor-dialogo',
-          initialValue: _dialogo,
+          initialValue: _dialogo.value,
           presets: const ['#EF4444', '#10B981', '#7C3AED'],
         );
-        if (hex != null) setState(() => _dialogo = hex);
+        if (hex != null) _dialogo.value = hex;
       },
     ),
-    Container(width: 32, height: 32, color: sgHexToColor(_dialogo)),
-    Text(_dialogo),
+    ValueListenableBuilder<String>(
+      valueListenable: _dialogo,
+      builder: (context, hex, _) => Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 12,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            color: sgHexToColor(hex),
+          ),
+          Text(hex),
+        ],
+      ),
+    ),
   ],
 )
 ```
 
-Ajuste: o trecho usa `String _dialogo = '#7C3AED';` e `setState` num `State`.
+Ajuste: o trecho usa estado local do exemplo (`_dialogo`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String> _dialogo = ValueNotifier('#7C3AED');
+```
