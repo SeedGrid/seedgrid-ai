@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, gadgets]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Gadgets (relógio, calendário, gauges, QR) — Flutter (`seedgrid_components`)
@@ -25,7 +25,7 @@ analisado-em: 2026-11-07
 | Componente | Estado | Para que serve | Página do showcase |
 |---|---|---|---|
 | `SgCalendar` | portado | Calendário mensal com vários meses, locale, limites e dias bloqueados. | `pages/sg_calendar_page.dart` |
-| `SgClock` | portado | Relógio digital ou analógico com fuso, 12h/24h, temas e estilos de dígito. | `pages/sg_clock_page.dart` |
+| `SgClock` | portado | Relógio digital ou analógico com fuso, 12h/24h, temas, estilos de dígito e desenho próprio do dígito (`digitalStyle: custom` + `digitBuilder`). | `pages/sg_clock_page.dart` |
 | `SgTimeProvider` | portado | Fornece a hora do servidor, com tick por segundo, a toda a árvore. | `pages/sg_time_provider_page.dart` |
 | `SgClockThemeProvider` | portado | Resolve temas de relógio (locais e globais) com modo e tema de recuo. | `pages/sg_clock_theme_provider_page.dart` |
 | `SgClockThemePicker` | portado | Seletor de tema de relógio com miniatura e busca. | `pages/sg_clock_theme_picker_page.dart` |

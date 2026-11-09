@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, gadgets, e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgCalendar
 
@@ -62,7 +62,7 @@ SgCalendar(
 
 ## SgClock
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_clock_page.dart` (14 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_clock_page.dart` (15 exemplo(s) na página; abaixo 4).
 
 ### Digital
 
@@ -140,61 +140,105 @@ Região `sgClockAnalogico` em `sg_clock_page.snippets.g.dart`.
 ```dart
 SgClockThemeProvider(
   value: SgClockThemeProviderValue(themes: sgClockThemesBuiltIn),
-  child: Wrap(
-    spacing: 16,
-    runSpacing: 16,
-    crossAxisAlignment: WrapCrossAlignment.start,
-    children: [
-      SizedBox(
-        width: 260,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SgClockThemePicker(
-              value: _themeId,
-              onChange: (id) => setState(() => _themeId = id),
-              label: 'Tema',
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                SgButton(
-                  label: Text(
-                    _smooth
-                        ? 'Segundos: smooth'
-                        : 'Segundos: step',
+  child: ListenableBuilder(
+    listenable: Listenable.merge([_themeId, _smooth, _showSeconds]),
+    builder: (context, _) => Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        SizedBox(
+          width: 260,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SgClockThemePicker(
+                value: _themeId.value,
+                onChange: (id) => _themeId.value = id,
+                label: 'Tema',
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  SgButton(
+                    label: Text(
+                      _smooth.value
+                          ? 'Segundos: smooth'
+                          : 'Segundos: step',
+                    ),
+                    onClick: () => _smooth.value = !_smooth.value,
                   ),
-                  onClick: () => setState(() => _smooth = !_smooth),
-                ),
-                SgButton(
-                  label: Text(
-                    _showSeconds
-                        ? 'Segundos: ON'
-                        : 'Segundos: OFF',
+                  SgButton(
+                    label: Text(
+                      _showSeconds.value
+                          ? 'Segundos: ON'
+                          : 'Segundos: OFF',
+                    ),
+                    onClick: () =>
+                        _showSeconds.value = !_showSeconds.value,
                   ),
-                  onClick: () =>
-                      setState(() => _showSeconds = !_showSeconds),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-      SgClock(
-        clockStyle: SgClockClockStyle.analog,
-        size: 220,
-        initialServerTime: '2026-06-15T10:08:30Z',
-        timezone: 'UTC',
-        themeId: _themeId,
-        showSeconds: _showSeconds,
-        secondHandMode: _smooth
-            ? SgClockSecondHandMode.smooth
-            : SgClockSecondHandMode.step,
-      ),
-    ],
+        SgClock(
+          clockStyle: SgClockClockStyle.analog,
+          size: 220,
+          initialServerTime: '2026-06-15T10:08:30Z',
+          timezone: 'UTC',
+          themeId: _themeId.value,
+          showSeconds: _showSeconds.value,
+          secondHandMode: _smooth.value
+              ? SgClockSecondHandMode.smooth
+              : SgClockSecondHandMode.step,
+        ),
+      ],
+    ),
   ),
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_showSeconds`: `ValueNotifier<bool>`, valor inicial `true`; `_smooth`: `ValueNotifier<bool>`, valor inicial `false`; `_themeId`: `ValueNotifier<String>`, valor inicial `'seedgrid'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### Desenho do dígito próprio (digitBuilder)
+
+Com digitalStyle custom, o digitBuilder recebe as partes do relógio e devolve o desenho de cada dígito; sem ele, o relógio cai no estilo default.
+
+Região `sgClockDigitBuilder` em `sg_clock_page.snippets.g.dart`.
+
+```dart
+SgClock(
+  digitalStyle: SgClockDigitalStyle.custom,
+  initialServerTime: '2026-06-15T09:41:07-03:00',
+  timezone: 'America/Sao_Paulo',
+  digitBuilder: (context, parts) {
+    final scheme = Theme.of(context).colorScheme;
+    return Wrap(
+      spacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final ch in parts.text.split(''))
+          ch == ':'
+              ? Text(ch)
+              : Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: scheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    ch,
+                    style: TextStyle(color: scheme.onPrimary),
+                  ),
+                ),
+      ],
+    );
+  },
 )
 ```
 
@@ -202,7 +246,7 @@ SgClockThemeProvider(
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_time_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
-### Uma hora para toda a árvore
+### Uso básico
 
 Os relógios abaixo não têm initialServerTime: leem a hora do SgTimeProvider e andam juntos, alinhados à virada do segundo.
 
@@ -275,33 +319,38 @@ Região `sgClockThemeProviderBasico` em `sg_clock_theme_provider_page.snippets.g
 ```dart
 SgClockThemeProvider(
   value: SgClockThemeProviderValue(themes: sgClockThemesBuiltIn),
-  child: Wrap(
-    spacing: 16,
-    runSpacing: 16,
-    crossAxisAlignment: WrapCrossAlignment.start,
-    children: [
-      SgClock(
-        clockStyle: SgClockClockStyle.analog,
-        size: 160,
-        initialServerTime: '2026-06-15T10:08:30Z',
-        timezone: 'UTC',
-        themeId: _themeId,
-      ),
-      SizedBox(
-        width: 300,
-        child: SgClockThemePicker(
-          value: _themeId,
-          onChange: (id) => setState(() => _themeId = id),
+  child: ValueListenableBuilder<String>(
+    valueListenable: _themeId,
+    builder: (context, themeId, _) => Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        SgClock(
+          clockStyle: SgClockClockStyle.analog,
+          size: 160,
+          initialServerTime: '2026-06-15T10:08:30Z',
+          timezone: 'UTC',
+          themeId: themeId,
         ),
-      ),
-    ],
+        SizedBox(
+          width: 300,
+          child: SgClockThemePicker(
+            value: themeId,
+            onChange: (id) => _themeId.value = id,
+          ),
+        ),
+      ],
+    ),
   ),
 )
 ```
 
-### Um tema local
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_themeId`: `ValueNotifier<String>`, valor inicial `'classic'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
-themes aceita temas próprios, que valem só abaixo do provider e vencem os globais de mesmo id.
+### Tema local customizado
+
+Passe um array themes para o provider para injetar temas locais sem registro global.
 
 Região `sgClockThemeProviderLocal` em `sg_clock_theme_provider_page.snippets.g.dart`.
 
@@ -371,40 +420,43 @@ SgClockThemeProvider(
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_clock_theme_picker_page.dart` (4 exemplo(s) na página; abaixo 3).
 
-### Escolhendo o tema de um relógio
+### Uso básico
 
-O seletor lê os temas do SgClockThemeProvider mais próximo; o relógio ao lado usa o tema escolhido.
+Escolha de tema visual com preview imediato aplicado ao relógio.
 
 Região `sgClockThemePickerBasico` em `sg_clock_theme_picker_page.snippets.g.dart`.
 
 ```dart
 SgClockThemeProvider(
   value: SgClockThemeProviderValue(themes: sgClockThemesBuiltIn),
-  child: Wrap(
-    spacing: 16,
-    runSpacing: 16,
-    crossAxisAlignment: WrapCrossAlignment.start,
-    children: [
-      SizedBox(
-        width: 300,
-        child: SgClockThemePicker(
-          value: _tema,
-          onChange: (id) => setState(() => _tema = id),
+  child: ValueListenableBuilder<String>(
+    valueListenable: _tema,
+    builder: (context, tema, _) => Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        SizedBox(
+          width: 300,
+          child: SgClockThemePicker(
+            value: tema,
+            onChange: (id) => _tema.value = id,
+          ),
         ),
-      ),
-      SgClock(
-        clockStyle: SgClockClockStyle.analog,
-        size: 160,
-        initialServerTime: '2026-06-15T10:08:30Z',
-        timezone: 'UTC',
-        themeId: _tema,
-      ),
-    ],
+        SgClock(
+          clockStyle: SgClockClockStyle.analog,
+          size: 160,
+          initialServerTime: '2026-06-15T10:08:30Z',
+          timezone: 'UTC',
+          themeId: tema,
+        ),
+      ],
+    ),
   ),
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado e controllers da página do showcase (`_tema`) e `setState`. Declare esses membros no seu `State` para copiá-lo.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_tema`: `ValueNotifier<String>`, valor inicial `'classic'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ### Sem busca, aberto e com miniatura grande
 
@@ -694,7 +746,7 @@ const SgQRCode(
 
 ### Logo no centro
 
-logoSrc (URL) ou logoImage (qualquer ImageProvider) com tamanho, respiro e cantos configuráveis.
+O logo central tem tamanho, respiro e cantos configuráveis (logoSize, logoPadding e logoBorderRadius).
 
 Região `sgQrCodeLogo` em `sg_qr_code_page.snippets.g.dart`.
 
@@ -711,7 +763,7 @@ SgQRCode(
 
 ## SgStringAnimator
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_string_animator_page.dart` (9 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_string_animator_page.dart` (10 exemplo(s) na página; abaixo 3).
 
 ### Roller 3D - nomes (alinhado à esquerda)
 

@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, feedback-e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Feedback e exibição (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Exemplos|Exemplos — Feedback e exibição (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-07: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 8a43f9d (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco com "Região" foi comparado, texto a texto, com a constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (idêntico, com `context.tx` já trocado pelo literal); os blocos "Exemplo próprio" foram lidos contra o construtor Dart. Continua sem `flutter analyze`/`flutter test` nesta conferência. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 > **Pré-requisitos.** Os exemplos de `toast` e `sgWhistle` só **disparam** mensagens: é preciso haver um `SgToaster` ou `SgToastHost` (para toasts) e um `SgWhistler` ou `SgWhistleHost` (para whistles) montado em algum lugar da árvore; os exemplos de `SgToastHost`/`SgWhistleHost` mostram a montagem. O exemplo com `_extraHost` usa uma variável `bool` de estado da página (`StatefulWidget`). Conferi, por amostragem (pelo menos um exemplo por componente), que nomes e parâmetros existem na API Dart real (por exemplo `toast.promise<T>`, `SgToastPromiseMessages`, `SgWhistleOptions(message:)`, `SgAvatarGroup(children:)`); não encontrei divergência.
 
@@ -46,9 +46,9 @@ Wrap(
 )
 ```
 
-### Severidades e cor própria
+### Severidade e cores personalizadas
 
-Cores padrão por severidade e uma cor própria com `SgAvatarSeverity.custom` e `customColors`.
+Preset por severity e override de cores.
 
 Região `sgAvatarCores` em `sg_avatar_page.snippets.g.dart`.
 
@@ -84,9 +84,9 @@ Wrap(
 )
 ```
 
-### Tamanhos e formas
+### Forma e tamanho
 
-Formas `circle` e `square`, tamanhos `xs` e `lg` e imagem por `src`.
+Combinações de shape e size.
 
 Região `sgAvatarTamanhos` em `sg_avatar_page.snippets.g.dart`.
 
@@ -198,9 +198,9 @@ Column(
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_badge_page.dart` (9 exemplo(s) na página; abaixo 3).
 
-### Severidades e estilos
+### Severidades
 
-Quatro estilos (solid, soft, outline, ghost) para cada severidade.
+Cada severidade e cada estilo (solid, soft, outline, ghost).
 
 Região `sgBadgeSeveridades` em `sg_badge_page.snippets.g.dart`.
 
@@ -223,7 +223,7 @@ Wrap(
 
 ### Tamanhos
 
-Os quatro tamanhos do badge: `xs`, `sm`, `md` e `lg`.
+XS, SM, MD e LG.
 
 Região `sgBadgeTamanhos` em `sg_badge_page.snippets.g.dart`.
 
@@ -241,9 +241,9 @@ Wrap(
 )
 ```
 
-### Contador, limite e ponto
+### Contador e dot
 
-`count` aplica `max` ("99+"); `dot` mostra só o ponto e `pulse` o anima.
+Badge numérico, max e indicador.
 
 Região `sgBadgeContador` em `sg_badge_page.snippets.g.dart`.
 
@@ -267,11 +267,11 @@ const Wrap(
 
 ## SgBadgeOverlay
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_badge_overlay_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_badge_overlay_page.dart` (5 exemplo(s) na página; abaixo 3).
 
 ### Contador no canto do avatar
 
-Padrão: top-right.
+Contador sobre o canto do avatar; o padrão é top-right.
 
 Região `sgBadgeOverlayAvatar` em `sg_badge_overlay_page.snippets.g.dart`.
 
@@ -323,52 +323,63 @@ SgBadgeOverlay(
 
 ## SgSkeleton
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_skeleton_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_skeleton_page.dart` (6 exemplo(s) na página; abaixo 3).
 
-### Formas
+### Formas básicas
 
-text (padrão), rectangle, rounded, square e circle.
+Variantes principais: "text", "rectangle", "rounded", "square" e "circle".
 
 Região `sgSkeletonFormas` em `sg_skeleton_page.snippets.g.dart`.
 
 ```dart
-const Wrap(
-  spacing: 16,
-  runSpacing: 16,
-  crossAxisAlignment: WrapCrossAlignment.center,
+const SgGrid(
+  columns: {'base': 2, 'lg': 5},
+  gap: 12,
   children: [
-    SgSkeleton(width: 160),
-    SgSkeleton(
-      shape: SgSkeletonShape.rectangle,
-      width: 120,
-      height: 48,
-    ),
-    SgSkeleton(
-      shape: SgSkeletonShape.rounded,
-      width: 120,
-      height: 48,
-    ),
-    SgSkeleton(shape: SgSkeletonShape.square),
-    SgSkeleton(shape: SgSkeletonShape.circle),
+    SgSkeleton(shape: SgSkeletonShape.text),
+    SgSkeleton(shape: SgSkeletonShape.rectangle, height: 48),
+    SgSkeleton(shape: SgSkeletonShape.rounded, height: 48),
+    SgSkeleton(shape: SgSkeletonShape.square, size: 56),
+    SgSkeleton(shape: SgSkeletonShape.circle, size: 56),
   ],
 )
 ```
 
-### Animações
+### Animação
 
-wave (padrão), pulse e none.
+Escolha entre "wave", "pulse" ou "none".
 
-Região `sgSkeletonAnimacoes` em `sg_skeleton_page.snippets.g.dart`.
+Região `sgSkeletonAnimacao` em `sg_skeleton_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+const SgGrid(
+  columns: {'base': 1, 'sm': 3},
+  gap: 16,
   children: [
-    SgSkeleton(width: 220),
-    SizedBox(height: 8),
-    SgSkeleton(width: 220, animation: SgSkeletonAnimation.pulse),
-    SizedBox(height: 8),
-    SgSkeleton(width: 220, animation: SgSkeletonAnimation.none),
+    SgStack(
+      gap: 8,
+      children: [
+        Text('wave'),
+        SgSkeleton(animation: SgSkeletonAnimation.wave, height: 56),
+      ],
+    ),
+    SgStack(
+      gap: 8,
+      children: [
+        Text('pulse'),
+        SgSkeleton(
+          animation: SgSkeletonAnimation.pulse,
+          height: 56,
+        ),
+      ],
+    ),
+    SgStack(
+      gap: 8,
+      children: [
+        Text('none'),
+        SgSkeleton(animation: SgSkeletonAnimation.none, height: 56),
+      ],
+    ),
   ],
 )
 ```
@@ -380,13 +391,11 @@ Aceita número (px) ou "50%", "2rem", "1.5em"; size define largura e altura junt
 Região `sgSkeletonDimensoes` em `sg_skeleton_page.snippets.g.dart`.
 
 ```dart
-const Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+const SgStack(
+  gap: 8,
   children: [
     SgSkeleton(width: '50%', height: '2rem'),
-    SizedBox(height: 8),
     SgSkeleton(size: '3rem', shape: SgSkeletonShape.circle),
-    SizedBox(height: 8),
     SgSkeleton(width: 200, height: 24, borderRadius: 4),
   ],
 )
@@ -394,73 +403,52 @@ const Column(
 
 ## SgToaster
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_toaster_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_toaster_page.dart` (11 exemplo(s) na página; abaixo 3).
 
-### Tipos
+### Tipos de toast
 
-toast(), success, info, warning, error, loading e promise. O toast loading nunca some sozinho.
+Use métodos específicos por severidade.
 
 Região `sgToasterTipos` em `sg_toaster_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 8,
   children: [
     SgButton(
-      label: Text('Padrão'),
-      onClick: () => toast('Mensagem simples'),
+      label: Text('default'),
+      onClick: () => toast.message('Mensagem neutra'),
     ),
     SgButton(
-      label: Text('Sucesso'),
+      label: Text('success'),
       severity: SgSeverity.success,
-      onClick: () => toast.success(
-        'Salvo!',
-        SgToastOptions(
-          description: 'As alterações foram gravadas.',
-        ),
-      ),
+      onClick: () => toast.success('Operação concluída'),
     ),
     SgButton(
-      label: Text('Info'),
+      label: Text('info'),
       severity: SgSeverity.info,
-      onClick: () => toast.info('Nova versão disponível'),
+      onClick: () => toast.info('Informação importante'),
     ),
     SgButton(
-      label: Text('Aviso'),
+      label: Text('warning'),
       severity: SgSeverity.warning,
-      onClick: () => toast.warning('Sessão expira em 5 minutos'),
+      onClick: () => toast.warning('Atenção no fluxo'),
     ),
     SgButton(
-      label: Text('Erro'),
+      label: Text('error'),
       severity: SgSeverity.danger,
       onClick: () => toast.error('Falha ao salvar'),
     ),
     SgButton(
-      label: Text('Carregando'),
-      severity: SgSeverity.secondary,
-      onClick: () => toast.loading(
-        'Processando...',
-        const SgToastOptions(id: 'processando'),
-      ),
-    ),
-    SgButton(
-      label: Text('Promise'),
+      label: Text('loading'),
       appearance: SgAppearance.outline,
-      onClick: () => toast.promise<String>(
-        Future<String>.delayed(
-          const Duration(seconds: 2),
-          () => 'ok',
-        ),
-        SgToastPromiseMessages<String>(
-          loading: 'Enviando...',
-          success: (String v) => 'Enviado: $v',
-          error: 'Não foi possível enviar',
-        ),
-      ),
+      onClick: () => toast.loading('Processando...'),
     ),
     SgButton(
-      label: Text('Limpar tudo'),
+      label: Text('descartar todos'),
       appearance: SgAppearance.ghost,
       onClick: toast.dismiss,
     ),
@@ -468,64 +456,114 @@ Wrap(
 )
 ```
 
-### Ação e botão de fechar
+### Ações e toast personalizado
 
-Cada toast pode ter uma ação e decidir se mostra o x, por cima do padrão do toaster.
+Use action para CTA rápida e custom para renderização livre.
 
-Região `sgToasterAcao` em `sg_toaster_page.snippets.g.dart`.
+Região `sgToasterAcoes` em `sg_toaster_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 8,
   children: [
     SgButton(
-      label: Text('Com ação'),
-      onClick: () => toast(
-        'Item removido',
+      label: Text('Toast com ação'),
+      severity: SgSeverity.warning,
+      onClick: () => toast.warning(
+        'Item arquivado',
         SgToastOptions(
+          description: 'Clique em desfazer para restaurar.',
           action: SgToastAction(
             label: 'Desfazer',
-            onClick: () => toast.success('Restaurado'),
+            onClick: () => toast.success(
+              'Ação desfeita',
+              SgToastOptions(
+                description: 'O item voltou para a lista.',
+              ),
+            ),
           ),
         ),
       ),
     ),
     SgButton(
-      label: Text('Sem botão de fechar'),
+      label: Text('Toast personalizado'),
       appearance: SgAppearance.outline,
-      onClick: () => toast(
-        'Sem x',
-        const SgToastOptions(closeButton: false, duration: 2500),
+      onClick: () => toast.custom(
+        (String id) => Container(
+          width: 280,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF7F1),
+            border: Border.all(color: const Color(0x80C56A2D)),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Toast personalizado',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF8F4B1F),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Conteúdo renderizado via toast.custom(...)',
+                style: const TextStyle(color: Color(0xFF6B4B33)),
+              ),
+              const SizedBox(height: 8),
+              SgButton(
+                label: Text('Fechar'),
+                size: SgSize.sm,
+                onClick: () => toast.dismiss(id),
+              ),
+            ],
+          ),
+        ),
+        const SgToastOptions(duration: 8000, closeButton: false),
       ),
     ),
   ],
 )
 ```
 
-### Duração
+### Opções por toast
 
-A duração do toast vence a do toaster (padrão 4000 ms). Zero deixa o toast fixo.
+Cada toast aceita duration, closeButton, description e action.
 
-Região `sgToasterDuracao` em `sg_toaster_page.snippets.g.dart`.
+Região `sgToasterOpcoes` em `sg_toaster_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 8,
   children: [
     SgButton(
+      label: Text('Disparar toast com opções'),
+      onClick: () => toast.info(
+        'Toast com opções personalizadas',
+        SgToastOptions(
+          description: 'Duração de 10s, sem closeButton.',
+          duration: 10000,
+          closeButton: false,
+        ),
+      ),
+    ),
+    SgButton(
       label: Text('1 segundo'),
-      onClick: () =>
-          toast('Rápido', const SgToastOptions(duration: 1000)),
+      appearance: SgAppearance.outline,
+      onClick: () => toast('Rápido', const SgToastOptions(duration: 1000)),
     ),
     SgButton(
-      label: Text('8 segundos'),
-      onClick: () =>
-          toast('Devagar', const SgToastOptions(duration: 8000)),
-    ),
-    SgButton(
-      label: Text('Fixo'),
+      label: Text('Fixo (duration: 0)'),
+      appearance: SgAppearance.outline,
       onClick: () => toast.info(
         'Fica até fechar',
         const SgToastOptions(duration: 0),
@@ -537,43 +575,44 @@ Wrap(
 
 ## SgToastHost
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_toast_host_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_toast_host_page.dart` (11 exemplo(s) na página; abaixo 3).
 
-### Um host para o app inteiro
+### Configuração básica
 
-Coloque o SgToastHost uma vez, por cima do conteúdo (ex.: no builder do MaterialApp); qualquer tela dispara toasts pela API toast.
+Neste showcase, o SgToastHost já está montado na página. Em um app real, monte-o uma vez na raiz.
 
 Região `sgToastHostBasico` em `sg_toast_host_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 8,
   children: [
     SgButton(
-      label: Text('Sucesso'),
+      label: Text('toast.message'),
+      onClick: () => toast.message('Mensagem básica'),
+    ),
+    SgButton(
+      label: Text('toast.success'),
       severity: SgSeverity.success,
-      onClick: () => toast.success('Salvo pelo host'),
+      onClick: () => toast.success('Operação concluída'),
     ),
     SgButton(
-      label: Text('Erro'),
-      severity: SgSeverity.danger,
-      onClick: () => toast.error('Falhou pelo host'),
-    ),
-    SgButton(
-      label: Text('Limpar'),
-      appearance: SgAppearance.ghost,
+      label: Text('toast.dismiss (all)'),
+      appearance: SgAppearance.outline,
       onClick: toast.dismiss,
     ),
   ],
 )
 ```
 
-### O host prevalece sobre o SgToaster solto
+### Prioridade: layout vs página
 
 Esta área tem um SgToaster dentro dela, mas existe um SgToastHost na página: o toaster solto não desenha nada, então cada toast aparece uma vez só.
 
-Região `sgToastHostPrevalece` em `sg_toast_host_page.snippets.g.dart`.
+Região `sgToastHostPrioridade` em `sg_toast_host_page.snippets.g.dart`.
 
 ```dart
 SizedBox(
@@ -593,98 +632,118 @@ SizedBox(
 )
 ```
 
-### Vários hosts
+### Posicionamento
 
 O último host montado é o ativo; quando ele sai, o anterior volta. Ligue o segundo host (canto inferior esquerdo) e dispare um toast.
 
-Região `sgToastHostVarios` em `sg_toast_host_page.snippets.g.dart`.
+Região `sgToastHostPosicionamento` em `sg_toast_host_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 12,
-  runSpacing: 8,
-  crossAxisAlignment: WrapCrossAlignment.center,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 12,
   children: [
-    FilterChip(
-      label: Text('Segundo host'),
-      selected: _extraHost,
-      onSelected: (v) => setState(() => _extraHost = v),
+    ValueListenableBuilder<bool>(
+      valueListenable: _extraHost,
+      builder: (context, v, _) => FilterChip(
+        label: Text('Segundo host'),
+        selected: v,
+        onSelected: (value) => _extraHost.value = value,
+      ),
     ),
     SgButton(
       label: Text('Disparar'),
-      onClick: () => toast.info(
-        'Quem está ativo?',
-        const SgToastOptions(duration: 3000),
-      ),
+      onClick: () => toast.info('Quem está ativo?', const SgToastOptions(duration: 3000)),
     ),
   ],
 )
 ```
 
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_extraHost`: `ValueNotifier<bool>`, valor inicial `false`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
 ## SgWhistler
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_whistler_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_whistler_page.dart` (11 exemplo(s) na página; abaixo 3).
 
-### Severidades
+### Severidades e comportamento do stack
 
-Os avisos aparecem no rodapé da página.
+O serviço expõe métodos de conveniência por severidade, enquanto props do host como max, newestOnTop e gap controlam o stack.
 
 Região `sgWhistlerSeveridades` em `sg_whistler_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  gap: 8,
   children: [
-    SgButton(
-      label: Text('Padrão'),
-      onClick: () => sgWhistle.show(
-        SgWhistleOptions(message: 'Aviso simples'),
-      ),
+  SgButton(
+    label: const Text('default'),
+    onClick: () => sgWhistle.show(
+    SgWhistleOptions(
+      title: 'Nota de contexto',
+      message: 'Feedback inline renderizado dentro do fluxo do layout.',
+      duration: 5000,
     ),
-    SgButton(
-      label: Text('Sucesso'),
-      severity: SgSeverity.success,
-      onClick: () => sgWhistle.success(
-        SgWhistleOptions(
-          title: 'Salvo',
-          message: 'As alterações foram gravadas.',
-        ),
-      ),
+  ),
+  ),
+  SgButton(
+    label: const Text('success'),
+    severity: SgSeverity.success,
+    onClick: () => sgWhistle.success(
+    SgWhistleOptions(
+      title: 'Salvo',
+      message: 'O registro foi persistido com sucesso.',
+      duration: 5000,
     ),
-    SgButton(
-      label: Text('Info'),
-      severity: SgSeverity.info,
-      onClick: () => sgWhistle.info(
-        SgWhistleOptions(
-          message: 'Há uma nova versão.',
-        ),
-      ),
+  ),
+  ),
+  SgButton(
+    label: const Text('info'),
+    severity: SgSeverity.info,
+    onClick: () => sgWhistle.info(
+    SgWhistleOptions(
+      title: 'Atenção',
+      message: 'Esta seção pode mostrar progresso ou dicas contextuais.',
+      duration: 5000,
     ),
-    SgButton(
-      label: Text('Aviso'),
-      severity: SgSeverity.warning,
-      onClick: () => sgWhistle.warning(
-        SgWhistleOptions(
-          message: 'Sessão perto de expirar.',
-        ),
-      ),
+  ),
+  ),
+  SgButton(
+    label: const Text('warning'),
+    severity: SgSeverity.warning,
+    onClick: () => sgWhistle.warning(
+    SgWhistleOptions(
+      title: 'Revisão pendente',
+      message: 'A ação precisa de confirmação antes de continuar.',
+      duration: 5000,
     ),
-    SgButton(
-      label: Text('Erro'),
-      severity: SgSeverity.danger,
-      onClick: () => sgWhistle.error(
-        SgWhistleOptions(
-          title: 'Falha',
-          message: 'Não foi possível salvar.',
-        ),
-      ),
+  ),
+  ),
+  SgButton(
+    label: const Text('error'),
+    severity: SgSeverity.danger,
+    onClick: () => sgWhistle.error(
+    SgWhistleOptions(
+      title: 'Ação falhou',
+      message: 'A requisição retornou um erro e precisa de atenção.',
+      duration: 5000,
     ),
-    SgButton(
-      label: Text('Limpar tudo'),
-      appearance: SgAppearance.ghost,
-      onClick: sgWhistle.dismiss,
+  ),
+  ),
+  SgButton(
+    label: const Text('loading'),
+    appearance: SgAppearance.outline,
+    onClick: () => sgWhistle.loading(
+    SgWhistleOptions(
+      title: 'Processando...',
+      message: 'Processando sem bloquear o layout da página.',
+      duration: 0,
     ),
+  ),
+  ),
   ],
 )
 ```
@@ -714,86 +773,88 @@ Wrap(
 )
 ```
 
-### Ação, ícone e onClose
+### Ícone e onClose
 
-A ação fecha o aviso; onClose roda quando ele sai por qualquer motivo.
+icon troca o ícone do aviso; onClose roda quando ele sai da pilha por qualquer motivo.
 
-Região `sgWhistlerAcao` em `sg_whistler_page.snippets.g.dart`.
+Região `sgWhistlerIconeOnclose` em `sg_whistler_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  gap: 12,
   children: [
-    SgButton(
-      label: Text('Com ação'),
-      onClick: () => sgWhistle.warning(
-        SgWhistleOptions(
-          title: 'Rascunho',
-          message: 'Você tem alterações não salvas.',
-          icon: const Icon(Icons.edit),
-          duration: 0,
-          action: SgWhistleAction(
-            label: 'Salvar',
-            onClick: () => sgWhistle.success(
-              SgWhistleOptions(
-                message: 'Rascunho salvo',
-              ),
+    SgStack(
+      direction: SgStackDirection.row,
+      wrap: true,
+      align: SgStackAlign.center,
+      gap: 8,
+      children: [
+        SgButton(
+          label: Text('Aviso com ícone'),
+          onClick: () => sgWhistle.warning(
+            SgWhistleOptions(
+              title: 'Rascunho',
+              message: 'Você tem alterações não salvas.',
+              icon: const Icon(Icons.edit),
+              duration: 0,
+              onClose: () => _fechados.value++,
             ),
           ),
-          onClose: () => debugPrint('whistle fechado'),
         ),
-      ),
-    ),
-    SgButton(
-      label: Text('Sem botão de fechar'),
-      appearance: SgAppearance.outline,
-      onClick: () => sgWhistle.info(
-        SgWhistleOptions(
-          message: 'Some em 3 segundos',
-          dismissible: false,
-          duration: 3000,
+        ValueListenableBuilder<int>(
+          valueListenable: _fechados,
+          builder: (context, total, _) =>
+              Text('${'onClose chamado'}: $total'),
         ),
-      ),
+      ],
     ),
+    const SgWhistler(max: 3),
   ],
 )
 ```
 
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_fechados`: `ValueNotifier<int>`, valor inicial `0`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
 ## SgWhistleHost
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_whistle_host_page.dart` (4 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_whistle_host_page.dart` (8 exemplo(s) na página; abaixo 3).
 
-### Um host para a tela
+### Configuração básica
 
-O SgWhistleHost marca o lugar dos avisos; qualquer código dispara pela API sgWhistle.
+Monte um SgWhistleHost onde o layout deve revelar mensagens contextuais. Depois dispare whistles de qualquer lugar da página.
 
 Região `sgWhistleHostBasico` em `sg_whistle_host_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 8,
-  runSpacing: 8,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  gap: 8,
   children: [
-    SgButton(
-      label: Text('Sucesso'),
-      severity: SgSeverity.success,
-      onClick: () => sgWhistle.success(
-        SgWhistleOptions(message: 'Salvo pelo host'),
-      ),
+  SgButton(
+    label: const Text('sgWhistle.show'),
+    onClick: () => sgWhistle.show(
+    SgWhistleOptions(
+      title: 'Exemplo base',
+      message: 'Um whistle padrão apareceu no rodapé da página.',
     ),
-    SgButton(
-      label: Text('Erro'),
-      severity: SgSeverity.danger,
-      onClick: () => sgWhistle.error(
-        SgWhistleOptions(message: 'Falhou pelo host'),
-      ),
+  ),
+  ),
+  SgButton(
+    label: const Text('sgWhistle.success'),
+    severity: SgSeverity.success,
+    onClick: () => sgWhistle.success(
+    SgWhistleOptions(
+      title: 'Salvo',
+      message: 'Esta mensagem permaneceu no fluxo do documento.',
     ),
-    SgButton(
-      label: Text('Limpar'),
-      appearance: SgAppearance.ghost,
-      onClick: sgWhistle.dismiss,
-    ),
+  ),
+  ),
+  SgButton(
+    label: const Text('sgWhistle.dismiss'),
+    appearance: SgAppearance.outline,
+    onClick: sgWhistle.dismiss,
+  ),
   ],
 )
 ```
@@ -805,16 +866,17 @@ A caixa abaixo tem um SgWhistler solto, mas há um SgWhistleHost na página: o s
 Região `sgWhistleHostPrevalece` em `sg_whistle_host_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgStack(
+  gap: 8,
+  align: SgStackAlign.start,
   children: [
-    const SgWhistler(),
     SgButton(
       label: Text('Disparar'),
       onClick: () => sgWhistle.info(
         SgWhistleOptions(message: 'Só aparece no host'),
       ),
     ),
+    const SgWhistler(),
   ],
 )
 ```
@@ -826,15 +888,19 @@ O último host montado é o ativo (aqui, um segundo host com cantos retos); ao s
 Região `sgWhistleHostVarios` em `sg_whistle_host_page.snippets.g.dart`.
 
 ```dart
-Wrap(
-  spacing: 12,
-  runSpacing: 8,
-  crossAxisAlignment: WrapCrossAlignment.center,
+SgStack(
+  direction: SgStackDirection.row,
+  wrap: true,
+  align: SgStackAlign.center,
+  gap: 8,
   children: [
-    FilterChip(
-      label: Text('Segundo host (cantos retos)'),
-      selected: _extraHost,
-      onSelected: (v) => setState(() => _extraHost = v),
+    ValueListenableBuilder<bool>(
+      valueListenable: _extraHost,
+      builder: (context, ativo, _) => SgButton(
+        label: Text('${'Segundo host (cantos retos)'}: $ativo'),
+        appearance: SgAppearance.outline,
+        onClick: () => _extraHost.value = !ativo,
+      ),
     ),
     SgButton(
       label: Text('Disparar'),
@@ -849,13 +915,15 @@ Wrap(
 )
 ```
 
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_extraHost`: `ValueNotifier<bool>`, valor inicial `false`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
 ## SgNotificationBell
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_notification_bell_page.dart` (4 exemplo(s) na página; abaixo 4). O backend e o Pulse são simulados em memória (`demo_notifications_api.dart` e `SgSimulatedPulseConnection`), sem token nem chave.
 
 ### Básico
 
-Toque no sino. Aqui não há servidor: a caixa vive em memória e um Pulse simulado avisa na hora quando o botão cria uma notificação nova.
+Toque no sino. Aqui não há servidor: a caixa vive em memória e um Pulse simulado avisa na hora quando o botão cria uma notificação nova (sem Pulse, a lista se atualiza ao abrir o sino e no polling de reserva). placement escolhe o lado em que o painel abre.
 
 Região `sgNotificationBellBasico` em `sg_notification_bell_page.snippets.g.dart`.
 
@@ -896,11 +964,11 @@ SgRealtimeProvider(
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_basico`: `DemoNotificationsApi` (backend simulado em memória, `demo_notifications_api.dart` do showcase); `_demoToken`: função `Future<SgRealtimeConnectResponse> Function()` do arquivo da página, que devolve um `SgRealtimeConnectResponse(enabled: true, token: ...)`; `_pulse`: `SgSimulatedPulseConnection` (Pulse simulado em memória). Declare-os no seu widget.
 
 ### Tipos com ícone e ação
 
-`types` liga cada tipo de notificação a um ícone e à ação de abrir; os callbacks avisam o que o usuário fez.
+types liga cada tipo de notificação a um ícone e à ação de abrir (por exemplo, baixar o relatório). Os callbacks avisam o que o usuário fez.
 
 Região `sgNotificationBellTipos` em `sg_notification_bell_page.snippets.g.dart`.
 
@@ -916,30 +984,32 @@ Wrap(
       types: {
         'report.ready': SgNotificationTypeConfig(
           icon: const Icon(Icons.description_outlined),
-          onOpen: (n) => setState(
-            () => _evento = 'baixar relatório ${n.publicId}',
-          ),
+          onOpen: (n) =>
+              _evento.value = 'baixar relatório ${n.publicId}',
         ),
         'backup.finished': SgNotificationTypeConfig(
           icon: const Icon(Icons.check_circle_outline),
-          onOpen: (n) => setState(
-            () => _evento = 'baixar backup ${n.publicId}',
-          ),
+          onOpen: (n) =>
+              _evento.value = 'baixar backup ${n.publicId}',
         ),
       },
       onNotificationDelete: (n) =>
-          setState(() => _evento = 'excluiu: ${n.title}'),
+          _evento.value = 'excluiu: ${n.title}',
     ),
-    Text('Último evento: $_evento'),
+    ValueListenableBuilder<String>(
+      valueListenable: _evento,
+      builder: (context, evento, _) =>
+          Text('Último evento: $evento'),
+    ),
   ],
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_evento`: `ValueNotifier<String>`, valor inicial `'-'`; `_tipos`: `DemoNotificationsApi` (backend simulado). Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ### Interruptor Não lidas
 
-O painel traz o interruptor "Não lidas"; com `defaultUnreadOnly` desligado, ele abre em "Todas". A escolha não persiste entre recargas.
+O painel traz o interruptor Não lidas (aqui, com defaultUnreadOnly desligado, abre em Todas). Ligado, tocar numa notificação a tira da lista e o contador cai na hora; desligado, mostra todas. A escolha não persiste entre recargas.
 
 Região `sgNotificationBellInterruptor` em `sg_notification_bell_page.snippets.g.dart`.
 
@@ -951,11 +1021,11 @@ SgNotificationBell(
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_interruptor`: `DemoNotificationsApi` (backend simulado). Declare-os no seu widget.
 
 ### Sem o interruptor
 
-`showUnreadToggle: false` esconde só o interruptor: o sino continua e o painel lista todas as notificações.
+showUnreadToggle: false esconde só o interruptor: o sino continua e o painel lista todas as notificações.
 
 Região `sgNotificationBellSemInterruptor` em `sg_notification_bell_page.snippets.g.dart`.
 
@@ -967,7 +1037,7 @@ SgNotificationBell(
 )
 ```
 
-Observação: este trecho não é autocontido; ele usa estado, controllers e o backend simulado da página do showcase (`_pulse`, `_basico`, `_demoToken` e afins). Declare esses membros no seu `State` para copiá-lo.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_semInterruptor`: `DemoNotificationsApi` (backend simulado). Declare-os no seu widget.
 
 ### Uso real (não executa na demo)
 

@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, providers,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # API — Providers (ambiente/persistência e realtime) (Flutter)

@@ -4,21 +4,21 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, providers,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Providers (ambiente/persistência e realtime) (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/providers/Exemplos|Exemplos — Providers (ambiente/persistência e realtime) (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/providers/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgEnvironmentProvider
 
 Página: `apps/seedgrid_showcase/lib/pages/sg_environment_provider_page.dart` (5 exemplo(s) na página; abaixo 3).
 
-### Namespace e escopo
+### Namespace customizado
 
 A chave final é sg:<namespace>:<escopo>:<chave>. O valor fica salvo no armazenamento local do aparelho.
 
@@ -57,7 +57,7 @@ SgEnvironmentProvider(
 )
 ```
 
-### Sem namespace nada é salvo
+### Default (namespace vazio)
 
 Com o provider sem namespace (ou com namespace vazio) a chave não existe: o estado volta ao padrão.
 
@@ -128,12 +128,16 @@ Column(
       ),
     ),
     const SizedBox(height: 8),
-    Text('chamadas: ${_requests.join(' | ')}'),
+    ValueListenableBuilder<List<String>>(
+      valueListenable: _requests,
+      builder: (context, requests, _) =>
+          Text('chamadas: ${requests.join(' | ')}'),
+    ),
   ],
 )
 ```
 
-Ajuste: `_fakeServer(_server, _requests)` é um método da página do showcase (`Future<SgFetchResponse> Function(SgFetchRequest)`; `_server` é um `Map<String, Object?>` e `_requests` uma `List<String>`, ambos membros do `State`) que simula o servidor de persistência; troque por um `fetcher` real ou omita o parâmetro para usar `sgDefaultFetcher`.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_fakeServer`: função `SgFetcher _fakeServer(Map<String, Object?> server, ValueNotifier<List<String>> requests)` do arquivo da página, que simula o servidor de persistência (troque por um `fetcher` real ou omita o parâmetro para usar `sgDefaultFetcher`); `_requests`: `ValueNotifier<List<String>>`, valor inicial `const []` com o registro das chamadas HTTP; `_server`: `Map<String, Object?>` (a base do servidor simulado). Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ## SgRealtimeProvider
 
@@ -153,8 +157,10 @@ SgRealtimeProvider(
   child: SgRealtimeEventListener(
     channel: 'backup',
     events: 'backup.finished.*',
-    handler: (e) =>
-        setState(() => _avisos.add('${e.event} #${e.messageId}')),
+    handler: (e) => _avisos.value = [
+      ..._avisos.value,
+      '${e.event} #${e.messageId}',
+    ],
     child: Builder(
       builder: (context) {
         final r = useSgRealtimeStatus(context);
@@ -176,7 +182,7 @@ SgRealtimeProvider(
                   onClick: () => _pulse.emitMessage(
                     channel: 'backup',
                     event: 'backup.finished.success',
-                    messageId: '${_avisos.length + 1}',
+                    messageId: '${_avisos.value.length + 1}',
                   ),
                 ),
                 SgButton(
@@ -193,8 +199,11 @@ SgRealtimeProvider(
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              'Avisos: ${_avisos.isEmpty ? '(nenhum)' : _avisos.join(', ')}',
+            ValueListenableBuilder<List<String>>(
+              valueListenable: _avisos,
+              builder: (context, avisos, _) => Text(
+                'Avisos: ${avisos.isEmpty ? '(nenhum)' : avisos.join(', ')}',
+              ),
             ),
           ],
         );
@@ -204,7 +213,7 @@ SgRealtimeProvider(
 )
 ```
 
-Ajuste: `_pulse`, `_avisos`, `_token` e `setState` vêm do `State` da página. `_pulse` é um `SgSimulatedPulseConnection()`, `_avisos` é uma `List<String>` e `_token` é um `Future<SgRealtimeConnectResponse> Function()` que devolve `SgRealtimeConnectResponse(enabled: true, token: ...)`.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_avisos`: `ValueNotifier<List<String>>`, valor inicial `const []`; `_pulse`: `SgSimulatedPulseConnection` (Pulse simulado em memória); `_token`: função `Future<SgRealtimeConnectResponse> Function()` do estado da página, que devolve `SgRealtimeConnectResponse(enabled: true, token: ...)`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ### Polling de reserva
 
@@ -246,11 +255,11 @@ SgRealtimeProvider(
 )
 ```
 
-Ajuste: `_pulse2` (outro `SgSimulatedPulseConnection`), `_token` e as variáveis de contagem são membros do `State` da página do showcase.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_pulse2`: `SgSimulatedPulseConnection` (outro Pulse simulado); `_token`: função `Future<SgRealtimeConnectResponse> Function()` do estado da página, que devolve `SgRealtimeConnectResponse(enabled: true, token: ...)`. Declare-os no seu widget.
 
 ### Desligado
 
-Com `enabled: false` (ex.: enquanto não há usuário logado) não pede token nem conecta.
+Com enabled: false (ex.: enquanto não há usuário logado) não pede token nem conecta.
 
 Região `sgRealtimeProviderDesligado` em `sg_realtime_provider_page.snippets.g.dart`.
 
@@ -267,5 +276,5 @@ SgRealtimeProvider(
 )
 ```
 
-Ajuste: `_token` é um membro do `State` da página (ver o exemplo do simulador).
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_token`: função `Future<SgRealtimeConnectResponse> Function()` do estado da página, que devolve `SgRealtimeConnectResponse(enabled: true, token: ...)`. Declare-os no seu widget.
 

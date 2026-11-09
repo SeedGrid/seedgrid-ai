@@ -4,44 +4,55 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, editor, ex
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Editor de texto rico (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/editor/Exemplos|Exemplos — Editor de texto rico (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/editor/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgTextEditor
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_text_editor_page.dart` (5 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_text_editor_page.dart` (8 exemplo(s) na página; abaixo 3).
 
 ### Básico
 
-Barra de ferramentas completa; onChangeHtml recebe o HTML do corpo a cada edição.
+Exemplo com CSS embutido e download do HTML.
 
 Região `sgTextEditorBasico` em `sg_text_editor_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgStack(
+  gap: 8,
+  align: SgStackAlign.start,
   children: [
-    SgTextEditor(
-      id: 'editor-basico',
-      height: 220,
-      placeholder: 'Escreva aqui',
-      defaultValueHtml: '<p>Texto <strong>inicial</strong></p>',
-      onChangeHtml: (html) => setState(() => _html = html),
+    ListenableBuilder(
+      listenable: Listenable.merge([_html, _css]),
+      builder: (context, _) => SgTextEditor(
+        id: 'sg-text-editor',
+        height: 220,
+        valueHtml: _html.value,
+        onChangeHtml: (html) => _html.value = html,
+        cssText: _css.value,
+        onCssTextChange: (css) => _css.value = css,
+        showCssEditor: true,
+        onSave: (file, meta) =>
+            _baixado.value = '${file.name}: ${file.bytes.length} bytes',
+      ),
     ),
-    const SizedBox(height: 8),
-    Text('HTML: $_html'),
+    ValueListenableBuilder<String>(
+      valueListenable: _baixado,
+      builder: (context, v, _) =>
+          v.isEmpty ? const SizedBox.shrink() : Text(v),
+    ),
   ],
 )
 ```
 
-Ajuste: `_html` é um campo `String` do `State` da página e `setState` exige um `StatefulWidget`.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_baixado`: `ValueNotifier<String>`, valor inicial `''`; `_css`: `ValueNotifier<String>`, valor inicial `'body { font-family: Arial; }'`; `_html`: `ValueNotifier<String>`, valor inicial `'<p><strong>SeedGrid</strong> editor</p>'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ### Valor controlado
 
@@ -50,29 +61,30 @@ valueHtml troca o conteúdo; mudar o valor por fora não dispara onChangeHtml.
 Região `sgTextEditorControlado` em `sg_text_editor_page.snippets.g.dart`.
 
 ```dart
-Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
+SgStack(
+  gap: 8,
+  align: SgStackAlign.start,
   children: [
-    SgTextEditor(
-      id: 'editor-controlado',
-      height: 180,
-      valueHtml: _valor,
-      onChangeHtml: (html) => setState(() => _valor = html),
+    ValueListenableBuilder<String>(
+      valueListenable: _valor,
+      builder: (context, v, _) => SgTextEditor(
+        id: 'sg-text-editor-controlled',
+        height: 180,
+        valueHtml: v,
+        onChangeHtml: (html) => _valor.value = html,
+      ),
     ),
-    const SizedBox(height: 8),
     SgButton(
       label: Text('Trocar o conteúdo'),
-      severity: SgSeverity.secondary,
-      onClick: () => setState(
-        () =>
-            _valor = '<h2>Título</h2><ul><li><p>Item</p></li></ul>',
-      ),
+      appearance: SgAppearance.outline,
+      onClick: () => _valor.value =
+          '<h2>Título</h2><ul><li><p>Item</p></li></ul>',
     ),
   ],
 )
 ```
 
-Ajuste: `_valor` é um campo `String` do `State` da página (valor inicial qualquer HTML); `setState` exige que o trecho esteja dentro de um `StatefulWidget`.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_valor`: `ValueNotifier<String>`, valor inicial um HTML qualquer. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
 ### Desabilitado, erro e cantos
 

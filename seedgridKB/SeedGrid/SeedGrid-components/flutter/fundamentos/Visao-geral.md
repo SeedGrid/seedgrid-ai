@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, fundamento
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Fundamentos — Flutter (`seedgrid_components`, `seedgrid_theme`, `seedgrid_commons`)
@@ -23,7 +23,8 @@ analisado-em: 2026-10-30
 | `SgForm` | apoio, substitui `useForm` | Mantém o `SgFormController` acessível aos campos e envia com Enter ou botão `submit`. | `seedgrid_components/lib/src/form/sg_form.dart` |
 | `SgFormController` | apoio, substitui `useForm` | Guarda valores, regras, erros e estado do formulário: `setValue`, `trigger`, `reset`, `handleSubmit`. | `seedgrid_components/lib/src/form/sg_form.dart` |
 | `SgValidationScope` | apoio, só no Flutter | Registra campos sem formulário para o `SgWizard` validá-los ao avançar de etapa. | `seedgrid_components/lib/src/form/sg_validation_scope.dart` |
-| `SgComponentsI18nProvider` | portado | Define o idioma (5 embutidos) e as mensagens dos componentes abaixo dele. | `seedgrid_components/lib/src/i18n/i18n.dart` |
+| `SgComponentsI18nProvider` | portado | Define o idioma (5 embutidos) e as mensagens dos componentes abaixo dele. Tem página no showcase (`pages/sg_components_i18n_provider_page.dart`, 4 exemplos: uso básico, troca dinâmica, `setComponentsI18n` e sobrescrita de mensagens). | `seedgrid_components/lib/src/i18n/i18n.dart` |
+| `useComponentsI18n` | apoio, equivalente ao React (hook vira função com `BuildContext`) | Lê o idioma ativo e traduz chaves com `t(i18n, chave)`. Tem página no showcase (`pages/use_components_i18n_page.dart`, 2 exemplos: uso básico e componente ciente de locale). | `seedgrid_components/lib/src/i18n/i18n.dart` |
 | `setComponentsI18n` | apoio, equivalente ao React | Define o idioma e as mensagens globais dos componentes, fora de árvore de widgets. | `seedgrid_components/lib/src/i18n/i18n.dart` |
 | `sgNode` | apoio, só no Flutter | Converte `String`/`num` em `Text` nas props de texto que aceitam `String` ou `Widget`. | `seedgrid_components/lib/src/props/sg_node.dart` |
 | `SeedThemeProvider` | apoio, parcial (sem persistência nem `applyTo`) | Gera o tema SeedGrid por cor seed, claro/escuro, e o injeta no `ThemeData`. | `seedgrid_theme/lib/src/seed_theme_provider.dart` |
@@ -75,7 +76,7 @@ A tabela completa, com assinatura, está na [[SeedGrid/SeedGrid-components/flutt
 
 ## Não verificado
 
-- Não executei `flutter test`, `flutter analyze` nem o showcase; os exemplos de [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos]] foram conferidos **por leitura** contra as assinaturas (e contra testes e telas do repositório), não compilados.
+- Não executei `flutter test`, `flutter analyze` nem o showcase; os exemplos de [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos]] foram conferidos **por leitura** contra as assinaturas (e contra testes e telas do repositório), não compilados; as seções 11 e 12 (`SgComponentsI18nProvider` e `useComponentsI18n`) são cópia 1:1 dos snippets do showcase.
 - Não li os 5 arquivos `messages_*.dart` por inteiro (só os prefixos de chave e a contagem: 214 chaves por idioma); o texto de cada mensagem não é reproduzido aqui.
 - `tools/mcp_manifest/` e as ADR 49 a 52 não foram lidos; as citações às ADR vêm dos comentários do código.
 - Não comparei os valores numéricos de `buildScaleFromHex` (tabelas `_lLight`, `_lDark`) com o `colorUtils.ts` do React; a paridade é afirmada pelo cabeçalho do código ("conferida por `test/parity`"), **não confirmada** por mim.

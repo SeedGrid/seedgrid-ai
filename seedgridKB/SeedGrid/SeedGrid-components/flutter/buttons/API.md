@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, buttons, a
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # API — Botões (Flutter)
@@ -40,7 +40,7 @@ Botao de acao com suporte a severity, appearance, shape, loading e icones para a
 | `rightIcon` | `Widget?` | — | não | React | Icone exibido depois do label. |
 | `loading` | `bool` | `false` | não | React | Exibe spinner e bloqueia interacao enquanto a acao esta em progresso. |
 | `customColors` | `SgButtonCustomColors?` | — | não | React | Tipo no React: `SgButtonCustomColors`. |
-| `onClick` | `VoidCallback?` | — | não | Flutter | `onClick` do botao HTML. |
+| `onClick` | `FutureOr<void> Function()?` | — | não | Flutter | Clique do botão; pode ser síncrono ou assíncrono. Se devolve um `Future`, o botão entra em `loading` sozinho até terminar (ver "Eventos e callbacks"). |
 | `type` | `SgButtonType` | `SgButtonType.button` | não | Flutter | `type` do botao HTML. |
 | `child` | `Object?` | — | não | Flutter | `children` no React (tem precedencia sobre [label]). `String` ou `Widget`. |
 | `enabled` | `bool?` | `true` † | não | React | Quando false, desabilita a interacao do botao. |
@@ -57,7 +57,16 @@ Botao de acao com suporte a severity, appearance, shape, loading e icones para a
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (confirmado em `buttons/sg_button.dart`, `_SgButtonState._onTap`)
-- `onClick: VoidCallback?`: chamado ao tocar/clicar, ou ao pressionar Enter ou Espaço com o foco no botão. Não dispara com `enabled: false` nem com `loading: true` (o botão fica desabilitado nos dois casos).
+- `onClick: FutureOr<void> Function()?` (`SgButton`): chamado ao tocar/clicar, ou ao pressionar Enter ou Espaço com o foco no botão. Não dispara com `enabled: false` nem com `loading: true` (o botão fica desabilitado nos dois casos). Os botões nativos do Flutter (`ElevatedButton`, `TextButton` e afins) usam `VoidCallback` e não têm loading automático; o `SgButton` vai um passo além, compatível com eles.
+- **`onClick` assíncrono** (confirmado em `buttons/sg_button.dart`, `_SgButtonState._onTap`):
+  1. Pode ou não ser assíncrono. Função síncrona (abrir um modal, alternar um painel) funciona como sempre e nada muda.
+  2. Se DEVOLVE um `Future`, o botão entra em loading sozinho (spinner, desabilitado), ignora cliques até o `Future` terminar (inclusive cliques seguidos antes do rebuild) e volta ao normal ao terminar ou falhar. Isso protege contra duplo clique e reenvio na tela, mas NÃO substitui a chave de idempotência no servidor.
+  3. Precisa DEVOLVER o `Future`: `async () { await salvar(); }` e `() => salvar()` protegem (uma função `async` sempre devolve `Future`); `() { salvar(); }` (função que não é `async`, sem devolver o resultado) não protege.
+  4. O botão não engole o erro: sai do loading e relança a falha como exceção não tratada (`whenComplete`). Trate com `try`/`catch` dentro do `onClick` e avise o usuário (por exemplo `sgWhistle.error(SgWhistleOptions(...))`).
+  5. Use `async` só para ação que pode demorar ou falhar (salvar, enviar, pagar); ação instantânea fica síncrona.
+  6. A prop `loading` manual continua valendo e vence: o loading efetivo é `loading` ou `Future` pendente.
+  Exemplos 1:1 com o showcase em [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos|Exemplos]]: "Loading automático com Future", "onClick síncrono x assíncrono" e "Tratando erro no onClick assíncrono".
+- `SgSplitButton.onClick` e `SgFloatActionButton.onClick` continuam `VoidCallback?` (sem loading automático).
 - Não há controller: o estado (hover, pressionado, foco) é interno ao `State`.
 
 **Formulário**

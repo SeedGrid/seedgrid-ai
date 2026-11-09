@@ -4,15 +4,15 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, fundamento
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages
 branch: main
-commit: 6a37694
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Fundamentos (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos — Fundamentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/fundamentos/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|Visão geral (Flutter)]].
 
-> **Como foram conferidos.** O showcase Flutter não tem página para estes utilitários (formulário, idioma, tema, máscaras, validadores, CEP/CNPJ, HTTP), então nenhum bloco é cópia de snippet. Cada exemplo foi escrito para esta nota e conferido **por leitura** contra as assinaturas em `seedgrid_components`, `seedgrid_theme` e `seedgrid_commons` (commit `6a37694`): construtores, tipos dos parâmetros e retornos. **Não foram compilados nem executados** (sem `flutter analyze`). Seguem a regra do dono (ADR 63): nenhum usa `setState` de página; o valor mora num `SgFormController` ou num `ValueNotifier`, e a tela reage por `ListenableBuilder`/`ValueListenableBuilder`. Os parâmetros `id`, `name`, `control`, `label`, `required`, `requiredMessage`, `minLength`, `minLengthMessage` e `validation` dos campos vêm da API de cada widget ([[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|Inputs de texto — Flutter]]). Importações usadas:
+> **Como foram conferidos.** O showcase Flutter só tem página para `SgComponentsI18nProvider` e `useComponentsI18n`: as seções 11 e 12 são cópia 1:1 dos snippets dessas páginas (seedgrid-fe-flutter `3e7ea56`). Para os demais utilitários (formulário, tema, máscaras, validadores, CEP/CNPJ, HTTP) não há página, então as seções 1 a 10 não são cópia de snippet: cada exemplo foi escrito para esta nota e conferido **por leitura** contra as assinaturas em `seedgrid_components`, `seedgrid_theme` e `seedgrid_commons` (commit `6a37694`, sem mudança de API nesses pacotes até o `3e7ea56`): construtores, tipos dos parâmetros e retornos. **Não foram compilados nem executados** (sem `flutter analyze`). Seguem a regra do dono (ADR 63): nenhum usa `setState` de página; o valor mora num `SgFormController` ou num `ValueNotifier`, e a tela reage por `ListenableBuilder`/`ValueListenableBuilder`. Os parâmetros `id`, `name`, `control`, `label`, `required`, `requiredMessage`, `minLength`, `minLengthMessage` e `validation` dos campos vêm da API de cada widget ([[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|Inputs de texto — Flutter]]). Importações usadas:
 >
 > ```dart
 > import 'package:flutter/material.dart';
@@ -382,8 +382,311 @@ class MeuRotulo extends StatelessWidget {
 
 `sgNode('Salvar')` vira `Text('Salvar')`; um tipo diferente de `String`, `num` ou `Widget` lança `ArgumentError`.
 
+## 11. `SgComponentsI18nProvider` (showcase)
+
+Página: `apps/seedgrid_showcase/lib/pages/sg_components_i18n_provider_page.dart` (4 exemplo(s) na página; abaixo 4). Os trechos abaixo são cópia 1:1 das regiões da página, sem `setState` de página: o idioma escolhido mora num `ValueNotifier` e o `ValueListenableBuilder` reconstrói só o que depende dele.
+
+### Uso básico
+
+Envolva o app com SgComponentsI18nProvider passando o locale e as mensagens do idioma desejado.
+
+Região `sgComponentsI18nProviderBasico` em `sg_components_i18n_provider_page.snippets.g.dart`.
+
+```dart
+SgComponentsI18nProvider(
+  locale: 'en-US',
+  messages: componentsMessagesEnUs,
+  child: Builder(
+    builder: (context) {
+      final i18n = useComponentsI18n(context);
+      return SgGrid(
+        gap: 4,
+        children: [
+          Text('locale: ${i18n.locale}'),
+          Text(
+            'components.actions.clear: ${t(i18n, 'components.actions.clear')}',
+          ),
+          Text(
+            'components.password.show: ${t(i18n, 'components.password.show')}',
+          ),
+          Text(
+            'components.inputs.required: ${t(i18n, 'components.inputs.required')}',
+          ),
+        ],
+      );
+    },
+  ),
+)
+```
+
+### Troca dinâmica de locale
+
+Altere o locale em runtime. Os componentes re-renderizam automaticamente com as novas mensagens.
+
+Região `sgComponentsI18nProviderDinamico` em `sg_components_i18n_provider_page.snippets.g.dart`.
+
+```dart
+ValueListenableBuilder<String>(
+  valueListenable: _locale,
+  builder: (context, locale, _) => SgGrid(
+    gap: 12,
+    children: [
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final id in const [
+            'pt-BR',
+            'pt-PT',
+            'en-US',
+            'es',
+            'fr',
+          ])
+            SgButton(
+              label: Text(id),
+              size: SgSize.sm,
+              appearance: id == locale
+                  ? SgAppearance.solid
+                  : SgAppearance.outline,
+              onClick: () => _locale.value = id,
+            ),
+        ],
+      ),
+      SgComponentsI18nProvider(
+        locale: locale,
+        messages: getBuiltInComponentsMessages(locale),
+        child: Builder(
+          builder: (context) {
+            final i18n = useComponentsI18n(context);
+            return SgGrid(
+              gap: 4,
+              children: [
+                Text('locale: ${i18n.locale}'),
+                Text(
+                  'components.actions.clear: ${t(i18n, 'components.actions.clear')}',
+                ),
+                Text(
+                  'components.password.show: ${t(i18n, 'components.password.show')}',
+                ),
+                Text(
+                  'components.inputs.required: ${t(i18n, 'components.inputs.required')}',
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ],
+  ),
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_locale`: `ValueNotifier<String>`, valor inicial `'pt-BR'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### API imperativa (setComponentsI18n)
+
+Alternativa ao Provider. Útil para definir o idioma antes de montar a árvore de componentes.
+
+Região `sgComponentsI18nProviderImperativo` em `sg_components_i18n_provider_page.snippets.g.dart`.
+
+```dart
+Builder(
+  builder: (context) {
+    void aplicar(String locale) {
+      final anterior = getComponentsI18n();
+
+      setComponentsI18n(SgComponentsI18nInput(locale: locale));
+      final atual = getComponentsI18n();
+      _resultado.value =
+          '${atual.locale}: ${t(atual, 'components.actions.clear')}';
+
+      // Devolve o estado global anterior para não afetar o restante da página.
+      setComponentsI18n(
+        SgComponentsI18nInput(
+          locale: anterior.locale,
+          messages: anterior.messages,
+        ),
+      );
+    }
+
+    return SgGrid(
+      gap: 12,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            SgButton(
+              label: const Text('es'),
+              size: SgSize.sm,
+              onClick: () => aplicar('es'),
+            ),
+            SgButton(
+              label: const Text('fr'),
+              size: SgSize.sm,
+              appearance: SgAppearance.outline,
+              onClick: () => aplicar('fr'),
+            ),
+          ],
+        ),
+        ValueListenableBuilder<String>(
+          valueListenable: _resultado,
+          builder: (context, resultado, _) => Text(resultado),
+        ),
+      ],
+    );
+  },
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_resultado`: `ValueNotifier<String>`, valor inicial `'-'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### Sobrescrita de mensagens
+
+Sobrescreva apenas as chaves que deseja customizar. Mescle suas mensagens com o objeto built-in do locale.
+
+Região `sgComponentsI18nProviderSobrescrita` em `sg_components_i18n_provider_page.snippets.g.dart`.
+
+```dart
+SgComponentsI18nProvider(
+  locale: 'en-US',
+  messages: {
+    ...componentsMessagesEnUs,
+    'components.actions.clear': 'Reset',
+    'components.password.show': 'Reveal',
+    'components.inputs.required': 'Mandatory field.',
+  },
+  child: Builder(
+    builder: (context) {
+      final i18n = useComponentsI18n(context);
+      return SgGrid(
+        gap: 4,
+        children: [
+          Text('locale: ${i18n.locale}'),
+          Text(
+            'components.actions.clear: ${t(i18n, 'components.actions.clear')}',
+          ),
+          Text(
+            'components.password.show: ${t(i18n, 'components.password.show')}',
+          ),
+          Text(
+            'components.inputs.required: ${t(i18n, 'components.inputs.required')}',
+          ),
+        ],
+      );
+    },
+  ),
+)
+```
+
+## 12. `useComponentsI18n` (showcase)
+
+Página: `apps/seedgrid_showcase/lib/pages/use_components_i18n_page.dart` (2 exemplo(s) na página; abaixo 2). Também cópia 1:1 das regiões da página.
+
+### Uso básico
+
+Use useComponentsI18n para ler o locale ativo e traduzir chaves com o helper t.
+
+Região `useComponentsI18nBasico` em `use_components_i18n_page.snippets.g.dart`.
+
+```dart
+ValueListenableBuilder<String>(
+  valueListenable: _locale,
+  builder: (context, locale, _) => SgGrid(
+    gap: 12,
+    children: [
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final id in const [
+            'pt-BR',
+            'pt-PT',
+            'en-US',
+            'es',
+            'fr',
+          ])
+            SgButton(
+              label: Text(id),
+              size: SgSize.sm,
+              appearance: id == locale
+                  ? SgAppearance.solid
+                  : SgAppearance.outline,
+              onClick: () => _locale.value = id,
+            ),
+        ],
+      ),
+      SgComponentsI18nProvider(
+        locale: locale,
+        child: Builder(
+          builder: (context) {
+            final i18n = useComponentsI18n(context);
+            return SgGrid(
+              gap: 4,
+              children: [
+                Text('locale: ${i18n.locale}'),
+                Text('messages: ${i18n.messages.length}'),
+                Text(
+                  'components.actions.clear: ${t(i18n, 'components.actions.clear')}',
+                ),
+                Text(
+                  'components.password.show: ${t(i18n, 'components.password.show')}',
+                ),
+                Text(
+                  'components.inputs.required: ${t(i18n, 'components.inputs.required')}',
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ],
+  ),
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_locale`: `ValueNotifier<String>`, valor inicial `'pt-BR'`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### Construindo componentes cientes de locale
+
+Combine useComponentsI18n com t para construir componentes que respeitam automaticamente o locale ativo.
+
+Região `useComponentsI18nCientesDeLocale` em `use_components_i18n_page.snippets.g.dart`.
+
+```dart
+SgComponentsI18nProvider(
+  locale: 'es',
+  child: SgGrid(
+    gap: 8,
+    children: [
+      Builder(
+        builder: (context) {
+          final i18n = useComponentsI18n(context);
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: SgButton(
+              label: Text(t(i18n, 'components.actions.clear')),
+              size: SgSize.sm,
+              appearance: SgAppearance.outline,
+              onClick: () => _limpezas.value++,
+            ),
+          );
+        },
+      ),
+      ValueListenableBuilder<int>(
+        valueListenable: _limpezas,
+        builder: (context, limpezas, _) =>
+            Text('onClear: $limpezas'),
+      ),
+    ],
+  ),
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_limpezas`: `ValueNotifier<int>`, valor inicial `0`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
 ## Não verificado
 
-- Nenhum dos exemplos foi compilado ou executado (sem `flutter analyze` nesta análise); a conferência foi por leitura dos construtores e assinaturas, e os resultados comentados (`// 529.982.247-25` etc.) vêm da leitura das funções.
+- Nenhum dos exemplos foi compilado ou executado por mim (sem `flutter analyze` nesta análise; os das seções 11 e 12 são os do showcase, cujo `flutter test` não rodei); a conferência foi por leitura dos construtores e assinaturas, e os resultados comentados (`// 529.982.247-25` etc.) vêm da leitura das funções.
 - `r.problems` do exemplo 7 foi deduzido da leitura de `validatePassword`; `idade.problem` depende da data de hoje.
 - Os exemplos 8 e 9 fazem chamadas de rede reais se executados (ViaCEP, publica.cnpj.ws, `api.exemplo.com` fictício).

@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, providers]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Providers (ambiente/persistência e realtime) — Flutter (`seedgrid_components`)
@@ -31,7 +31,7 @@ analisado-em: 2026-11-07
 
 - `SgEnvironmentProvider`: uma vez perto da raiz do app, para dar um **namespace** (e escopo e estratégia) à persistência de layout dos componentes (`SgFloatActionButton`, `SgDatatable` e outros). Sem namespace, nada é persistido pelo ambiente.
 - `SgRealtimeProvider`: uma vez no layout, quando a tela deve reagir a avisos do Pulse em vez de fazer polling; escute com `SgRealtimeEventListener` e use `useSgRealtimeStatus` para cair no polling quando `connected` for falso. Precisa de um `connectionFactory` (ver [[SeedGrid/SeedGrid-components/flutter/providers/API|API]]).
-- Para tradução dos textos dos componentes, o provider é outro: `SgComponentsI18nProvider` ([[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|fundamentos]]).
+- Para tradução dos textos dos componentes, o provider é outro: `SgComponentsI18nProvider` e o `useComponentsI18n` ([[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|fundamentos]]); ambos têm página no showcase Flutter (`sg_components_i18n_provider_page.dart`, 4 exemplos, e `use_components_i18n_page.dart`, 2), com os exemplos 1:1 em [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos — Fundamentos (Flutter)]].
 
 ## O que muda em relação ao React
 

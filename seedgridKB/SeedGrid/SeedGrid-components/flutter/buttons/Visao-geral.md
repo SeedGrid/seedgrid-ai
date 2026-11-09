@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, buttons]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Botões — Flutter (`seedgrid_components`)
@@ -30,13 +30,14 @@ analisado-em: 2026-11-07
 
 ## Quando usar
 
-- `SgButton`: qualquer ação simples (salvar, cancelar, enviar). Dentro de um `SgForm`, use `type: SgButtonType.submit` para enviar o formulário. Para ação principal com variações da mesma tarefa, prefira `SgSplitButton`.
+- `SgButton`: qualquer ação simples (salvar, cancelar, enviar); para uma ação que demora ou pode falhar, faça o `onClick` devolver um `Future` (`async () {...}`) e o botão cuida do loading. Dentro de um `SgForm`, use `type: SgButtonType.submit` para enviar o formulário. Para ação principal com variações da mesma tarefa, prefira `SgSplitButton`.
 - `SgSplitButton`: uma ação padrão mais algumas alternativas (por exemplo "Salvar" e "Salvar como…"). Se as alternativas são ações independentes da tela, use botões separados.
 - `SgFloatActionButton`: ação de destaque que flutua sobre o conteúdo (criar item), com ações secundárias em leque (`actions`). Para ação dentro do fluxo da página, use `SgButton`.
 
 ## O que muda em relação ao React
 
 - `onClick`, `enabled`, `type` e `child` do `SgButton` são extras explícitos (no React vêm do `<button>`); `className`/`style` não existem (ADR 50).
+- `SgButton.onClick` é `FutureOr<void> Function()?` (no React, `(event) => unknown`): se devolver um `Future`, o botão entra em loading sozinho, ignora cliques até terminar e volta ao normal ao terminar ou falhar. Protege contra duplo clique, mas não substitui a chave de idempotência no servidor; precisa devolver o `Future` (`async () {...}` sempre devolve; `() { salvar(); }` não); o erro não é engolido (trate com `try`/`catch` no `onClick`); `async` só para ação que demora ou falha; a prop `loading` manual vence. Os botões nativos do Flutter usam `VoidCallback` e não têm loading automático. Detalhes na [[SeedGrid/SeedGrid-components/flutter/buttons/API|API]].
 - Em largura menor que 600 px o menu do `SgSplitButton` vira painel de baixo (ADR 51).
 - O `SgFloatActionButton` flutua no `Overlay` raiz (`absolute: false`) e guarda a posição arrastada em `SharedPreferences` ou no `SgEnvironmentProvider`; `hint` por hover não existe no toque.
 - Resumo de todas as decisões: [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · regras de tradução: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].

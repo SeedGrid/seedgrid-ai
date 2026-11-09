@@ -4,83 +4,97 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, datatable,
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Tabela de dados (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos — Tabela de dados (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/datatable/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgDatatable
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_datatable_page.dart` (14 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_datatable_page.dart` (13 exemplo(s) na página; abaixo 3).
 
-### Básico
+### Básico com paginação e sort
 
-value (as linhas) e columns (field, header, align, width). Sem paginator, todas as linhas aparecem.
+infiniteScroll={false} mantém o paginador também em tela estreita: abaixo de 600 px o padrão viraria cartões com rolagem infinita.
 
 Região `sgDatatableBasico` em `sg_datatable_page.snippets.g.dart`.
 
 ```dart
-SgDatatable(
-  title: 'Pessoas',
-  value: _pessoas.take(6).toList(),
-  columns: _colunas,
-  stripedRows: true,
-  showGridlines: true,
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgDatatable(
+      id: 'datatable-basic',
+      title: 'Pessoas',
+      value: _pessoas,
+      columns: _colunas,
+      dataKey: 'id',
+      paginator: true,
+      infiniteScroll: false,
+      rows: 5,
+      rowsPerPageOptions: const [5, 10],
+      stripedRows: true,
+      showGridlines: true,
+      onPage: (e) => _pagina.value =
+          'página ${e.page} de ${e.pageCount} (first ${e.first})',
+    ),
+    ValueListenableBuilder<String>(
+      valueListenable: _pagina,
+      builder: (context, evento, _) =>
+          Text('${'Último onPage'}: $evento'),
+    ),
+  ],
 )
 ```
 
-Ajuste: `_pessoas` (uma `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario`) e `_colunas` (uma `List<SgDatatableColumn>`) são constantes do arquivo da página do showcase, não da biblioteca; substitua pelos seus dados e colunas.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_colunas`: `List<SgDatatableColumn>` (constante do arquivo da página); `_pagina`: `ValueNotifier<String>`, valor inicial `'nenhum evento ainda'`; `_pessoas`: `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario` (constante do arquivo da página). Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
 
-### Filtros
+### Filtro global + filtros por coluna
 
 showGlobalFilter, showColumnFilters, filterMatchMode por coluna e showClearFiltersButton.
 
 Região `sgDatatableFiltros` em `sg_datatable_page.snippets.g.dart`.
 
 ```dart
-SizedBox(
-  height: 420,
-  child: SingleChildScrollView(
-    child: SgDatatable(
-      value: _pessoas,
-      columns: [
-        SgDatatableColumn(
-          field: 'nome',
-          header: 'Nome',
-          filter: true,
-        ),
-        SgDatatableColumn(
-          field: 'cidade',
-          header: 'Cidade',
-          filter: true,
-          filterMatchMode: SgDatatableFilterMatchMode.startsWith,
-        ),
-        SgDatatableColumn(
-          field: 'salario',
-          header: 'Salário',
-          excludeGlobalFilter: true,
-        ),
-      ],
-      paginator: true,
-      rows: 5,
-      showGlobalFilter: true,
-      showColumnFilters: true,
-      showClearFiltersButton: true,
+SgDatatable(
+  value: _pessoas,
+  columns: [
+    SgDatatableColumn(
+      field: 'nome',
+      header: 'Nome',
+      filter: true,
     ),
-  ),
+    SgDatatableColumn(
+      field: 'cidade',
+      header: 'Cidade',
+      filter: true,
+      filterMatchMode: SgDatatableFilterMatchMode.startsWith,
+    ),
+    SgDatatableColumn(
+      field: 'salario',
+      header: 'Salário',
+      excludeGlobalFilter: true,
+    ),
+  ],
+  paginator: true,
+  infiniteScroll: false,
+  rows: 5,
+  showGlobalFilter: true,
+  showColumnFilters: true,
+  showClearFiltersButton: true,
 )
 ```
 
-Ajuste: `_pessoas` (uma `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario`) e `_colunas` (uma `List<SgDatatableColumn>`) são constantes do arquivo da página do showcase, não da biblioteca; substitua pelos seus dados e colunas.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_pessoas`: `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario` (constante do arquivo da página). Declare-os no seu widget.
 
-### Colunas personalizadas e rodapé
+### Template customizado e footer
 
-body desenha a célula, footer recebe as linhas processadas, hidden/hideable/reorderable e o gerenciador de colunas.
+body desenha a célula e footer recebe as linhas processadas.
 
 Região `sgDatatableColunas` em `sg_datatable_page.snippets.g.dart`.
 
@@ -92,7 +106,6 @@ SgDatatable(
     SgDatatableColumn(
       field: 'nome',
       header: 'Nome',
-      hideable: false,
       footer: 'Total',
     ),
     SgDatatableColumn(
@@ -108,12 +121,11 @@ SgDatatable(
     SgDatatableColumn(
       field: 'cidade',
       header: 'Cidade',
-      hidden: true,
     ),
   ],
-  columnManagerLabel: 'Colunas visíveis',
+  showColumnManager: false,
 )
 ```
 
-Ajuste: `_pessoas` (uma `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario`) e `_colunas` (uma `List<SgDatatableColumn>`) são constantes do arquivo da página do showcase, não da biblioteca; substitua pelos seus dados e colunas.
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_pessoas`: `List<SgDatatableRow>` com as chaves `id`, `nome`, `cidade`, `idade` e `salario` (constante do arquivo da página). Declare-os no seu widget.
 

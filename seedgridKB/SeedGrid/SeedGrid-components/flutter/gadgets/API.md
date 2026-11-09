@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, gadgets, a
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # API — Gadgets (relógio, calendário, gauges, QR) (Flutter)
@@ -85,7 +85,7 @@ Relogio analogico ou digital com multiplos estilos visuais, timezone, formato 12
 - Arquivo: `packages/seedgrid_components/lib/src/gadgets/clock/sg_clock.dart` (linha 217) · classe `class SgClock extends StatefulWidget`
 - Contrato gerado das props (nomes, tipos e padrões do React): `packages/seedgrid_components/lib/src/generated/sg_clock.g.dart`
 - Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
-- Construtor: `const SgClock({...})` com 14 parâmetro(s) nomeado(s), 14 do contrato React e 0 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 2.
+- Construtor: `const SgClock({...})` com 15 parâmetro(s) nomeado(s), 15 do contrato React e 0 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 2.
 
 ### Props de SgClock
 
@@ -98,7 +98,8 @@ Relogio analogico ou digital com multiplos estilos visuais, timezone, formato 12
 | `locale` | `String` | `'pt-BR'` | não | React | — |
 | `format` | `SgClockFormat` | `SgClockFormat.v24h` | não | React | Formato horario do relogio. Valores: `12h`, `24h`. |
 | `showSeconds` | `bool` | `true` | não | React | Exibe ou oculta os segundos. |
-| `digitalStyle` | `SgClockDigitalStyle` | `SgClockDigitalStyle.defaultValue` | não | React | Estilo visual do relogio digital. Valores: `default`, `segment`, `sevenSegment`, `roller3d`, `flip`, `fade`, `matrix`, `neon`, `discard`. |
+| `digitalStyle` | `SgClockDigitalStyle` | `SgClockDigitalStyle.defaultValue` | não | React | Estilo visual do relogio digital. Valores: `default`, `segment`, `sevenSegment`, `roller3d`, `flip`, `fade`, `matrix`, `neon`, `discard`, `custom` (desenhado por `digitBuilder`). |
+| `digitBuilder` | `SgClockDigitalStyleBuilder?` | — | não | React | Desenha o relógio digital quando `digitalStyle` é `custom`, sem registro global; sem ele o relógio cai no estilo `default`. Tipo Dart: `Widget Function(BuildContext context, SgClockDigitalParts parts)`; tipo no React: `SgClockDigitBuilder`. |
 | `secondHandMode` | `SgClockSecondHandMode` | `SgClockSecondHandMode.step` | não | React | Valores: `step`, `smooth`. |
 | `themeId` | `String` | `'classic'` | não | React | Tema visual aplicado ao relogio. |
 | `theme` | `SgClockTheme?` | — | não | React | Tema avulso (tem precedencia sobre `themeId`). Tipo no React: `SgClockTheme`. |
@@ -115,6 +116,8 @@ Relogio analogico ou digital com multiplos estilos visuais, timezone, formato 12
 - Períodos do dia (AM/PM e equivalentes) gerados para 33 locales, segundo o docs/PARIDADE.md.
 - `cardProps` é um `SgClockCardProps` (subconjunto do `SgCard`).
 - Os 8 estilos digitais usam os widgets de dígitos, ligados por `registerSgClockDigitalStyle` (os padrões são registrados por `ensureSgClockDigitalStyles`); estilo sem construtor registrado cai no `default`.
+- Desenho próprio por instância: com `digitalStyle: SgClockDigitalStyle.custom` o relógio chama `digitBuilder(context, parts)` e usa o `Widget` devolvido; `parts` é um `SgClockDigitalParts` (`hour`, `minute`, `second` e `dayPeriod` como texto, `is12h`, `showSeconds`, `size`, além de `text`, `textWithPeriod` e `sizePx`). O resultado vem envolvido no rótulo de acessibilidade do digital. Sem `digitBuilder`, `custom` cai no estilo `default`. Exemplo 1:1 em [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos|Exemplos]] ("Desenho do dígito próprio (digitBuilder)").
+- `registerSgClockDigitalStyle` continua **global e só no Flutter** (liga um estilo nomeado para todos os relógios); `digitBuilder` é o caminho por instância, que existe nas duas plataformas.
 - A comparação visual (golden) usa a fonte de teste do Flutter, então não há comparação visual de texto com o React; não testado em dispositivo (docs/PARIDADE.md).
 
 ### Eventos, controllers e acessibilidade

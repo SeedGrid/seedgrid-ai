@@ -4,19 +4,19 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, buttons, e
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/apps/seedgrid_showcase/lib/pages
 branch: main
-commit: 8a43f9d
-analisado-em: 2026-11-07
+commit: 3e7ea56
+analisado-em: 2026-11-09
 ---
 
 # Exemplos — Botões (Flutter)
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos — Botões (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/buttons/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'` e `context.tx(nome)` (com variável) virou `nome`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam `setState` ou variáveis de estado da página dizem isso na própria linha de origem. Até 3 exemplos por componente; o conjunto completo está no showcase (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'` e `context.tx(nome)` (com variável) virou `nome`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 
 ## SgButton
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_button_page.dart` (14 exemplo(s) na página; abaixo 3).
+Página: `apps/seedgrid_showcase/lib/pages/sg_button_page.dart` (17 exemplo(s) na página; abaixo 6).
 
 ### Severities
 
@@ -137,6 +137,115 @@ Column(
         ),
       ],
     ),
+  ],
+)
+```
+
+### Loading automático com Future
+
+Se o onClick devolve uma operação assíncrona (Promise no React, Future no Flutter), o botão entra em loading sozinho: mostra o spinner, fica desabilitado e ignora cliques, inclusive cliques seguidos antes de a tela atualizar, até a operação terminar. Ao terminar ou falhar, volta ao normal. Isso evita duplo clique e reenvio e ajuda na idempotência da ação na tela, mas não substitui a chave de idempotência no servidor. A prop loading manual continua valendo e vence: o loading efetivo é loading ou operação pendente.
+
+Região `sgButtonLoadingAutomatico` em `sg_button_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 12,
+  runSpacing: 12,
+  crossAxisAlignment: WrapCrossAlignment.center,
+  children: [
+    SgButton(
+      label: Text('Submit'),
+      onClick: () async {
+        final saving = 'Saving...';
+        final done = 'Done';
+        _status.value = saving;
+        await Future.delayed(const Duration(milliseconds: 1500));
+        _status.value = done;
+      },
+    ),
+    ValueListenableBuilder<String?>(
+      valueListenable: _status,
+      builder: (context, status, _) =>
+          Text(status ?? 'Idle'),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_status`: `ValueNotifier<String?>`, valor inicial `null`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### onClick síncrono x assíncrono
+
+O onClick pode ou não ser assíncrono. Função síncrona (abrir um modal, alternar um painel) funciona como sempre e nada muda. Para o botão proteger a ação, o onClick precisa DEVOLVER a operação assíncrona: no React, async () => { await salvar(); } ou () => salvar(); no Flutter, async () { ... } sempre devolve um Future. Chamar salvar() sem devolver o resultado (no React, chaves sem return; no Flutter, função que não é async) não protege. Use async só quando a ação puder demorar ou falhar (salvar, enviar, pagar); ações instantâneas ficam síncronas.
+
+Região `sgButtonOnclickSincronoXAssincrono` em `sg_button_page.snippets.g.dart`.
+
+```dart
+Wrap(
+  spacing: 12,
+  runSpacing: 12,
+  crossAxisAlignment: WrapCrossAlignment.center,
+  children: [
+    SgButton(
+      label: Text('Toggle panel'),
+      appearance: SgAppearance.outline,
+      onClick: () {
+        _panel.value = !_panel.value;
+      },
+    ),
+    ValueListenableBuilder<bool>(
+      valueListenable: _panel,
+      builder: (context, open, _) =>
+          Text(open ? 'Open' : 'Closed'),
+    ),
+    SgButton(
+      label: Text('Save'),
+      onClick: () async {
+        final saving = 'Saving...';
+        final saved = 'Saved';
+        _saved.value = saving;
+        await Future.delayed(const Duration(milliseconds: 1500));
+        _saved.value = saved;
+      },
+    ),
+    ValueListenableBuilder<String?>(
+      valueListenable: _saved,
+      builder: (context, status, _) =>
+          Text(status ?? 'Idle'),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa membros que não vêm nele, do estado local da página do showcase (não da biblioteca): `_panel`: `ValueNotifier<bool>`, valor inicial `false`; `_saved`: `ValueNotifier<String?>`, valor inicial `null`. Declare-os no seu widget. Quem guarda o valor é o `ValueNotifier` e o `ValueListenableBuilder` do próprio trecho reconstrói só o que depende dele: nada de `setState` de página (ADR 63).
+
+### Tratando erro no onClick assíncrono
+
+O botão não engole o erro: se a operação falhar, ele sai do loading e relança o erro como rejeição não tratada. Por isso, trate a falha com try/catch dentro do onClick e avise o usuário (por exemplo, com sgWhistle.error). Neste exemplo a operação sempre falha e o aviso aparece na caixa abaixo.
+
+Região `sgButtonTratandoErroNoOnclickAssincrono` em `sg_button_page.snippets.g.dart`.
+
+```dart
+SgStack(
+  gap: 12,
+  children: [
+    SgButton(
+      label: Text('Save (fails)'),
+      severity: SgSeverity.danger,
+      onClick: () async {
+        final title = 'Could not save';
+        final message = 'Check your connection and try again.';
+        try {
+          await Future.delayed(const Duration(milliseconds: 1200));
+          throw Exception('Network error');
+        } catch (_) {
+          sgWhistle.error(
+            SgWhistleOptions(title: title, message: message),
+          );
+        }
+      },
+    ),
+    const SgWhistler(),
   ],
 )
 ```
