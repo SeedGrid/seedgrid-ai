@@ -2,8 +2,8 @@
 tags: [seedgrid, component, frontend, react, inputs-midia, exemplos]
 fonte: front/seedgrid-fe-components/apps/showcase/src/app/components
 branch: main
-commit: 557bc16
-analisado-em: 2026-11-07
+commit: 0f304bb
+analisado-em: 2026-11-09
 description: "Exemplos TSX (React) de Data e hora, arquivo, imagem e câmera, copiados dos samples do showcase do @seedgrid/fe-components. Para os exemplos Dart do mesmo grupo, veja a pasta flutter/."
 plataforma: react
 ---
@@ -12,10 +12,15 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`; versões anteriores, até 2026.11.1, não têm `SgFileUpload`). Os trechos abaixo são os `*.tsx.sample` do showcase (copy/paste 1:1), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
+> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`; versões anteriores, até 2026.11.1, não têm `SgFileUpload`). Os trechos abaixo são todos os exemplos do showcase, na ordem e com os títulos do showcase (pt-BR), cada um cópia 1:1 do `*.tsx.sample` (comparada por script em 2026-11-09, seedgrid-fe-components `0f304bb`), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-file-upload/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
 
+## SgInputDateTime
 
-## SgInputDateTime: básico (instante UTC)
+### 1) Básico
+
+O onChange entrega o instante em ISO 8601 UTC (ou null se o campo estiver incompleto).
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/basico.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -27,13 +32,17 @@ export default function App() {
   return (
     <div className="w-80">
       <SgInputDateTime id="demo-basic" label="Quando" onChange={(value) => setInstant(value)} />
-      <p className="mt-2 text-xs text-muted-foreground">Valor atual: {instant ?? "-"}</p>
+      <p className="mt-2 text-xs text-muted-foreground">Valor: {instant ?? "-"}</p>
     </div>
   );
 }
 ```
 
-## SgInputDateTime: fusos (mesmo instante, três horas diferentes)
+### 2) Fusos horários
+
+O mesmo instante exibido em UTC, -03:00 e +05:30; editar um campo atualiza os outros.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/fuso.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -47,13 +56,17 @@ export default function App() {
       <SgInputDateTime id="demo-zone-utc" label="UTC" timeZone="UTC" value={instant} onChange={(value) => value !== null && setInstant(value)} />
       <SgInputDateTime id="demo-zone-sp" label="-03:00" timeZone="-03:00" value={instant} onChange={(value) => value !== null && setInstant(value)} />
       <SgInputDateTime id="demo-zone-in" label="+05:30" timeZone="+05:30" value={instant} onChange={(value) => value !== null && setInstant(value)} />
-      <p className="text-xs text-muted-foreground">Valor atual: {instant || "-"}</p>
+      <p className="text-xs text-muted-foreground">Valor: {instant || "-"}</p>
     </div>
   );
 }
 ```
 
-## SgInputDateTime: limites, passo de minutos e obrigatório
+### 3) Limites e passo de minutos
+
+minDate/maxDate validam o intervalo e minuteStep arredonda os minutos ao sair do campo.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/limites.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -76,7 +89,11 @@ export default function App() {
 }
 ```
 
-## SgInputDateTime: com segundos
+### 4) Com segundos
+
+showSeconds mostra e aceita os segundos.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/segundos.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -91,24 +108,11 @@ export default function App() {
 }
 ```
 
-## SgInputDateTime: posição do rótulo
+### 5) Eventos
 
-```tsx
-import * as React from "react";
-import { SgGrid, SgInputDateTime } from "@seedgrid/fe-components";
+onChange (instante ou null), onEnter (foco) e onExit (saída) informam o que o usuário fez.
 
-export default function App() {
-  return (
-    <SgGrid columns={{ base: 1, md: 3 }} gap={8} className="w-full">
-      <SgInputDateTime id="sg-input-date-time-label-float" label="Label float" labelPosition="float" />
-      <SgInputDateTime id="sg-input-date-time-label-top" label="Label top" labelPosition="top" />
-      <SgInputDateTime id="sg-input-date-time-label-left" label="Label left" labelPosition="left" labelWidth={140} labelAlign="end" />
-    </SgGrid>
-  );
-}
-```
-
-## SgInputDateTime: eventos (`onEnter` e `onExit`)
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/eventos.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -132,7 +136,101 @@ export default function App() {
 }
 ```
 
-## SgFileUpload: básico (a lista de arquivos)
+### 6) Dentro de um formulário
+
+O formulário guarda o instante ISO 8601 UTC.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/dentro-de-um-formulario.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgButton, SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [submitted, setSubmitted] = React.useState("");
+  const { control, handleSubmit } = useForm<{ appointment: string }>({ defaultValues: { appointment: "" } });
+
+  return (
+    <form className="w-80 space-y-3" onSubmit={handleSubmit((values) => setSubmitted(values.appointment))}>
+      <SgInputDateTime
+        id="demo-form"
+        name="appointment"
+        control={control}
+        label="Agendamento"
+        timeZone="-03:00"
+        required
+        requiredMessage="Informe a data e a hora"
+      />
+      <SgButton type="submit">Enviar</SgButton>
+      {submitted ? <p className="text-sm">Enviado: {submitted}</p> : null}
+    </form>
+  );
+}
+```
+
+### 7) Posição do rótulo
+
+Compare os modos de rótulo: flutuante, acima e à esquerda.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/posicao-do-rotulo.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgGrid, SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <SgGrid columns={{ base: 1, md: 3 }} gap={8} className="w-full">
+      <SgInputDateTime id="sg-input-date-time-label-float" label="Flutuante" labelPosition="float" />
+      <SgInputDateTime id="sg-input-date-time-label-top" label="Acima" labelPosition="top" />
+      <SgInputDateTime
+        id="sg-input-date-time-label-left"
+        label="Esquerda"
+        labelPosition="left"
+        labelWidth={140}
+        labelAlign="end"
+      />
+    </SgGrid>
+  );
+}
+```
+
+### 8) Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.datetime.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/idioma.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgInputDateTime, SgComponentsI18nProvider } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgComponentsI18nProvider locale="fr" messages={{ "components.inputs.datetime.min": "Escolha uma data a partir de {min}." }}>
+        <SgInputDateTime
+          id="demo-i18n"
+          label="Agendamento"
+          timeZone="UTC"
+          minDate="2026-11-01T08:00:00Z"
+          defaultValue="2026-10-01T10:00:00Z"
+          required
+        />
+      </SgComponentsI18nProvider>
+    </div>
+  );
+}
+```
+
+## SgFileUpload
+
+### 1) Básico
+
+Um arquivo de qualquer tipo. O onChange entrega a lista (de um); o envio ao servidor é do host.
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/basico.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -154,7 +252,11 @@ export default function App() {
 }
 ```
 
-## SgFileUpload: vários arquivos e erro por arquivo
+### 2) Vários arquivos
+
+maxFiles maior que 1 liga a seleção múltipla; os escolhidos se somam até o limite. Cada recusa é por arquivo.
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/varios.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -181,7 +283,30 @@ export default function App() {
 }
 ```
 
-## SgFileUpload: limites de quantidade e de tamanho (texto com unidade)
+### 3) Tipos aceitos
+
+mediaType aceita grupos (image, video, audio) e formatos (pdf, xls, xlsx...). O tipo é conferido pelo conteúdo do arquivo, não só pela extensão.
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/tipos.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgFileUpload } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgFileUpload id="demo-types" label="Planilha ou PDF" mediaType={["pdf", "xls", "xlsx"]} maxFiles={2} />
+    </div>
+  );
+}
+```
+
+### 4) Limites de tamanho
+
+maxSizePerFile e maxSizeTotal aceitam bytes ou texto com unidade ("500KB", "1.5MB", "1GB").
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/limites.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -203,22 +328,11 @@ export default function App() {
 }
 ```
 
-## SgFileUpload: tipos aceitos (PDF e planilhas)
+### 5) Desabilitado
 
-```tsx
-import * as React from "react";
-import { SgFileUpload } from "@seedgrid/fe-components";
+Não permite escolher nem remover.
 
-export default function App() {
-  return (
-    <div className="w-80">
-      <SgFileUpload id="demo-types" label="Planilha ou PDF" mediaType={["pdf", "xls", "xlsx"]} maxFiles={2} />
-    </div>
-  );
-}
-```
-
-## SgFileUpload: desabilitado, com arquivo já salvo
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/desabilitado.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -238,7 +352,70 @@ export default function App() {
 }
 ```
 
-## SgImageUpload: básico (valor é uma lista)
+### 6) Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.fileupload.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/idioma.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgFileUpload, SgComponentsI18nProvider } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgComponentsI18nProvider locale="fr" messages={{ "components.inputs.fileupload.drop": "Arraste o contrato aqui" }}>
+        <SgFileUpload
+          id="demo-i18n"
+          label="Anexo"
+        />
+      </SgComponentsI18nProvider>
+    </div>
+  );
+}
+```
+
+### 7) Dentro de um formulário
+
+O formulário guarda a lista de arquivos e valida o obrigatório.
+
+Fonte: `apps/showcase/src/app/components/sg-file-upload/samples/dentro-de-um-formulario.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgButton, SgFileUpload } from "@seedgrid/fe-components";
+
+export default function Example() {
+  const [submitted, setSubmitted] = React.useState("");
+  const { control, handleSubmit } = useForm<{ comprovantes: Array<{ name: string }> }>({ defaultValues: { comprovantes: [] } });
+
+  return (
+    <form className="w-80 space-y-3" onSubmit={handleSubmit((values) => setSubmitted(`${values.comprovantes.length} arquivo(s)`))}>
+      <SgFileUpload
+        id="comprovantes"
+        name="comprovantes"
+        control={control}
+        label="Comprovantes"
+        maxFiles={3}
+        required
+        requiredMessage="Anexe ao menos um arquivo"
+      />
+      <SgButton type="submit">Enviar</SgButton>
+      {submitted ? <p className="text-sm">Enviado: {submitted}</p> : null}
+    </form>
+  );
+}
+```
+
+## SgImageUpload
+
+### 1) Básico
+
+O onChange entrega a lista de imagens (de uma); o envio ao servidor é do host. O tipo é conferido pelo conteúdo do arquivo.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/basico.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -260,31 +437,11 @@ export default function App() {
 }
 ```
 
-## SgImageUpload: regras (tipo, tamanho, dimensão e proporção)
+### 2) Várias imagens
 
-```tsx
-import * as React from "react";
-import { SgImageUpload } from "@seedgrid/fe-components";
+maxFiles maior que 1 liga a seleção múltipla e mostra a grade de miniaturas. As imagens recusadas não derrubam as demais.
 
-export default function App() {
-  return (
-    <div className="w-80">
-      <SgImageUpload
-        id="demo-rules"
-        label="Avatar"
-        accept="image/png,image/jpeg"
-        maxSizePerFile="2MB"
-        minWidth={200}
-        minHeight={200}
-        aspect={1}
-        hintText="PNG ou JPEG, até 2 MB, quadrada, mínimo 200 × 200 px."
-      />
-    </div>
-  );
-}
-```
-
-## SgImageUpload: várias imagens (grade)
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/varias.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -310,7 +467,39 @@ export default function App() {
 }
 ```
 
-## SgImageUpload: imagem já salva (`{ name, url }`)
+### 3) Regras de validação
+
+accept, maxSizePerFile, minWidth/minHeight e aspect recusam a imagem com uma mensagem e disparam onError.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/regras.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgImageUpload } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgImageUpload
+        id="demo-rules"
+        label="Avatar"
+        accept="image/png,image/jpeg"
+        maxSizePerFile="2MB"
+        minWidth={200}
+        minHeight={200}
+        aspect={1}
+        hintText="PNG ou JPEG, até 2 MB, quadrada, mínimo 200 × 200 px."
+      />
+    </div>
+  );
+}
+```
+
+### 4) Imagem já salva
+
+Um item com url ({ name, url }) é uma imagem existente no servidor e já aparece na pré-visualização.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/valor-salvo.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -330,7 +519,11 @@ export default function App() {
 }
 ```
 
-## SgImageUpload: desabilitado
+### 5) Desabilitado
+
+Não permite escolher nem remover.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/desabilitado.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -345,7 +538,69 @@ export default function App() {
 }
 ```
 
-## SgCameraCapture: básico
+### 6) Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.imageupload.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/idioma.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgImageUpload, SgComponentsI18nProvider } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgComponentsI18nProvider locale="fr" messages={{ "components.inputs.imageupload.drop": "Arraste a foto aqui" }}>
+        <SgImageUpload
+          id="demo-i18n"
+          label="Foto"
+        />
+      </SgComponentsI18nProvider>
+    </div>
+  );
+}
+```
+
+### 7) Dentro de um formulário
+
+O formulário guarda a lista de imagens e valida o obrigatório.
+
+Fonte: `apps/showcase/src/app/components/sg-image-upload/samples/dentro-de-um-formulario.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgButton, SgImageUpload } from "@seedgrid/fe-components";
+
+export default function Example() {
+  const [submitted, setSubmitted] = React.useState("");
+  const { control, handleSubmit } = useForm<{ documento: Array<{ name: string }> }>({ defaultValues: { documento: [] } });
+
+  return (
+    <form className="w-80 space-y-3" onSubmit={handleSubmit((values) => setSubmitted(values.documento[0]?.name ?? "-"))}>
+      <SgImageUpload
+        id="documento"
+        name="documento"
+        control={control}
+        label="Foto do documento"
+        required
+        requiredMessage="Escolha uma imagem"
+      />
+      <SgButton type="submit">Enviar</SgButton>
+      {submitted ? <p className="text-sm">Enviado: {submitted}</p> : null}
+    </form>
+  );
+}
+```
+
+## SgCameraCapture
+
+### 1) Básico
+
+O onCapture entrega a imagem JPEG (Blob); o envio ao servidor é do host. Exige HTTPS e a permissão do navegador.
+
+Fonte: `apps/showcase/src/app/components/sg-camera-capture/samples/basico.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -371,7 +626,11 @@ export default function App() {
 }
 ```
 
-## SgCameraCapture: guia oval (selfie)
+### 2) Guia oval (selfie)
+
+guide="oval" com a câmera frontal ajuda a centralizar o rosto.
+
+Fonte: `apps/showcase/src/app/components/sg-camera-capture/samples/guia-oval.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -398,7 +657,11 @@ export default function App() {
 }
 ```
 
-## SgCameraCapture: guia retangular (documento, câmera traseira, alta resolução)
+### 3) Guia retangular (documento)
+
+guide="rect" com a câmera traseira e resolução alta, para documentos.
+
+Fonte: `apps/showcase/src/app/components/sg-camera-capture/samples/guia-retangular.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -420,7 +683,11 @@ export default function App() {
 }
 ```
 
-## SgCameraCapture: tratar erros da câmera
+### 4) Erros de câmera
+
+Sem permissão, sem câmera ou falha: o componente mostra o estado e chama onError com o código.
+
+Fonte: `apps/showcase/src/app/components/sg-camera-capture/samples/erros.tsx.sample`.
 
 ```tsx
 import * as React from "react";
@@ -442,6 +709,30 @@ export default function App() {
 }
 ```
 
-## Câmera e galeria juntas (composição)
+### 5) Idioma e textos (i18n)
+
+Os textos internos vêm do dicionário components.inputs.camera.*. Envolva o componente em SgComponentsI18nProvider (ou chame setComponentsI18n) para trocar o idioma e use messages para substituir uma chave.
+
+Fonte: `apps/showcase/src/app/components/sg-camera-capture/samples/idioma.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgCameraCapture, SgComponentsI18nProvider } from "@seedgrid/fe-components";
+
+export default function App() {
+  return (
+    <div className="w-80">
+      <SgComponentsI18nProvider locale="fr" messages={{ "components.inputs.camera.capture": "Tirar foto agora" }}>
+        <SgCameraCapture
+          id="demo-i18n"
+          label="Foto"
+        />
+      </SgComponentsI18nProvider>
+    </div>
+  );
+}
+```
+
+### Câmera e galeria juntas (composição, exemplo próprio)
 
 Receita **sugerida** pelos `compositionHints` dos metas (**Inferência**, não é um sample do showcase): `SgCameraCapture` para tirar na hora e `SgImageUpload` para escolher da galeria; em ambos, o envio fica com o host (use o `File` ou o `Blob` recebido no serviço de arquivos do projeto).
