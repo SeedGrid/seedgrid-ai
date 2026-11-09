@@ -48,7 +48,7 @@ As respostas formam um JSON plano, uma chave por pergunta (`chave` da pergunta, 
   "selfEnter": "sim", "selfEnterModo": "convite",
   "auditoria": "mongodb", "armazenamentoAvatar": "filesystem", "armazenamentoBackup": "filesystem", "apikeysUso": "Integrações internas",
   "billingProvider": "stripe", "trialDias": 14, "planos": "Básico,Pro", "diferencaPlanos": "Pro libera mais usuários",
-  "dominioFront": "app.acme.com.br", "dominioAdmin": "admin.acme.com.br",
+  "dominioFront": "portal.acme.com.br",
   "emailRemetente": "noreply@acme.com.br", "emailAdmin": "dono@acme.com.br"
 }
 ```
