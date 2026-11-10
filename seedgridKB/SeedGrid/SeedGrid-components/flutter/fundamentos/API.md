@@ -53,7 +53,7 @@ Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fu
 | `SeedThemeInput` | `SeedThemeInput` | parcial (sem `persistMode` e `persistenceStrategy`) |
 | `ThemeVars` | `ThemeVars` (`Map<String, String>`) | portado |
 | `defaultSeedTheme` | `defaultSeedTheme` | portado (sem `persistMode`) |
-| `clamp`, `hexToRgb`, `rgbToHex`, `rgbToHsl`, `hslToRgb`, `hslToHex`, `relativeLuminance`, `pickOnColor`, `toRgbVarValue`, `shiftHue`, `buildScaleFromHex` | mesmos nomes | portado |
+| `clamp`, `hexToRgb`, `rgbToHex`, `rgbToHsl`, `hslToRgb`, `hslToHex`, `relativeLuminance`, `contrastRatio`, `pickOnColor`, `toRgbVarValue`, `shiftHue`, `buildScaleFromHex` | mesmos nomes | portado |
 | `getSystemMode` | `getSystemMode()` devolve `Brightness` | portado |
 | `generateThemeVars`, `generateComponentTokens` | mesmos nomes | portado |
 | `ThemeProvider`, `useTheme`, `SeedGridThemeConfig`, `defaultTheme`, `AppShell` (legado, `@deprecated`) | nenhum | não portado de propósito |
@@ -501,7 +501,8 @@ Funções soltas: `Color parseThemeColor(String text)` (lança `FormatException(
 | `hslToRgb` | `({double r, double g, double b}) hslToRgb(double h, double s, double l)` | — |
 | `hslToHex` | `String hslToHex(double h, double s, double l)` | — |
 | `relativeLuminance` | `double relativeLuminance(String hex)` | luminância relativa; **ocultado** no reexport de `seedgrid_components` (importe `seedgrid_theme` direto). |
-| `pickOnColor` | `String pickOnColor(String bgHex)` | `#0B0B0C` se a luminância > 0,5, senão `#FFFFFF`. |
+| `pickOnColor` | `String pickOnColor(String bgHex)` | O texto sobre uma cor de fundo é escolhido por contraste calculado: tenta `#FFFFFF` e depois `#0B0B0C` e fica com o primeiro cuja razão de contraste WCAG com o fundo seja >= 4,5 (`MIN_CONTRAST_RATIO`, no Flutter `minContrastRatio`); se nenhum atingir, usa o de maior contraste. Antes da mudança (fe-components `45c413f`, fe-flutter `8572bc1`) o corte era a luminância 0,5. Cores médias (verdes claros, laranjas, vermelhos, azuis médios, cinzas) passam a ter texto preto onde antes tinham branco (`color_utils.dart`, fe-flutter `8572bc1`). |
+| `contrastRatio` | `double contrastRatio(String aHex, String bHex)` | razão de contraste WCAG entre duas cores hex (1 a 21); `minContrastRatio` é 4,5. |
 | `toRgbVarValue` | `String toRgbVarValue(String hex)` | `"r g b"`. |
 | `shiftHue` | `String shiftHue(String hex, double dh, [double? targetS, double? targetL])` | gira o matiz e fixa saturação/luminosidade (0 a 100). |
 | `buildScaleFromHex` | `Map<int, String> buildScaleFromHex(String baseHex, Brightness resolvedMode, {double? boostS, double? biasL})` | escala 50 a 900 por HSL (luminosidade por degrau, diferente no claro e no escuro). |
