@@ -301,7 +301,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `dropbox` → `api-url`, `content-url`, `token-url` | dropbox | `String` | endpoints oficiais | — | Proxy e teste | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `seedgrid.filemanagement.registry-table.enabled` | Anexos (tabela sg_attachments) | — | `false` | — | Liga o registro de anexos | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `seedgrid.migrations.host-managed` | Anexos (tabela sg_attachments) | — | `false` | — | Quando true, o host migra o banco e o runner da lib não age (use nas tenancies) | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
-| `owner-key` (chave do mapa de qualquer backend) | Anexos (tabela sg_attachments) | — | vazio | — | Dono do anexo, opaco; gravado em sg_attachments.owner_key | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `owner-key` (chave do mapa de qualquer backend; não é propriedade do `application.properties`, o host a passa em `registry.get(tipo, Map.of("owner-key", ...))`) | Anexos (tabela sg_attachments) | — | vazio | — | Dono opaco (tenant, empresa ou usuário, quem decide é o host) | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 
 ### login-tenancy
 
