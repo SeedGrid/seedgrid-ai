@@ -1,0 +1,29 @@
+{
+  "comentario": "Divergências conhecidas entre os catálogos de Extensions e o código Java (P161.F4.T2). Cada item precisa de motivo. `*` casa qualquer trecho. Item novo aqui exige que alguém tenha conferido o código.",
+  "propriedades": {
+    "codigoSemCatalogo": [
+      { "padrao": "seedgrid.security.access-current-company", "motivo": "atributo interno de requisição (CompanyAccessFilter.CURRENT_COMPANY_PROPERTY), não é configuração" },
+      { "padrao": "seedgrid.security.company-required-handled-by-module", "motivo": "atributo interno de requisição entre filtros (security e business-days), não é configuração" },
+      { "padrao": "seedgrid.security.admin-guard.lock", "motivo": "nome do recurso de lock em LastAdminGuard, não é configuração (a configuração é admin-guard.lock-timeout)" },
+      { "padrao": "seedgrid.security.rate-limit.login.*", "motivo": "REVISAR (dev da security): defaults legados no microprofile-config da security sem leitor; o catálogo usa seedgrid.ratelimit.login.*" },
+      { "padrao": "seedgrid.subdomain-tenancy.*.migrations.location", "motivo": "falso positivo conhecido (dev-2): @WithName(\"location.additional\") compõe com location; a KB está certa" }
+    ],
+    "catalogoSemCodigo": [
+      { "padrao": "seedgrid.cache.*", "motivo": "fachada dinâmica sobre quarkus.redis.* e sufixos montados em tempo de execução; não há leitura literal" },
+      { "padrao": "seedgrid.ratelimit.*", "motivo": "chaves dinâmicas por @RateLimited(configKey); o sufixo vem da anotação" },
+      { "padrao": "seedgrid.circuitbreaker.*", "motivo": "chaves dinâmicas por nome do circuit breaker" },
+      { "padrao": "seedgrid.filemanagement.filesystem.base-path", "motivo": "REVISAR (doc): nota do login-tenancy diz que é default repassado ao filemanagement; o login-tenancy não o declara no código" }
+    ]
+  },
+  "enums": {
+    "codigoSemCatalogo": [
+      { "padrao": "cities:StateEnum", "motivo": "REVISAR (doc): o código está na cities, mas o catálogo o lista em commons (nota commons/Enums.md)" },
+      { "padrao": "login-tenancy:LoginTenancyConfig.CustomerType", "motivo": "REVISAR (doc): enum aninhado na interface de configuração, sem seção na nota Enums" },
+      { "padrao": "security:CompanyQuotaValidator.Operation", "motivo": "REVISAR (doc): enum aninhado numa SPI, sem seção na nota Enums" }
+    ],
+    "catalogoSemCodigo": [
+      { "padrao": "commons:StateEnum*", "motivo": "REVISAR (doc): o enum foi movido do commons para a cities em 2026-10-28; a seção ainda está em commons/Enums.md" }
+    ],
+    "valoresDiferem": []
+  }
+}
