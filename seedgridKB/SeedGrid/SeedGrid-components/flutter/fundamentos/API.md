@@ -53,7 +53,7 @@ Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fu
 | `SeedThemeInput` | `SeedThemeInput` | parcial (sem `persistMode` e `persistenceStrategy`) |
 | `ThemeVars` | `ThemeVars` (`Map<String, String>`) | portado |
 | `defaultSeedTheme` | `defaultSeedTheme` | portado (sem `persistMode`) |
-| `clamp`, `hexToRgb`, `rgbToHex`, `rgbToHsl`, `hslToRgb`, `hslToHex`, `relativeLuminance`, `contrastRatio`, `pickOnColor`, `toRgbVarValue`, `shiftHue`, `buildScaleFromHex` | mesmos nomes | portado |
+| `clamp`, `hexToRgb`, `rgbToHex`, `rgbToHsl`, `hslToRgb`, `hslToHex`, `relativeLuminance`, `contrastRatio`, `bestOnContrast`, `adjustBgForOnColor`, `pickOnColor`, `toRgbVarValue`, `shiftHue`, `buildScaleFromHex` | mesmos nomes | portado |
 | `getSystemMode` | `getSystemMode()` devolve `Brightness` | portado |
 | `generateThemeVars`, `generateComponentTokens` | mesmos nomes | portado |
 | `ThemeProvider`, `useTheme`, `SeedGridThemeConfig`, `defaultTheme`, `AppShell` (legado, `@deprecated`) | nenhum | não portado de propósito |
@@ -483,7 +483,7 @@ Campos de `SeedThemeInput`:
 
 Funções soltas: `Color parseThemeColor(String text)` (lança `FormatException('Valor de token nao e cor: ...')`) e `Color colorFromHex(String hex)`.
 
-**Getters tipados** (`extension SgThemeTokens on SgTheme`, gerada, 193 getters): regra de nome = tira `--sg-` e vira camelCase (`--sg-btn-primary-bg` → `btnPrimaryBg`; `--sg-primary-600` → `primary600`). Tokens legados (`--background`, `--primary`...) só por `theme.color('--background')`. Grupos (Confirmado em `sg_theme_tokens.g.dart`): neutros (`bg`, `surface`, `mutedSurface`, `border`, `ring`, `text`, `muted`, `disabled`, `onDisabled`, `link`, `linkHover`, `badge`, `onBadge`, `tooltip`, `onTooltip`); `on*` (`onPrimary`, `onSecondary`, `onTertiary`, `onWarning`, `onError`, `onInfo`, `onSuccess`); escalas `primary|secondary|tertiary|warning|error|info|success` de `50` a `900` (10 degraus) mais `*Hover`/`*Active`; botões `btn{Primary,Secondary,Success,Info,Warning,Danger,Help,Plain}{Bg,Fg,Border,HoverBg,ActiveBg,Ring}`; `input*`, `card*`, `alert{Info,Success,Warning,Error}{Bg,Fg,Border}`, `badgeBg/Fg`, `tooltipBg/Fg`, `modal*`, `menu*`, `table*`.
+**Getters tipados** (`extension SgThemeTokens on SgTheme`, gerada, 207 getters): regra de nome = tira `--sg-` e vira camelCase (`--sg-btn-primary-bg` → `btnPrimaryBg`; `--sg-primary-600` → `primary600`). Tokens legados (`--background`, `--primary`...) só por `theme.color('--background')`. Grupos (Confirmado em `sg_theme_tokens.g.dart`): neutros (`bg`, `surface`, `mutedSurface`, `border`, `ring`, `text`, `muted`, `disabled`, `onDisabled`, `link`, `linkHover`, `badge`, `onBadge`, `tooltip`, `onTooltip`); `on*` (`onPrimary`, `onSecondary`, `onTertiary`, `onWarning`, `onError`, `onInfo`, `onSuccess`); escalas `primary|secondary|tertiary|warning|error|info|success` de `50` a `900` (10 degraus) mais `*Hover`/`*Active`; botões `btn{Primary,Secondary,Success,Info,Warning,Danger,Help,Plain}{Bg,Fg,Border,HoverBg,ActiveBg,Ring}`; `input*`, `card*`, `alert{Info,Success,Warning,Error}{Bg,Fg,Border}`, `badgeBg/Fg`, `tooltipBg/Fg`, `modal*`, `menu*`, `table*`.
 
 `SgTheme sgThemeOf(BuildContext context)` (`seedgrid_components/lib/src/theme_access.dart`): o `SgTheme` do `Theme`; sem ele, gera `SgTheme.fromInput(defaultSeedTheme, theme.brightness)`.
 
@@ -503,6 +503,8 @@ Funções soltas: `Color parseThemeColor(String text)` (lança `FormatException(
 | `relativeLuminance` | `double relativeLuminance(String hex)` | luminância relativa; **ocultado** no reexport de `seedgrid_components` (importe `seedgrid_theme` direto). |
 | `pickOnColor` | `String pickOnColor(String bgHex)` | O texto sobre uma cor de fundo é escolhido por contraste calculado: tenta `#FFFFFF` e depois `#0B0B0C` e fica com o primeiro cuja razão de contraste WCAG com o fundo seja >= 4,5 (`MIN_CONTRAST_RATIO`, no Flutter `minContrastRatio`); se nenhum atingir, usa o de maior contraste. Antes da mudança (fe-components `45c413f`, fe-flutter `8572bc1`) o corte era a luminância 0,5. Cores médias (verdes claros, laranjas, vermelhos, azuis médios, cinzas) passam a ter texto preto onde antes tinham branco (`color_utils.dart`, fe-flutter `8572bc1`). |
 | `contrastRatio` | `double contrastRatio(String aHex, String bHex)` | razão de contraste WCAG entre duas cores hex (1 a 21); `minContrastRatio` é 4,5. |
+| `bestOnContrast` | `double bestOnContrast(String bgHex)` | maior contraste entre `#FFFFFF` e `#0B0B0C` sobre o fundo. |
+| `adjustBgForOnColor` | `String adjustBgForOnColor(String bgHex)` | Se nenhum dos dois alcança 4,5, `adjustBgForOnColor(bgHex)` clareia ou escurece o fundo em passos de 1% de luminosidade HSL, até `maxBgAdjustSteps` (15), na direção que atinge o mínimo com menos passos (empate: escurece), mantendo matiz e saturação; se nenhuma direção atinge, devolve o fundo original.  |
 | `toRgbVarValue` | `String toRgbVarValue(String hex)` | `"r g b"`. |
 | `shiftHue` | `String shiftHue(String hex, double dh, [double? targetS, double? targetL])` | gira o matiz e fixa saturação/luminosidade (0 a 100). |
 | `buildScaleFromHex` | `Map<int, String> buildScaleFromHex(String baseHex, Brightness resolvedMode, {double? boostS, double? biasL})` | escala 50 a 900 por HSL (luminosidade por degrau, diferente no claro e no escuro). |
