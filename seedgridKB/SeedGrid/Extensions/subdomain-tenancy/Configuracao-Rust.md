@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, subdomain-tenancy, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-subdomain-tenancy
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # Configuração Rust — `seedgrid-rust-crate-subdomain-tenancy`
@@ -39,6 +39,13 @@ Parsing: booleanos em geral `v != "false"` (qualquer coisa diferente de `false` 
 | `PRODUCT_PREFIX` → `product_prefix` | `Option<String>` | ex. `crm` | `None` | Não | nome do banco por tenant `<prefix>_<tenant>` | `TenantPoolProvider`, provisioning, coordinator | Java: `seedgrid.subdomain-tenancy.product-prefix`; o Java usa a env `PRODUCT_PREFIX` em `database.master.subdomain` | boot | idem |
 | `default_tenant` (campo) | `String` | — | `master` | Não | tenant de fallback/escopo plataforma (bypass do gate de migração) | `gate.rs`, `pool_resolver.rs`, `provisioning_routes.rs`, `spi.rs`, `tenant_scoped.rs` | Java: `...default-tenant`; **sem env no Rust** | struct | `SubdomainTenancyConfig::default` |
 
+### 2.1.1 URL externa do tenant (esquema e porta)
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `SEEDGRID_MULTITENANCY_USE_HTTPS` → `use_https` | `bool` | `true` (sem diferenciar maiúsculas, após `trim`) liga; qualquer outro valor desliga | `true` | Não | esquema (`https`/`http`) da URL externa do tenant. **Consumidor deferido**: o doc-comment do campo diz que o crate ainda não porta a construção de URL externa/redirect; o campo é lido só por completude de config | nenhum consumidor no crate (busca em `src/`) | Java: `seedgrid.subdomain-tenancy.use-https` (padrão `true`) | boot | `src/config.rs` (`from_env`) |
+| `SEEDGRID_MULTITENANCY_PORT` · primário `CODGRID_MULTITENANCY_PORT` (grafia do exemplo Java) → `port` | `Option<u16>` | inteiro 0–65535; vazio ou inválido = ignorado | `None` (porta implícita do esquema) | Não | porta da URL externa do tenant; o primário lido é `CODGRID_MULTITENANCY_PORT`, e `SEEDGRID_MULTITENANCY_PORT` é o fallback. Mesmo consumidor deferido de `use_https` | nenhum consumidor no crate | Java: `seedgrid.subdomain-tenancy.port` | boot | `src/config.rs` (`from_env`) |
+
 ### 2.2 Datasources (master e tenant)
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
@@ -46,11 +53,12 @@ Parsing: booleanos em geral `v != "false"` (qualquer coisa diferente de `false` 
 | `SEEDGRID_MULTITENANCY_MASTER_DB_URL` | URL | `jdbc:postgresql://`, `postgresql://`, `postgres://` | — (fallback: `master_url_fallback` do host) | Não | base para derivar `host:port` (e creds embutidas) do tenant | `apply_datasource_env` | Java: `...master.datasource.jdbc.url` | boot | `src/config.rs` → `apply_datasource_env` |
 | `SEEDGRID_MULTITENANCY_MASTER_DB_USERNAME` | `String` | — | — | Não | fallback das creds do tenant | idem | Java: `...master.datasource.username` | boot | idem |
 | 🔒 `SEEDGRID_MULTITENANCY_MASTER_DB_PASSWORD` | `String` | — | — | Não | idem | idem | Java: `...master.datasource.password` | boot | idem |
+| `SEEDGRID_MULTITENANCY_MASTER_DB_POOL_MIN` / `_MAX` → `master_pool_min/max` | `u32` | `_MIN` ≥ 0; `_MAX` vira no mínimo 1 (`n.max(1)`); vazio ou inválido = ignorado | `1` / `10` | Não | conexões do pool do datasource **master**; consumido pelo host ao abrir o pool master compartilhado (o crate não abre o master sozinho) | host (`assemble_all(config, Some(master_pool), ...)`) | Java: `...master.datasource.jdbc.min-size/max-size` (MPC `1` / `10`) | boot | `src/config.rs` (`from_env`, `pool_env`) |
 | `SEEDGRID_MULTITENANCY_TENANT_DB_URL` → `tenant_url_pattern` | URL base | URL sem `{tenant}` (anexa `/{tenant}`) ou com `{tenant}` | `jdbc:postgresql://localhost:5439/{tenant}` | Não (recomendada) | precedência: `TENANT_URL_PATTERN` > `TENANT_DB_URL` > host:port do master > default | `TenantPoolProvider`, coordinator | Java: `...tenant.datasource.jdbc.url` | boot | idem |
 | `SEEDGRID_MULTITENANCY_TENANT_URL_PATTERN` → `tenant_url_pattern` | `String` | com `{tenant}` | — | Não | legado; tem a última palavra | idem | Java: `...tenant.datasource.jdbc.url-pattern` | boot | idem |
 | `SEEDGRID_MULTITENANCY_TENANT_DB_USERNAME` → `tenant_username` | `String` | — | `postgres` | Não | precedência: env tenant > creds do master > default; também vira `OWNER` do `CREATE DATABASE` | provisioning, pools | Java: `...tenant.datasource.username` | boot | idem |
 | 🔒 `SEEDGRID_MULTITENANCY_TENANT_DB_PASSWORD` → `tenant_password` | `String` | — | `postgres` | Não (trocar em produção) | idem | pools | Java: `...tenant.datasource.password` | boot | idem |
-| `SEEDGRID_MULTITENANCY_TENANT_DB_POOL_MIN` / `_MAX` → `tenant_pool_min/max` | `u32` | ≥ 1 | `1` / `10` | Não | conexões por pool de tenant | `src/orchestrator.rs` (`with_min/max_connections`) | Java: `...tenant.datasource.jdbc.min-size/max-size` (Java: **0 / 5**) | boot | idem |
+| `SEEDGRID_MULTITENANCY_TENANT_DB_POOL_MIN` / `_MAX` → `tenant_pool_min/max` | `u32` | `_MIN` ≥ 0; `_MAX` vira no mínimo 1 (`n.max(1)`) | `0` / `5` (`SubdomainTenancyConfig::default`) | Não | conexões por pool de tenant | `src/orchestrator.rs` (`with_min/max_connections`) | Java: `...tenant.datasource.jdbc.min-size/max-size` (MPC `0` / `5`, igual) | boot | idem |
 | `SEEDGRID_MULTITENANCY_TENANT_DB_MAX_ACTIVE_DATASOURCES` → `tenant_max_active_datasources` | `usize` | `0` = ilimitado | `200` | Não | teto de pools em cache; LRU fecha o menos usado | `src/orchestrator.rs` (`with_max_active`) | Java: `...tenant.datasource.max-active-datasources` | boot | `src/config.rs` |
 | `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_ENABLED` → `tenant_cb_enabled` | `bool` | `false` desliga | `true` | Não | CB em volta da abertura do pool de cada tenant | `src/orchestrator.rs` | **só no Rust** (Java não tem `enabled`) | boot | idem |
 | `SEEDGRID_MULTITENANCY_TENANT_DB_CIRCUIT_BREAKER_FAILURE_RATIO` | `f64` | 0..1 | `0.5` | Não | convertido para % | idem | Java: `...circuit-breaker.failure-ratio` | boot | idem |
@@ -183,6 +191,6 @@ SEEDGRID_MULTITENANCY_TRIAL_CRON=0 10 * * * ?
 ## 9. Dúvidas e lacunas
 
 - Nomes `SEEDGRID_SUBDOMAIN_TENANCY_*` do Java atual não lidos — **Confirmado**.
-- Default diferente do Java: pool do tenant (1/10 × 0/5) — **Confirmado**.
+- Pool do tenant: o crate usa `0`/`5` (`src/config.rs`, `Default`), igual ao `MPC` do Java; uma versão anterior desta nota dizia `1`/`10` — **Confirmado**.
 - Sem equivalente no crate: `tenant.datasource.jdbc.idle-timeout/acquisition-timeout`, `tenant.datasource.cache.*`, `tenant-header`, `*.migrations.location.additional`, `openapi.master-only-paths`, `master/tenant.entity-packages`, `mailer.*`, `admin-user.*` (admin do master vem de `SEEDGRID_SECURITY_FIRST_ADMIN_USER_*`, ) — **Confirmado** por comparação com o `microprofile-config.properties` Java.
 - `trial_days`/`trial_cron`: o Java analisado não tem mais configuração de trial (seção "Trial configuration" vazia) — **Confirmado**; se o trial foi movido ao billing no Java, o crate ainda o mantém — **Inferência**.

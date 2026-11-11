@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, security, configuracao]
 fonte: java/seedgrid-quarkus-ext-security
 branch: main
-commit: 450735386e
-analisado-em: 2026-10-14
+commit: 98572be20a
+analisado-em: 2026-11-11
 ---
 
 # security — Configuração (Quarkus)
@@ -100,6 +100,7 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.security.2f.enabled` | boolean | `true`/`false` | **`true`** (mp-config; `@WithDefault` `false`) | Não | `false`: `/2f/enable` responde 400 "2FA is disabled" e o login não inicia desafio 2FA | Login e endpoints `/2f/*` | — | Runtime | Decl.: `…/security/configs/TwoFactorConfig#enabled()`; consumo: `services/AuthService` (login), `controllers/TwoFactorController#enable2FA`, `services/TwoFactorService` |
 | `seedgrid.security.2f.allowed-methods` | List\<String\> | `EMAIL`, `TOTP`, `WHATSAPP` (códigos das `TwoFactorStrategy` registradas; normalizados `trim().toUpperCase()`; ver [[SeedGrid/Extensions/security/Enums#TwoFactorMethodType\|TwoFactorMethodType]] — `BACKUP_CODE` existe no enum mas não tem estratégia) | `EMAIL,TOTP` | Não | Interseção com as estratégias disponíveis e com `canEnroll(user)` define o que o usuário pode ativar | `TwoFactorController#getAllowedMethods/isAllowedMethod` | `WHATSAPP` exige `whatsapp.channel-id` | Runtime | Decl.: `TwoFactorConfig#allowedMethods()`; consumo: `controllers/TwoFactorController` |
+| `seedgrid.security.2f.default-method` | String | um dos códigos de `allowed-methods` (ex.: `EMAIL`, `TOTP`, `WHATSAPP`) | `TOTP` | Não | Método de 2FA sugerido na interface; o Javadoc diz que deve ser um dos permitidos. **Declarada, mas nenhum código do módulo a lê** (busca por `defaultMethod()` sem consumidores): hoje não muda o comportamento do backend | — | Deve estar em `allowed-methods` | Runtime | Decl.: `…/security/configs/TwoFactorConfig#defaultMethod()`; consumo: nenhum no runtime (Confirmado por busca) |
 | `seedgrid.security.2f.totp.issuer` | String | texto | `SeedGrid` | Não | Issuer na URL `otpauth://` e no QR | Setup TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#issuer()`; consumo: `services/TwoFactorService` |
 | `seedgrid.security.2f.totp.digits` | int | ex.: 6 | `6` | Não | Dígitos do código TOTP | Setup e verificação TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#digits()`; consumo: `TwoFactorService`, `spis/impl/TotpTwoFactorStrategy` |
 | `seedgrid.security.2f.totp.period` | int | segundos | `30` | Não | Período do código | Setup e verificação TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#period()`; consumo: idem |
@@ -108,6 +109,7 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 | `seedgrid.security.2f.otp-qrcode.logo` | Optional\<String\> | `classpath:...` ou caminho de arquivo | — | Condicional (só com branding) | Caminho do logo | idem | — | Runtime | Decl.: `TwoFactorConfig.OtpQrCode#logo()`; consumo: `TwoFactorService` |
 | `seedgrid.security.2f.otp-qrcode.size` | int | pixels | `256` | Não | Largura/altura da imagem QR | idem | — | Runtime | Decl.: `TwoFactorConfig.OtpQrCode#size()`; consumo: `TwoFactorService`, `TwoFactorController` |
 | `seedgrid.security.2f.verify.max-attempts` | int | ≥ 1 | `5` | Não | Ao exceder, a sessão 2FA (tempToken) é removida e a verificação falha | `TwoFactorService` (verify) | Somado ao rate-limit `2fa-verify` | Runtime | Decl.: `TwoFactorConfig.Verify#maxAttempts()`; consumo: `services/TwoFactorService` |
+| `seedgrid.security.2f.verify.lockout-duration` | Duration | ISO-8601 | `PT30M` | Não | Tempo de bloqueio depois de estourar `verify.max-attempts` (Javadoc: "Lockout duration after max attempts exceeded"). **Declarada, mas nenhum código do módulo a lê** (busca por `lockoutDuration()` sem consumidores): ao exceder as tentativas o `TwoFactorService` só remove a sessão 2FA, sem bloqueio temporizado | — | Complementa `2f.verify.max-attempts` | Runtime | Decl.: `TwoFactorConfig.Verify#lockoutDuration()`; consumo: nenhum no runtime (Confirmado por busca) |
 | `seedgrid.security.2f.session.ttl` | Duration | ISO-8601 | `PT5M` | Não | Validade do `tempToken` (sessão 2FA em cache) | `TwoFactorService` | — | Runtime | Decl.: `TwoFactorConfig.Session#ttl()`; consumo: `TwoFactorService` |
 | `seedgrid.security.2f.email.code-ttl` | Duration | ISO-8601 | `PT5M` | Não | Validade do código por e-mail | Estratégia EMAIL | — | Runtime | Decl.: `TwoFactorConfig.Email#codeTtl()`; consumo: `spis/impl/EmailTwoFactorStrategy` |
 | `seedgrid.security.2f.backup-codes.count` | int | ≥ 1 | `10` | Não | Quantidade de backup codes gerados | `BackupCodeService` | — | Runtime | Decl.: `TwoFactorConfig.BackupCodes#count()`; consumo: `services/BackupCodeService` |
@@ -132,6 +134,8 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 | `seedgrid.security.self-enter.cleanup.purge-after` | Duration | ISO-8601 | `PT168H` | Não | Idade após a qual solicitações APPROVED/REJECTED/EXPIRED são apagadas | Job de limpeza | — | Runtime | Decl.: `SelfEnterConfig.Cleanup#purgeAfter()`; consumo: `EntryRequestCleanupJob` |
 | `seedgrid.security.self-enter.email.confirm-subject` | String | texto | `Confirme seu e-mail` | Não | Assunto do e-mail com código de confirmação | `SelfEnterService` | — | Runtime | Decl.: `SelfEnterConfig.Email#confirmSubject()`; consumo: `SelfEnterService` |
 | `seedgrid.security.self-enter.email.invite-subject` | String | texto | `Voce recebeu um convite para cadastro` | Não | Assunto do e-mail de convite | `SelfEnterService` | — | Runtime | Decl.: `SelfEnterConfig.Email#inviteSubject()`; consumo: `SelfEnterService` |
+| `seedgrid.security.self-enter.email.approved-subject` | String | texto | `Seu acesso foi aprovado` | Não | Assunto do e-mail de aprovação. **Declarada, mas nenhum código do módulo a lê** (busca por `approvedSubject()` sem consumidores) | — | — | Runtime | Decl.: `SelfEnterConfig.Email#approvedSubject()`; consumo: nenhum no runtime (Confirmado por busca) |
+| `seedgrid.security.self-enter.email.from` | Optional\<String\> | endereço de e-mail | — (sem padrão) | Não | Remetente dos e-mails do self-enter. **Declarada, mas nenhum código do módulo a lê** (o `SelfEnterService` usa só `confirmSubject()` e `inviteSubject()`): o remetente efetivo é o do mailer `security` (`seedgrid.security.mailer.from`) | — | Ver §2.7 | Runtime | Decl.: `SelfEnterConfig.Email#from()`; consumo: nenhum no runtime (Confirmado por busca) |
 
 ### 2.7 E-mail / SMTP (`seedgrid.security.mailer.*`)
 
@@ -290,20 +294,9 @@ Env var: chaves que começam com dígito após o ponto (`2fa-verify`) viram `SEE
 | `seedgrid.security.company-access.cache-ttl` | Duration | ISO-8601 | `PT60S` | Não | TTL do estado da empresa no `seedgrid-cache` (compartilhado entre os nós). A invalidação a cada mudança é explícita; cache fora do ar lê o banco. | `CompanyAccessService` | — | Runtime | Insumo Fase 5 |
 | `seedgrid.security.company-access.read-only.allowed-paths` | lista | caminhos; `*` um segmento, `**` qualquer profundidade | `/public/auth/**,/me/select-company,/me/profile,/me/password,/me/terms/accept,/me/identities,/2f,/users/change-password` | Não | Caminhos onde a escrita passa com a empresa em `READ_ONLY`. **Sobrescrever SUBSTITUI o padrão.** | Filtro de acesso | Prefira `contributions.<nome>` | Runtime | `microprofile-config.properties` do security |
 | `seedgrid.security.company-access.read-only.contributions.<nome>` | lista | caminhos | vazio | Não | Contribuições **aditivas** (uma chave por contribuinte). O billing traz `...contributions.billing=/me/billing,/me/plans,/me/subscription,/me/usage`. | Filtro de acesso | Soma-se a `allowed-paths` | Runtime | Insumo Fase 5 |
-| `seedgrid.security.social.providers` | lista | `google`, `facebook`, `apple` | vazio (módulo inerte) | Não | Provedores de login social ligados. Id desconhecido ou provedor sem credencial: o boot **falha**. Não há chave "enabled" por provedor. | `seedgrid-security-social` | Exige as chaves `social.<provedor>.*` | Boot | README do módulo |
-| `seedgrid.security.social.<provedor>.client-id` | String | id do cliente OAuth | `unset` | Sim, para o provedor listado | Credencial do cliente no provedor. Env: `SEEDGRID_SECURITY_SOCIAL_<PROVEDOR>_CLIENT_ID`. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.<provedor>.client-secret` 🔒 | String | segredo do cliente | placeholder desligado | Sim, para o provedor listado | Segredo do cliente no provedor; só por variável de ambiente. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.<provedor>.state-secret` 🔒 | String | 32 caracteres ou mais | placeholder desligado | Sim, para o provedor listado | Cifra o estado do fluxo; **igual em todas as instâncias**. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.<provedor>.encryption-secret` 🔒 | String | 32 caracteres ou mais | placeholder desligado | Sim, para o provedor listado | Cifra o cookie de sessão do fluxo OIDC; **igual em todas as instâncias**. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.<provedor>.redirect-uri` | String | caminho ou URL absoluta terminada em `/public/auth/social/<provedor>/callback` | `/public/auth/social/<provedor>/callback` | Sim, em produção | A `redirect_uri` cadastrada no provedor (o Google exige URL exata). | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.apple.team-id` | String | Team ID da conta Apple | `unset` | Sim, para `apple` | Emissor (`iss`) do client secret JWT da Apple. Env: `SEEDGRID_SECURITY_SOCIAL_APPLE_TEAM_ID`. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.apple.key-id` | String | Key ID da chave `.p8` | `unset` | Sim, para `apple` | Identifica a chave que assina o client secret. Env: `SEEDGRID_SECURITY_SOCIAL_APPLE_KEY_ID`. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.apple.private-key-file` 🔒 / `.private-key` 🔒 | String | caminho do `.p8` ou o conteúdo da chave | vazio | Sim, uma das duas, para `apple` | Chave privada que assina o client secret (a Apple não tem segredo fixo). Só por variável de ambiente ou arquivo montado. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.apple.client-secret-lifespan` | int (segundos) | 1 ou mais | `300` | Não | Validade do client secret JWT gerado. | `seedgrid-security-social` | — | Boot | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.allowed-return-hosts` | lista | `host`, `host:porta`, `*.dominio` | host de `frontend.base-url` | Não | Hosts do front permitidos em `returnTo` (anti *open redirect*). | `seedgrid-security-social` | `seedgrid.security.frontend.base-url` | Runtime | README do módulo |
-| `seedgrid.security.social.error-url` | String | URL do front | `frontend.base-url` + `frontend.login-path` | Não | Para onde voltar em falha do provedor (ex.: usuário cancelou). | `seedgrid-security-social` | — | Runtime | `microprofile-config.properties` do módulo |
-| `seedgrid.security.social.ticket-ttl` | Duration | ISO-8601 | `PT60S` | Não | Validade do ticket de uso único que leva o resultado ao front. | `seedgrid-security-social` | — | Runtime | `microprofile-config.properties` do módulo |
 | `seedgrid.security.social-login.*` | — | `pending-ttl`, `code-ttl`, `max-code-attempts` | `PT30M`, `PT15M`, `5` | Não | Fluxo de confirmação do e-mail por código de 6 dígitos (provedor sem e-mail verificado). | `SocialLoginService` | — | Runtime | Insumo Fase 2b; padrões em `SecuritySocialLoginConfig` |
+
+As propriedades do módulo opcional `seedgrid-security-social` (`seedgrid.security.social.*`, mais `frontend.base-url` e `frontend.login-path` lidas por ele) têm nota própria: [[SeedGrid/Extensions/security-social/Configuracao|Configuração do security-social (Quarkus)]]. O fluxo de configuração com o Google está em [[SeedGrid/Extensions/security/Login-social-Google|Login com Google]].
 
 ## 3. Propriedades de frameworks/bibliotecas configuradas pela extension
 
@@ -437,6 +430,7 @@ seedgrid.security.password.expiration-days=0
 # ---------- 2FA ----------
 seedgrid.security.2f.enabled=true
 seedgrid.security.2f.allowed-methods=EMAIL,TOTP,WHATSAPP
+seedgrid.security.2f.default-method=TOTP            # declarada; o backend não a consulta
 seedgrid.security.2f.totp.issuer=<NomeDoApp>
 seedgrid.security.2f.totp.digits=6
 seedgrid.security.2f.totp.period=30
@@ -445,6 +439,7 @@ seedgrid.security.2f.otp-qrcode.branding.enabled=false
 #seedgrid.security.2f.otp-qrcode.logo=classpath:/images/logo.png
 seedgrid.security.2f.otp-qrcode.size=256
 seedgrid.security.2f.verify.max-attempts=5
+seedgrid.security.2f.verify.lockout-duration=PT30M   # declarada; o backend não a consulta
 seedgrid.security.2f.session.ttl=PT5M
 seedgrid.security.2f.email.code-ttl=PT5M
 seedgrid.security.2f.backup-codes.count=10
@@ -466,6 +461,8 @@ seedgrid.security.self-enter.cleanup.cron=0 */10 * * * ?
 seedgrid.security.self-enter.cleanup.purge-after=PT168H
 seedgrid.security.self-enter.email.confirm-subject=Confirme seu e-mail
 seedgrid.security.self-enter.email.invite-subject=Voce recebeu um convite para cadastro
+seedgrid.security.self-enter.email.approved-subject=Seu acesso foi aprovado   # declarada; o backend não a consulta
+#seedgrid.security.self-enter.email.from=<remetente>   # declarada; o backend não a consulta
 
 # ---------- E-mail (mailer nomeado "security") ----------
 seedgrid.security.mailer.from=noreply@<seu-dominio>

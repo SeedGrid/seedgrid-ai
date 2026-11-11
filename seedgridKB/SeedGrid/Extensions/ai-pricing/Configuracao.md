@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, ai-pricing, quarkus, configuracao]
 fonte: java/seedgrid-quarkus-ext-ai-pricing
 branch: main
-commit: 0608ca66b5
-analisado-em: 2026-10-14
+commit: 4af58ac
+analisado-em: 2026-11-11
 ---
 
 # AI Pricing (Quarkus): configuração
@@ -51,7 +51,7 @@ Origem: `rt/entities/AiPricingConfigEntity.java`, `runtime/src/main/resources/db
 
 | Propriedade | Padrão | Efeito |
 |---|---|---|
-| `seedgrid.ai-pricing.enabled` | `true` | `false`: sem migrations, sem robô e as rotas `/admin/ai/**` respondem 404. Nas tenancy o default vem de `seedgrid.<tenancy>.modules.ai-pricing.enabled`. |
+| `seedgrid.ai-pricing.enabled` | `true` | `false` desliga a API: as rotas `/admin/ai/**` respondem 404 (filtro pré-matching, antes da autenticação) e somem do OpenAPI (`AiPricingApi#enabled`, `AiPricingApiToggleFilter`, `AiPricingApiOpenApiFilter`); o `AiPricingScheduler` também lê a chave e não agenda nada. Sem o `quarkus-security` no host a API responde 404 mesmo com `true` (`AiPricingApi.SECURITY_PRESENT`). Nas tenancy o default vem de `seedgrid.<tenancy>.modules.ai-pricing.enabled`. |
 | `seedgrid.migrations.host-managed` | `false` | `true` (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco. |
 
 A extension **sempre migra** o datasource default na subida (`AiPricingMigrationRunner`, histórico `sg_flyway_schema_history_ai_pricing`). Não existe mais `seedgrid.ai-pricing.migration.enabled`.

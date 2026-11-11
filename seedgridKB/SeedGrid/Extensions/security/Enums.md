@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, security, enum]
 fonte: java/seedgrid-quarkus-ext-security
 branch: main
-commit: 450735386e
-analisado-em: 2026-10-14
+commit: 98572be20a
+analisado-em: 2026-11-11
 ---
 
 # security — Enums (Quarkus)
@@ -20,6 +20,10 @@ Caminho-base: `java/seedgrid-quarkus-ext-security/runtime/src/main/java/br/com/s
 | [[SeedGrid/Extensions/security/Enums#EntryRequestStatus\|EntryRequestStatus]] | `entities/EntryRequestStatus.java` | Coluna `sg_entry_requests.status`, self-enter, job de limpeza | Sim (persistido) |
 | [[SeedGrid/Extensions/security/Enums#EntryRequestOrigin\|EntryRequestOrigin]] | `entities/EntryRequestOrigin.java` | Coluna `sg_entry_requests.origin`, self-enter | Sim (persistido) |
 | [[SeedGrid/Extensions/security/Enums#UserCreateOptions.Delivery\|UserCreateOptions.Delivery]] | `services/UserCreateOptions.java` (enum aninhado) | API Java para quem cria usuário por fluxo próprio (`UserService#createUser`) | Sim (API de bean) |
+| [[SeedGrid/Extensions/security/Enums#AdminGuardScope\|AdminGuardScope]] | `configs/AdminGuardScope.java` | `admin-guard.scope` (config), `SecurityIsolationPolicy`, `LastAdminGuard` | Sim (valor de config) |
+| [[SeedGrid/Extensions/security/Enums#IsolationMode\|IsolationMode]] | `configs/IsolationMode.java` | `seedgrid.security.isolation` (config), `SecurityIsolationPolicy`, `RoleService` | Sim (valor de config) |
+| [[SeedGrid/Extensions/security/Enums#CompanyAccessMode\|CompanyAccessMode]] | `entities/CompanyAccessMode.java` | Coluna `sg_companies.access_mode`, `CompanyAccessService`, `CompanyAccessFilter`, `AuthService` | Sim (persistido) |
+| [[SeedGrid/Extensions/security/Enums#PersonType\|PersonType]] | `entities/PersonType.java` | Coluna `sg_companies.person_type`, `CompanyDTOReq`/`CompanyDTOPatch`, `DocumentValidator` | Sim (persistido) |
 
 ## TwoFactorMethodType
 
@@ -89,6 +93,53 @@ Arquivo: `…/security/services/UserCreateOptions.java` — FQN `br.com.seedgrid
 | `CALLBACK` | Envio feito pelo host via `ActivationMailer` | Exige `activationMailer` não nulo (senão `IllegalArgumentException`); falha do envio só é logada com `mailerBestEffort=true` | Confirmado |
 
 - Não é persistido nem serializado em JSON; é parâmetro Java. Construtores de conveniência no record criam as variantes `NONE` e `CALLBACK`.
+
+## AdminGuardScope
+
+Arquivo: `…/security/configs/AdminGuardScope.java` — FQN `br.com.seedgrid.security.configs.AdminGuardScope`. Javadoc: escopo da invariante "mínimo 1 ADMIN ativo".
+
+| Valor | Significado | Efeito / onde é tratado | Observações |
+|---|---|---|---|
+| `COMPANY` | Por empresa (banco compartilhado) | Padrão quando `isolation=shared-database` (`SecurityIsolationPolicy`); `LastAdminGuard` aplica a invariante dentro de cada empresa | Confirmado |
+| `DATABASE` | Por banco (banco dedicado) | Padrão quando `isolation=dedicated-database`; `LastAdminGuard` compara `scope() == DATABASE` para contar ADMIN no banco todo | Confirmado |
+
+- **Config:** `seedgrid.security.admin-guard.scope` (`Optional<AdminGuardScope>` em `SecurityAdminGuardConfig`); valores textuais `company` / `database` ([[SeedGrid/Extensions/security/Configuracao|Configuração §2.14]]). Sem valor, vale o padrão do modo de isolamento.
+- Não é persistido nem serializado em JSON.
+
+## IsolationMode
+
+Arquivo: `…/security/configs/IsolationMode.java` — FQN `br.com.seedgrid.security.configs.IsolationMode`. Javadoc: modelo de dados do host, um banco compartilhado entre empresas ou um banco dedicado por tenant.
+
+| Valor | Significado | Efeito / onde é tratado | Observações |
+|---|---|---|---|
+| `SHARED_DATABASE` | Um banco compartilhado entre empresas | Padrão (`@ConfigProperty(name = "seedgrid.security.isolation", defaultValue = "shared-database")` em `SecurityIsolationPolicy`); `RoleService` impede perfil com o nome reservado de ADMIN neste modo | Confirmado |
+| `DEDICATED_DATABASE` | Um banco dedicado por tenant | `SecurityIsolationPolicy` passa a `dedicated`: `account.enabled` e `platform-scope.exempt` e `admin-guard.scope` ganham os padrões do modo dedicado (`admin-guard.scope=DATABASE`) | Confirmado |
+
+- **Config:** `seedgrid.security.isolation` com `shared-database` ou `dedicated-database`. Não é persistido.
+
+## CompanyAccessMode
+
+Arquivo: `…/security/entities/CompanyAccessMode.java` — FQN `br.com.seedgrid.security.entities.CompanyAccessMode`. O security aplica o estado num filtro central; quem decide quando ele muda é o billing ou o host, por `CompanyAccessService#setMode`.
+
+| Valor | Significado | Efeito / onde é tratado | Observações |
+|---|---|---|---|
+| `ACTIVE` | Normal: tudo permitido | Padrão do campo `Company.accessMode`; `CompanyAccessFilter` deixa passar | Confirmado |
+| `READ_ONLY` | Login normal; escrita bloqueada | `CompanyAccessFilter`: requisições que alteram dados recebem 403 `COMPANY_READ_ONLY`, salvo caminhos liberados (`company-access.read-only.*`) e `@SgReadOnlySafe` | Confirmado |
+| `DISABLED` | Sem login; sessões existentes caem | `AuthService` recusa login e seleção de empresa (403 `COMPANY_DISABLED`); o filtro responde o mesmo como rede de segurança | Confirmado |
+
+- **Método:** `countsForAdminInvariant()` retorna `this != DISABLED` (ACTIVE e READ_ONLY contam para a invariante do ADMIN; DISABLED não).
+- **Persistência:** `@Enumerated(EnumType.STRING)` em `sg_companies.access_mode` (`VARCHAR(16)`), `CHECK ck_company_access_mode` (`V200__security_ddl.sql`) aceita exatamente `ACTIVE, READ_ONLY, DISABLED`. JSON: nome da constante (`CompanyAccessModeDTOReq`, `AuthService`).
+
+## PersonType
+
+Arquivo: `…/security/entities/PersonType.java` — FQN `br.com.seedgrid.security.entities.PersonType`. Javadoc: natureza do titular da empresa.
+
+| Valor | Significado | Efeito / onde é tratado | Observações |
+|---|---|---|---|
+| `PJ` | Pessoa jurídica (documento = CNPJ, obrigatório) | Padrão (`Company.personType`, `CompanyService` quando o DTO não informa); `DocumentValidator.isValidFor`; empresa-plataforma só é PJ (`AuthService`, `PlatformScopeFilter`) | Confirmado |
+| `PF` | Pessoa física (documento = CPF, opcional) | `DocumentValidator.isValidFor(PF, …)` valida CPF | Confirmado |
+
+- **Persistência:** `@Enumerated(EnumType.STRING)` em `sg_companies.person_type` (`VARCHAR(2) NOT NULL DEFAULT 'PJ'`), `CHECK ck_company_person_type` aceita `PJ, PF`. JSON: nome da constante em `CompanyDTOReq`/`CompanyDTOPatch`.
 
 ## Internos
 

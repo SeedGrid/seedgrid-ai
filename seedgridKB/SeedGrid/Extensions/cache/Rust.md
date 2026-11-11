@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, cache, rust]
 fonte: rust/seedgrid-rust-crate-cache
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # cache — porte Rust (`seedgrid-rust-crate-cache`)
@@ -64,18 +64,44 @@ let out = cache.with_lock("job:import", Duration::from_secs(30), || async { 42 }
 - Operações do backend distribuído são sempre fail-soft (ver `ProviderDownLog`).
 - Lock reentrante; o lock é liberado mesmo em panic.
 - Com múltiplos hosts, só o primeiro é usado.
-- A superfície de configuração é de 4 propriedades.
+- A superfície de configuração é de 6 variáveis: 4 do `CacheConfig` (`HOSTS`, `PASSWORD`, `TIMEOUT`, `IF_PROVIDER_IS_DOWN`) e 2 da memória local (`SEEDGRID_CACHE_MEMORY_MAX_ENTRIES`, `SEEDGRID_CACHE_MEMORY_SWEEP_INTERVAL`); ver [[SeedGrid/Extensions/cache/Configuracao-Rust|Configuração Rust]].
 
 ## Enums
 Java: [[SeedGrid/Extensions/cache/Enums|Enums do cache (Java)]].
 
-| Enum | Arquivo | Java equivalente |
-|---|---|---|
-| `ProviderDownLog` | `src/config.rs` | [[SeedGrid/Extensions/cache/Enums#Level\|Level]] (`seedgrid.cache.if-provider-is-down`) |
-| `CacheBackend` (`InMemory`, `Distributed{flavor, config}`) | `src/factory.rs` | seleção por módulo no classpath |
-| `DistributedFlavor` (`Redis`, `Valkey`, `Dragonfly`) | `src/redis_backend.rs` | módulos `cache-redis`/`-valkey`/`-dragonfly`; **informativo** (mesma implementação) |
-| `LockGuard` (`InMemory`, `Distributed{lock_key, token}`) | `src/provider.rs` | interno (retorno de `acquire_lock`) |
-| `CacheError` (`LockNotAcquired`, `Backend`, `Other`) | `src/error.rs` | — |
+| Enum | Arquivo | Variantes | Java equivalente |
+|---|---|---|---|
+| `ProviderDownLog` | `src/config.rs` | `Warn`, `Error`, `Failover` | [[SeedGrid/Extensions/cache/Enums#Level\|Level]] (`seedgrid.cache.if-provider-is-down`) |
+| `CacheBackend` | `src/factory.rs` | `InMemory`, `Distributed` (com `flavor` e `config`) | seleção por módulo no classpath |
+| `DistributedFlavor` | `src/redis_backend.rs` | `Redis`, `Valkey`, `Dragonfly` | módulos `cache-redis`/`-valkey`/`-dragonfly`; **informativo** (mesma implementação) |
+| `LockGuard` | `src/provider.rs` | `Local`, `Distributed` (com `lock_key` e `token`) | interno (retorno de `try_acquire_lock`) |
+| `CacheError` | `src/error.rs` | `LockBusy`, `Backend`, `InvalidArgument`, `Unsupported`, `Other` | `CacheLockBusyException`, `IllegalArgumentException`, `UnsupportedOperationException` |
+| `Kind` | `src/annotations/codec.rs` | `Null`, `EmptyOptional`, `Value`, `PresentOptional` | [[SeedGrid/Extensions/cache/Enums#CacheEnvelope.Kind\|CacheEnvelope.Kind]] |
+| `Lookup` | `src/annotations/codec.rs` | `Miss`, `Hit` (com o valor) | — (resultado de leitura do codec) |
+| `CacheAnnotation` | `src/annotations/runtime.rs` | `Result`, `Invalidation` | — (descritor coletado pelas macros `#[sg_cache_*]`) |
+| `CacheKeyScope` | `src/annotations/scope.rs` | `Default`, `Tenant`, `Company`, `User`, `Global` | [[SeedGrid/Extensions/cache/Enums#CacheKeyScope\|CacheKeyScope]] |
+| `State` | `src/failover/cache.rs` | `Normal`, `Failover` | [[SeedGrid/Extensions/cache/Enums#State\|FailoverCache.State]] |
 
 ### ProviderDownLog
-`Warn` (padrão), `Error`. `from_config_value`: trim, case-insensitive; `ERROR` → `Error`, **qualquer outro valor** → `Warn`. Lido de `SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN` (sem fallback `QUARKUS_REDIS_*`). **Comportamento**: no Rust os dois valores degradam (fail-soft) e só mudam o nível do log; no Java `ERROR` é fail-closed e relança a exceção.
+`Warn` (padrão), `Error`, `Failover`. `from_config_value`: trim, case-insensitive; `ERROR` → `Error`, `FAILOVER` → `Failover`, **qualquer outro valor** → `Warn`. Lido de `SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN` (sem fallback `QUARKUS_REDIS_*`). **Comportamento**: `Warn` e `Error` degradam (fail-soft) e só mudam o nível do log; no Java `ERROR` é fail-closed e relança a exceção. `Failover` troca para memória local ao cair o servidor, mas quem aplica é o `FailoverCache` (fora dele o provider se comporta como `Warn`); `build` o liga com `Failover` ou `SEEDGRID_CACHE_FAILOVER_ENABLED=true` (`src/factory.rs`).
+
+### CacheError
+`LockBusy(String)` (lock já com outro dono; equivalente do `CacheLockBusyException`; mensagem "Could not acquire lock: {chave}"), `Backend` (falha do crate `redis`), `InvalidArgument(String)` (argumento inválido do chamador, ex.: prefixo vazio em `delete_by_prefix`), `Unsupported(String)` (operação que o provider não implementa), `Other(String)` (genérico, ex.: configuração inválida ao montar a conexão). Case sobre a variante, nunca sobre a mensagem.
+
+### LockGuard
+`Local(LocalLockGuard)`: lock local da instância (memória, ou o lock local usado quando o provider distribuído está fora do ar em `WARN`); `Distributed { lock_key, token }`: lock distribuído (`SET NX PX`, liberação por compare-and-delete via Lua).
+
+### Kind
+`Null`, `EmptyOptional`, `Value`, `PresentOptional` (códigos 0 a 3 no 5º byte do envelope). O Rust só grava `Value`; os demais são lidos como miss (`open` aceita-os, `decode` só devolve `Hit` para `Value`). Existe outro `Kind` público em `src/failover/classifier.rs` (`Infrastructure`, `LocalSaturation`, `CallerError`, `LockBusy`, `ExtraNotInfrastructure`), usado pelo `ProviderFailureClassifier`.
+
+### Lookup
+`Miss` (ausente ou ilegível) e `Hit(T)` (valor guardado); `is_hit()`.
+
+### CacheAnnotation
+`Result(&ResultDesc)` e `Invalidation(&InvalidationDesc)`; coletados com `inventory` pelas macros de annotation.
+
+### CacheKeyScope
+`Default` (vale `seedgrid.cache.key-scope`, padrão `Tenant`), `Tenant`, `Company`, `User`, `Global` (sem segmento de escopo na chave). `parse(text)` é case-insensitive e devolve `None` para valor desconhecido.
+
+### State
+`Normal` e `Failover`, estado do `FailoverCache`.

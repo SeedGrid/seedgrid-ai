@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, backup, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-backup
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # backup — Configuração Rust
@@ -64,6 +64,7 @@ Precedência invertida: **`SEEDGRID_BACKUP_MAILER_*` primeiro**, `BACKUP_MAILER_
 |---|---|---|---|---|---|---|---|---|---|
 | `BACKUP_CSV_DELIMITER` / `SEEDGRID_BACKUP_CSV_DELIMITER` (Java `csv.delimiter`) | String | 1º byte é usado | `,` | Não | delimitador do CSV e do manifest | `exporter.rs` | — | `from_env()` | `exporter.rs` |
 | `BACKUP_CSV_QUOTE_CHAR` / `SEEDGRID_BACKUP_CSV_QUOTE_CHAR` (Java `csv.quote-char`) | String | 1º byte é usado | `"` | Não | aspas do CSV | `exporter.rs` | — | `from_env()` | `exporter.rs` |
+| `BACKUP_CSV_ENCODING` / `SEEDGRID_BACKUP_CSV_ENCODING` (Java `csv.encoding`) | String | nome de encoding (texto livre) | `UTF-8` | Não | guardado em `CsvConfig.encoding`; **lido mas não aplicado**: nenhum código do crate usa `csv.encoding` (o exporter não recodifica) | `BackupConfig::from_env` | — | `from_env()` | `config.rs` → `from_env`, `CsvConfig` |
 | `BACKUP_FILESYSTEM_BASE` / `SEEDGRID_BACKUP_FILESYSTEM_BASE_PATH` (Java `filesystem.base-path`) | String | caminho | `/var/seedgrid/files` | Não | `base-path` do storage filesystem | `build_storage_config("filesystem")` | — | `from_env()` | `config.rs` |
 
 ## MinIO
@@ -110,6 +111,7 @@ BACKUP_ASYNC_ENABLED=true
 BACKUP_FILESYSTEM_BASE=/var/seedgrid/files
 BACKUP_CSV_DELIMITER=,
 BACKUP_CSV_QUOTE_CHAR='"'
+BACKUP_CSV_ENCODING=UTF-8                 # lido, mas o exporter não o aplica
 BACKUP_NOTIFICATION_ENABLED=true
 BACKUP_NOTIFICATION_POLL_INTERVAL=5m
 BACKUP_NOTIFICATION_MAX_RETRIES=3

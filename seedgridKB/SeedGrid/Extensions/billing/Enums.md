@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, billing, quarkus, enum]
 fonte: java/seedgrid-quarkus-ext-billing
 branch: main
-commit: ba38efc347
-analisado-em: 2026-10-14
+commit: 98962ea
+analisado-em: 2026-11-11
 ---
 
 # Billing (Quarkus): enums
@@ -24,6 +24,10 @@ Arquivos em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-core/runtime/src
 | `AccountHistoryType` | `entities/AccountHistoryType.java` | `sg_billing_account_history.type`; `AccountHistoryResponse.type` (String) | sim |
 | `SubscriptionLifecycleEvent.Type` | `dtos/events/SubscriptionLifecycleEvent.java` | evento CDI e códigos `billing.*` | sim |
 | `UserAccessEvent.Type` | `dtos/events/UserAccessEvent.java` | evento CDI e e-mails de acesso | sim |
+| `CompanyAccessEvent.Type` | `dtos/events/CompanyAccessEvent.java` | evento CDI `CompanyAccessEvent` | sim |
+| `CompanyAccessEvent.Cause` | `dtos/events/CompanyAccessEvent.java` | evento CDI `CompanyAccessEvent` | sim |
+| `CheckoutSelectionEvent.Reason` | `dtos/events/CheckoutSelectionEvent.java` | evento CDI `CheckoutSelectionEvent` | sim |
+| `CheckoutSelectionService.Status` | `services/CheckoutSelectionService.java` | `CheckoutSelectionService.Result.status` | sim (tipo público do serviço) |
 | `BillingEventType` | `dtos/BillingEventType.java` | `BillingEvent.type` (SPIs), `sg_billing_events.type` | sim |
 | `RecurringInterval` | `dtos/RecurringInterval.java` | `CreatePriceRequest`, `CreateMeteredPriceRequest`, `PriceInfo` | sim |
 | `TiersMode` | `dtos/TiersMode.java` | `CreateMeteredPriceRequest.tiersMode` | sim |
@@ -119,6 +123,44 @@ FQN `br.com.seedgrid.billing.dtos.events.UserAccessEvent.Type`. Não persistido.
 | `LOSS_SCHEDULED` | Usuário escolhido para perder acesso quando o plano com menos vagas valer. | `SeatService` | `UserAccessEmailObserver` envia `accessLoss` com data. |
 | `LOSS_APPLIED` | Perdeu o acesso agora. | `SeatService` | `accessLoss` imediato. |
 | `RESTORED` | Estava escolhido, mas o downgrade foi desfeito. | `SeatService` | `accessRestored`. |
+
+## CompanyAccessEvent.Type
+FQN `br.com.seedgrid.billing.dtos.events.CompanyAccessEvent.Type`. Não persistido: evento CDI disparado dentro da transação que mudou o estado de acesso da empresa (o host avisa o cliente; o billing não envia e-mail de empresa).
+
+| Valor | Significado | Disparado por | Efeito |
+|---|---|---|---|
+| `CHANGE_SCHEDULED` | Empresa escolhida no downgrade para mudar de estado quando o plano com menos empresas passar a valer. | `CompanySeatService` (`previousMode` nulo; `effectiveAt` preenchido) | O host avisa com a data. |
+| `CHANGE_APPLIED` | Mudou de estado agora (virada de ciclo ou passo da inadimplência). | `CompanySeatService`, `PastDueService` | O host avisa a mudança imediata. |
+| `RESTORED` | Estava escolhida para mudar e não vai mais (downgrade desfeito), ou voltou ao estado anterior (fatura paga). | `CompanySeatService`, `PastDueService` | O host avisa a restauração. |
+
+## CompanyAccessEvent.Cause
+FQN `br.com.seedgrid.billing.dtos.events.CompanyAccessEvent.Cause`. Não persistido.
+
+| Valor | Significado | Disparado por | Observações |
+|---|---|---|---|
+| `PLAN_LIMIT` | Limite de empresas do plano (downgrade). | `CompanySeatService` | `planName` preenchido (exceto em `RESTORED`). |
+| `PAST_DUE` | Inadimplência: passo `READ_ONLY` ou `DISABLED` do ciclo. | `PastDueService` | `planName` nulo. |
+| `PAYMENT_RESTORED` | A fatura foi paga: voltou ao estado de antes da inadimplência. | `PastDueService` | Usado com `Type.RESTORED`. |
+
+## CheckoutSelectionEvent.Reason
+FQN `br.com.seedgrid.billing.dtos.events.CheckoutSelectionEvent.Reason`. Não persistido. Evento disparado quando o pagamento do checkout foi confirmado mas a referência de seleção (`selectionRef`) não vale: a assinatura é ativada mesmo assim, sem aplicar perdas de acesso, e o host pede ao cliente que complete a seleção pelo `PUT`.
+
+| Valor | Significado | Disparado por | Observações |
+|---|---|---|---|
+| `NOT_FOUND` | A referência não existe (apagada pela limpeza ou nunca existiu). | `SubscriptionBillingEventHandler#chosen` | Vem de `CheckoutSelectionService.Status` pelo mesmo nome (`Reason.valueOf(status.name())`). |
+| `EXPIRED` | Passou da validade (`seedgrid.billing.checkout.selection-ttl`). | idem | idem |
+| `OTHER_ACCOUNT` | Pertence a outra conta; nunca é aplicada (possível adulteração do metadata). | idem | idem |
+
+## CheckoutSelectionService.Status
+FQN `br.com.seedgrid.billing.services.CheckoutSelectionService.Status`. Resultado de `CheckoutSelectionService#consume` (campo `Result.status`). Não persistido.
+
+| Valor | Significado | Efeito | Observações |
+|---|---|---|---|
+| `APPLY` | Válida, desta conta e não usada: aplicar. | Já foi marcada como consumida; `Result` traz usuários a desativar e a seleção de empresas. | Único com a escolha. |
+| `ALREADY_USED` | Já foi usada (reentrega do webhook). | `SubscriptionBillingEventHandler` não aplica nada e não dispara evento. | Não é erro. |
+| `NOT_FOUND` | Token ausente ou inexistente. | Vira `CheckoutSelectionEvent.Reason.NOT_FOUND`. | — |
+| `EXPIRED` | `expiresAt` não é posterior a agora. | Vira `Reason.EXPIRED`. | — |
+| `OTHER_ACCOUNT` | Pertence a outra conta. | Vira `Reason.OTHER_ACCOUNT`. | Verificado antes de `ALREADY_USED`. |
 
 ## BillingEventType
 FQN `br.com.seedgrid.billing.dtos.BillingEventType`. Campo `BillingEvent.type`. Persistido por nome em `sg_billing_events.type varchar(50)` (idempotência do webhook). Evento Stripe não mapeado gera `UnsupportedEventException` e resposta 204.

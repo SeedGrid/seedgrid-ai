@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, cache, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-cache
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # cache — Configuração Rust
@@ -28,7 +28,11 @@ Valores são `trim`ados; vazio conta como ausente (`alias_resolve`).
 | `SEEDGRID_CACHE_HOSTS` / fallback `QUARKUS_REDIS_HOSTS` (Java `seedgrid.cache.hosts` / `quarkus.redis.hosts`) | String | `host:porta`, `redis://...`, `rediss://...`; lista por vírgula (só o 1º é usado) | `localhost:6379` | Não | montado em URL por `redis_url()` (prefixa `redis://` se faltar esquema) | `RedisCache::connect` | `password` | `from_env()` | `config.rs` → `from_env`, `redis_url`; `redis_backend.rs` → `connect` |
 | 🔒 `SEEDGRID_CACHE_PASSWORD` / `QUARKUS_REDIS_PASSWORD` | `Option<String>` | texto | — | Não | injetada como `:<senha>@` na URL se ela ainda não tiver `@` | `redis_url()` | `hosts` | `from_env()` | `config.rs` |
 | `SEEDGRID_CACHE_TIMEOUT` / `QUARKUS_REDIS_TIMEOUT` | `Option<Duration>` | número = segundos; `Nms`, `Ns`, `Nm`; `PTnS`/`PTnM` | — | Não | timeout de conexão **e** de resposta; inválido → ignorado | `RedisCache::connect` | — | `from_env()` | `config.rs` → `parse_duration`; `redis_backend.rs` |
-| `SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN` (Java `seedgrid.cache.if-provider-is-down`) | `ProviderDownLog` | `WARN`, `ERROR` (case-insensitive); outro → `WARN` | `WARN` | Não | só muda o nível do log; Rust sempre degrada (Java `ERROR` relança) | `RedisCache` (`on_provider_down`) | sem fallback `QUARKUS_REDIS_*` | `from_env()` | `config.rs`; `redis_backend.rs` |
+| `SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN` (Java `seedgrid.cache.if-provider-is-down`) | `ProviderDownLog` | `WARN`, `ERROR`, `FAILOVER` (case-insensitive); outro → `WARN` | `WARN` | Não | `WARN`/`ERROR` só mudam o nível do log (Rust degrada; Java `ERROR` relança); `FAILOVER` embrulha o backend distribuído em `FailoverCache` | `RedisCache` (`on_provider_down`) | sem fallback `QUARKUS_REDIS_*` | `from_env()` | `config.rs`; `redis_backend.rs` |
+| `SEEDGRID_CACHE_MEMORY_MAX_ENTRIES` (Java `seedgrid.cache.memory.max-entries`) | `usize` | inteiro `>= 1` | `100000` (`DEFAULT_MAX_ENTRIES`) | Não | teto de entradas da memória local; inválido ou `< 1` → aviso e usa o padrão | `InMemoryCache::new` | — | `MemoryCacheConfig::from_env()` | `memory.rs` |
+| `SEEDGRID_CACHE_MEMORY_SWEEP_INTERVAL` (Java `seedgrid.cache.memory.sweep-interval`) | `Duration` | segundos inteiros `>= 1` | `60` s (`DEFAULT_SWEEP_INTERVAL`) | Não | intervalo da varredura periódica de expirados (`spawn_sweeper`); inválido → aviso e usa o padrão | `InMemoryCache::spawn_sweeper` | — | `MemoryCacheConfig::from_env()` | `memory.rs` |
+
+Estas duas variáveis são lidas por `MemoryCacheConfig::from_env()` (chamado por `InMemoryCache::new()`), não por `CacheConfig::from_env()`; só aceitam o prefixo `SEEDGRID_CACHE_` (sem fallback `QUARKUS_REDIS_*`).
 
 Mapeamento Java: **Confirmado** — o nome `seedgrid.cache.if-provider-is-down` está em `java/seedgrid-quarkus-lib-cache/.../CacheProviderFailSoft.java` (`PROP`); a relação `seedgrid.cache.*` ↔ `quarkus.redis.*` está no interceptor Java (comentários lidos). A conversão para env segue a regra MicroProfile sem ambiguidade.
 
@@ -62,7 +66,9 @@ SEEDGRID_CACHE_HOSTS=localhost:6379
 SEEDGRID_CACHE_HOSTS=redis://<host>:6379     # ou host:porta; rediss:// para TLS
 SEEDGRID_CACHE_PASSWORD=<SEGREDO:redis-password>
 SEEDGRID_CACHE_TIMEOUT=5s                    # 5 | 5s | 500ms | PT5S
-SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN=WARN      # WARN|ERROR (apenas nível de log)
+SEEDGRID_CACHE_IF_PROVIDER_IS_DOWN=WARN      # WARN|ERROR (nível de log)|FAILOVER (memória local ao cair)
+SEEDGRID_CACHE_MEMORY_MAX_ENTRIES=100000     # memória local: teto de entradas (>= 1)
+SEEDGRID_CACHE_MEMORY_SWEEP_INTERVAL=60      # memória local: segundos entre varreduras
 # Fallback se SEEDGRID_CACHE_* faltar:
 # QUARKUS_REDIS_HOSTS=redis://<host>:6379
 ```

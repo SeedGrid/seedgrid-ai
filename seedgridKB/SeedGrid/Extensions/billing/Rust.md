@@ -72,7 +72,7 @@ Alternativa: `BillingPlatform::assemble(Some(&pool), BillingOverrides { event_ha
 ## Limitações
 
 - A rota `GET /billing/subscription` existe só no Rust.
-- O `seedgrid-billing-core` Java tem grupos de configuração (`seedgrid.billing.trial`, `.catalog`, `.checkout`, `.portal`, `.access-gate`, `.feature-gate`, `.reconciliation`, `.api`, `.plan-term.additional-attributes`, `business-timezone`, `currency`, `overage-meter-name`, `persistence-unit`) que **não têm contraparte** em `src/config.rs` do Rust (Confirmado).
+- O núcleo de configuração do `seedgrid-billing-core` Java (`trial`, `past-due`, `access-gate`, `quota`, `api`, `business-timezone`, `currency`, `overage-meter-name`, `catalog`, `checkout`, `portal`, `reconciliation`, `feature-gate`) tem contraparte lida de variáveis `SEEDGRID_BILLING_*` em `src/settings.rs` e `src/api_toggle.rs` (ver [[SeedGrid/Extensions/billing/Configuracao-Rust|Configuração Rust do billing]]; Confirmado). Sem contraparte: `persistence-unit` e `plan-term.additional-attributes` (só struct/`Default`, sem env).
 
 ## Enums
 Equivalentes Java: [[SeedGrid/Extensions/billing/Enums|Enums do billing (Java)]].

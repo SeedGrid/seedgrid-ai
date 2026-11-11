@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, filemanagement, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-filemanagent
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # filemanagement — Configuração Rust
@@ -13,13 +13,19 @@ Visão do crate: [[SeedGrid/Extensions/filemanagement/Rust|Porte Rust do fileman
 ## Cabeçalho
 | Item | Valor |
 |---|---|
-| Mecanismo | **não lê variáveis de ambiente** nem tem struct de config: cada backend recebe um `HashMap<String, String>` em `FileStorageRegistry::get(tipo, &config)` → `FileStorageFactory::create(&config)` |
+| Mecanismo | **Os backends não leem variáveis de ambiente**: cada um recebe um `HashMap<String, String>` em `FileStorageRegistry::get(tipo, &config)` → `FileStorageFactory::create(&config)` |
 | Equivalente Java | idem: `Map<String,String>` passado ao registry; sem `@ConfigMapping` |
 | Seleção de backend | pelo `tipo` passado ao registry (`type_identifier`); disponibilidade depende das features Cargo |
 | Leitura | na criação do storage (`create`), uma vez por `(tipo, config)` (cache do registry) |
-| Verificação | `grep` por `env::var` em `src/` não encontra nada (**Confirmado**); só `tests/minio_smoke.rs` lê env |
+| Verificação | em `src/` só `config.rs` (`FileManagementConfig::from_env`) e `migrations.rs` (`FileManagementMigrationRunner::from_env`) leem env, e só as duas variáveis da seção seguinte (**Confirmado** por grep de `env::var`); os factories dos backends não leem. `tests/minio_smoke.rs` lê env |
 
 Quem fornece o mapa no workspace: `seedgrid-rust-crate-backup` (`BackupConfig::build_storage_config`, ver [[SeedGrid/Extensions/backup/Configuracao-Rust|Configuração Rust do backup]]) e o exemplo `seedgrid-filemanagement-example` (env `MINIO_*`).
+
+## Variáveis de ambiente (anexos e migrations)
+| Variável | Tipo | Padrão | Comportamento | Origem |
+|---|---|---|---|---|
+| `SEEDGRID_FILEMANAGEMENT_REGISTRY_TABLE_ENABLED` (Java: `seedgrid.filemanagement.registry-table.enabled`) | bool | `false` | `true` (sem diferenciar maiúsculas) liga os anexos: a migration 1300 cria `sg_attachments` e o registry decora os storages. Ausente ou diferente de `true` = `false` | `src/config.rs` → `FileManagementConfig::from_env` |
+| `SEEDGRID_MIGRATIONS_HOST_MANAGED` (Java: `seedgrid.migrations.host-managed`) | bool | `false` | `true`: o host migra e `FileManagementMigrationRunner::migrate_if_needed` não age | `src/migrations.rs` → `FileManagementMigrationRunner::from_env` |
 
 ## Chaves por backend
 A coluna "Leitura" é sempre `create(&config)`. Valores são `trim`ados e vazios contam como ausentes, salvo indicação.

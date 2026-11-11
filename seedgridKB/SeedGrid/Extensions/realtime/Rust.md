@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, realtime, rust]
 fonte: rust/seedgrid-rust-crate-realtime
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # realtime — porte Rust (`seedgrid-rust-crate-realtime`)
@@ -66,4 +66,11 @@ Não há app em `rust/examples/` para realtime.
 - **Não executados.**
 
 ## Enums
-Sem enums de domínio. Enum público de erro: `IssueError` (`src/publisher.rs`) — `Disabled` (realtime desligado; `POST /realtime/connect` responde `{enabled:false}`) e `Pulse(PulseError)` (Pulse recusou ou não respondeu; vira HTTP 503).
+Sem enums de domínio. Enum público de erro: `IssueError`.
+
+| Enum | Arquivo | Variantes | Usado em |
+|---|---|---|---|
+| `IssueError` | `src/publisher.rs` | `Disabled`, `Pulse` | erro de emissão do token (`RealtimePublisher`) |
+
+### IssueError
+`Disabled` (realtime desligado; `POST /realtime/connect` responde `{enabled:false}`) e `Pulse(PulseError)` (Pulse recusou ou não respondeu; vira HTTP 503). Sem enum equivalente no Java.

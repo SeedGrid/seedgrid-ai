@@ -3,8 +3,8 @@ description: "Propriedades seedgrid.cities.* (módulo, unidade de persistência,
 tags: [seedgrid, extension, cities, configuracao]
 fonte: java/seedgrid-quarkus-ext-cities
 branch: main
-commit: bad4c48
-analisado-em: 2026-10-27
+commit: 2fbadd7
+analisado-em: 2026-11-11
 ---
 
 # Cities: configuração
@@ -32,7 +32,8 @@ Para o formulário de cadastro sem login. **Desligada por padrão**; `seedgrid.c
 | `seedgrid.cities.public-rest.enabled` | `false` (env `SEEDGRID_CITIES_PUBLIC_REST_ENABLED`) | Liga `/public/cities` e `/public/cities/by-ibge-code/{código}` (rotas fixas, sem prefixo configurável). |
 | `seedgrid.cities.public-rest.min-name-length` | `3` | Mínimo de caracteres do termo (depois de tirar acento e espaços). Abaixo disso, 400. |
 | `seedgrid.cities.public-rest.max-results` | `20` | Teto de cidades por busca; **não há paginação** (`page`, `size` e `limit` são ignorados). |
-| `seedgrid.cities.public-rest.rate-permits` / `.rate-window-seconds` | `30` / `60` | Pedidos por IP por janela. Estourou: 429 com `Retry-After`. |
+| `seedgrid.cities.public-rest.rate-permits` | `30` | Pedidos por IP por janela. Estourou: 429 com `Retry-After`. |
+| `seedgrid.cities.public-rest.rate-window-seconds` | `60` | Tamanho da janela do limite por IP, em segundos (`CitiesConfig.PublicRest#rateWindowSeconds`). |
 | `seedgrid.cities.public-rest.global-permits` | `600` | Pedidos por janela somando todos os IPs (contra quem varia o IP). |
 | `seedgrid.cities.public-rest.client-ip-header` | vazio | Cabeçalho com o IP real (ex.: `X-Forwarded-For`). Vazio = endereço da conexão, que não é forjável. |
 | `seedgrid.cities.public-rest.cache-seconds` | `86400` | `Cache-Control: public, max-age`; também há `ETag` (304 com `If-None-Match`). |

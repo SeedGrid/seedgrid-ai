@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, whatsapp, rust]
 fonte: rust/seedgrid-rust-crate-whatsapp
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # whatsapp — porte Rust (`seedgrid-rust-crate-whatsapp`)
@@ -35,7 +35,7 @@ Biblioteca **só de saída** (sem webhooks de entrada) para enviar mensagens Wha
 | trait `WhatsAppApi` | `send_text_message`, `send_media_file/url`, `send_audio_file/url`, `send_location`, `send_contact`, `send_reaction`, `send_sticker`, `send_template`…, `provider()`, `is_configured()` | `src/api.rs` |
 | traits `WhatsAppEvolutionMessaging` (`send_ptv`, `send_poll`, `send_list`, `send_buttons`, `send_status`, `offer_call`), `WhatsAppLabels`, `WhatsAppGroups`, `WhatsAppChat`, `WhatsAppInstanceManagement` (`create_instance`, `delete_instance`, `get_instances`, `connect_instance`, `get_connection_state`, `restart_instance`, `set_webhook`, `get_webhook`) | capacidades Evolution | `src/api.rs` |
 | DTOs (`WhatsAppTextMessage`, `WhatsAppMedia*`, `WhatsAppSendMessageResult`, `WhatsAppInstance`, `WebhookConfig`…) e enums | modelo | `src/dtos.rs`, `src/enums.rs` |
-| `WhatsAppError` (`IllegalState` quando falta credencial), `Result` | erros | `src/error.rs` |
+| `WhatsAppError` (`RequiredField`, `InvalidValue`, `InvalidPhoneNumber`, `InvalidMedia`, `Provider`, `IllegalState`, `Transport`), `Result` | erros | `src/error.rs` |
 
 As credenciais não são validadas na construção: a falta de `api-key`/`access-token` vira `WhatsAppError::IllegalState` na primeira chamada que precisa dela (`require_api_key` em `src/evolution.rs`; header Bearer em `src/cloud.rs`), como no Java.
 
@@ -62,7 +62,7 @@ Unitários extensos em `src/evolution.rs`, `src/cloud.rs`, `src/factory.rs`; `te
 - A fábrica não tem fallback `isResolvable`.
 
 ## Enums
-Java: [[SeedGrid/Extensions/whatsapp/Enums|Enums do whatsapp (Java)]]. Todos em `src/enums.rs`; cada um tem `value()` (texto) e `from_value()` (erro `WhatsAppError::WhatsApp("Unexpected value '…'")` se desconhecido) e `Serialize`/`Deserialize` manuais pelo texto (como o `@JsonValue`/`@JsonCreator` do Java). Variantes e textos **iguais** aos do Java.
+Java: [[SeedGrid/Extensions/whatsapp/Enums|Enums do whatsapp (Java)]]. Todos em `src/enums.rs`; cada um tem `value()` (texto) e `from_value()` (erro `WhatsAppError::InvalidValue("Unexpected value '…'")` se desconhecido) e `Serialize`/`Deserialize` manuais pelo texto (como o `@JsonValue`/`@JsonCreator` do Java). Variantes e textos **iguais** aos do Java.
 
 | Enum | Variantes → texto | Java equivalente |
 |---|---|---|
@@ -78,6 +78,6 @@ Java: [[SeedGrid/Extensions/whatsapp/Enums|Enums do whatsapp (Java)]]. Todos em 
 | `WhatsAppReadReceiptsValue` | `All`, `None` | [[SeedGrid/Extensions/whatsapp/Enums#WhatsAppReadReceiptsValue\|WhatsAppReadReceiptsValue]] |
 | `WhatsAppOnlinePrivacyValue` | `All`, `MatchLastSeen` → `match_last_seen` | [[SeedGrid/Extensions/whatsapp/Enums#WhatsAppOnlinePrivacyValue\|WhatsAppOnlinePrivacyValue]] |
 | `WhatsAppGroupAddPrivacyValue` | `All`, `Contacts`, `ContactBlacklist` | [[SeedGrid/Extensions/whatsapp/Enums#WhatsAppGroupAddPrivacyValue\|WhatsAppGroupAddPrivacyValue]] |
-| `WhatsAppError` | `WhatsApp`, `IllegalState` (credencial ausente), `Unsupported` | exceções do módulo |
+| `WhatsAppError` | `RequiredField`, `InvalidValue`, `InvalidPhoneNumber`, `InvalidMedia`, `Provider`, `IllegalState` (credencial ausente), `Transport` | exceções do módulo (`src/error.rs`); sem `Unsupported` |
 
 `WhatsAppProvider::from_config` (config `seedgrid.whatsapp.api`): vazio, `default` ou valor desconhecido → `Default`; trim + minúsculas; `evolution` → `Evolution`; `whatsapp-cloud` → `Official` ([[SeedGrid/Extensions/whatsapp/Configuracao-Rust|Configuração Rust]]).

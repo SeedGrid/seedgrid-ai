@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, billing, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-billing
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # billing — Configuração Rust
@@ -34,6 +34,35 @@ Helpers: `opt(name)` faz `trim` e trata vazio como ausente; `opt_any(names)` dev
 
 Mapeamento Java ↔ env: os nomes Java vêm de `@ConfigProperty` em `java/seedgrid-quarkus-ext-billing/seedgrid-billing-stripe/runtime/.../StripeBillingProvider.java` e `StripeProductBootstrap.java` (**Confirmado**). Os nomes de env do Rust **não** seguem exatamente a regra MicroProfile para chaves camelCase (ex.: `apiKey` → `SEEDGRID_BILLING_STRIPE_APIKEY`), são convenção do projeto (doc de `config.rs`).
 
+## Núcleo da conta (`settings.rs`)
+
+Estas structs são lidas por `BillingPlatform::assemble_accounts` (`src/accounts_platform.rs`): `AccountOverrides.core/trial/past_due/access_gate/quota` (todos `Option`) têm precedência; se `None`, vale `X::from_env()`. Parsing de `bool` (`env_bool`): só o texto `true` (sem diferenciar maiúsculas) é verdadeiro, e a variável vazia conta como ausente (usa o padrão). Números inválidos caem no padrão sem erro. Os limites de `plan-term.additional-attributes` (`PlanTermAttributesConfig`: `max_size_bytes` 16384, `max_depth` 5, `max_keys` 100) **não têm variável de ambiente**: vêm de `AccountOverrides.plan_term_attributes` ou do `Default`.
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `SEEDGRID_BILLING_TRIAL_ENABLED` → `TrialConfig.enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `true` | Não | conta nova ganha assinatura no plano TRIAL (semeado no seed) | `TrialService` via `assemble_accounts` | `TRIAL_PLAN_TERM_PUBLIC_ID`; Java: `seedgrid.billing.trial.enabled` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_TRIAL_PLAN_TERM_PUBLIC_ID` → `TrialConfig.plan_term_public_id` | String | public id do term | `00000000-0000-0000-0000-0000000000a2` (id fixo do `R__billing_seed.sql`) | Não | term do trial | `TrialService` | `TRIAL_ENABLED`; Java: `seedgrid.billing.trial.*` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_PAST_DUE_ENABLED` → `PastDueConfig.enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `false` | Não | liga o ciclo de inadimplência e o agendador; ligado, **substitui** o bloqueio geral `access-gate.block-past-due` | `PastDueScheduler` (`accounts_platform.rs`), gate de acesso | `ACCESS_GATE_BLOCK_PAST_DUE`; Java: `seedgrid.billing.past-due.enabled` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_PAST_DUE_READ_ONLY_AFTER_DAYS` → `read_only_after_days` | `i32` | inteiro; inválido cai no padrão; `0` = não aplica o passo | `7` | Não | dias de inadimplência até as empresas virarem somente leitura (o valor efetivo mora no `PlanTerm`; a propriedade é o padrão quando o term é nulo) | ciclo de inadimplência | `PAST_DUE_DISABLE_AFTER_DAYS`; Java: `seedgrid.billing.past-due.read-only-after-days` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_PAST_DUE_DISABLE_AFTER_DAYS` → `disable_after_days` | `i32` | inteiro; inválido cai no padrão; `0` = não aplica o passo | `30` | Não | dias de inadimplência até as empresas serem desligadas | ciclo de inadimplência | `PAST_DUE_READ_ONLY_AFTER_DAYS`; Java: `seedgrid.billing.past-due.disable-after-days` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_PAST_DUE_INTERVAL` → `interval` | String | `1h`, `30m`, `1s`, `2d`, `500ms` ou ISO-8601 `PT1H`/`PT30M`/`PT1S` (`parse_interval`) | `1h` (valor inválido também cai em 1 h) | Não | intervalo do agendador de inadimplência | `PastDueScheduler` via `interval_duration()` | `PAST_DUE_ENABLED`; Java: `seedgrid.billing.past-due.interval` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_ACCESS_GATE_ENABLED` → `AccessGateConfig.enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `false` | Não | liga o bloqueio GERAL de acesso por situação da conta | `gate_config` em `assemble_accounts` (`access_gate.rs`) | `ACCESS_GATE_BLOCK_PAST_DUE`, `ACCESS_GATE_ALLOWED_PATHS`; Java: `seedgrid.billing.access-gate.enabled` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_ACCESS_GATE_BLOCK_PAST_DUE` → `block_past_due` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` (atenção: o padrão é `true`, mas um valor presente e diferente de `true` desliga) | `true` | Não | pagamento pendente também bloqueia (402 `PAYMENT_PAST_DUE`) | `access_gate.rs` | `PAST_DUE_ENABLED` (ligado, substitui este bloqueio); Java: `seedgrid.billing.access-gate.block-past-due` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_ACCESS_GATE_ALLOWED_PATHS` → `allowed_paths` | `Vec<String>` | CSV de prefixos de rota (`trim`, vazios descartados) | vazio | Não | prefixos sempre liberados, além dos padrão (`ACCESS_GATE_ALWAYS_ALLOWED`) | `access_gate.rs` | `ACCESS_GATE_ENABLED`; Java: `seedgrid.billing.access-gate.allowed-paths` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_QUOTA_USERS_ENABLED` → `QuotaConfig.users_enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `false` | Não | escolhe, ao montar o estado, o validador de cota de usuários do billing (sem ele valem as implementações padrão da security, sem limite) | `account/quota.rs` (`user_quota_validator`) | Java: `seedgrid.billing.quota.users.enabled` (`@IfBuildProperty` no Java; aqui é decidido ao montar o estado) | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_QUOTA_COMPANIES_ENABLED` → `QuotaConfig.companies_enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `false` | Não | idem para empresas | `account/quota.rs` (`company_quota_validator`) | Java: `seedgrid.billing.quota.companies.enabled` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_API_ENABLED` → `BillingApiConfig.enabled` | bool | `true` (sem diferenciar maiúsculas); qualquer outro valor vira `false` | `true` | Não | `false` faz `deny_if_disabled` devolver 404 `problem+json` nos prefixos de `API_PREFIXES` e `filter_openapi` remover esses paths do OpenAPI | `api_toggle.rs` (`deny_if_disabled`), `apidoc.rs` (`openapi_for`, `filter_openapi`); o crate não chama `BillingApiConfig::from_env()` sozinho: o host fornece a config por requisição (`SharedApiConfig`) | Java: `seedgrid.billing.api.enabled` | `from_env()` | `src/api_toggle.rs` |
+| `SEEDGRID_BILLING_BUSINESS_TIMEZONE` → `CoreConfig.business_timezone` | String | id de fuso IANA | `America/Sao_Paulo` | Não | fuso em que o negócio conta os dias | `BusinessTimeZone::new` em `assemble_accounts` | Java: `seedgrid.billing.business-timezone` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_CURRENCY` → `currency` | String | ISO 4217, minúsculas | `brl` | Não | moeda dos preços publicados | `assemble_accounts` (publicação de preços) | Java: `seedgrid.billing.currency` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_OVERAGE_METER_NAME` → `overage_meter_name` | String | texto | `Excedente` | Não | nome EXIBIDO do meter de excedente (`<nome> - <rótulo>`) | `account/publication.rs` | Java: `seedgrid.billing.overage-meter-name` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_CATALOG_PRODUCT_ID` → `catalog_product_id` | `Option<String>` | id de produto do provider | — (ausente) | Condicional: sem ele e sem `SEEDGRID_BILLING_STRIPE_PRODUCT`, publicar preços falha (`provider_product_not_configured`) | produto do provider sob o qual os preços são criados; tem precedência sobre `SEEDGRID_BILLING_STRIPE_PRODUCT` (`CoreConfig::product_id`: aparado, vazio descartado) | `account/publication.rs` | `SEEDGRID_BILLING_STRIPE_PRODUCT` (`legacy_stripe_product_id`); Java: `seedgrid.billing.catalog.product-id` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_CHECKOUT_SUCCESS_URL` → `checkout_success_url` | `Option<String>` | URL | — (ausente) | Não | URL de sucesso enviada ao provider no checkout | `account/checkout.rs` | `CHECKOUT_CANCEL_URL`; Java: `seedgrid.billing.checkout.success-url` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_CHECKOUT_CANCEL_URL` → `checkout_cancel_url` | `Option<String>` | URL | — (ausente) | Não | URL de cancelamento do checkout | `account/checkout.rs` | `CHECKOUT_SUCCESS_URL`; Java: `seedgrid.billing.checkout.cancel-url` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_CHECKOUT_SELECTION_TTL` → `checkout_selection_ttl` | `Duration` | mesmo formato de `PAST_DUE_INTERVAL` (`parse_interval`); inválido cai no padrão | `48h` | Não | validade da seleção de checkout (`CheckoutSelectionService`) | `accounts_platform.rs` | Java: `seedgrid.billing.checkout.selection-ttl` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_PORTAL_RETURN_URL` → `portal_return_url` | `Option<String>` | URL | — (ausente) | Não | URL de retorno do portal do provider | `account/change.rs` | Java: `seedgrid.billing.portal.return-url` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_RECONCILIATION_THROTTLE_SECONDS` → `reconciliation_throttle_seconds` | `i64` | inteiro; inválido cai no padrão | `60` | Não | intervalo mínimo entre reconciliações | `accounts_platform.rs` | Java: `seedgrid.billing.reconciliation.throttle-seconds` | `from_env()` | `src/settings.rs` |
+| `SEEDGRID_BILLING_FEATURE_GATE_EXEMPT_COMPANY_IDS` → `feature_gate_exempt_company_ids` | `Vec<i64>` | CSV de ids numéricos de empresa (itens não numéricos são descartados) | vazio | Não | empresas isentas do gate de funcionalidades do plano | `account/catalog.rs` (`exempt_company_ids`) | Java: `seedgrid.billing.feature-gate.exempt-company-ids` | `from_env()` | `src/settings.rs` |
+
 ## Structs
 | Campo | `Default` |
 |---|---|
@@ -41,6 +70,7 @@ Mapeamento Java ↔ env: os nomes Java vêm de `@ConfigProperty` em `java/seedgr
 | `StripeConfig.test_clock_enabled` | `true` |
 | `StripeConfig.product`, `product_name` | `None` |
 | `StripeConfig.api_base` | `https://api.stripe.com` |
+| `TrialConfig` / `PastDueConfig` / `AccessGateConfig` / `QuotaConfig` / `BillingApiConfig` / `CoreConfig` | padrões da seção "Núcleo da conta" |
 
 ## Features Cargo
 | Feature | Padrão | Efeito |
@@ -75,6 +105,28 @@ SEEDGRID_BILLING_STRIPE_TEST_CLOCK_ENABLED=true   # só tem efeito com chave sk_
 SEEDGRID_BILLING_STRIPE_PRODUCT=<id-produto>      # bootstrap (host chama ensure_product_bootstrap)
 SEEDGRID_BILLING_STRIPE_PRODUCT_NAME=<nome>
 # SEEDGRID_BILLING_STRIPE_API_BASE=https://api.stripe.com
+# --- Núcleo da conta (opcionais; valores abaixo = padrões) ---
+SEEDGRID_BILLING_TRIAL_ENABLED=true
+SEEDGRID_BILLING_PAST_DUE_ENABLED=false
+SEEDGRID_BILLING_PAST_DUE_READ_ONLY_AFTER_DAYS=7
+SEEDGRID_BILLING_PAST_DUE_DISABLE_AFTER_DAYS=30
+SEEDGRID_BILLING_PAST_DUE_INTERVAL=1h
+SEEDGRID_BILLING_ACCESS_GATE_ENABLED=false
+SEEDGRID_BILLING_ACCESS_GATE_BLOCK_PAST_DUE=true
+# SEEDGRID_BILLING_ACCESS_GATE_ALLOWED_PATHS=/public,/health
+SEEDGRID_BILLING_QUOTA_USERS_ENABLED=false
+SEEDGRID_BILLING_QUOTA_COMPANIES_ENABLED=false
+SEEDGRID_BILLING_API_ENABLED=true
+SEEDGRID_BILLING_BUSINESS_TIMEZONE=America/Sao_Paulo
+SEEDGRID_BILLING_CURRENCY=brl
+SEEDGRID_BILLING_OVERAGE_METER_NAME=Excedente
+# SEEDGRID_BILLING_CATALOG_PRODUCT_ID=<id-produto>
+# SEEDGRID_BILLING_CHECKOUT_SUCCESS_URL=https://<app>/assinatura?ok=1
+# SEEDGRID_BILLING_CHECKOUT_CANCEL_URL=https://<app>/assinatura?cancel=1
+SEEDGRID_BILLING_CHECKOUT_SELECTION_TTL=48h
+# SEEDGRID_BILLING_PORTAL_RETURN_URL=https://<app>/assinatura
+SEEDGRID_BILLING_RECONCILIATION_THROTTLE_SECONDS=60
+# SEEDGRID_BILLING_FEATURE_GATE_EXEMPT_COMPANY_IDS=1,2
 ```
 
 ## Receitas
@@ -83,4 +135,4 @@ SEEDGRID_BILLING_STRIPE_PRODUCT_NAME=<nome>
 - **Mock do Stripe**: `SEEDGRID_BILLING_STRIPE_API_BASE=http://localhost:<porta>`.
 
 ## Dúvidas e lacunas
-- Grupos de config do billing-core Java atual (`trial`, `catalog`, `checkout`, `portal`, `access-gate`, `feature-gate`, `reconciliation`, `api`, `business-timezone`, `currency`, …) **não existem** no Rust.
+- O núcleo Java (`trial`, `catalog`, `checkout`, `portal`, `access-gate`, `feature-gate`, `reconciliation`, `api`, `business-timezone`, `currency`, `overage-meter-name`, `past-due`, `quota`) **tem contraparte** em `src/settings.rs` e `src/api_toggle.rs` (seção "Núcleo da conta"; Confirmado). Sem contraparte lida do ambiente: `persistence-unit` (nenhuma ocorrência em `src/`) e `plan-term.additional-attributes` (só struct/`Default`, sem env).

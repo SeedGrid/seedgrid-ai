@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, audit, rust, configuracao]
 fonte: rust/seedgrid-rust-crate-audit
 branch: main
-commit: be738a2d1e
-analisado-em: 2026-10-14
+commit: 7b5b6e1
+analisado-em: 2026-11-11
 ---
 
 # audit — Configuração Rust
@@ -27,11 +27,14 @@ Regras gerais do helper `opt(name)` (`src/config.rs`): valor é `trim()`ado e st
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
 |---|---|---|---|---|---|---|---|---|---|
 | `SEEDGRID_AUDIT_ENABLED` | bool | `true`/`false` (parse `bool` do Rust, sensível a maiúsculas) | `true` | Não | `false` torna `Auditor::record` no-op e faz `AuditPlatform::assemble` devolver `Ok(None)`. Valor inválido → `true` | liga/desliga auditoria | — | `from_env()` | decl.: `config.rs` → `AuditConfig::from_env`; consumo: `state.rs` (`if !self.config.enabled`), `platform.rs` → `AuditPlatform::assemble` |
-| `AUDIT_STRATEGY` (Java: `seedgrid.audit.persistence.strategy`, via `${AUDIT_STRATEGY:...}`) | enum `AuditPersistenceStrategy` | `JPA`, `POSTGRES`, `POSTGRESQL` → `Jpa`; `MONGODB`, `MONGO` → `Mongodb` (case-insensitive, trim) | derivado da feature: `Jpa` com `postgres` (também quando ambas ou nenhuma); `Mongodb` só com `mongodb` sem `postgres` | Não | valor desconhecido → default da feature. `AuditState::postgres/mongodb` falham (`AuditError::Config`) se a estratégia não casar com o backend | escolhe backend no `AuditPlatform`; valida construtor | `MONGODB` sem a feature `mongodb` → `assemble` loga erro e devolve `Ok(None)` | `from_env()` | `config.rs` → `default_strategy`, `AuditPersistenceStrategy::parse`; `state.rs` → `validate_strategy`; `platform.rs` |
+| `AUDIT_STRATEGY` (Java: `seedgrid.audit.persistence.strategy`, via `${AUDIT_STRATEGY:...}`) | enum `AuditPersistenceStrategy` | `JPA`, `JPA` → `Jpa`; `MONGODB` → `Mongodb` (case-insensitive, trim; nenhum outro alias) | derivado da feature: `Jpa` com `postgres` (também quando ambas ou nenhuma); `Mongodb` só com `mongodb` sem `postgres` | Não | valor desconhecido → default da feature. `AuditState::postgres/mongodb` falham (`AuditError::Config`) se a estratégia não casar com o backend | escolhe backend no `AuditPlatform`; valida construtor | `MONGODB` sem a feature `mongodb` → `assemble` loga erro e devolve `Ok(None)` | `from_env()` | `config.rs` → `default_strategy`, `AuditPersistenceStrategy::parse`; `state.rs` → `validate_strategy`; `platform.rs` |
 
 ### Relacional (JPA/Postgres)
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Leitura | Origem |
 |---|---|---|---|---|---|---|---|---|---|
+| `SEEDGRID_AUDIT_DB_KIND` (Java: `seedgrid.audit.jpa.db-kind`, via `${SEEDGRID_AUDIT_DB_KIND:postgresql}`) | `Option<String>` | texto (ex.: `postgresql`) | `postgresql` quando a estratégia é `Jpa`; `None` com `Mongodb` | Não | Guardado em `AuditConfig.jpa.db_kind`; sem consumidor no crate (informativo) | campo de `JpaConfig` | — | `from_env()` | `config.rs` → `AuditConfig::from_env` |
+| `SEEDGRID_AUDIT_JPA_PACKAGES` (Java: `seedgrid.audit.jpa.packages`) | `Option<String>` | lista de pacotes | — | Não | Guardado em `AuditConfig.jpa.packages`; sem consumidor no crate. Tem precedência sobre `SEEDGRID_AUDIT_DB_PACKAGES` | campo de `JpaConfig` | alias `SEEDGRID_AUDIT_DB_PACKAGES` | `from_env()` | `config.rs` → `AuditConfig::from_env` |
+| `SEEDGRID_AUDIT_DB_PACKAGES` (alias histórico do Rust de `SEEDGRID_AUDIT_JPA_PACKAGES`) | `Option<String>` | lista de pacotes | — | Não | Lida só se `SEEDGRID_AUDIT_JPA_PACKAGES` estiver ausente ou vazia | idem | `SEEDGRID_AUDIT_JPA_PACKAGES` | `from_env()` | `config.rs` → `AuditConfig::from_env` |
 | `SEEDGRID_AUDIT_DB_URL` (Java: `seedgrid.audit.jpa.jdbc.url`) | `Option<String>` | `jdbc:postgresql:...`, `postgres://...`, `postgresql://...` | — | Condicional: só se o host usar `pg_connection_url()` | `AuditConfig::pg_connection_url()` remove `jdbc:`; outro formato → `AuditError::Config` | método público; nenhum chamador no workspace | `AuditPlatform` usa o `PgPool` recebido do host | `from_env()` | `config.rs` → `pg_connection_url` |
 
 ### MongoDB
@@ -49,6 +52,7 @@ Mapeamento Java ↔ env: **Confirmado** para `AUDIT_STRATEGY`, `SEEDGRID_AUDIT_D
 | `AuditConfig.strategy` | `AuditPersistenceStrategy` | `default_strategy()` | `#[default]` do enum é `Jpa`, mas `AuditConfig::default()` usa `default_strategy()` |
 | `AuditConfig.mongodb` | `MongoConfig { database, connection_string }` | ambos `None` | com `None`, `effective_mongo_uri()` cai no `DEFAULT_MONGODB_URI` |
 | `AuditConfig.jpa.jdbc_url` | `Option<String>` | `None` | usado só por `pg_connection_url()` |
+| `AuditConfig.jpa.db_kind` / `.packages` | `Option<String>` | `None` | sem consumidor no crate |
 
 ## Features Cargo
 | Feature | Padrão | Efeito |

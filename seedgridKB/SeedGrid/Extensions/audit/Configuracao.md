@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, audit, configuracao]
 fonte: java/seedgrid-quarkus-ext-audit
 branch: main
-commit: d5bf32e509
-analisado-em: 2026-10-14
+commit: 632e6f4
+analisado-em: 2026-11-11
 ---
 
 # SeedGrid Audit — Configuração
@@ -29,6 +29,7 @@ Variáveis de ambiente lidas explicitamente pelos `microprofile-config.propertie
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
+| `seedgrid.audit.enabled` | `boolean` | `true`/`false` | `true` (`@WithDefault("true")`) | Não | Declarada no `AuditConfig`. **Nenhum código Java do repositório audit lê `AuditConfig#enabled()` nem a chave** (grep em `java/seedgrid-quarkus-ext-audit`): no Quarkus ela não desliga a auditoria por si. O porte Rust tem o equivalente `SEEDGRID_AUDIT_ENABLED`, esse sim lido (ver [[SeedGrid/Extensions/audit/Configuracao-Rust\|Configuração Rust]]) | — | — | Runtime | Decl.: `AuditConfig#enabled()` |
 | `seedgrid.audit.persistence.strategy` | enum [[SeedGrid/Extensions/audit/Enums#AuditPersistenceStrategy\|AuditPersistenceStrategy]] | `JPA`, `MONGODB` (conversão case-insensitive, segundo javadoc) | `JPA` (`@WithDefault`); o módulo postgresql define `${AUDIT_STRATEGY:JPA}` e o módulo mongodb `${AUDIT_STRATEGY:MONGODB}` | Não (mas deve corresponder ao módulo de store presente) | Seleciona o `AuditPersistenceProvider` cuja `strategy()` coincide; sem provider correspondente → `IllegalStateException("No audit persistence provider available for strategy ...")` na primeira injeção dos repositórios | `AuditPersistenceRouter#resolveProvider()`; `AuditConfig#isMongo()/isJpa()` | Determina se `seedgrid.audit.jpa.*` ou `seedgrid.audit.mongodb.*` têm efeito (`effective*`) | Runtime | Decl.: `AuditConfig.Persistence#strategy()`; default de módulo: `META-INF/microprofile-config.properties` (postgresql e mongodb) |
 
 ### 2.2 JPA / PostgreSQL (`seedgrid.audit.jpa.*`)
@@ -39,6 +40,8 @@ Só têm efeito com `strategy=JPA` **e** quando não há `EntityManager` CDI res
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.audit.jpa.jdbc.url` | `Optional<String>` | URL iniciando com `jdbc:postgresql:` | — (módulo: `${SEEDGRID_AUDIT_DB_URL:}` = vazio) | Condicional: obrigatória com `strategy=JPA` sem `EntityManager` CDI | Vazia → `IllegalStateException("Audit JPA strategy configured but seedgrid.audit.jpa.jdbc.url not set")`; outro esquema → `IllegalArgumentException("Unsupported JDBC URL")`. Usada no `PGSimpleDataSource` do PU standalone `audit-pu` | `PostgreSqlAuditPersistenceProvider#getOrCreateEntityManagerFactory()` via `AuditConfig#effectiveJpaJdbcUrl()` | `username`, `password` | Runtime | Decl.: `AuditConfig.Jpa.Jdbc#url()`; default: `seedgrid-quarkus-ext-audit-postgresql/runtime/.../META-INF/microprofile-config.properties` |
 | `seedgrid.audit.jpa.username` | `Optional<String>` | texto | — (módulo: `${SEEDGRID_AUDIT_DB_USERNAME:}`) | Condicional (conforme o banco) | Usuário do datasource standalone | idem, via `effectiveJpaUsername()` | `jdbc.url` | Runtime | `AuditConfig.Jpa#username()` |
+| `seedgrid.audit.jpa.db-kind` | `Optional<String>` | texto (ex.: `postgresql`) | — no mapping; o módulo postgresql define `${SEEDGRID_AUDIT_DB_KIND:postgresql}` | Não | Só ecoado por `effectiveJpaDbKind()` (com `strategy=JPA`); **nenhum código Java do repositório audit chama `effectiveJpaDbKind()`**, então não muda o comportamento hoje | `AuditConfig#effectiveJpaDbKind()` | — | Runtime | Decl.: `AuditConfig.Jpa#dbKind()`; default: `seedgrid-quarkus-ext-audit-postgresql/runtime/.../META-INF/microprofile-config.properties` |
+| `seedgrid.audit.jpa.packages` | `Optional<String>` | lista de pacotes | — | Não | Declarada no `AuditConfig.Jpa`; o javadoc diz que os pacotes das entidades já vêm de `quarkus.hibernate-orm.audit.packages=br.com.seedgrid.audit.core.entities`. **Nenhum código Java do repositório audit lê** `jpa().packages()` | — | `quarkus.hibernate-orm.audit.packages` | Runtime | Decl.: `AuditConfig.Jpa#packages()` |
 | 🔒 `seedgrid.audit.jpa.password` | `Optional<String>` | texto | — (módulo: `${SEEDGRID_AUDIT_DB_PASSWORD:}`) | Condicional (conforme o banco) | Senha do datasource standalone | idem, via `effectiveJpaPassword()` | `jdbc.url` | Runtime | `AuditConfig.Jpa#password()` |
 
 ### 2.3 MongoDB (`seedgrid.audit.mongodb.*`)
@@ -48,7 +51,7 @@ Só têm efeito com `strategy=JPA` **e** quando não há `EntityManager` CDI res
 | 🔒 `seedgrid.audit.mongodb.connection-string` | `Optional<String>` | connection string MongoDB | — no mapping; o módulo mongodb define `${SEEDGRID_AUDIT_MONGODB_URI:<URI local com credenciais de desenvolvimento>}` (valor não reproduzido aqui) | Condicional: necessária em produção com `strategy=MONGODB` (senão cai no default de desenvolvimento do módulo) | Não é lida por Java; o módulo faz a ponte `quarkus.mongodb.connection-string=${seedgrid.audit.mongodb.connection-string}` | Ponte em `microprofile-config.properties` | `quarkus.mongodb.connection-string` | Runtime | Decl.: `AuditConfig.MongoDb#connectionString()`; ponte: `seedgrid-quarkus-ext-audit-mongodb/runtime/.../META-INF/microprofile-config.properties` |
 | `seedgrid.audit.mongodb.database` | `Optional<String>` | nome de database | — (fallback do producer: `<seedgrid.login-tenancy.app.code>_audit_db`, ou `audit_db`) | Não | Não é lida pelo módulo audit. Só tem efeito quando o `MongoDatabase` vem do `LoginTenancyMongoAuditDatabaseProducer` (seedgrid-login-tenancy, banco único): define o nome do banco de auditoria. Ignorada com `seedgrid-subdomain-tenancy` (`TenantAwareMongoProducer` usa `<product-prefix>_<tenant>_audit_db`) ou com producer próprio da app | `java/seedgrid-quarkus-ext-login-tenancy/runtime/src/main/java/br/com/seedgrid/logintenancy/configs/LoginTenancyMongoAuditDatabaseProducer.java` → `#resolveDatabaseName()` (`@ConfigProperty`) | `seedgrid.login-tenancy.app.code` | Runtime | Decl.: `AuditConfig.MongoDb#database()`; consumo: `LoginTenancyMongoAuditDatabaseProducer#auditDatabase` |
 
-Total: **6** propriedades com efeito (`persistence.strategy`, `jpa.jdbc.url`, `jpa.username`, `jpa.password`, `mongodb.connection-string`, `mongodb.database`).
+Total: **6** propriedades com efeito (`persistence.strategy`, `jpa.jdbc.url`, `jpa.username`, `jpa.password`, `mongodb.connection-string`, `mongodb.database`), mais 3 declaradas no `AuditConfig` sem consumidor no código (`enabled`, `jpa.db-kind`, `jpa.packages`).
 
 ## 3. Propriedades de framework definidas/recomendadas
 

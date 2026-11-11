@@ -127,11 +127,14 @@ function tables(text) {
   return res;
 }
 
+// o `*` dentro de um trecho de código (glob como /public/auth/**) é valor, não negrito: protege antes e devolve no fim
 const stripMd = (s) => s
+  .replace(/`([^`]*)`/g, (m, c) => c.replace(/\*/g, ''))
   .replace(/\[\[([^\]|]*)\|([^\]]*)\]\]/g, '$2')
   .replace(/\[\[([^\]]*)\]\]/g, '$1')
   .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
   .replace(/`/g, '').replace(/\*\*/g, '').replace(/\*(\S[^*]*)\*/g, '$1')
+  .replace(//g, '*')
   .replace(/\s+/g, ' ').trim();
 
 function trunc(s, n) {

@@ -2,8 +2,8 @@
 tags: [seedgrid, extension, audit, enum]
 fonte: java/seedgrid-quarkus-ext-audit
 branch: main
-commit: d5bf32e509
-analisado-em: 2026-10-14
+commit: 632e6f4
+analisado-em: 2026-11-11
 ---
 
 # SeedGrid Audit — Enums
@@ -63,4 +63,4 @@ Onde é usado: [[SeedGrid/Extensions/audit/Configuracao|`seedgrid.audit.persiste
 ## Comparação com o porte Rust (informativo)
 
 - `AuditOperationEnum` ↔ `AuditOperation` (`rust/seedgrid-rust-crate-audit/src/models.rs`, `#[serde(rename_all = "UPPERCASE")]`): mesmos 5 valores, mesma grafia.
-- `AuditPersistenceStrategy` ↔ `AuditPersistenceStrategy` (`rust/seedgrid-rust-crate-audit/src/config.rs`, variantes `Jpa`/`Mongodb`): o `parse` do Rust também aceita os aliases `POSTGRES`, `POSTGRESQL` e `MONGO`, que o Java não aceita.
+- `AuditPersistenceStrategy` ↔ `AuditPersistenceStrategy` (`rust/seedgrid-rust-crate-audit/src/config.rs`, variantes `Jpa`/`Mongodb`): o `parse` do Rust aceita só `JPA` e `MONGODB` (sem diferenciar maiúsculas), como o Java (`AuditPersistenceStrategy::parse` em `config.rs`).
