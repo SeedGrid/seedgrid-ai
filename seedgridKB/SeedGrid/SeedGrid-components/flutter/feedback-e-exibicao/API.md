@@ -424,7 +424,7 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 
 ## SgNotificationBell
 
-> **Flutter** · estado de paridade: **portado** · equivalente React: `SgNotificationBell` (mesmo nome). Conferido contra seedgrid-fe-flutter 74c3189.
+> **Flutter** · estado de paridade: **parcial** (o Pulse entra por `connectionFactory`; `apiUrl` e `tokenEndpoint` precisam ser absolutos; docs/PARIDADE.md, commit d8425b8) · equivalente React: `SgNotificationBell` (mesmo nome). Conferido contra seedgrid-fe-flutter 74c3189.
 
 Sino de notificações do usuário logado, com os mesmos nomes de prop do React e **um extra**: `connectionFactory`. Autônomo: sem `SgRealtimeProvider` acima que assine `user-notifications`, abre o próprio.
 

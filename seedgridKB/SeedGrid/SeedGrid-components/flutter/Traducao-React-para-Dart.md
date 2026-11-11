@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, traducao, 
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/docs/TABELA_DE_TRADUCAO.md
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: d8425b8
+analisado-em: 2026-11-11
 ---
 
 # Tradução React → Dart

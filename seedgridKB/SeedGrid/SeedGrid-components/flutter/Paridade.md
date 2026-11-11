@@ -1,20 +1,20 @@
 ---
-description: "Tabela de paridade React × Flutter dos componentes SeedGrid, em perguntas e respostas: placar (89 portados, 0 parciais, 0 não portados), o que mudou no critério de parcial, quais portados não têm ressalva, limitações que se repetem, perdas do editor e como ler e regenerar o docs/PARIDADE.md."
+description: "Tabela de paridade React × Flutter dos componentes SeedGrid, em perguntas e respostas: placar (94 componentes: 91 portados, 3 parciais, 0 pendentes; SgColorPicker só no Flutter), o que mudou no critério de parcial, quais portados não têm ressalva, limitações que se repetem, perdas do editor e como ler e regenerar o docs/PARIDADE.md."
 tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, paridade, perguntas-e-respostas]
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/docs/PARIDADE.md
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: d8425b8
+analisado-em: 2026-11-11
 ---
 
 # Paridade React × Flutter
 
-> **Plataforma: Flutter (comparada com o React).** Resumo de `docs/PARIDADE.md` e `docs/paridade.json` (gerados por `node tools/parity_table/generate.mjs` a partir do `@seedgrid/fe-components` 2026.7.1; **não edite à mão**), commit `e9989b8` do repositório Flutter. A tabela completa, com o motivo de cada ressalva, fica no repositório e, por componente, na seção "Diferenças do React" de cada `<grupo>/API`. Visão geral das duas plataformas: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]] · [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral do Flutter]].
+> **Plataforma: Flutter (comparada com o React).** Resumo de `docs/PARIDADE.md` e `docs/paridade.json` (gerados por `node tools/parity_table/generate.mjs` a partir do `@seedgrid/fe-components` 2026.7.1; **não edite à mão**), commit `d8425b8` do repositório Flutter. A tabela completa, com o motivo de cada ressalva, fica no repositório e, por componente, na seção "Diferenças do React" de cada `<grupo>/API`. Visão geral das duas plataformas: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]] · [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral do Flutter]].
 
 ## Qual é o placar?
 
-**89 componentes** do React: **89 portados, 0 parciais, 0 pendentes, 0 não aplicáveis** (cabeçalho do `docs/PARIDADE.md` e `resumo` do `docs/paridade.json`, commit `e9989b8`). Por grupo: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|inputs-texto]] 15, [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral|inputs-selecao]] 14, [[SeedGrid/SeedGrid-components/flutter/layout/Visao-geral|layout]] 19, [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral|gadgets]] 10, [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral|feedback-e-exibicao]] 9, [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral|digits]] 8, [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral|navegacao-e-overlay]] 6, [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral|buttons]] 3, [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral|providers]] 2, [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|datatable]] 1, [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral|editor]] 1 e [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|fundamentos]] 1 (`SgComponentsI18nProvider`). Soma das colunas da tabela: 2042 props no contrato, 154 omitidas de propósito e 549 genéricas.
+**94 componentes** do React: **91 portados, 3 parciais, 0 pendentes, 0 não aplicáveis** (cabeçalho do `docs/PARIDADE.md` e `resumo` do `docs/paridade.json`, commit `d8425b8`). Os 3 parciais são `SgFileUpload`, `SgImageUpload` (o valor é uma lista de `SgFile`, nome e bytes, em vez do `File` do navegador; no `SgImageUpload`, recorte e compressão ficam fora) e `SgNotificationBell` (o Pulse entra por `connectionFactory`, porque o SDK de Pulse ainda não é dependência do pacote; `apiUrl` e `tokenEndpoint` precisam ser absolutos). **Somente Flutter** (fora dos totais e nunca pendente): `SgColorPicker` (e `showSgColorPicker`), porque o React usa o seletor nativo do navegador (`input type=color`); ver a decisão 4 em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]. O número de componentes de cada grupo está na `Visao-geral` do grupo. Soma das colunas da tabela: 2195 props no contrato, 196 omitidas de propósito e 569 genéricas.
 
 **O critério mudou.** A versão anterior desta nota (commit `314cb5a`) dizia 27 portados e 62 parciais. Desde o commit `b1dfe4e` ("parcial só para funcionalidade que falta") o `parcial` não é mais usado para diferença de propósito ou limitação de teste: os 62 antigos `parcial` agora são `portado` **com ressalva registrada** na coluna "Onde / motivo", e os 27 sem ressalva são os mesmos de antes. Os componentes que só ganharam o status final depois (`SgClock`, `SgRealtimeProvider`, `SgMenu`, `SgCalendar`, `SgInputNumber`/`SgInputCurrency`, `SgPeriodSelector`, `SgWizard`, layout, `SgTextEditor`) saíram do status parcial pelos commits listados no histórico do repositório (`git log 314cb5a..e9989b8`); não repito o que cada um corrigiu aqui, está na ressalva de cada um.
 
@@ -24,7 +24,7 @@ analisado-em: 2026-10-30
 
 ## Quais estão portados sem nenhuma ressalva?
 
-27 componentes têm o campo "Onde / motivo" só com o caminho do arquivo:
+27 componentes (os mesmos de antes) têm o campo "Onde / motivo" só com o caminho do arquivo:
 
 | Onda | Componentes |
 |---|---|
@@ -67,6 +67,6 @@ A mesma fonte alimenta o catálogo do showcase: componente do React ainda sem wi
 
 ## Não verificado
 
-- Não rodei `flutter test` nem o gerador ao escrever esta nota; os números (89/0/0/0, 27 sem ressalva, 2042/154/549) são os de `docs/paridade.json` no commit `e9989b8` (somas feitas por mim sobre o JSON).
+- Não rodei `flutter test` nem o gerador ao escrever esta nota; os números (94/91/3/0, 27 sem ressalva, 2195/196/569) são os de `docs/paridade.json` no commit `d8425b8` (somas feitas por mim sobre o JSON, em 2026-11-11). O cabeçalho do `PARIDADE.md` ainda cita `@seedgrid/fe-components` 2026.7.1 como base do espelho do React.
 - A afirmação de que os 62 antigos `parcial` são os atuais portados-com-ressalva vem da comparação das duas listas (a de 27 sem ressalva é idêntica nas duas versões da nota); o critério novo vem da mensagem do commit `b1dfe4e`, não de um documento do repositório.
 - Os números sobre locales, moedas, fusos e QR vêm do texto da tabela; não os recontei no código.

@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, perguntas-
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: d8425b8
+analisado-em: 2026-11-11
 ---
 
 # Componentes SeedGrid em Flutter (`seedgrid_components`)
@@ -25,7 +25,8 @@ Os grupos Flutter têm os **mesmos nomes de pasta** dos grupos React. Cada um te
 | Tabela de dados | 1 | [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos\|Exemplos]] |
 | Editor de texto rico | 1 | [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos\|Exemplos]] |
 | Botões | 3 | [[SeedGrid/SeedGrid-components/flutter/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos\|Exemplos]] |
-| Feedback e exibição | 9 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
+| Feedback e exibição | 10 | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/Exemplos\|Exemplos]] |
+| Inputs de mídia (data e hora, arquivo, imagem, câmera, cor) | 4 (+ `SgColorPicker`, só Flutter) | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos\|Exemplos]] |
 | Layout e containers | 19 | [[SeedGrid/SeedGrid-components/flutter/layout/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/layout/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos\|Exemplos]] |
 | Navegação, overlay e wizard | 6 | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos\|Exemplos]] |
 | Gadgets (relógio, calendário, gauges, QR) | 10 | [[SeedGrid/SeedGrid-components/flutter/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos\|Exemplos]] |
@@ -33,7 +34,7 @@ Os grupos Flutter têm os **mesmos nomes de pasta** dos grupos React. Cada um te
 | Providers (ambiente/persistência e realtime) | 2 | [[SeedGrid/SeedGrid-components/flutter/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/providers/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos\|Exemplos]] |
 | Fundamentos (formulário, i18n, tema, commons) | 1 (+ `SgForm` e pacotes de apoio) | [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos\|Exemplos]] |
 
-Soma: **89 componentes**, os mesmos 89 da tabela de paridade (`docs/paridade.json`). Notas transversais: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução React → Dart]] · [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]] · [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · [[SeedGrid/SeedGrid-components/flutter/API-por-grupo|API por grupo (índice)]]. Os exemplos antigos por tema (`Exemplos-*.md`, commit `314cb5a`) continuam na pasta, mas os atuais e completos ficam em `<grupo>/Exemplos`.
+Soma: **94 componentes** do React, os mesmos 94 da tabela de paridade (`docs/paridade.json`, commit `d8425b8`), mais o `SgColorPicker`, que existe só no Flutter. Notas transversais: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução React → Dart]] · [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]] · [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] · [[SeedGrid/SeedGrid-components/flutter/API-por-grupo|API por grupo (índice)]]. Os exemplos antigos por tema (`Exemplos-*.md`, commit `314cb5a`) continuam na pasta, mas os atuais e completos ficam em `<grupo>/Exemplos`.
 
 ## O que é?
 
@@ -87,10 +88,10 @@ Detalhe em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] e
 ## O que ainda falta?
 
 - **Publicação no pub.dev:** só com autorização do dono (hoje instala-se do Git).
-- **Placar:** segundo `docs/PARIDADE.md` e `docs/paridade.json` (commit `e9989b8`), dos 89 componentes do React **89 estão `portado`, 0 `parcial`, 0 pendentes, 0 não aplicáveis**: desde o commit `b1dfe4e` o `parcial` só vale para funcionalidade que falta, e as diferenças de propósito ficam registradas na coluna "Onde / motivo" ([[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]]).
+- **Placar:** segundo `docs/PARIDADE.md` e `docs/paridade.json` (commit `d8425b8`), dos 94 componentes do React **91 estão `portado`, 3 `parcial` (`SgFileUpload`, `SgImageUpload`, `SgNotificationBell`), 0 pendentes, 0 não aplicáveis**; o `SgColorPicker` é só Flutter e fica fora dos totais. O `parcial` vale para funcionalidade que falta, e as diferenças de propósito ficam registradas na coluna "Onde / motivo" ([[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]]).
 - **Não portado, de propósito ou por decisão pendente** (todos registrados na tabela): tema de relógio por URL/SVG livre (`SgClockUrlThemeUnsupportedError`, ADR 51/D8); `href` real no `SgBreadcrumb` e no `SgMenu` (falta `url_launcher`: só dispara `onClick`/`onNavigate`); a ligação do SDK Pulse como dependência do `SgRealtimeProvider` (o cliente entra por `connectionFactory`; decisão do dono, commit `c10a137`); perdas do conversor HTML do `SgTextEditor` (tabelas e iframes, entre outras).
 - **Limitações recorrentes:** goldens com a fonte de teste do Flutter (sem comparação visual de texto com o React); não testado em IME nem em dispositivo, segundo a tabela.
-- O `README.md` do repositório foi atualizado depois da análise anterior (agora fala em "89 de 89" e traz instalação via Git, primeiros passos e a lista de componentes gerada); a divergência antiga entre o README e a tabela de paridade deixou de existir.
+- O `README.md` do repositório foi atualizado depois da análise anterior (na análise de 2026-10-30 falava em "89 de 89"; não reconferi o texto atual do README) e traz instalação via Git, primeiros passos e a lista de componentes gerada); a divergência antiga entre o README e a tabela de paridade deixou de existir.
 
 ## Não verificado
 

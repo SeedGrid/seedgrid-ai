@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, api, indic
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/packages/seedgrid_components/lib/src
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: d8425b8
+analisado-em: 2026-11-11
 ---
 
 # API por grupo (Flutter)
@@ -23,7 +23,8 @@ Caminhos relativos a `packages/seedgrid_components/lib/src/`. Nomes de widget ig
 | Tabela de dados | `inputs/datatable/` | `SgDatatable` (+ `SgDatatableController`, `SgDatatableColumn`) | [[SeedGrid/SeedGrid-components/flutter/datatable/API\|API]] |
 | Editor de texto rico | `inputs/editor/` | `SgTextEditor` | [[SeedGrid/SeedGrid-components/flutter/editor/API\|API]] |
 | Botões | `buttons/` | `SgButton`, `SgSplitButton`, `SgFloatActionButton` | [[SeedGrid/SeedGrid-components/flutter/buttons/API\|API]] |
-| Feedback e exibição | `commons/`, `feedback/` | `SgAvatar`, `SgAvatarGroup`, `SgBadge`, `SgBadgeOverlay`, `SgSkeleton`, `SgToaster`, `SgToastHost`, `SgWhistler`, `SgWhistleHost` | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
+| Feedback e exibição | `commons/`, `feedback/` | `SgAvatar`, `SgAvatarGroup`, `SgBadge`, `SgBadgeOverlay`, `SgSkeleton`, `SgToaster`, `SgToastHost`, `SgWhistler`, `SgWhistleHost`, `SgNotificationBell` | [[SeedGrid/SeedGrid-components/flutter/feedback-e-exibicao/API\|API]] |
+| Inputs de mídia | `inputs/camera/`, `inputs/files/`, `inputs/color/` e o seletor de data e hora em `inputs/` | `SgInputDateTime`, `SgFileUpload`, `SgImageUpload`, `SgCameraCapture`, `SgColorPicker` (só Flutter) | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | Layout e containers | `layout/basic/`, `layout/containers/`, `layout/dock/`, `layout/tree/`, `layout/menu/` | `SgStack`, `SgGrid`, `SgPanel`, `SgScreen`, `SgGroupBox`, `SgCard`, `SgAccordion`, `SgPageControl`, `SgPageControlPage`, `SgExpandablePanel`, `SgCarousel`, `SgBreadcrumb`, `SgMenu`, `SgTreeView`, `SgDockLayout`, `SgDockZone`, `SgDockScreen`, `SgToolBar`, `SgToolbarIconButton` | [[SeedGrid/SeedGrid-components/flutter/layout/API\|API]] |
 | Navegação, overlay e wizard | `menus/dock_menu/`, `overlay/`, `feedback/sg_wizard.dart` | `SgDockMenu`, `SgPopup`, `SgDialog`, `SgConfirmationDialog`, `SgWizard`, `SgWizardPage` | [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API\|API]] |
 | Gadgets | `gadgets/calendar/`, `gadgets/clock/`, `gadgets/gauges/`, `gadgets/string_animator/` | `SgCalendar`, `SgClock`, `SgTimeProvider`, `SgClockThemeProvider`, `SgClockThemePicker`, `SgClockThemePreview`, `SgLinearGauge`, `SgRadialGauge`, `SgQRCode`, `SgStringAnimator` | [[SeedGrid/SeedGrid-components/flutter/gadgets/API\|API]] |

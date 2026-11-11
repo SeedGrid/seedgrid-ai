@@ -4,7 +4,7 @@ fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components
 branch: main
 commit: ad30fc11de
 fonte-flutter: front/seedgrid-fe-flutter
-commit-flutter: e9989b8
+commit-flutter: d8425b8
 analisado-em: 2026-11-11
 gerado-por: scripts/kb-catalogs.mjs --only catalogo
 ---

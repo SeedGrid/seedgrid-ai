@@ -4,8 +4,8 @@ tags: [seedgrid, front, component, flutter, dart, plataforma-flutter, divergenci
 plataforma: flutter
 fonte: front/seedgrid-fe-flutter/docs
 branch: main
-commit: e9989b8
-analisado-em: 2026-10-30
+commit: d8425b8
+analisado-em: 2026-11-11
 ---
 
 # Divergências do Flutter em relação ao React
@@ -23,6 +23,8 @@ As duas primeiras de 2026-10-25 e a terceira de 2026-10-26 (fonte: `docs/DIVERGE
 | 3 | A barra de força do `SgInputPassword` fica neutra com o campo vazio | a pontuação era "requisitos ativos menos não atendidos"; com o campo vazio nenhum requisito é violado de fato, então a barra já nascia com 5 segmentos verdes | **alterado nos dois (Flutter e React):** só pontua depois que há texto; vazio (inicial, apagado ou `reset`) = 0 segmentos acesos; com texto, a regra é a de antes (1 vermelho, 2 laranja, 3 âmbar, 4 amarelo, 5 verde). Testes: `test/widgets/sg_input_password_test.dart` e, no React, `tests/inputs-dom.test.mjs` |
 
 Mecanismo da decisão 2 (`form/sg_form.dart`, símbolos `SgFieldValidator`, `SgFormController.registerField(name, {required, initialValue, validator})` e `unregisterValidator`; o `rules`/`SgRules` foi removido na P153.F2.T3): o `required` roda primeiro (ordem do RHF); o validador do componente só roda se ele passou, então o erro de `required` vence; o erro do validador tem `type: 'validate'`. Campo desabilitado nunca falha; campo vazio e não obrigatório não falha; `reset()` limpa os erros. Risco registrado: com `validateWithViaCep` ou `validateWithPublicaCnpj` ligados, o envio dispara a consulta de rede (memorizada pelo último valor).
+
+**Componentes somente Flutter (registro de 2026-11-06, item 4 do `docs/DIVERGENCIAS_DO_REACT.md`).** `SgColorPicker` (e o helper `showSgColorPicker`) existe só no Flutter, porque o Flutter não tem seletor de cor nativo e o React usa o `input type=color` do navegador. Não exige paridade nem entra em fila de porte. Regra para qualquer componente somente Flutter: (1) entra em `tools/parity_table/somente_flutter.json`, nunca em `props-spec.json`/`estado.json` (espelho do React); (2) `generate.mjs` o lista na seção "Somente Flutter" do `docs/PARIDADE.md` e em `paridade.json` (`somenteFlutter`, fora dos totais e nunca pendente); (3) as props são escritas à mão em `sg_flutter_only_prop_specs.dart`; (4) no showcase é uma página normal, com exemplos numerados, `SgPlayground` e Referência de Props. Teste: `test/widgets/sg_color_picker_test.dart`.
 
 Testes que fixam as decisões: `test/widgets/sg_multi_select_test.dart`, `sg_multi_select_chips_test.dart` (decisão 1) e `test/form/sg_form_component_validators_test.dart` (decisão 2).
 
