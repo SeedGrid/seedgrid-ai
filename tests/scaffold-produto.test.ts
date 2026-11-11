@@ -246,7 +246,7 @@ test('trial, ai-pricing, exchange e business-days mexem no pom, no env e nos tes
   assert.equal(com.saida.ok, true, (com.saida.erros ?? []).join('\n'));
   const pom2 = ler(com.destino, 'backend/pom.xml');
   for (const a of ['seedgrid-whatsapp-evolution', 'seedgrid-realtime', 'seedgrid-ai-pricing', 'seedgrid-exchange', 'seedgrid-business-days', 'seedgrid-cache-redis']) assert.ok(pom2.includes(`<artifactId>${a}</artifactId>`), a);
-  assert.ok(/<artifactId>seedgrid-cache-redis<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom2));
+  assert.ok(/<artifactId>seedgrid-cache-redis<\/artifactId>\s*<version>2026.11.0<\/version>/.test(pom2));
   assert.ok(existsSync(join(com.destino, 'backend/src/test/java/br/com/acme/portal/api/audit/DomainAuditTest.java')));
   const e2 = env(ler(com.destino, 'backend/dev.env'));
   assert.equal(e2.SEEDGRID_CACHE_FAILOVER_ENABLED, 'false');
@@ -691,7 +691,7 @@ test('cities: nos modelos de tenancy vem com o modelo (sem dependencia direta); 
   assert.equal(com1.saida.ok, true, (com1.saida.erros ?? []).join('\n'));
   const pom = ler(com1.destino, 'backend/pom.xml');
   assert.equal(pom.split('<artifactId>seedgrid-cities</artifactId>').length - 1, 1, 'uma unica dependencia seedgrid-cities');
-  assert.ok(/<artifactId>seedgrid-cities<\/artifactId>\s*<version>2026\.10\.22<\/version>/.test(pom), 'versao da cities');
+  assert.ok(/<artifactId>seedgrid-cities<\/artifactId>\s*<version>2026.11.0<\/version>/.test(pom), 'versao da cities');
   assert.ok(com1.saida.extensoes.includes('cities'));
   assert.ok(!arquivos(com1.destino).some((f) => /migration.*cit(y|ies)/i.test(f)), 'o host nao carrega migration da cities');
   assert.equal(readFileSync(join(com1.destino, 'backend/pom.xml'), 'utf8'), readFileSync(join(com2.destino, 'backend/pom.xml'), 'utf8'));
