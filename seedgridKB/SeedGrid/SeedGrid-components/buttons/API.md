@@ -2,8 +2,8 @@
 tags: [seedgrid, front, component, buttons]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-components/src/buttons
 branch: main
-commit: 0f304bb
-analisado-em: 2026-11-09
+commit: 0287d2f
+analisado-em: 2026-11-11
 description: "API React de Botões (@seedgrid/fe-components): props completas com tipo e padrão, eventos e acessibilidade. Plataforma React; a API Flutter equivalente está em flutter/ com o mesmo nome de grupo."
 plataforma: react
 ---
@@ -97,7 +97,7 @@ Nenhum contexto consumido.
 | `fg` | texto |
 | `border` | borda |
 | `hoverBg` | fundo em hover |
-| `hoverFg` | texto em hover |
+| `hoverFg` | texto em hover, e também no estado ativo quando é customizado; sem cor customizada, cada estado usa o texto escolhido por contraste sobre o próprio fundo (`--sg-btn-<papel>-hover-fg` e `--sg-btn-<papel>-active-fg`, ver `pacotes/fe-theme`) |
 | `hoverBorder` | borda em hover |
 | `activeBg` | fundo ativo |
 | `ring` | anel de foco |
