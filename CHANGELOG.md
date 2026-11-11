@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- Pins do `sg-new-product` (catálogo, matriz e boilerplates) em 2026.11.x, `<repositories>` do Nexus nos boilerplates (ADR 64) e `check-catalogo-pins.mjs` passa a conferir também as propriedades dos boilerplates.
+
 ## [0.7.11] — 2026-11-09
 
 ### Alterado

@@ -19,6 +19,7 @@ Esta skill transforma um pedido de produto novo em uma pasta pronta para subir. 
 
 - `data/matriz-produto.json`: as perguntas, na ordem, com opções, condições (`se`) e o efeito de cada resposta.
 - `data/catalogo.json`: extensions (dependências, o que cada modelo traz e o que não traz).
+- **Pins de versão:** as versões fixadas no `catalogo.json`, no `matriz-produto.json` e nas propriedades `seedgrid.<nome>.version` dos `boilerplates/*/backend/pom.xml` têm de ser iguais às dos poms da plataforma. `node scripts/check-catalogo-pins.mjs` confere os três e reprova pin velho (roda no `npm test`); depois de cada bump de extension, atualize os três. Enquanto a versão estiver só no Nexus (ADR 64), o `pom` do produto precisa do `<repositories>` do Nexus (`maven-releases`, leitura anônima); os boilerplates já o trazem e todo `pom` gerado deve manter esse bloco.
 - `scripts/scaffold-produto.mjs`: valida as respostas contra a matriz e gera o produto.
 - `scripts/readme-produto.mjs`: esqueleto do `README.md` (C4 até C3 em Mermaid) e guardião dos marcadores.
 - `scripts/verificar-subida.mjs`: sobe o produto e verifica (seção 3b).

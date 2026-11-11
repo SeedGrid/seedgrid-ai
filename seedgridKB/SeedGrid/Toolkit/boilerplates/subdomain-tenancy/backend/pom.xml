@@ -18,13 +18,24 @@
         <quarkus.platform.version>3.30.6</quarkus.platform.version>
         <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
         <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
-        <seedgrid.subdomain-tenancy.version>2026.11.10</seedgrid.subdomain-tenancy.version>
+        <seedgrid.subdomain-tenancy.version>2026.11.11</seedgrid.subdomain-tenancy.version>
         <!-- Avisos em tempo real ao usuario logado (SeedGrid Pulse): fim de backup etc. -->
-        <seedgrid.realtime.version>2026.10.22</seedgrid.realtime.version>
-        <seedgrid.notification.version>2026.10.22</seedgrid.notification.version>
-        <seedgrid.whatsapp.version>2026.10.22</seedgrid.whatsapp.version>
+        <seedgrid.realtime.version>2026.11.0</seedgrid.realtime.version>
+        <seedgrid.notification.version>2026.11.0</seedgrid.notification.version>
+        <seedgrid.whatsapp.version>2026.11.0</seedgrid.whatsapp.version>
         <minio.version>8.5.9</minio.version>
     </properties>
+
+    <!-- Nexus da SeedGrid: as versoes 2026.11.x das extensions ficam no Nexus (leitura anonima) ate subirem
+         ao Maven Central (ADR 64). Sem este bloco o Maven nao as encontra. -->
+    <repositories>
+        <repository>
+            <id>seedgrid-releases</id>
+            <url>https://nexus.seedgrid.com.br/repository/maven-releases/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>

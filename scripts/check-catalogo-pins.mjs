@@ -43,6 +43,20 @@ const pins = new Map();
   if (m && !pins.has(m[1])) pins.set(m[1], m[2]);
 })(JSON.parse(readFileSync(matrizFile, 'utf8')));
 
+// Os boilerplates (Toolkit/boilerplates/*/backend/pom.xml) fixam versao em propriedades `seedgrid.<nome>.version`: mesma regra.
+const boilerDir = path.join(root, 'seedgridKB', 'SeedGrid', 'Toolkit', 'boilerplates');
+const ALIAS = { resilience: 'seedgrid-resilience-core' };
+const propPins = []; // { arquivo, artifactId, versao }
+if (existsSync(boilerDir)) {
+  for (const m of readdirSync(boilerDir, { withFileTypes: true })) {
+    const pom = path.join(boilerDir, m.name, 'backend', 'pom.xml');
+    if (!m.isDirectory() || !existsSync(pom)) continue;
+    for (const [, nome, versao] of readFileSync(pom, 'utf8').matchAll(/<seedgrid\.([\w-]+)\.version>(\d{4}\.\d+\.\d+)</g)) {
+      propPins.push({ arquivo: `${m.name}/backend/pom.xml`, artifactId: ALIAS[nome] ?? `seedgrid-${nome}`, versao });
+    }
+  }
+}
+
 const javaDir = path.join(platform, 'java');
 if (!existsSync(javaDir)) {
   const msg = `[check-catalogo-pins] seedgrid-platform nao encontrado em ${platform}; ${pins.size} pin(s) nao conferidos (use --platform ou SEEDGRID_PLATFORM)`;
@@ -87,6 +101,15 @@ for (const [artifactId, versao] of pins) {
   }
   conferidos += 1;
   if (cur !== versao) erros.push(`${artifactId}: catalogo fixa ${versao}, a plataforma esta em ${cur}`);
+}
+for (const { arquivo, artifactId, versao } of propPins) {
+  const cur = atual.get(artifactId);
+  if (!cur) {
+    console.log(`[check-catalogo-pins] aviso: ${artifactId} (boilerplate ${arquivo}) nao achado nos poms da plataforma (pin ${versao} nao conferido)`);
+    continue;
+  }
+  conferidos += 1;
+  if (cur !== versao) erros.push(`${artifactId}: boilerplate ${arquivo} fixa ${versao}, a plataforma esta em ${cur}`);
 }
 for (const e of erros) console.error(`[check-catalogo-pins] DEFASADO ${e}`);
 if (erros.length) {

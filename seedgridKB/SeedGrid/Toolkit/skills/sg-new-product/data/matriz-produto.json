@@ -438,7 +438,7 @@
               "apikeys"
             ],
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-apikeys:2026.10.22"
+              "br.com.seedgrid:seedgrid-apikeys:2026.11.0"
             ],
             "hibernate_packages": [
               "br.com.seedgrid.apikeys.entities"
@@ -565,7 +565,7 @@
               "cities"
             ],
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-cities:2026.10.22"
+              "br.com.seedgrid:seedgrid-cities:2026.11.0"
             ]
           },
           "efeito_ausente": {
@@ -716,7 +716,7 @@
               "provedorCache": "redis"
             },
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-cache-redis:2026.10.22"
+              "br.com.seedgrid:seedgrid-cache-redis:2026.11.0"
             ],
             "env": {
               "SEEDGRID_CACHE_HOSTS": "${externo}",
@@ -735,7 +735,7 @@
               "provedorCache": "valkey"
             },
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-cache-valkey:2026.10.22"
+              "br.com.seedgrid:seedgrid-cache-valkey:2026.11.0"
             ],
             "env": {
               "SEEDGRID_CACHE_HOSTS": "${externo}",
@@ -754,7 +754,7 @@
               "provedorCache": "dragonfly"
             },
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-cache-dragonfly:2026.10.22"
+              "br.com.seedgrid:seedgrid-cache-dragonfly:2026.11.0"
             ],
             "env": {
               "SEEDGRID_CACHE_HOSTS": "${externo}",

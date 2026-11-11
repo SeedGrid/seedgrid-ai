@@ -296,7 +296,7 @@
       "pom": [
         {
           "artifactId": "seedgrid-cities",
-          "versao": "2026.10.22"
+          "versao": "2026.11.0"
         }
       ]
     },
@@ -376,15 +376,15 @@
       "provedores": [
         {
           "artifactId": "seedgrid-cache-redis",
-          "versao": "2026.10.22"
+          "versao": "2026.11.0"
         },
         {
           "artifactId": "seedgrid-cache-valkey",
-          "versao": "2026.10.22"
+          "versao": "2026.11.0"
         },
         {
           "artifactId": "seedgrid-cache-dragonfly",
-          "versao": "2026.10.22"
+          "versao": "2026.11.0"
         }
       ],
       "pendencia": "servico do compose do provedor (redis, valkey ou dragonfly): o dono fornece; a KB nao traz imagem nem healthcheck"
