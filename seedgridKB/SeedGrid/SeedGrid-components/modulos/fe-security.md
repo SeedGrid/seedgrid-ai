@@ -2,8 +2,8 @@
 tags: [seedgrid, front, modulo, fe-security]
 fonte: front/seedgrid-fe-components/packages/modules/seedgrid-fe-security
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # @seedgrid/fe-security
@@ -256,6 +256,7 @@ Legenda de Fase: **build (NEXT_PUBLIC inline)** = Next substitui o valor no bund
 | `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | string | nome de cookie | `sg_{{project_slug}}_access_token` | Não | Nome do cookie httpOnly do access token (trim; vazio cai no padrão) | Login/refresh/logout e motor de sessão | Deve ser igual nos dois arquivos que a leem | runtime server | `PKG/scaffold/src/modules/security/server/session-routes.ts.hbs → ACCESS_COOKIE_NAME`; `.../server/session-server.ts.hbs → ACCESS_COOKIE_NAME` |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | string | nome de cookie | `sg_{{project_slug}}_refresh_token` | Não | Nome do cookie httpOnly do refresh token | idem | idem | runtime server | idem `REFRESH_COOKIE_NAME` |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_MAX_AGE_SECONDS` | string → inteiro | inteiro > 0 | `2592000` (30 dias) | Não | `maxAge` do cookie de refresh; inválido/≤0 cai no padrão | `setRefreshTokenCookie` | Só no caminho `session-routes` (o motor da lib não usa `maxAge`) | runtime server | `.../session-routes.ts.hbs → resolveRefreshCookieMaxAge` |
+| `SEEDGRID_REPORT_API_TOKEN` | string | token de service (server-to-server) | — | Não | Declarada em `env` do manifesto do módulo; **nenhum código da lib nem do scaffold a lê** (a lib recebe o valor só via `SecurityServerConfig.serviceToken`; a leitura aparece apenas em exemplo do README) | Lista de envs que o CLI do SeedGrid conhece para o módulo `security` | `SecurityServerConfig.serviceToken` (o app lê o env e repassa) | não lida pelo pacote (declaração do manifesto; leitura, se houver, é do app: runtime server) | `PKG/src/module.ts → module.env`; `PKG/README.md` (exemplo) |
 | `NODE_ENV` | string | `production` / outros | — | Não | `secure` dos cookies = `NODE_ENV === "production"` | cookies do scaffold; default de `secureCookies` na lib | `SecurityServerConfig.secureCookies` sobrepõe na lib | runtime server (Inferência: o Next pode inlinear `NODE_ENV` no build) | `PKG/src/server/create-security-server.ts → createSecurityServer`; `.../session-routes.ts.hbs` |
 
 Variáveis do app base consumidas indiretamente (via `@/config/environment`, fora deste pacote): `appEnvironment.hosts.apiOrigin`, `appEnvironment.hosts.masterAppHost`, `appEnvironment.persistence.scope`, `resolveApiBaseUrlForHostname(hostname)`. As envs que os alimentam **não estão neste repositório** — **Não confirmado**.
@@ -287,30 +288,30 @@ Valores literais no código copiado para o app (editáveis no app). **Confirmado
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
 | `apiBaseUrl` | `string` | — | client: `"/api"`; server: `appEnvironment.hosts.apiOrigin` | — (calculado) | Base dos clients `createApiClient` privado/público | `services/security-api.ts` | Proxy `/api/[[...path]]` do app base (Inferência) | runtime client / runtime server (avaliado no import) | `config.ts → resolveApiBaseUrl` |
-| `pagination.defaultPageSize` | number | inteiro | `10` | — | Tamanho de página padrão | listas CRUD | | código (scaffold) | `config.ts` |
-| `pagination.pageSizeOptions` | number[] | — | `[10, 20, 50]` | — | Opções de página | listas CRUD | | código (scaffold) | `config.ts` |
-| `search.debounceMs` | number | ms | `1000` | — | Debounce da busca | `useDebouncedSearch` (Inferência pelo README do scaffold) | | código (scaffold) | `config.ts` |
-| `search.minLength` | number | — | `3` | — | Mínimo de caracteres da busca | listas | `security.common.search_hint` | código (scaffold) | `config.ts` |
+| `pagination.defaultPageSize` | number | inteiro | `10` | — | Tamanho de página padrão | Listas CRUD e telas de `fe-self-enter` (`invitations`, `requests/to-approve`) | | código (scaffold) | `config.ts` |
+| `pagination.pageSizeOptions` | number[] | — | `[10, 20, 50]` | — | Opções de página | Nenhum consumidor no scaffold além do próprio `config.ts` (grep) | | código (scaffold) | `config.ts` |
+| `search.debounceMs` | number | ms | `1000` | — | Debounce da busca | `useDebouncedSearch` (default de `delayMs`; Confirmado — `scaffold/src/modules/security/hooks/useDebouncedSearch.ts`) | | código (scaffold) | `config.ts` |
+| `search.minLength` | number | — | `3` | — | Mínimo de caracteres da busca | `utils.ts` (normalização/validação do termo) e listas | `security.common.search_hint` | código (scaffold) | `config.ts` |
 | `storage.sessionKey` | string | — | `` `${appEnvironment.persistence.scope}:security:session` `` | — | Chave no `localStorage` da sessão client | `services/session-storage.ts` | `appEnvironment.persistence.scope` | runtime client | `config.ts` |
 | `storage.pendingTwoFactorKey` | string | — | `` `${scope}:security:pending-2fa` `` | — | Chave do 2FA pendente (tempToken) | idem | idem | runtime client | `config.ts` |
 | `features.selfEnterEnabled` | boolean | — | `false` | — | Ver `NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED` | Bloqueia a tela pública `/auth/self-enter` do fe-self-enter quando `false` | | build (NEXT_PUBLIC inline) | `config.ts` |
 | `routes.dashboard` | string | path | `/` | — | Destino pós-login padrão | `resolvePostAuthPath` | | código (scaffold) | `config.ts` |
-| `routes.profile` | string | path | `/security/profile` | — | | menu/telas | | código (scaffold) | `config.ts` |
+| `routes.profile` | string | path | `/security/profile` | — | Destino do atalho de perfil | `components/AppShell.tsx.hbs` | | código (scaffold) | `config.ts` |
 | `routes.login` | string | path | `/auth/login` | — | Redirect do `RouteGuard` | `RouteGuard`, `/login` | | código (scaffold) | `config.ts` |
-| `routes.welcome` | string | path | `/auth/welcome` | — | | | | código (scaffold) | `config.ts` |
-| `routes.forgotPassword` | string | path | `/auth/forgot-password` | — | | | | código (scaffold) | `config.ts` |
+| `routes.welcome` | string | path | `/auth/welcome` | — | Nenhum consumidor no scaffold (grep) | | | código (scaffold) | `config.ts` |
+| `routes.forgotPassword` | string | path | `/auth/forgot-password` | — | Rota pública (não exige sessão) | `AuthProvider` (`isPublicRoute`), telas de login/recuperação | | código (scaffold) | `config.ts` |
 | `routes.forgotPasswordConfirm` | string | path | `/auth/forgot-password/confirm` | — | | | | código (scaffold) | `config.ts` |
 | `routes.forgotPasswordSuccess` | string | path | `/auth/forgot-password/success` | — | | | | código (scaffold) | `config.ts` |
-| `routes.verifyTwoFactor` | string | path | `/auth/2fa/verify` | — | | | | código (scaffold) | `config.ts` |
+| `routes.verifyTwoFactor` | string | path | `/auth/2fa/verify` | — | Rota pública; destino após login que exige 2FA | `AuthProvider`, tela de login | | código (scaffold) | `config.ts` |
 | `routes.users` | string | path | `/security/users` | — | | menu | | código (scaffold) | `config.ts` |
 | `routes.companies` | string | path | `/security/companies` | — | | menu | | código (scaffold) | `config.ts` |
 | `routes.roles` | string | path | `/security/roles` | — | | menu | | código (scaffold) | `config.ts` |
 | `routes.twoFactor` | string | path | `/security/2fa` | — | | | | código (scaffold) | `config.ts` |
 | `routes.apiKeys` | string | path | `/security/api-keys` | — | Página vem de `fe-apikeys` | menu | | código (scaffold) | `config.ts` |
 | `routes.changePassword` | string | path | `/users/change-password` | — | Redirect forçado quando `changePasswordRequired` | `RouteGuard` | | código (scaffold) | `config.ts` |
-| `routes.selfEnterPublic` | string | path | `/auth/self-enter` | — | Página vem de `fe-self-enter` | | | código (scaffold) | `config.ts` |
-| `routes.selfEnterApproval` | string | path | `/self-enter/requests/to-approve` | — | idem | menu | | código (scaffold) | `config.ts` |
-| `routes.selfEnterInvitations` | string | path | `/self-enter/invitations` | — | idem | menu | | código (scaffold) | `config.ts` |
+| `routes.selfEnterPublic` | string | path | `/auth/self-enter` | — | Página vem de `fe-self-enter`; tratada como rota pública no `AuthProvider` e linkada na tela de login | `AuthProvider`, `auth/login/page.tsx` | | código (scaffold) | `config.ts` |
+| `routes.selfEnterApproval` | string | path | `/self-enter/requests/to-approve` | — | idem | `useSecurityAppShellSections.tsx.hbs` (menu) | | código (scaffold) | `config.ts` |
+| `routes.selfEnterInvitations` | string | path | `/self-enter/invitations` | — | idem | `useSecurityAppShellSections.tsx.hbs` (menu) | | código (scaffold) | `config.ts` |
 
 ### Variáveis de template (CLI)
 

@@ -178,7 +178,7 @@ function propTables(file) {
   const out = [];
   for (const t of tables(read(file))) {
     const iProp = colIdx(t.header, /^(propriedade|atributo)/);
-    const iBeh = colIdx(t.header, /^(comportamento|observacao)/);
+    const iBeh = colIdx(t.header, /^(comportamento|observacao|efeito)/);
     if (iProp !== 0 || iBeh < 0) continue;
     if (/^observacao/.test(norm(stripMd(t.header[iBeh]))) && !/^atributo/.test(norm(stripMd(t.header[0])))) continue;
     if (EXCLUDE_SECTION.test(norm(stripMd(t.h[2] || '')))) continue;

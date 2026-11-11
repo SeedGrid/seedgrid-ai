@@ -2,8 +2,8 @@
 tags: [seedgrid, front, modulo, fe-self-enter]
 fonte: front/seedgrid-fe-components/packages/modules/seedgrid-fe-self-enter
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # @seedgrid/fe-self-enter
@@ -79,6 +79,16 @@ As telas usam `securityService` do scaffold do fe-security (`createSelfEnterRequ
 ## Configuração
 
 Nenhuma variável de ambiente lida pelo pacote nem pelo seu scaffold (verificado com `grep process.env`). Dependência indireta: a tela pública consulta `securityConfig.features.selfEnterEnabled`, que no scaffold do fe-security vem de `process.env.NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED` (build, NEXT_PUBLIC inline) — documentado em [[SeedGrid/SeedGrid-components/modulos/fe-security|fe-security]].
+
+Legenda de Fase: **geração (CLI)** = definido pelo CLI ao gerar o app; **build (NEXT_PUBLIC inline)** = Next substitui o valor no bundle no build; **código (scaffold)** = literal no código copiado para o app.
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `configKey` (manifesto) | string | — | `"self-enter"` | — | Chave do módulo na configuração do CLI; `requires: ["security"]` | Habilita o módulo; o CLI deriva `security_self_enter_enabled` (Confirmado só pelo comentário do manifesto: `config.is_module_enabled("self-enter")`) | `security_self_enter_enabled` no fe-security | geração (CLI) | `PKG/src/module.ts` |
+| `securityConfig.features.selfEnterEnabled` (consumida) | boolean | — | `false` | — | Quando `false` e a tela não está em modo convite, a tela pública `auth/self-enter` bloqueia o pedido de acesso | `scaffold/src/app/auth/self-enter/page.tsx` | `NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED` (fe-security) | build (NEXT_PUBLIC inline) | `fe-security: scaffold/src/modules/security/config.ts` |
+| `securityConfig.pagination.defaultPageSize` (consumida) | number | inteiro | `10` | — | Tamanho de página inicial das telas `invitations` e `requests/to-approve` | páginas do scaffold | fe-security | código (scaffold) | `fe-security: scaffold/src/modules/security/config.ts` |
+
+`PKG` = `front/seedgrid-fe-components/packages/modules/seedgrid-fe-self-enter`. `createSelfEnterServer(session)` não recebe config própria: só o `SecurityServer` do fe-security. **Confirmado** (`PKG/src/server/create-self-enter-server.ts`).
 
 ## Exemplo (fonte: README)
 

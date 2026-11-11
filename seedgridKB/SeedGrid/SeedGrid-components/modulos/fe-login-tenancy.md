@@ -2,8 +2,8 @@
 tags: [seedgrid, front, modulo, fe-login-tenancy]
 fonte: front/seedgrid-fe-components/packages/modules/seedgrid-fe-login-tenancy
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # @seedgrid/fe-login-tenancy

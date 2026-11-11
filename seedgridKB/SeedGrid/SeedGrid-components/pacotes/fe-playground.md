@@ -2,8 +2,8 @@
 tags: [seedgrid, front, pacote, fe-playground]
 fonte: front/seedgrid-fe-components/packages/seedgrid-fe-playground
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # `@seedgrid/fe-playground`
@@ -74,15 +74,15 @@ Lidas via `process.env` em `src/SgPlayground.tsx`. Por serem `NEXT_PUBLIC_*`, o 
 
 | Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
 |---|---|---|---|---|---|---|---|---|---|
-| `NEXT_PUBLIC_SANDPACK_SEEDGRID_DEPENDENCY` | string | versão/range npm | `latest` | Não | versão do `@seedgrid/fe-components` no sandbox | `resolvedSeedgridDependency` | prop `seedgridDependency` vence | build (NEXT_PUBLIC inline) | `SgPlayground` |
+| `NEXT_PUBLIC_SANDPACK_SEEDGRID_DEPENDENCY` | string | versão/range npm | `latest` | Não | versão do `@seedgrid/fe-components` no sandbox; resolvido com `??` (string vazia definida NÃO cai em `latest`) | `resolvedSeedgridDependency` | prop `seedgridDependency` vence | build (NEXT_PUBLIC inline) | `SgPlayground` |
 | `NEXT_PUBLIC_SANDPACK_BUNDLER_URL` | string | URL válida (`new URL`) | `https://sandpack.seedgrid.com.br` | Não | URL do bundler; inválida → padrão; barra final removida | `normalizeUrl` | prop `bundlerURL` vence | build (NEXT_PUBLIC inline) | `SgPlayground` |
-| `NEXT_PUBLIC_SANDPACK_BUNDLER_TIMEOUT_MS` | número | > 0 | `60000` | Não | timeout do bundler; inválido/≤0 → padrão | `normalizeTimeoutMs` | prop `bundlerTimeoutMs` vence | build (NEXT_PUBLIC inline) | `SgPlayground` |
-| `NEXT_PUBLIC_SANDPACK_DEBUG` | boolean | `1/true/yes/on`, `0/false/no/off` | `false` | Não | loga a config do Sandpack (`console.info`) quando `interactive` | `useEffect` | — | build (NEXT_PUBLIC inline) | `SgPlayground` |
+| `NEXT_PUBLIC_SANDPACK_BUNDLER_TIMEOUT_MS` | número | > 0 | `60000` | Não | timeout do bundler em ms (convertido com `Number`, arredondado com `Math.round`); inválido/≤0/vazio → padrão | `normalizeTimeoutMs` | prop `bundlerTimeoutMs` vence | build (NEXT_PUBLIC inline) | `SgPlayground` |
+| `NEXT_PUBLIC_SANDPACK_DEBUG` | boolean | `1/true/yes/on`, `0/false/no/off` | `false` | Não | loga a config do Sandpack (`console.info`: bundlerURL, timeout e registries, sem o token) quando `interactive`; valor não reconhecido → `false` | `useEffect` | — | build (NEXT_PUBLIC inline) | `SgPlayground` |
 | `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_URL` | string | URL | — | Condicional (sem ela nenhum registry é criado) | registry npm privado; barras finais removidas | `resolveDefaultNpmRegistriesFromEnv` | habilita as 4 abaixo; prop `npmRegistries` vence | build (NEXT_PUBLIC inline) | `resolveDefaultNpmRegistriesFromEnv` |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_SCOPES` | string CSV | ex. `@seedgrid,@outro` | `@seedgrid` | Não | `enabledScopes` | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_LIMIT_TO_SCOPES` | boolean | idem DEBUG | `true` | Não | `limitToScopes` | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_PROXY_ENABLED` | boolean | idem DEBUG | `false` | Não | `proxyEnabled` | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
-| 🔒 `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_AUTH_TOKEN` | string | token | — | Não | `registryAuthToken` do registry | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_SCOPES` | string CSV | ex. `@seedgrid,@outro` | `@seedgrid` | Não | `enabledScopes` (separa por vírgula, trim, descarta vazios; variável definida como string vazia resulta em lista vazia, não em `@seedgrid`) | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_LIMIT_TO_SCOPES` | boolean | idem DEBUG | `true` | Não | `limitToScopes`; valor não reconhecido → `true` | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_PROXY_ENABLED` | boolean | idem DEBUG | `false` | Não | `proxyEnabled`; valor não reconhecido → `false` | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
+| 🔒 `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_AUTH_TOKEN` | string | token | — | Não | `registryAuthToken` do registry (trim; só incluído se não vazio) | idem | requer `…_URL` | build (NEXT_PUBLIC inline) | idem |
 
 **Risco (Inferência)**: um token em variável `NEXT_PUBLIC_*` fica visível no JavaScript entregue ao navegador. Usar somente com token de leitura restrito.
 

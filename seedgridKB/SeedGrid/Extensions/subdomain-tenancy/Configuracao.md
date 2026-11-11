@@ -116,6 +116,9 @@ Estado em `sg_tenant_migration_state` (master), lock com fencing token e heartbe
 | `seedgrid.subdomain-tenancy.migration.max-concurrency` | `int` | ≥ 1 | `3` (env `…_MIGRATION_MAX_CONCURRENCY`) | Não | Tamanho do pool `tenant-migration-login` e do semáforo; sem vaga devolve "Migration capacity reached" | `TenantMigrationCoordinator` | — | runtime | idem (`Migration#maxConcurrency()`) |
 | `seedgrid.subdomain-tenancy.migration.lock-lease` | `Duration` | ISO-8601 | `PT10M` (env `…_MIGRATION_LOCK_LEASE`) | Não | Validade do lock; heartbeat a cada `lease/3` (mínimo 5 s) | `TenantMigrationCoordinator` | `instance-id` | runtime | Decl.: `@ConfigProperty` (`Duration`), `Migration#lockLease()` (`String`), `MPC` |
 | `seedgrid.subdomain-tenancy.migration.instance-id` | `Optional<String>` | texto | `—` (MPC: `${…_MIGRATION_INSTANCE_ID:}` → vazio = ausente) | Não | Dono do lock; vazio → `instance-<UUID aleatório>` a cada boot | `TenantMigrationCoordinator` | — | runtime | Decl.: `@ConfigProperty` em `TenantMigrationCoordinator`, `Migration#instanceId()`, `MPC` |
+| `seedgrid.subdomain-tenancy.modules.ai-pricing.enabled` | `boolean` | `true`/`false` | `true` | Não | **Só tem efeito com a extension `seedgrid-ai-pricing` no classpath do host (opcional desde a 2026.11.06).** Migra `db/migration/ai-pricing` no master; desligado ou ausente = não migra e as rotas respondem 404 | — | — | runtime | `RT/flyway/Migrations` |
+| `seedgrid.subdomain-tenancy.modules.exchange.enabled` | `boolean` | `true`/`false` | `true` | Não | Idem (só com a extension `seedgrid-exchange` no classpath) para `db/migration/exchange` (master) | — | — | runtime | `RT/flyway/Migrations` |
+| `seedgrid.subdomain-tenancy.modules.business-days.enabled` | `boolean` | `true`/`false` | `true` | Não | **Só com a extension `seedgrid-business-days` no classpath.** Migra `db/migration/business-days` no master **e em cada tenant** (cada um com o seu calendário); ausente = nenhuma migration toca o banco | — | — | runtime | `RT/flyway/Migrations` |
 
 ### 2.6 Bootstrap do admin global (banco master)
 
@@ -188,9 +191,6 @@ As chaves têm efeito via ponte do `MPC` para o mailer nomeado `quarkus.mailer."
 | Propriedade | Padrão no consumo | Efeito aqui | Origem |
 |---|---|---|---|
 | `seedgrid.audit.persistence.strategy` | `—` | Só com `jpa` (case-insensitive) roda `db/migration/audit` no master e nos tenants | `RT/flyway/Migrations#migrateAuditSchema` |
-| `seedgrid.subdomain-tenancy.modules.ai-pricing.enabled` | `true` | **Só tem efeito com a extension `seedgrid-ai-pricing` no classpath do host (opcional desde a 2026.11.06).** Migra `db/migration/ai-pricing` no master; desligado ou ausente = não migra e as rotas respondem 404 | `RT/flyway/Migrations` |
-| `seedgrid.subdomain-tenancy.modules.exchange.enabled` | `true` | Idem (só com a extension `seedgrid-exchange` no classpath) para `db/migration/exchange` (master) | `RT/flyway/Migrations` |
-| `seedgrid.subdomain-tenancy.modules.business-days.enabled` | `true` | **Só com a extension `seedgrid-business-days` no classpath.** Migra `db/migration/business-days` no master **e em cada tenant** (cada um com o seu calendário); ausente = nenhuma migration toca o banco | `RT/flyway/Migrations` |
 | `quarkus.mongodb.database` | `default_db` | Sufixo dos bancos Mongo por tenant no `MongoTenantResolverImpl` | `RT/mongodb/MongoTenantResolverImpl` |
 | `seedgrid.ratelimit.{tenant-signup\|tenant-validate-email\|tenant-resend-email}.{permits\|window\|enabled}` | anotação: 100/1 min, 10/1 min, 5/1 h; `enabled=true` | Overrides do `@SgRateLimit` nos endpoints públicos (resilience) | `RT/controllers/TenantSignupController`; `java/seedgrid-quarkus-ext-resilience/.../SgRateLimit.java` (Javadoc) |
 | `seedgrid.security.frontend.base-url` | (do security) | Base dos links de e-mail; `TenantSecurityLinks` insere `<tenant>.` no host em contexto de tenant | `RT/security/TenantSecurityLinks` (via `SecurityFrontendConfig`) |

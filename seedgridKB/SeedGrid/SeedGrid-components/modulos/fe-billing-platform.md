@@ -2,8 +2,8 @@
 tags: [seedgrid, front, modulo, fe-billing-platform]
 fonte: front/seedgrid-fe-components/packages/modules/seedgrid-fe-billing-platform
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # @seedgrid/fe-billing-platform
@@ -101,8 +101,8 @@ Variáveis de ambiente lidas no scaffold (`server.ts.hbs`) e objeto `billingPlat
 |---|---|---|---|---|---|---|---|---|---|
 | `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | string (env) | nome de cookie | `sg_{{project_slug}}_access_token` (slug substituído pelo CLI) | Não | Nome do cookie do access token usado pela sessão; `trim()`, vazio cai no padrão | `getBillingPlatformServer → createSecurityServer({ cookies.token })` | deve coincidir com o do fe-security (mesma sessão) | runtime server | `scaffold/src/modules/billing-platform/server.ts.hbs → ACCESS_COOKIE_NAME` |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | string (env) | nome de cookie | `sg_{{project_slug}}_refresh_token` | Não | Nome do cookie do refresh token | idem `cookies.refresh` | idem | runtime server | `... → REFRESH_COOKIE_NAME` |
-| `billingPlatformConfig.pagination.defaultPageSize` | number | inteiro | `10` | Não | Página inicial | telas | — | runtime client | `scaffold/src/modules/billing-platform/config.ts → billingPlatformConfig` |
-| `billingPlatformConfig.pagination.pageSizeOptions` | number[] | inteiros | `[10, 20, 50]` | Não | Opções do paginador | telas | — | runtime client | idem |
+| `billingPlatformConfig.pagination.defaultPageSize` | number | inteiro | `10` | Não | Página inicial; definida no config, mas nenhuma tela do scaffold a consome hoje | telas | — | runtime client | `scaffold/src/modules/billing-platform/config.ts → billingPlatformConfig` |
+| `billingPlatformConfig.pagination.pageSizeOptions` | number[] | inteiros | `[10, 20, 50]` | Não | Opções do paginador; definida no config, mas nenhuma tela do scaffold a consome hoje | telas | — | runtime client | idem |
 | `billingPlatformConfig.routes.*` | string / função | rotas | `plans=/platform/plans`, `newPlan=/platform/plans/new`, `trial=/platform/plans/trial`, `plan(id)=/platform/plans/{id}` | Não | Rotas das telas e do menu | menu e navegação | — | runtime client | idem |
 
 O cookie `passwordChangeRequired` é fixo (`sg_{{project_slug}}_password_change_required`, sem env). A base da API vem de `resolvePublicApiBaseUrl` (`@/modules/security/server/public-api-base-url`, scaffold do [[SeedGrid/SeedGrid-components/modulos/fe-security|fe-security]]).

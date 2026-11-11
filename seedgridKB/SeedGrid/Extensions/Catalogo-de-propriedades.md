@@ -20,24 +20,25 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 
 | Plataforma | Extension | Propriedades |
 |---|---|---|
-| Quarkus | ai-pricing | 3 |
+| Quarkus | ai-pricing | 5 |
 | Quarkus | apikeys | 2 |
 | Quarkus | audit | 9 |
 | Quarkus | backup | 46 |
 | Quarkus | billing | 33 |
+| Quarkus | business-days | 5 |
 | Quarkus | cache | 21 |
 | Quarkus | cities | 14 |
 | Quarkus | commons | 5 |
-| Quarkus | exchange | 2 |
-| Quarkus | filemanagement | 32 |
-| Quarkus | login-tenancy | 42 |
+| Quarkus | exchange | 4 |
+| Quarkus | filemanagement | 35 |
+| Quarkus | login-tenancy | 45 |
 | Quarkus | notification | 9 |
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
 | Quarkus | resilience | 15 |
 | Quarkus | security | 149 |
 | Quarkus | security-social | 15 |
-| Quarkus | subdomain-tenancy | 57 |
+| Quarkus | subdomain-tenancy | 60 |
 | Quarkus | user-notifications | 7 |
 | Quarkus | whatsapp | 5 |
 | Rust | apikeys | 2 |
@@ -61,9 +62,10 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-billing-user | 3 |
 | Front | fe-login-tenancy | 2 |
 | Front | fe-playground | 9 |
-| Front | fe-security | 43 |
+| Front | fe-security | 44 |
+| Front | fe-self-enter | 3 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **862** |
+| **Total** | | **884** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -74,6 +76,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.ai-pricing.persistence-unit` | Propriedades | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager de todas as tabelas do ai-pricing (repositories) | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
 | `seedgrid.app.ai-pricing.timezone` | Propriedades | String (ZoneId) | `America/Sao_Paulo` | runtime | Fuso em que o cron do robô (vindo do banco) é interpretado | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
 | `seedgrid.app.ai-pricing.source-url` | Propriedades | String (URL) | `https://developers.openai.com/api/docs/pricing` | runtime | URL usada só quando sg_ai_pricing_config.source_url está nula ou vazia | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+| `seedgrid.ai-pricing.enabled` | Toggle do módulo | — | `true` | — | false desliga a API: as rotas /admin/ai/** respondem 404 (filtro pré-matching, antes da autenticação) e somem do… | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Toggle do módulo | — | `false` | — | true (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco | [[SeedGrid/Extensions/ai-pricing/Configuracao\|ai-pricing/Configuracao]] |
 
 ### apikeys
 
@@ -185,6 +189,16 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.billing.past-due.interval` | Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout | String | `1h` | Runtime | Intervalo do agendador de inadimplência | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.checkout.selection-ttl` | Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout | Duration | `48h` | Runtime | Validade da referência (selectionRef) da escolha de usuários e empresas feita no checkout | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 
+### business-days
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `seedgrid.business-days.enabled` | Propriedades | — | `true` (env `SEEDGRID_BUSINESS_DAYS_ENABLED`) | — | Liga/desliga o módulo: desligado = sem migrations e rotas 404 (e fora do OpenAPI) | [[SeedGrid/Extensions/business-days/Configuracao\|business-days/Configuracao]] |
+| `seedgrid.business-days.persistence-unit` | Propriedades | — | PU default (`Optional<String>`; opcional) | — | PU das tabelas | [[SeedGrid/Extensions/business-days/Configuracao\|business-days/Configuracao]] |
+| `seedgrid.business-days.max-range-days` | Propriedades | — | `36600` (env `SEEDGRID_BUSINESS_DAYS_MAX_RANGE_DAYS`) | — | Teto de dias nas consultas de intervalo | [[SeedGrid/Extensions/business-days/Configuracao\|business-days/Configuracao]] |
+| `seedgrid.business-days.company-required` | Propriedades | — | `false` (o `login-tenancy` liga por padrão) | — | Ciclo 2026.10.22. true exige empresa corrente em toda rota /business-days/**; sem ela, 403 COMPANY_REQUIRED (sem token… | [[SeedGrid/Extensions/business-days/Configuracao\|business-days/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Propriedades | — | `false` | — | Definido pelas tenancy: o runner da extension não age, a tenancy migra cada banco | [[SeedGrid/Extensions/business-days/Configuracao\|business-days/Configuracao]] |
+
 ### cache
 
 | Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
@@ -246,6 +260,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|---|---|---|---|
 | `seedgrid.exchange.persistence-unit` | Propriedades lidas pela extension | Optional\<String\> | — (PU default) | runtime | Escolhe o EntityManager das tabelas sg_currencies e sg_currency_exchange_rates | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
 | `seedgrid.app.business-timezone` | Propriedades lidas pela extension | String (ZoneId) | `America/Sao_Paulo` | Configuração do commons]]. | Fuso usado para apresentar o horário do próximo retry nos avisos (exchange.rate-fetch-failed) | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
+| `seedgrid.exchange.enabled` | Toggle do módulo | — | `true` | — | false: sem migrations, sem scheduler e as rotas /admin/exchange-rate, /admin/currencies e… | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Toggle do módulo | — | `false` | — | true (definido pelas tenancy): o runner da extension não age; a tenancy migra cada banco | [[SeedGrid/Extensions/exchange/Configuracao\|exchange/Configuracao]] |
 
 ### filemanagement
 
@@ -283,6 +299,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `dropbox` → `app-key`, `app-secret` 🔒 | dropbox | `String` | — | — | App do produto no console do Dropbox; o token do usuário vem da StorageCredentialSource | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `dropbox` → `root-folder-path` | dropbox | `String` | — | — | Pasta raiz; vira o bucket da StorageKey | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 | `dropbox` → `api-url`, `content-url`, `token-url` | dropbox | `String` | endpoints oficiais | — | Proxy e teste | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `seedgrid.filemanagement.registry-table.enabled` | Anexos (tabela sg_attachments) | — | `false` | — | Liga o registro de anexos | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `seedgrid.migrations.host-managed` | Anexos (tabela sg_attachments) | — | `false` | — | Quando true, o host migra o banco e o runner da lib não age (use nas tenancies) | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
+| `owner-key` (chave do mapa de qualquer backend) | Anexos (tabela sg_attachments) | — | vazio | — | Dono do anexo, opaco; gravado em sg_attachments.owner_key | [[SeedGrid/Extensions/filemanagement/Configuracao\|filemanagement/Configuracao]] |
 
 ### login-tenancy
 
@@ -327,6 +346,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.ratelimit.signup-resend-email.enabled` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `boolean` | `true` | Runtime | Limite de POST /public/signup/resend-email | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.ratelimit.signup-resend-email.permits` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `long` | `5` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.ratelimit.signup-resend-email.window` | Rate limit dos endpoints de signup (seedgrid.ratelimit.<configKey>.*, lido pelo seedgrid-resilience) | `Duration` | `PT1H` | Runtime | idem | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.billing.api.enabled` | Defaults que a extension define para outros módulos SeedGrid (sobrescrevíveis) | — | — | — | Endpoints do billing somem com o módulo desligado | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.security.account.assignable-permission-audiences` | Defaults que a extension define para outros módulos SeedGrid (sobrescrevíveis) | — | — | — | Perfis de conta-cliente recebem permissões de audience client (e sem audience) | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
+| `seedgrid.filemanagement.filesystem.base-path` | Defaults que a extension define para outros módulos SeedGrid (sobrescrevíveis) | — | — | — | Storage local padrão | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.login-tenancy.signup.customer-type` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22) | enum | `B2B` | Runtime | Quem pode se cadastrar; fora do tipo: 403 SIGNUP_TYPE_NOT_ALLOWED | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.login-tenancy.signup.personal-document-required` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22) | boolean | `false` | Runtime | true: POST /public/signup/personal sem CPF responde 400 PERSONAL_DOCUMENT_REQUIRED | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
 | `seedgrid.login-tenancy.modules.business-days.company-required` | Cadastro B2B, B2C e calendário (ciclo 2026.10.22) | boolean | `true` | Runtime | Alimenta seedgrid.business-days.company-required: ligado, sem empresa corrente toda rota /business-days/** responde… | [[SeedGrid/Extensions/login-tenancy/Configuracao\|login-tenancy/Configuracao]] |
@@ -606,6 +628,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.migration.max-concurrency` | Orquestração de migrations por tenant | `int` | `3` (env `…_MIGRATION_MAX_CONCURRENCY`) | runtime | Tamanho do pool tenant-migration-login e do semáforo; sem vaga devolve "Migration capacity reached" | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.migration.lock-lease` | Orquestração de migrations por tenant | `Duration` | `PT10M` (env `…_MIGRATION_LOCK_LEASE`) | runtime | Validade do lock; heartbeat a cada lease/3 (mínimo 5 s) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.migration.instance-id` | Orquestração de migrations por tenant | `Optional<String>` | `—` (MPC: `${…_MIGRATION_INSTANCE_ID:}` → vazio = ausente) | runtime | Dono do lock; vazio → instance-<UUID aleatório> a cada boot | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.modules.ai-pricing.enabled` | Orquestração de migrations por tenant | `boolean` | `true` | runtime | Só tem efeito com a extension seedgrid-ai-pricing no classpath do host (opcional desde a 2026.11.06) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.modules.exchange.enabled` | Orquestração de migrations por tenant | `boolean` | `true` | runtime | Idem (só com a extension seedgrid-exchange no classpath) para db/migration/exchange (master) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
+| `seedgrid.subdomain-tenancy.modules.business-days.enabled` | Orquestração de migrations por tenant | `boolean` | `true` | runtime | Só com a extension seedgrid-business-days no classpath | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.admin-user.name` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_NAME`) | runtime | Nome do admin global | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.admin-user.email` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_EMAIL`) | runtime | Normalizado (trim().toLowerCase()) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | 🔒 `seedgrid.subdomain-tenancy.admin-user.initial-password` | Bootstrap do admin global (banco master) | `Optional<String>` | MPC: vazio (env `SEEDGRID_SUBDOMAIN_TENANCY_ADMIN_INITIAL_PASSWORD`) | runtime | Vazia → senha gerada por PasswordGenerator e enviada por e-mail de boas-vindas (se o e-mail falhar, o admin fica sem a… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
@@ -1049,7 +1074,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|---|---|---|---|
 | `backupConfig.apiBaseUrl` | Configuração | string | `"/api"` no browser; `appEnvironment.hosts.apiOrigin` no server | runtime client / runtime server | Base do createApiClient do scaffold | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
 | `backupConfig.pagination.defaultPageSize` | Configuração | number | `10` | runtime client | Tamanho de página inicial | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
-| `backupConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
+| `backupConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador; definida no config, mas nenhuma tela do scaffold a consome hoje (o paginador da lista usa só… | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
 | `backupConfig.polling.intervalMs` | Configuração | number | `5000` | runtime client | Intervalo de polling dos jobs em andamento | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
 | `backupConfig.routes.exports` | Configuração | string | `"/backup/exports"` | runtime client | Rota da lista / menu | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
 | `backupConfig.routes.newExport` | Configuração | string | `"/backup/exports/new"` | runtime client | Rota de criação | [[SeedGrid/SeedGrid-components/modulos/fe-backup\|modulos/fe-backup]] |
@@ -1060,8 +1085,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|---|---|---|---|
 | `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_access_token` (slug substituído pelo CLI) | runtime server | Nome do cookie do access token usado pela sessão; trim(), vazio cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Configuração | string (env) | `sg_{{project_slug}}_refresh_token` | runtime server | Nome do cookie do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
-| `billingPlatformConfig.pagination.defaultPageSize` | Configuração | number | `10` | runtime client | Página inicial | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
-| `billingPlatformConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `billingPlatformConfig.pagination.defaultPageSize` | Configuração | number | `10` | runtime client | Página inicial; definida no config, mas nenhuma tela do scaffold a consome hoje | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
+| `billingPlatformConfig.pagination.pageSizeOptions` | Configuração | number[] | `[10, 20, 50]` | runtime client | Opções do paginador; definida no config, mas nenhuma tela do scaffold a consome hoje | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
 | `billingPlatformConfig.routes.*` | Configuração | string / função | plans=/platform/plans, newPlan=/platform/plans/new, trial=/platform/plans/trial… | runtime client | Rotas das telas e do menu | [[SeedGrid/SeedGrid-components/modulos/fe-billing-platform\|modulos/fe-billing-platform]] |
 
 ### fe-billing-user
@@ -1083,15 +1108,15 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 
 | Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
 |---|---|---|---|---|---|---|
-| `NEXT_PUBLIC_SANDPACK_SEEDGRID_DEPENDENCY` | Configuração (variáveis de ambiente) | string | `latest` | build (NEXT_PUBLIC inline) | versão do @seedgrid/fe-components no sandbox | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_SEEDGRID_DEPENDENCY` | Configuração (variáveis de ambiente) | string | `latest` | build (NEXT_PUBLIC inline) | versão do @seedgrid/fe-components no sandbox; resolvido com ?? | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
 | `NEXT_PUBLIC_SANDPACK_BUNDLER_URL` | Configuração (variáveis de ambiente) | string | `https://sandpack.seedgrid.com.br` | build (NEXT_PUBLIC inline) | URL do bundler; inválida → padrão; barra final removida | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| `NEXT_PUBLIC_SANDPACK_BUNDLER_TIMEOUT_MS` | Configuração (variáveis de ambiente) | número | `60000` | build (NEXT_PUBLIC inline) | timeout do bundler; inválido/≤0 → padrão | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| `NEXT_PUBLIC_SANDPACK_DEBUG` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | loga a config do Sandpack (console.info) quando interactive | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_BUNDLER_TIMEOUT_MS` | Configuração (variáveis de ambiente) | número | `60000` | build (NEXT_PUBLIC inline) | timeout do bundler em ms (convertido com Number, arredondado com Math.round); inválido/≤0/vazio → padrão | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_DEBUG` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | loga a config do Sandpack (console.info: bundlerURL, timeout e registries, sem o token) quando interactive; valor não… | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
 | `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_URL` | Configuração (variáveis de ambiente) | string | — | build (NEXT_PUBLIC inline) | registry npm privado; barras finais removidas | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_SCOPES` | Configuração (variáveis de ambiente) | string CSV | `@seedgrid` | build (NEXT_PUBLIC inline) | enabledScopes | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_LIMIT_TO_SCOPES` | Configuração (variáveis de ambiente) | boolean | `true` | build (NEXT_PUBLIC inline) | limitToScopes | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_PROXY_ENABLED` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | proxyEnabled | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
-| 🔒 `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_AUTH_TOKEN` | Configuração (variáveis de ambiente) | string | — | build (NEXT_PUBLIC inline) | registryAuthToken do registry | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_SCOPES` | Configuração (variáveis de ambiente) | string CSV | `@seedgrid` | build (NEXT_PUBLIC inline) | enabledScopes (separa por vírgula, trim, descarta vazios; variável definida como string vazia resulta em lista vazia… | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_LIMIT_TO_SCOPES` | Configuração (variáveis de ambiente) | boolean | `true` | build (NEXT_PUBLIC inline) | limitToScopes; valor não reconhecido → true | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_PROXY_ENABLED` | Configuração (variáveis de ambiente) | boolean | `false` | build (NEXT_PUBLIC inline) | proxyEnabled; valor não reconhecido → false | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
+| 🔒 `NEXT_PUBLIC_SANDPACK_NPM_REGISTRY_AUTH_TOKEN` | Configuração (variáveis de ambiente) | string | — | build (NEXT_PUBLIC inline) | registryAuthToken do registry (trim; só incluído se não vazio) | [[SeedGrid/SeedGrid-components/pacotes/fe-playground\|pacotes/fe-playground]] |
 
 ### fe-security
 
@@ -1101,6 +1126,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `SEEDGRID_SECURITY_ACCESS_COOKIE_NAME` | Variáveis de ambiente | string | `sg_{{project_slug}}_access_token` | runtime server | Nome do cookie httpOnly do access token (trim; vazio cai no padrão) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_NAME` | Variáveis de ambiente | string | `sg_{{project_slug}}_refresh_token` | runtime server | Nome do cookie httpOnly do refresh token | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `SEEDGRID_SECURITY_REFRESH_COOKIE_MAX_AGE_SECONDS` | Variáveis de ambiente | string → inteiro | `2592000` (30 dias) | runtime server | maxAge do cookie de refresh; inválido/≤0 cai no padrão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `SEEDGRID_REPORT_API_TOKEN` | Variáveis de ambiente | string | — | não lida pelo pacote (declaração do manifesto; leitura, se houver, é do app: runtime server) | Declarada em env do manifesto do módulo; nenhum código da lib nem do scaffold a lê (a lib recebe o valor só via… | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `NODE_ENV` | Variáveis de ambiente | string | — | runtime server (Inferência: o Next pode inlinear NODE_ENV no build) | secure dos cookies = NODE_ENV === "production" | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `apiBaseUrl` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory), resolvido em runtime server | Prefixo de todas as chamadas | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `cookies.token` | SecurityServerConfig (lib — createSecurityServer) | `string` | — | código (factory) | Lê o access token → Authorization: Bearer | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
@@ -1121,25 +1147,33 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `storage.pendingTwoFactorKey` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `` `${scope}:security:pending-2fa` `` | runtime client | Chave do 2FA pendente (tempToken) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `features.selfEnterEnabled` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | boolean | `false` | build (NEXT_PUBLIC inline) | Ver NEXT_PUBLIC_SECURITY_SELF_ENTER_ENABLED | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.dashboard` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/` | código (scaffold) | Destino pós-login padrão | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
-| `routes.profile` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/profile` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.profile` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/profile` | código (scaffold) | Destino do atalho de perfil | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.login` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/login` | código (scaffold) | Redirect do RouteGuard | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
-| `routes.welcome` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/welcome` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
-| `routes.forgotPassword` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.welcome` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/welcome` | código (scaffold) | Nenhum consumidor no scaffold (grep) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.forgotPassword` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password` | código (scaffold) | Rota pública (não exige sessão) | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.forgotPasswordConfirm` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password/confirm` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.forgotPasswordSuccess` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/forgot-password/success` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
-| `routes.verifyTwoFactor` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/2fa/verify` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.verifyTwoFactor` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/2fa/verify` | código (scaffold) | Rota pública; destino após login que exige 2FA | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.users` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/users` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.companies` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/companies` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.roles` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/roles` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.twoFactor` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/2fa` | código (scaffold) | — | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.apiKeys` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/security/api-keys` | código (scaffold) | Página vem de fe-apikeys | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.changePassword` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/users/change-password` | código (scaffold) | Redirect forçado quando changePasswordRequired | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
-| `routes.selfEnterPublic` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/self-enter` | código (scaffold) | Página vem de fe-self-enter | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+| `routes.selfEnterPublic` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/auth/self-enter` | código (scaffold) | Página vem de fe-self-enter; tratada como rota pública no AuthProvider e linkada na tela de login | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.selfEnterApproval` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/self-enter/requests/to-approve` | código (scaffold) | idem | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `routes.selfEnterInvitations` | securityConfig (scaffold — scaffold/src/modules/security/config.ts) | string | `/self-enter/invitations` | código (scaffold) | idem | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `project_slug` | Variáveis de template (CLI) | string | não confirmado (definido pelo CLI) | geração (CLI/.hbs) | Compõe nomes padrão de cookie | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `security_api_keys_enabled` | Variáveis de template (CLI) | boolean | não confirmado | geração (CLI/.hbs) | Inclui menu/atalhos de API keys | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
 | `security_self_enter_enabled` | Variáveis de template (CLI) | boolean | não confirmado | geração (CLI/.hbs) | Inclui menu de self-enter | [[SeedGrid/SeedGrid-components/modulos/fe-security\|modulos/fe-security]] |
+
+### fe-self-enter
+
+| Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
+|---|---|---|---|---|---|---|
+| `configKey` (manifesto) | Configuração | string | `"self-enter"` | geração (CLI) | Chave do módulo na configuração do CLI; requires: ["security"] | [[SeedGrid/SeedGrid-components/modulos/fe-self-enter\|modulos/fe-self-enter]] |
+| `securityConfig.features.selfEnterEnabled` (consumida) | Configuração | boolean | `false` | build (NEXT_PUBLIC inline) | Quando false e a tela não está em modo convite, a tela pública auth/self-enter bloqueia o pedido de acesso | [[SeedGrid/SeedGrid-components/modulos/fe-self-enter\|modulos/fe-self-enter]] |
+| `securityConfig.pagination.defaultPageSize` (consumida) | Configuração | number | `10` | código (scaffold) | Tamanho de página inicial das telas invitations e requests/to-approve | [[SeedGrid/SeedGrid-components/modulos/fe-self-enter\|modulos/fe-self-enter]] |
 
 ### fe-subdomain-tenancy
 

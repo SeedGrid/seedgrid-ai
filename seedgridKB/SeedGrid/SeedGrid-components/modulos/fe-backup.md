@@ -2,8 +2,8 @@
 tags: [seedgrid, front, modulo, fe-backup]
 fonte: front/seedgrid-fe-components/packages/modules/seedgrid-fe-backup
 branch: main
-commit: ad30fc11de
-analisado-em: 2026-10-14
+commit: e9ca315
+analisado-em: 2026-11-11
 ---
 
 # @seedgrid/fe-backup
@@ -95,7 +95,7 @@ Nenhuma variável de ambiente lida diretamente (verificado com `grep process.env
 |---|---|---|---|---|---|---|---|---|---|
 | `backupConfig.apiBaseUrl` | string | URL ou `/api` | `"/api"` no browser; `appEnvironment.hosts.apiOrigin` no server | Não (calculado) | Base do `createApiClient` do scaffold | `backup-api.ts → privateClient` | depende de `@/config/environment` (app) | runtime client / runtime server | `scaffold/src/modules/backup/config.ts → resolveApiBaseUrl` |
 | `backupConfig.pagination.defaultPageSize` | number | inteiro | `10` | Não | Tamanho de página inicial | telas de lista | — | runtime client | `scaffold/.../config.ts → backupConfig` |
-| `backupConfig.pagination.pageSizeOptions` | number[] | inteiros | `[10, 20, 50]` | Não | Opções do paginador | telas de lista | — | runtime client | idem |
+| `backupConfig.pagination.pageSizeOptions` | number[] | inteiros | `[10, 20, 50]` | Não | Opções do paginador; definida no config, mas nenhuma tela do scaffold a consome hoje (o paginador da lista usa só `defaultPageSize`) | telas de lista | — | runtime client | idem |
 | `backupConfig.polling.intervalMs` | number | ms | `5000` | Não | Intervalo de polling dos jobs em andamento | `(list)/page.tsx` | `isExportInProgress` | runtime client | idem |
 | `backupConfig.routes.exports` | string | rota | `"/backup/exports"` | Não | Rota da lista / menu | `useBackupAppShellSections` | — | runtime client | idem |
 | `backupConfig.routes.newExport` | string | rota | `"/backup/exports/new"` | Não | Rota de criação | telas | — | runtime client | idem |
