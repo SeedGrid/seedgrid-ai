@@ -536,3 +536,23 @@ import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification,
 ### Eventos, ref e estilo
 
 Sem `ref` e sem `children`. Eventos: `onNotification`, `onNotificationDelete`, `onOpen`, `onPollingTick`. Textos em i18n (pt-BR, pt-PT, en-US, es, fr).
+
+## Cuidados de uso
+
+Avisos práticos recuperados das notas antigas de exemplos e conferidos contra o código do pacote `@seedgrid/fe-components` (`packages/seedgrid-fe-components/src/commons`, `notifications`).
+
+- **`SgAvatarGroup.size` vale só para o contador `+N`.** O grupo não repassa `size` aos filhos; cada `SgAvatar` deve receber o próprio `size`. O contador usa `moreSeverity` (padrão `neutral`) e `moreLabel`. **Confirmado** (`SgAvatar.tsx`: `SgAvatarGroup` só passa `size`, `shape`, `severity` e `bordered` ao avatar `+N`).
+- **`SgBadge` com `max` mostra `${max}+`.** Valor numérico acima de `max` vira `99+` (com `max={99}`); `0` some a menos que `showZero`. **Confirmado** (`SgBadge.tsx`, `getDisplayValue`).
+- **`SgBadge` `dot` com `pulse`.** `dot` renderiza só o ponto (sem valor) e `pulse` anima esse ponto. **Confirmado** (`SgBadge.tsx`, ramo `if (dot)`).
+- **Remoção do `SgBadge`.** Com `autoRemove` o próprio badge se oculta ao clicar em remover e ainda chama `onRemove`; sem `autoRemove`, a visibilidade é responsabilidade do pai em `onRemove`. **Confirmado** (`SgBadge.tsx`: `setAutoRemoved(true)` seguido de `onRemove?.()`).
+- **`toast.dismiss()` sem id fecha todos os toasts; com id fecha só aquele.** **Confirmado** (`SgToast.ts`, `dismissSgToast`).
+- **Opções por chamada de `toast.*`.** `description`, `duration`, `action`, `closeButton`, `className`, `style` e `id` são aceitas em cada chamada; reusar o `id` atualiza o mesmo toast em vez de criar outro. **Confirmado** (`SgToast.ts`, `SgToastOptions` e `upsertToast`).
+- **`toast.promise` relança o erro.** O toast de loading é trocado por sucesso/erro com o mesmo id, mas a rejeição continua propagando; o chamador precisa de `try/catch`. Sem mensagem de `success`/`error` o toast de loading é apenas descartado. **Confirmado** (`SgToast.ts`, `baseToast.promise`: `throw error`).
+- **`sgWhistle.promise` também relança o erro**, com o mesmo comportamento (loading trocado por `success`/`error`, descartado se faltar o estado). **Confirmado** (`SgWhistle.ts`, `promise`).
+- **`subscribeSgToasts` devolve a função de cancelamento** e já chama o listener uma vez com a lista atual; retorne-a no `useEffect` para limpar. **Confirmado** (`SgToast.ts`).
+- **`SgToaster` cede a vez a um `SgToastHost`.** Se existir qualquer `SgToastHost` montado, o `SgToaster` avulso não renderiza; entre vários hosts, o último montado é o ativo. **Confirmado** (`SgToaster.tsx`: `if (hostPresent)`; `sgToastHostRegistry.ts`: `getActiveHostId` devolve o topo da pilha).
+- **`SgWhistleHost` segue a mesma regra do toast.** O `SgWhistler` avulso some quando há host, e o último host montado renderiza. **Confirmado** (`SgWhistler.tsx`: `if (hostPresent) return null`; `sgWhistleHostRegistry.ts`).
+- **`SgWhistler` fica no fluxo da página** (`div` em coluna, sem `position: fixed`), ao contrário do `SgToaster`, que é `fixed`. Coloque-o dentro do container onde o aviso deve aparecer. **Confirmado** (`SgWhistler.tsx` x `SgToaster.tsx`).
+- **`sgWhistle.loading` devolve o id** e `sgWhistle.update(id, opções)` reaproveita o mesmo aviso; se o id não existir mais, `update` não cria outro. **Confirmado** (`SgWhistle.ts`, `update`: retorna `id` quando o aviso não é encontrado).
+- **`sgWhistle.custom` aceita JSX ou função `(id) => JSX`**, e `customColors` (por severidade) é prop do `SgWhistler`/`SgWhistleHost` (`SgWhistleHostProps = SgWhistlerProps`). **Confirmado** (`SgWhistle.ts`, `SgWhistler.tsx`, `SgWhistleHost.tsx`).
+- **`SgNotificationBell`: `apiUrl` e `fetcher`.** O padrão é `apiUrl="/api/user-notifications"` com `fetch` global; a demonstração do showcase injeta um `fetcher` e um Pulse simulados (`samples/demo-fetcher.ts`), sem token nem chave. Na aplicação real, não passe o `fetcher` de demonstração; use o `apiUrl` do backend. **Confirmado** (`SgNotificationBell.tsx`: `DEFAULT_API_URL`, `fetcher ?? fetch`).

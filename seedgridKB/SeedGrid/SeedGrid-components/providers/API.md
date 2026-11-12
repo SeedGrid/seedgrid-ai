@@ -179,3 +179,13 @@ Contexto interno `SgRealtimeContext` (`{ status, addListener }`, não exportado)
 ### Acessibilidade
 
 Não se aplica (não renderiza DOM).
+
+## Cuidados de uso
+
+- **Sem provider ou namespace vazio, nada é gravado:** o namespace padrão é a string vazia e `buildSgPersistenceKey` devolve `null` nesse caso; `useSgPersistence` então não carrega, não grava nem limpa (`load` devolve `null`). Para persistir de fato, monte o `SgEnvironmentProvider` com um `namespaceProvider` cuja `getNamespace()` devolva um valor não vazio. **Confirmado** (`src/environment/SgEnvironmentProvider.tsx`, `defaultNamespaceProvider`, `useSgPersistence`; `src/environment/persistence.ts`, `buildSgPersistenceKey`).
+- **Formato da chave final:** `sg:<namespace>:<scope>:<baseKey>` (sem `scope`, `sg:<namespace>:<baseKey>`). Com `namespace = "u:123"`, `scope = "app:crm"` e `baseKey = "fab:theme"`, a chave é `sg:u:123:app:crm:fab:theme`. **Confirmado** (`persistence.ts`; exemplo `providers/sg-environment-provider/samples/namespace-customizado.tsx.sample`).
+- **`useSgPersistentState` sem provider:** usa o `localStorage` direto com a `baseKey` pura (por exemplo `app:counter`), sem prefixo `sg:`. Com provider, a chave passa a seguir o formato acima e a estratégia do provider. `hydrated` indica que o valor salvo já foi carregado; só depois disso as mudanças são gravadas. **Confirmado** (`SgEnvironmentProvider.tsx`, `useSgPersistentState`).
+- **`serialize` só vale com provider:** sem provider o valor vai por `JSON.stringify` (um `Date` vira texto ISO), e `serialize` não é aplicado; `deserialize` é aplicado nos dois casos. **Confirmado** (`useSgPersistentState`: `persistence.save(baseKey, serialize(value))` só no ramo `hasProvider`; `writeLocalPersistentState` em `persistent-state.ts`).
+- **Modos da estratégia composta:** `strict` usa só a primária; `fallback` tenta a primária e, se ela lançar erro, usa a secundária; `mirror` lê a primária (cai na secundária se falhar ou vier vazia) e grava nas duas. Para espelhar em API e `localStorage`, use `mode: "mirror"` na `createCompositePersistenceStrategy` e no `persistence` do provider. **Confirmado** (`persistence.ts`, `createCompositePersistenceStrategy`).
+- **Imports nos exemplos REST do showcase:** os exemplos `rest-por-usuario` e `hybrid-local-rest` importam só `SgEnvironmentProvider`, mas usam `createApiPersistenceStrategy`, `createLocalStorageStrategy` e `createCompositePersistenceStrategy`; ao copiar, importe essas três funções de `@seedgrid/fe-components`. **Confirmado** (cabeçalho dos dois `.tsx.sample` em `apps/showcase/src/app/components/providers/sg-environment-provider/samples/`).
+

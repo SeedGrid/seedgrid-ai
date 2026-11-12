@@ -115,3 +115,11 @@ Metadados de IA: `src/i18n/SgComponentsI18nProvider.meta.ts` e `useComponentsI18
 | `generated-props.json` | `{ [exportName]: [{name,type,required,description}] }` gerado por `scripts/extract-props.mjs` (~186 KB). |
 
 O manifesto final `dist/ai/seedgrid-components.manifest.json` é servido pelo showcase em `GET /api/ai-manifest` e consumido pelo `seedgrid-components-mcp`.
+
+## Cuidados de uso
+
+- **Next.js App Router: use `suppressHydrationWarning` no `<html>`** quando o tema for `auto` ou persistido, porque o modo é resolvido no cliente. **Confirmado** em `apps/showcase/src/app/layout.tsx` (comentário e `<html lang="pt-BR" suppressHydrationWarning>`).
+- **i18n: `locale="pt-BR"` já carrega o catálogo embutido; `messages` só sobrescreve chaves.** Vale para `SgComponentsI18nProvider` e para `setComponentsI18n`, que mesclam `getBuiltInComponentsMessages(locale)` com as mensagens passadas. **Confirmado** em `src/i18n/index.ts`.
+- **Domínios de e-mail bloqueados em runtime: não há setter exportado.** O app atribui `globalThis.__seedgridBlockedEmailDomains = [...]`; `isBlockedEmailDomain` une a lista padrão, a global e a lista `extra` do parâmetro. **Confirmado** em `src/validators.ts` (`getRuntimeBlockedEmailDomains`, `getBlockedEmailDomains`).
+- **Estilos:** o CSS pré-compilado fica em `@seedgrid/fe-components/style.css` (`exports["./style.css"]`). **Confirmado** em `packages/seedgrid-fe-components/package.json` e no README do pacote.
+- **Manifesto de IA:** `GET /api/ai-manifest` devolve `dist/ai/seedgrid-components.manifest.json` com `cache-control: no-store` e responde 404 `{"error":"AI manifest not available"}` se o arquivo não existir (gere com o build do pacote). **Confirmado** em `apps/showcase/src/app/api/ai-manifest/route.ts`.

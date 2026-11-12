@@ -537,3 +537,12 @@ Nenhum `role`/`aria-*` próprio; depende dos dígitos internos. Confirmado.
 `SG_STRING_ANIMATOR_DEFAULT_CHARSET: string[]` — espaço, `0-9`, `A-Z`, `a-z` e `. ! ? - + # @ $ % & / * ( )`. Se `emptyChar` não estiver no `charset`, é inserido no início.
 
 Lacuna: o JSDoc de `SgStringAnimator` mostra `style="neon"`/`style="fade"` nos `@example`, mas a prop real é `stringAnimatorStyle` (não existe prop `style` no tipo).
+
+## Cuidados de uso
+
+Avisos práticos recuperados das notas antigas de exemplos e conferidos contra o código atual (`packages/seedgrid-fe-components/src/gadgets/clock`).
+
+- **Os temas embutidos precisam ser registrados.** `sgClockThemesBuiltIn` só passa a existir para o `SgClock`, o `SgClockThemePicker` e o resolvedor depois de `registerThemes(sgClockThemesBuiltIn)` (o showcase faz isso em `sg-clock-showcase-client.tsx`) ou de serem passados em `SgClockThemeProvider value.themes`. Sem registro, `themeId="seedgrid"` não resolve. **Confirmado** (`themes/registry.ts` começa com mapa vazio; `SgClock.tsx` linhas 185-187).
+- **Sem tema resolvido o relógio analógico não desenha o mostrador.** `themeId` tem padrão `"classic"`, que também precisa estar registrado; para dispensar registro e provider, passe o objeto `theme` direto. **Confirmado** (`SgClock.tsx`: `theme ?? resolver... ?? getTheme(themeId) ?? getTheme("classic")`, e `ThemeLayer` só entra se `themeObj` existir).
+- **`SgClockThemePicker` lista os temas do `SgClockThemeProvider`.** A lista vem de `resolver.list()`, que mescla os temas globais registrados com os locais do provider. **Confirmado** (`themes/provider.tsx`, `createThemeResolver().list`).
+- **`resolve("classic")` pode devolver `null`.** Se nenhum tema foi registrado (`registerThemes`) nem passado em `value.themes`, o resolvedor em modo `fallback` não tem o que devolver, inclusive para o próprio id de fallback; em modo `strict`, qualquer id desconhecido devolve `null`. **Confirmado** (`themes/provider.tsx`, `resolve`).

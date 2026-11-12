@@ -123,6 +123,13 @@ O `lang` do documento salvo é o `locale` do i18n. **Confirmado**.
 
 **Confirmado**.
 
+## Cuidados de uso
+
+- **Peers obrigatórios:** instale `react-hook-form`, `lucide-react` e todos os pacotes `@tiptap/*` usados (`core`, `pm`, `react`, `starter-kit` e as extensões `color`, `font-family`, `highlight`, `image`, `link`, `subscript`, `superscript`, `text-align`, `text-style`, `underline`), na faixa `^2.9.1` para o TipTap. **Confirmado** (`packages/seedgrid-fe-components/package.json`, `peerDependencies`).
+- **`onSave` entrega um arquivo pronto para upload:** o primeiro argumento é um `File` `text/html;charset=utf-8` e `meta.htmlDocument`, `meta.contentHtml` e `meta.cssText` trazem o documento, o corpo e o CSS como string; o envio ao servidor é por conta de quem usa. **Confirmado** (`src/inputs/SgTextEditor.tsx`, tipo `SgTextEditorSaveMeta` e `doSave`).
+- **react-hook-form só pelo caminho `control` + `name`:** o `onChangeHtml` próprio é substituído por `field.onChange` e `valueHtml` vem de `field.value`. Sem `control` e `name`, o editor se comporta como o modo comum. **Confirmado** (`SgTextEditor.tsx`: `if (control && name) { <Controller ...> }`).
+- **Desabilitar usa `enabled={false}`:** deixa o editor não editável e a toolbar desabilitada; `showCssEditor={false}` oculta o editor de CSS. **Confirmado** (`SgTextEditor.tsx`: `editable: enabled`).
+
 ## Fontes
 
 - `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgTextEditor.tsx` (`SgTextEditorBase`, `SgTextEditor`, `ToolbarButton`, `TextStyleWithSize`)

@@ -713,6 +713,12 @@ Fonte: `src/inputs/SgStepperInput.tsx`. Usa `<input type="number">` e dois botõ
   - O `{...inputProps}` espalhado por último sobrescreve o `onChange` interno do `<input>`.
 - **Acessibilidade:** botões com `aria-label` i18n `components.inputs.stepper.increase` e `components.inputs.stepper.decrease`; `aria-invalid` no input.
 
+## Cuidados de uso
+
+- **`SgAutocomplete`: `onSelect` entrega o item mapeado, não o objeto de origem.** O argumento é o `SgAutocompleteItem` devolvido por `mapItem` (`id`, `label`, `value?`, `group?`, `enabled?`, `data?`). Para ter o objeto completo no `onSelect`, ponha-o em `data` dentro do `mapItem`. O valor do formulário continua sendo o texto (label ou retorno de `formatSelection`). **Confirmado** em `src/inputs/SgAutocomplete.tsx` (`selectItem`: `onChange?.(selection)` e `onSelect?.(item)`).
+- **`SgCombobox`: `value`/`onValueChange` usam o `id` do item; `onSelect` entrega o objeto cru `T`.** Com lista local, controle o `id` e guarde o objeto à parte, vindo do `onSelect`. **Confirmado** em `src/inputs/SgCombobox.tsx` (`selectIndex`: `setSelectedValue(entry.item.id)` e `onSelect?.(entry.raw)`).
+- **`SgPeriodSelector` e `SgYearPartSelector` entregam o recorte já resolvido** (`startDate` à meia-noite local e `endDate` no último instante do dia). A mesma lógica serve sem componente: `resolvePeriod(preset, ref?, { locale })` e `resolveYearPart({ year, kind, part }, locale?)`, com `PeriodPreset` e `YearPartKind`, todos exportados do barrel; `locale` padrão `"pt-BR"`. `resolveYearPart` lança `RangeError` para ano não inteiro ou parte inválida. **Confirmado** em `src/inputs/SgPeriodSelector.tsx`, `src/inputs/yearPart.ts` e `src/index.ts`.
+
 ## Fontes
 
 - `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/{SgAutocomplete,SgCombobox,SgCheckboxGroup,SgRadioGroup,SgMultiSelect,SgMultiSelectChips,SgMultiSelectDropdown,SgOrderList,SgPickList,SgPeriodSelector,SgYearPartSelector,SgToggleSwitch,SgRating,SgSlider,SgStepperInput}.tsx`, `useSgMultiSelect.ts`, `yearPart.ts`

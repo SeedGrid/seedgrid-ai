@@ -974,6 +974,16 @@ Fonte: `src/inputs/SgInputOTP.tsx`. Usa um `<input>` por slot e um `<input type=
 
 **Confirmado**.
 
+## Cuidados de uso
+
+- **Idioma padrão:** sem `SgComponentsI18nProvider`, as mensagens de validação saem em `en-US`, o padrão do i18n global; para português, envolva a aplicação com o provider em `pt-BR`. **Confirmado** (`src/i18n/index.ts`, `DEFAULT_I18N.locale = "en-US"`; `SgComponentsI18nProvider.meta.ts`).
+- **`SgInputBirthDate`, `minAge`/`maxAge`:** informe `minAge` e/ou `maxAge`. Sem nenhum dos dois, qualquer data preenchida gera a mensagem de erro de configuração (`components.validators.birthdate.configMissing`); `minAge > maxAge` também gera erro de configuração. Campo vazio e não obrigatório não valida. **Confirmado** (`src/validators.ts`, `validateBirthDate`; `src/inputs/SgInputBirthDate.tsx`, `runValidation`).
+- **`SgInputCNPJ`, consulta pública:** com `validateWithPublicaCnpj`, o componente faz uma chamada HTTP real a `https://publica.cnpj.ws/cnpj/<14 dígitos>` (resposta não 2xx conta como "não encontrado"). A consulta só ocorre depois que o dígito verificador é válido e quando o CNPJ não é alfanumérico, e o resultado do último CNPJ consultado fica em cache no componente. Em testes, injete `publicaCnpjFetch={async () => ({ ok: true })}` (qualquer retorno verdadeiro vale como "encontrado"; `null` vale como "não encontrado"). Erro de rede ou exceção do fetch chama `onPublicaCnpjError` e não bloqueia a validação. **Confirmado** (`src/inputs/SgInputCNPJ.tsx`; `src/inputs/publicaCnpj.ts`, `defaultPublicaCnpjFetch`).
+- **`SgInputPassword`, `maxLength` padrão:** o campo limita a entrada a 15 caracteres quando `maxLength` não é informado. Em política de senha mais longa (por exemplo `minSize` acima de 15), informe `maxLength` explicitamente. **Confirmado** (`src/inputs/SgInputPassword.tsx`, `maxLength={maxLength ?? 15}`).
+- **`SgInputPassword`, gerador de senha:** `createNewPasswordButton` exibe o botão que gera uma senha aleatória respeitando a política; o tamanho vem de `newPasswordLength` (padrão `minSize`) e nunca de `maxLength`, que só serve de teto. `onValidation` recebe a primeira regra pendente ou `null`. **Confirmado** (`SgInputPassword.tsx`, comentário de `newPasswordLength` e cálculo do alvo).
+- **`SgInputOTP`, três saídas:** `onChange` entrega o valor mascarado, `onRawChange` o valor bruto, e `onComplete` (com o valor mascarado) dispara quando todos os slots estão preenchidos. **Confirmado** (`src/inputs/SgInputOTP.tsx`; exemplo `sg-input-otp/samples/colagem-on-complete.tsx.sample`).
+- **`SgInputCurrency` e `SgInputNumber`, valor emitido ao formulário:** a forma do valor entregue ao `react-hook-form` (string canônica como `"1234.50"` ou número) e o tratamento do campo vazio estão em mudança (`emptyValue` sai e entra `emptyValueIsNull`). Não trate o formato atual como definitivo; converta e valide o valor no envio. **Inferido; pode mudar (P155.F3.T6)**.
+
 ## Fontes
 
 - `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/*.tsx` (componentes) e `*.meta.ts` (metadados de IA)

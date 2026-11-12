@@ -343,3 +343,12 @@ Nenhum.
 
 ### Tipos auxiliares exportados
 `SgSevenSegmentDigitPalette = "red" | "blue" | "yellow" | "green" | "white"`.
+
+## Cuidados de uso
+
+- **`SgDiscardDigit`, profundidade da pilha:** `stackDepth` define as folhas visíveis, limitado a 2–30 (padrão 20), e é ignorado quando `totalNumberPages` está definido. Nesse caso a profundidade é `totalNumberPages - página atual + 1`, entre 1 e 30. **Confirmado** (`src/digits/discard-digit/SgDiscardDigit.tsx`, cálculo de `depth`).
+- **`SgDiscardDigit`, paginação imperativa:** `increasePage()` e `decreasePage()` (via `ref`, tipo `SgDiscardDigitHandle`) mudam só a página interna e, com isso, o tamanho da pilha; limite inferior 1 e, com `totalNumberPages`, limite superior no total. Não alteram `value`: o texto exibido continua vindo da prop, então atualize `value` no seu estado ao paginar. **Confirmado** (mesmo arquivo; `useImperativeHandle` não toca em `value`).
+- **`SgMatrixDigit`, vários caracteres:** uma instância desenha todos os caracteres de `value` (convertido para maiúsculas); `dotSize` (padrão 9), `gap` entre pontos (3) e `charGap` entre caracteres (7) ajustam as medidas. **Confirmado** (`src/digits/matrix-digit/SgMatrixDigit.tsx`).
+- **`SgRoller3DDigit`, valor fora de `items`:** sem `items`, vale a lista padrão `DEFAULT_ITEMS`. O tambor posiciona-se por `items.indexOf(value)`, e um `value` que não esteja na lista cai no primeiro item (índice 0), sem aviso. **Confirmado** (`src/digits/roller3d-digit/SgRoller3DDigit.tsx`).
+- **`SgSegmentDigit` e `SgSevenSegmentDigit`, um caractere por componente:** só o primeiro caractere de `value` é usado (`charAt(0)`). Para um relógio `HH:MM:SS`, use uma instância por caractere; no `SgSegmentDigit` o `:` é um glifo válido, e no `SgSevenSegmentDigit` qualquer caractere sem segmentos definidos fica apagado. **Confirmado** (`SgSegmentDigit.tsx`: `normalized = char === ":" ? ":" : ...`; `SgSevenSegmentDigit.tsx`: `segmentSetFor`).
+- **`SgSevenSegmentDigit`, paleta:** `palette` aceita `red` (padrão), `blue`, `yellow`, `green` e `white`; `color`, `backgroundColor` e `offColor` sobrescrevem cada token da paleta individualmente. **Confirmado** (`SgSevenSegmentDigit.tsx`, `PALETTES`).

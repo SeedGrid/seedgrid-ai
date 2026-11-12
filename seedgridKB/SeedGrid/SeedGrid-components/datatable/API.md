@@ -206,6 +206,15 @@ Todos os textos visíveis vêm de `components.datatable.*`:
 
 **Confirmado** pela presença ou ausência no código.
 
+## Cuidados de uso
+
+- **Anote o tipo das colunas.** Um `const COLUNAS = [{ …, align: "right" }]` sem anotação é inferido com `align: string`, que não cabe em `SgDatatableColumnAlign` (`"left" | "center" | "right"`). Declare `const COLUNAS: SgDatatableColumn<Linha>[] = [...]`. **Inferido** pelas regras do TypeScript e pelo tipo em `src/inputs/SgDatatable.tsx` (o `.sample` `basico` do showcase declara as colunas sem anotação).
+- **Abaixo de 600 px (`SG_DATATABLE_MOBILE_BREAKPOINT`), sem `mobileMode`, a lista vira cartões e liga a rolagem infinita.** A rolagem infinita só vale com `paginator` (`rows` é o tamanho de cada página). Para manter o paginador em tela estreita use `infiniteScroll={false}`; para nunca virar cartões use `mobileMode="scroll"`. **Confirmado** em `SgDatatable.tsx` (`cardsActive`, `infiniteActive = paginator && (infiniteScroll ?? cardsActive)`).
+- **Cartões: o título é a primeira coluna com `cardTitle`; colunas com `cardHidden` ficam só na tabela larga** (e fora do rodapé do cartão). **Confirmado** em `SgDatatable.tsx` (`cardTitleColumn`, filtro `!column.cardHidden`).
+- **Com `lazy`, quem acrescenta a página seguinte é o pai.** Em `onLoadMore` (que dispara junto com `onPage`) o pai busca a página, concatena em `value` e informa `totalRecords`; o fim da lista é `value.length >= totalRecords`. O componente não filtra nem ordena em `lazy`, e o `footer` em função recebe o próprio `value`. **Confirmado** em `SgDatatable.tsx` (`infiniteHasMore`, `loadMore`, `filteredRows`/`sortedRows` retornam `value` quando `lazy`).
+- **Botões, links e campos dentro da linha não selecionam a linha.** O `onClick` da linha ignora cliques cujo alvo esteja em `button, a, input, select, textarea, label` ou em `[data-sg-stop-row-select='true']`. **Confirmado** em `SgDatatable.tsx` (`target.closest(...)`).
+- **`ref` tipado:** `SgDatatable<Linha> ref={ref}` com `React.useRef<SgDatatableRef<Linha>>(null)`; o componente é `forwardRef` com cast genérico. Métodos confirmados: `getProcessedRows`, `clearFilters` (demais em "Ref"). **Confirmado** em `SgDatatable.tsx` (`SgDatatableRef`, `export const SgDatatable = React.forwardRef(...)`).
+
 ## Fontes
 
 - `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/inputs/SgDatatable.tsx` (`SgDatatableBase`, tipos, `buildDatatableColumnsPersistenceKey`)
