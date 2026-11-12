@@ -14,6 +14,8 @@ plataforma: react
 
 Pacote `@seedgrid/fe-components` versão `2026.7.1` (`packages/seedgrid-fe-components/package.json`). Visão geral: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Visão geral dos inputs de texto]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]].
 
+> **Atualização de 2026-11-12 (P155.F3.T9).** As seções `SgInputNumber` e `SgInputCurrency` foram reescritas e conferidas contra o código atual do `fe-components` (commits locais ainda sem push: `8642e19`, `5c497c3`, `019a253`; árvore em `4b150cc`), com arquivo e linha citados em cada ponto. **Mudanças que quebram** (também no `CHANGELOG.md` do pacote, seção "Nao publicado"): `onChange` e o valor do formulário passam a ser **número** (antes, texto como `"37.00"`); a prop `emptyValue` foi **removida, sem alias**, e entra `emptyValueIsNull`; `validation` recebe `number | null` (antes, `string`). As demais seções seguem conferidas em `0f304bb`; as máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) estão em mudança (P155.F3.T13) e não foram tocadas aqui.
+
 ## Como as tabelas foram montadas
 
 - **Tipo** e **Obrigatória** vêm do tipo TypeScript `<Componente>Props`, lido com o type checker do próprio pacote (mesma técnica de `scripts/extract-props.mjs`, só que **sem** a lista `IGNORED_PROPS` daquele script). Por isso as tabelas incluem `control`, `register`, `rules`, `inputProps`, `className`, `labelClassName`, `elevation` e `borderRadius`, que o `src/ai-meta/generated-props.json` deixa de fora de propósito. **Confirmado**.
@@ -66,7 +68,7 @@ Regras comuns, todas **Confirmado** no código de cada componente:
 - **`resolveFieldError(...erros)`:** devolve o primeiro erro não vazio. No caminho `control`, a ordem é `error` (prop) e depois `fieldState.error.message`.
 - **Valor gravado no formulário:**
   - `SgInputText` e derivados gravam a string do input, já com `prefixText`/`suffixText`.
-  - `SgInputNumber`/`SgInputCurrency` gravam a string canônica (`"1234.50"`).
+  - `SgInputNumber`/`SgInputCurrency` gravam **número** (`1234.5`) quando o usuário digita, cola ou limpa (`null` só com `emptyValueIsNull` e campo vazio). O que o host **atribui** (`defaultValues`, `setValue`, `reset`) fica no formulário **como foi atribuído** (número ou texto como `"37,5"`); o campo mostra o valor normalizado, mas o formulário só passa a guardar número depois da primeira edição. Atribua número para ler número. Ver [[#SgInputNumber]].
   - `SgInputOTP` grava o valor **bruto** (sem separadores da máscara).
 - Os wrappers que não fazem a integração sozinhos (Email, Password, Phone, CPF, CNPJ, CPFCNPJ, PostalCode, Date, BirthDate, TextSearch) repassam `name`/`control`/`register`/`rules` ao `SgInputText`, que faz a ligação. Exceção: o `SgInputPassword` também repassa, mas não está coberto por teste de RHF.
 
@@ -822,44 +824,49 @@ Fonte: `src/inputs/SgInputNumber.tsx`. Implementação própria, não deriva do 
 | `suffixText` | `string` | — | Não | Afixo visual à direita. |
 | `decimals` | `number` | `2` | Não | Casas decimais (0 = inteiro). |
 | `allowNegative` | `boolean` | `true` | Não | Permite negativo (tecla `-` alterna o sinal). |
-| `emptyValue` | `"null" \| "zero"` | `"zero"` | Não | Valor ao apagar tudo/limpar: `"zero"` → `0`, `"null"` → string vazia. |
+| `emptyValueIsNull` | `boolean` | `false` | Não | `false`: campo vazio vale `0` (o campo mostra `0,00`). `true`: vazio vale `null` (campo realmente vazio). Vale para `onChange`, formulário, botão limpar e `validation`. Substitui a antiga `emptyValue` (removida, sem alias). |
 | `type` | `HTMLInputTypeAttribute` | `"text"` | Não | Atributo `type`. |
 | `placeholder` | `string` | rótulo (float) | Não | Placeholder. |
 | `className` | `string` | classes internas | Não | Substitui a classe padrão do `<input>`. |
 | `labelClassName` | `string` | — | Não | Classes do rótulo. |
-| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>`; `value`/`defaultValue` de `inputProps` servem como valor externo/inicial; `onChange` recebe evento sintético com o valor canônico. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>`; `value`/`defaultValue` de `inputProps` servem como valor externo/inicial (número ou texto, ex.: `37.5` ou `"37,5"`); o `onChange` de `inputProps` recebe evento sintético cujo `value` é o texto com ponto e casas completas (`"37.50"`). |
 | `maxValue` | `number` | — | Não | Máximo (`components.inputs.number.max`). |
 | `minValue` | `number` | — | Não | Mínimo (`components.inputs.number.min`). |
 | `minValueMessage` | `string` | i18n | Não | Mensagem de mínimo. |
 | `maxValueMessage` | `string` | i18n | Não | Mensagem de máximo. |
 | `prefixIcon` | `ReactNode` | — | Não | Ícone à esquerda. |
 | `width` | `string \| number` | `"100%"` | Não | Largura do wrapper. |
-| `clearButton` | `boolean` | `true` | Não | Botão limpar (aplica `emptyValue`). |
+| `clearButton` | `boolean` | `true` | Não | Botão limpar (volta a `0` ou, com `emptyValueIsNull`, a vazio/`null`). |
 | `filled` | `boolean` | `false` | Não | Fundo preenchido. |
 | `enabled` | `boolean` | `true` (efetivo) | Não | `false` desabilita. |
 | `textInputType` | `"none" \| "email" \| "search" \| "tel" \| "text" \| "url" \| "numeric" \| "decimal"` | `"decimal"` | Não | `inputMode` do `<input>`. |
 | `onEnter` | `(() => void)` | — | Não | Chamado ao receber foco. |
 | `onExit` | `(() => void)` | — | Não | Chamado ao perder o foco (após a validação). |
-| `onChange` | `((value: string) => void)` | — | Não | Valor canônico string: ponto decimal, sem separador de milhar, decimais completas (ex.: `"1234.50"`, `"-3.00"`); `""` quando vazio com `emptyValue="null"`. |
+| `onChange` | `((value: number \| null) => void)` | — | Não | Número a cada tecla, colagem ou limpeza (ex.: `1234.5`, `-3`); `null` somente com `emptyValueIsNull` e campo vazio. É o mesmo valor que vai para o formulário. |
 | `onClear` | `(() => void)` | — | Não | Chamado ao limpar. |
 | `withBorder` | `boolean` | `true` | Não | Exibe borda. |
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
-| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. |
+| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. No padrão (`emptyValueIsNull` falso) o valor `0` conta como vazio e mostra `requiredMessage`. |
 | `requiredMessage` | `string` | i18n `components.inputs.required` | Não | Mensagem para campo obrigatório vazio. |
 | `iconButtons` | `ReactNode[]` | — | Não | Nós extras à direita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura (ignora teclas/cola). |
-| `validation` | `((value: string) => string \| null)` | — | Não | Validador final; recebe o valor canônico. |
+| `validation` | `((value: number \| null) => string \| null)` | — | Não | Validador final; recebe o **mesmo número** do `onChange`. Roda também com o campo vazio: recebe `0` (padrão) ou `null` (com `emptyValueIsNull`). `minValue`/`maxValue` rodam antes. **Mudança que quebra:** antes recebia `string`. |
 | `validateOnBlur` | `boolean` | `true` | Não | `true`: valida no blur (e na digitação após interação); `false`: valida a cada alteração. |
 | `onValidation` | `((message: string \| null) => void)` | — | Não | Recebe a mensagem de erro corrente ou `null` a cada validação. |
 
-- **Valor:** string canônica, ou `""` com `emptyValue="null"`. Para obter número, faça `Number(valor)`.
+- **Valor emitido (`onChange`, `onExternalChange` e formulário):** sempre **número** (`double`), nunca texto. `commitState` (`SgInputNumber.tsx:299`) converte o estado digitado com `Number(...)` (`stateToNumber`, linha 155) e entrega o mesmo número a `onChange` e ao formulário. Vazio: `0` (padrão) ou `null` com `emptyValueIsNull`.
+- **Valor atribuído (`defaultValues`, `setValue`, `reset`, `inputProps.value`/`defaultValue`):** aceita número ou texto (`37.5`, `"37.5"`, `"37,5"`). O campo lê o valor (`normalizeState`, `SgInputNumber.tsx:97`, aplicado em `202-221`) e **corta** as casas além de `decimals` (não arredonda). O formulário guarda o que foi atribuído, sem converter; só a edição do usuário grava número. **Inferência** pelo código (nenhum ponto normaliza ao atribuir); o teste `tests/inputs-value-contract-dom.test.mjs` prova o que o campo exibe, não o tipo guardado no formulário.
+- **Precisão:** o número é um `double`. Com muitas casas (ex.: 20 dígitos) o valor **emitido** perde precisão, embora o campo mantenha os dígitos digitados (CHANGELOG). Uma prop explícita para texto fica para uma versão futura.
+- **Valor vazio:** o botão limpar e Backspace/Delete até apagar tudo levam a `0` (padrão) ou a `null` (`emptyValueIsNull`; `SgInputNumber.tsx:333-361` e `423-433`). `onClear` não mudou.
+- **Validação com o campo vazio:** `validation` é chamada com `0` ou `null` (`SgInputNumber.tsx:268`), então serve de "obrigatório" (`value === null ? "Informe" : null`). Com `required`, o `requiredMessage` vem antes e a `validation` não é chamada. `minValue`/`maxValue` não se aplicam ao campo vazio nem, no padrão, ao `0`.
+- **`externalValue`:** é a entrada interna que o `<Controller>` usa (`string | number | null`); **não** é prop pública (o tipo de base não é exportado). Para dar valor por código use `defaultValues`/`setValue`/`reset` do formulário ou `inputProps.value`.
 - **Teclas:**
   - `-` ou `_` alternam o sinal.
   - `.`, `,` e o separador do locale abrem a parte decimal.
   - Backspace/Delete apagam da direita para a esquerda.
   - Ctrl/Meta/Alt e as teclas de navegação passam direto.
 - **Colar:** o texto colado é normalizado.
-- **RHF:** com `register`, o valor é enviado como evento sintético `{target: {name, value}}`; com `control`, por `field.onChange(valor)`.
+- **RHF:** com `register`, o número é enviado como evento sintético `{target: {name, value}}`; com `control`, por `field.onChange(numero)`. Leitura: `getValues("campo")` devolve `number` depois da edição. Exemplo completo (carregar da API, editar, salvar): [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD com valores da API]].
 
 **Confirmado**.
 
@@ -882,7 +889,7 @@ Fonte: `src/inputs/SgInputCurrency.tsx`. Mesma mecânica do `SgInputNumber`. O s
 | `suffixText` | `string` | — | Não | Afixo visual extra, combinado com o símbolo quando este fica à direita. |
 | `decimals` | `number` | casas da moeda (`Intl`) | Não | Casas decimais; padrão = `maximumFractionDigits` da moeda (BRL 2, JPY 0). |
 | `allowNegative` | `boolean` | `true` | Não | Permite negativo (tecla `-` alterna o sinal). |
-| `emptyValue` | `"null" \| "zero"` | `"zero"` | Não | Valor ao apagar tudo/limpar: `"zero"` → `0`, `"null"` → string vazia. |
+| `emptyValueIsNull` | `boolean` | `false` | Não | `false`: campo vazio vale `0` (o campo mostra `0,00`). `true`: vazio vale `null` (campo realmente vazio). Vale para `onChange`, formulário, botão limpar e `validation`. Substitui a antiga `emptyValue` (removida, sem alias). |
 | `currency` | `string` | `"BRL"` | Não | Código ISO 4217 (convertido para maiúsculas). |
 | `locale` | `string` | locale do i18n | Não | Locale para separadores/posição do símbolo. |
 | `currencyDisplay` | `"symbol" \| "name" \| "narrowSymbol" \| "code"` | `"symbol"` | Não | `symbol`, `narrowSymbol`, `code`, `name` (`Intl.NumberFormat`). |
@@ -894,30 +901,36 @@ Fonte: `src/inputs/SgInputCurrency.tsx`. Mesma mecânica do `SgInputNumber`. O s
 | `placeholder` | `string` | rótulo (float) | Não | Placeholder. |
 | `className` | `string` | classes internas | Não | Substitui a classe padrão do `<input>`. |
 | `labelClassName` | `string` | — | Não | Classes do rótulo. |
-| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>`; `value`/`defaultValue` de `inputProps` servem como valor externo/inicial; `onChange` recebe evento sintético com o valor canônico. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>`; `value`/`defaultValue` de `inputProps` servem como valor externo/inicial (número ou texto, ex.: `37.5` ou `"37,5"`); o `onChange` de `inputProps` recebe evento sintético cujo `value` é o texto com ponto e casas completas (`"37.50"`). |
 | `maxValue` | `number` | — | Não | Máximo (`components.inputs.number.max`). |
 | `minValue` | `number` | — | Não | Mínimo (`components.inputs.number.min`). |
 | `minValueMessage` | `string` | i18n | Não | Mensagem de mínimo. |
 | `maxValueMessage` | `string` | i18n | Não | Mensagem de máximo. |
 | `prefixIcon` | `ReactNode` | — | Não | Ícone à esquerda. |
 | `width` | `string \| number` | `"100%"` | Não | Largura do wrapper. |
-| `clearButton` | `boolean` | `true` | Não | Botão limpar (aplica `emptyValue`). |
+| `clearButton` | `boolean` | `true` | Não | Botão limpar (volta a `0` ou, com `emptyValueIsNull`, a vazio/`null`). |
 | `filled` | `boolean` | `false` | Não | Fundo preenchido. |
 | `enabled` | `boolean` | `true` (efetivo) | Não | `false` desabilita. |
 | `textInputType` | `"none" \| "email" \| "search" \| "tel" \| "text" \| "url" \| "numeric" \| "decimal"` | `"decimal"` | Não | `inputMode` do `<input>`. |
 | `onEnter` | `(() => void)` | — | Não | Chamado ao receber foco. |
 | `onExit` | `(() => void)` | — | Não | Chamado ao perder o foco (após a validação). |
-| `onChange` | `((value: string) => void)` | — | Não | Valor canônico string (ex.: `"1234.56"`), sem símbolo nem separador de milhar. |
+| `onChange` | `((value: number \| null) => void)` | — | Não | Número a cada tecla, colagem ou limpeza (ex.: `1234.56`, sem símbolo nem separador de milhar); `null` somente com `emptyValueIsNull` e campo vazio. É o mesmo valor que vai para o formulário. |
 | `onClear` | `(() => void)` | — | Não | Chamado ao limpar. |
 | `withBorder` | `boolean` | `true` | Não | Exibe borda. |
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
-| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. |
+| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. No padrão (`emptyValueIsNull` falso) o valor `0` conta como vazio e mostra `requiredMessage`. |
 | `requiredMessage` | `string` | i18n `components.inputs.required` | Não | Mensagem para campo obrigatório vazio. |
 | `iconButtons` | `ReactNode[]` | — | Não | Nós extras à direita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura (ignora teclas/cola). |
-| `validation` | `((value: string) => string \| null)` | — | Não | Validador final; recebe o valor canônico. |
+| `validation` | `((value: number \| null) => string \| null)` | — | Não | Validador final; recebe o **mesmo número** do `onChange`. Roda também com o campo vazio: recebe `0` (padrão) ou `null` (com `emptyValueIsNull`). `minValue`/`maxValue` rodam antes. **Mudança que quebra:** antes recebia `string`. |
 | `validateOnBlur` | `boolean` | `true` | Não | `true`: valida no blur (e na digitação após interação); `false`: valida a cada alteração. |
 | `onValidation` | `((message: string \| null) => void)` | — | Não | Recebe a mensagem de erro corrente ou `null` a cada validação. |
+
+- **Mesmo contrato do `SgInputNumber`** (`SgInputCurrency.tsx:236` e seguintes): `onChange` e o valor do formulário são **número** (`1234.56`), `emptyValueIsNull` (padrão `false`) escolhe `0` ou `null` para o vazio, e `validation` recebe `number | null` e roda também com o campo vazio (linha 356). `emptyValue` foi removida, sem alias.
+- **Atribuir valor:** `defaultValues`, `setValue`, `reset` e `inputProps.value`/`defaultValue` aceitam número ou texto (`1234.56`, `"1234,56"`); o formulário guarda o que foi atribuído e só a edição grava número. Casas além de `decimals` são cortadas no campo. Muitas casas (ex.: 20 dígitos) perdem precisão no valor emitido (`double`).
+- **`externalValue`** é interno, como no `SgInputNumber` (não é prop pública).
+
+**Confirmado** no código.
 
 ## SgInputOTP
 
@@ -982,7 +995,8 @@ Fonte: `src/inputs/SgInputOTP.tsx`. Usa um `<input>` por slot e um `<input type=
 - **`SgInputPassword`, `maxLength` padrão:** o campo limita a entrada a 15 caracteres quando `maxLength` não é informado. Em política de senha mais longa (por exemplo `minSize` acima de 15), informe `maxLength` explicitamente. **Confirmado** (`src/inputs/SgInputPassword.tsx`, `maxLength={maxLength ?? 15}`).
 - **`SgInputPassword`, gerador de senha:** `createNewPasswordButton` exibe o botão que gera uma senha aleatória respeitando a política; o tamanho vem de `newPasswordLength` (padrão `minSize`) e nunca de `maxLength`, que só serve de teto. `onValidation` recebe a primeira regra pendente ou `null`. **Confirmado** (`SgInputPassword.tsx`, comentário de `newPasswordLength` e cálculo do alvo).
 - **`SgInputOTP`, três saídas:** `onChange` entrega o valor mascarado, `onRawChange` o valor bruto, e `onComplete` (com o valor mascarado) dispara quando todos os slots estão preenchidos. **Confirmado** (`src/inputs/SgInputOTP.tsx`; exemplo `sg-input-otp/samples/colagem-on-complete.tsx.sample`).
-- **`SgInputCurrency` e `SgInputNumber`, valor emitido ao formulário:** a forma do valor entregue ao `react-hook-form` (string canônica como `"1234.50"` ou número) e o tratamento do campo vazio estão em mudança (`emptyValue` sai e entra `emptyValueIsNull`). Não trate o formato atual como definitivo; converta e valide o valor no envio. **Inferido; pode mudar (P155.F3.T6)**.
+- **`SgInputCurrency` e `SgInputNumber`, valor emitido ao formulário:** `onChange` e o valor gravado pelo usuário no `react-hook-form` são **número** (`37.5`), com `0` ou `null` (`emptyValueIsNull`) para o vazio. Mudança que quebra em relação ao texto `"37.00"` de antes: backends que esperavam texto devem aceitar número no JSON. O valor **atribuído** pelo host (`defaultValues`, `setValue`, `reset`) fica como foi atribuído (número ou texto), então atribua número. Números com muitas casas viram `double` e perdem precisão. **Confirmado** (`SgInputNumber.tsx`, `SgInputCurrency.tsx`, `CHANGELOG.md`).
+- **`SgInputCurrency` e `SgInputNumber`, `validation`:** o tipo é `(value: number | null) => string | null`; é chamada também com o campo vazio (`0` ou `null`). Quem escreveu `validation` com `value: string` precisa ajustar. **Confirmado**.
 
 ## Fontes
 

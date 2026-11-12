@@ -20,10 +20,12 @@ analisado-em: 2026-11-07
 
 > **Flutter** · estado de paridade: **portado** · equivalente React: `SgInputDateTime` (mesmo nome).
 
-Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto no idioma ativo e a hora no fuso escolhido.
+Campo de data e hora com o texto no idioma ativo e a hora no fuso escolhido; entrega e recebe o valor em `local` (padrão), `utc` ou `offset` (`valueMode`).
+
+> **Atualização de 2026-11-12 (P155.F3.T9).** Seção conferida contra o código Dart local do `fe-flutter` (commit local `f914390`, sem push; árvore em `19f7830`), com arquivo e linha. **Mudança que quebra:** o padrão do valor passa a ser `local` (`2026-01-15T10:30`); antes era o instante UTC com milissegundos (`...T17:30:00.000Z`). Para manter o instante use `valueMode: SgInputDateTimeValueMode.utc`. O Flutter agora entende nome IANA (tabela do `SgClock`, 2019 a 2045); a antiga limitação "IANA cai em `local`" saiu (nome desconhecido ainda cai em `local`).
 
 - Arquivo: `packages/seedgrid_components/lib/src/inputs/masked/sg_input_date_time.dart` · classe `class SgInputDateTime extends StatefulWidget implements SgInputDateTimeProps`; lógica pura em `sg_date_time_logic.dart`.
-- Construtor: `const SgInputDateTime({...})` com 51 parâmetros nomeados, 49 do contrato React e 2 extras do Flutter (`autofocus`, `focusNode`).
+- Construtor: `const SgInputDateTime({...})` com 52 parâmetros nomeados, 50 do contrato React e 2 extras do Flutter (`autofocus`, `focusNode`).
 
 ### Props de SgInputDateTime
 
@@ -33,7 +35,7 @@ Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto
 | `borderRadius` | `num?` | — | não | React | — |
 | `clearButton` | `bool?` | — | não | React | — |
 | `control` | `SgFormController?` | — | não | React | — |
-| `defaultValue` | `Object?` | — | não | React | Instante inicial (nao controlado). |
+| `defaultValue` | `Object?` | — | não | React | Valor inicial (não controlado), em qualquer formato: `String` (local sem fuso, ISO com `Z` ou deslocamento) ou `DateTime`. Não existe `initialValue` neste componente. |
 | `elevation` | `SgInputDateTimeElevation?` | — | não | React | Valores: `none`, `sm`, `md`, `lg`. |
 | `enabled` | `bool?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
@@ -57,7 +59,7 @@ Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto
 | `minNumberOfWordsMessage` | `String?` | — | não | React | — |
 | `minuteStep` | `num?` | — | não | React | Passo dos minutos (5, 10, 15, 30). |
 | `name` | `String?` | — | não | React | Nome do campo para formularios. |
-| `onChange` | `void Function(String? value, String local)?` | — | não | React | Instante ISO UTC (ou null) e texto local do campo. |
+| `onChange` | `void Function(String? value, String local)?` | — | não | React | Valor no formato de `valueMode` (ou `null` se incompleto/inválido) e o texto local do campo (`YYYY-MM-DDTHH:mm[:ss]`). |
 | `onClear` | `VoidCallback?` | — | não | React | — |
 | `onEnter` | `VoidCallback?` | — | não | React | Disparado ao receber foco — padrao seedgrid. |
 | `onExit` | `VoidCallback?` | — | não | React | Disparado ao perder o foco (apos validacao) — padrao seedgrid. |
@@ -72,10 +74,11 @@ Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto
 | `showSeconds` | `bool?` | `false` † | não | React | Mostra e aceita segundos. |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputDateTimeTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
-| `timeZone` | `String?` | `local` † | não | React | Fuso do campo: local, UTC, deslocamento (+03:00) ou nome IANA. |
+| `timeZone` | `String?` | `local` † | não | React | Fuso do campo: `local` (dispositivo), `UTC`, deslocamento (`+03:00`) ou nome IANA (`America/Sao_Paulo`); nome desconhecido cai em `local`. Também define o deslocamento de `utc` e `offset`. |
 | `validateOnBlur` | `bool?` | — | não | React | — |
 | `validation` | `String? Function(String local)?` | — | não | React | — |
-| `value` | `Object?` | — | não | React | Instante controlado (ISO 8601 ou Date). |
+| `value` | `Object?` | — | não | React | Valor controlado, em qualquer formato (`String` local sem fuso, ISO com `Z` ou deslocamento, ou `DateTime`); trocar por fora atualiza o campo. |
+| `valueMode` | `SgInputDateTimeValueMode?` | `local` † | não | React | Formato do valor que sai (`onChange` e formulário) e que o formulário aceita: `local` (`2026-01-15T10:30`), `utc` (`2026-01-15T13:30:00Z`) ou `offset` (`2026-01-15T10:30:00-03:00`). Valores: `local`, `utc`, `offset`. |
 | `width` | `Object?` | — | não | React | — |
 | `withBorder` | `bool?` | — | não | React | — |
 | `autofocus` | `bool` | `false` | não | Flutter | — |
@@ -85,8 +88,18 @@ Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, com o texto
 
 ### Eventos, formulário e comportamento
 
-- `onChange(String? value, String local)`: instante ISO 8601 UTC (ou `null`) e o texto local do campo. `value`/`defaultValue`/`minDate`/`maxDate` aceitam `String` ISO 8601 ou `DateTime`. `timeZone` é `local`, `UTC` ou deslocamento fixo (`-03:00`). `minuteStep` é ignorado com `showSeconds`. `alwaysFloat` não tem efeito (o rótulo é sempre estático, como no React).
-- **Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o instante ISO (texto). O campo registra um **`validator` próprio** (`_formValidate`) em `registerField`, que roda também no `handleSubmit`/`trigger`: obrigatório (`required`, com `requiredMessage` ou o texto i18n `components.inputs.required`), data válida e intervalo (`minDate`/`maxDate`); campo desabilitado nunca falha. A prop `rules` não existe mais.
+- `onChange(String? value, String local)`: o valor no formato de `valueMode` (ou `null`) e o texto local do campo. `value`/`defaultValue`/`minDate`/`maxDate` aceitam `String` ISO 8601 ou `DateTime`. `timeZone` é `local`, `UTC`, deslocamento fixo (`-03:00`) ou nome IANA. `minuteStep` é ignorado com `showSeconds`. `alwaysFloat` não tem efeito (o rótulo é sempre estático, como no React).
+- **Formato do valor (`valueMode`)** (`sg_input_date_time.dart:269-271`, `319-323` e `_emit`, linha 493; `sg_date_time_logic.dart`, `sgFormatDateTimeValue`): exemplo com `timeZone: 'America/Sao_Paulo'` e o usuário digitando 15/01/2026 10:30.
+
+| `valueMode` | Valor que sai | Como o host Java lê (**Inferência**: `java.time` padrão) |
+|---|---|---|
+| `local` (padrão) | `2026-01-15T10:30` (com `showSeconds`, `...T10:30:15`): relógio do campo, sem fuso | `LocalDateTime.parse(valor)`; `Instant` não lê |
+| `utc` | `2026-01-15T13:30:00Z`: instante em UTC, sempre com segundos e sem milissegundos | `Instant.parse(valor)` |
+| `offset` | `2026-01-15T10:30:00-03:00`: relógio do campo com o deslocamento do `timeZone`, sempre com segundos | `OffsetDateTime.parse(valor)` |
+
+- **Vazio, incompleto ou inválido:** `onChange` recebe `null` e o formulário grava `''` (`_emit`, linha 499).
+- **O que o campo aceita** (`value`, `defaultValue`, `SgFormController` com `reset`/`setValue`): qualquer um dos três formatos ou `DateTime`; texto **sem fuso** é o relógio do próprio campo e não é convertido (`sgParseDateTimeValue`). O Flutter só liga ao formulário por `name` + `control`/`SgForm` (não há `register`), então o valor atribuído e o digitado seguem o `valueMode`; o formulário guarda o atribuído como foi atribuído até a primeira edição.
+- **Formulário:** com `name` (+ `control`, ou o `SgForm` mais próximo) o valor do formulário é o texto no formato de `valueMode` (`''` quando vazio). O campo registra um **`validator` próprio** (`_formValidate`) em `registerField`, que roda também no `handleSubmit`/`trigger`: obrigatório (`required`, com `requiredMessage` ou o texto i18n `components.inputs.required`), data válida e intervalo (`minDate`/`maxDate`); campo desabilitado nunca falha. `validation` recebe o texto **local**. A prop `rules` não existe mais.
 - **Idioma:** o texto exibido segue o idioma do `SgComponentsI18nProvider` (`sgDisplayDateTime`; a hora é sempre 24h).
 
 ## SgFileUpload

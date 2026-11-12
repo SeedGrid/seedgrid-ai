@@ -59,6 +59,24 @@ Decisões:
 
 Bugs do **Flutter** achados e corrigidos (mesma fonte): não limpava por fora (Combobox, RadioGroup, CheckboxGroup, ToggleSwitch, MultiSelect/Chips, Autocomplete, PeriodSelector, TextEditor); Autocomplete perdia `setValue` com o campo focado; RadioGroup emitia de novo ao tocar no radio marcado; Combobox não revalidava após escolher; PeriodSelector e TextEditor mantinham a última escolha após `reset()`; OTP refazia o valor a partir do cortado pela máscara antiga; `initialValue` do Slider usava tipo diferente do resto.
 
+## O que mudou em número, moeda e data/hora em 2026-11-12?
+
+Decisões do dono de 2026-11-12 (plano P155.F3.T6), implementadas nos dois lados em commits locais ainda sem push (React `8642e19`, `5c497c3`, `019a253`, `e1284d8`; Flutter `c262a0f`, `d577401`, `2abdb89`, `f914390`). Conferido por leitura do código; testes não reexecutados.
+
+| Tema | React e Flutter hoje (iguais) | Observação |
+|---|---|---|
+| Valor de `SgInputNumber`/`SgInputCurrency` | `onChange` e valor digitado no formulário são **número** (`double`); vazio vale `0` ou `null` com `emptyValueIsNull`; `emptyValue` foi removida sem alias | substitui o antigo "texto `37.00` ao digitar, número ao setar" (divergência B) |
+| `validation` de número e moeda | recebe `number \| null` (React) e `num?` (Flutter); roda também com o campo vazio (`0` ou `null`) | `onValidation` segue devolvendo a mensagem |
+| Valor atribuído por código | número ou texto (`37.5`, `"37,5"`) é aceito; o formulário guarda **como foi atribuído** até a primeira edição | atribua número para ler número |
+| `SgInputDateTime` | `valueMode` `local` (padrão), `utc`, `offset` e `timeZone` (`local`, `UTC`, `+03:00` ou IANA); vale para `onChange` e formulário; `value`/`defaultValue`/`reset`/`setValue` aceitam qualquer formato | substitui o antigo "digitado com `.000Z`, setado sem" (divergência C); mudança que quebra: o padrão era UTC com milissegundos |
+
+Diferenças que **permanecem** (confirmadas no código):
+
+- `initialValue` existe no Flutter (`SgInputNumber`/`SgInputCurrency`) e não no React (lá é `inputProps.defaultValue`). Dentro de formulário o Flutter registra o `initialValue` como **texto** (`numeric_field.dart:229`), o que contradiz "o valor do formulário é sempre número" até a primeira edição; em CRUD use `reset`/`defaultValues` com número.
+- `SgInputDateTime` não tem `initialValue` em nenhum dos lados (use `defaultValue`).
+- Sem `register` no Flutter (ADR 49): o aviso do React "com `register`, `utc`/`offset` convertem só o digitado" não se aplica; `name` + `control`/`SgForm` seguem o `valueMode` em todos os caminhos.
+- As máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) seguem em mudança (P155.F3.T13) e não estão descritas aqui.
+
 ## Que defeitos do React foram encontrados?
 
 Só registrados, não corrigidos.

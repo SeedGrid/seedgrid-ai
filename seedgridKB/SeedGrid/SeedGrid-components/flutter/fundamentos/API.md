@@ -220,6 +220,8 @@ As props de texto do contrato são `Object?` e passam por `sgNode` (lista em [[S
 
 ## Enums compartilhados e por componente
 
+> **Atualização de 2026-11-12 (P155.F3.T9):** os enums `SgInputNumberEmptyValue` e `SgInputCurrencyEmptyValue` foram removidos (viraram o `bool emptyValueIsNull`, commit local `c262a0f`) e entrou `SgInputDateTimeValueMode` (`local`, `utc`, `offset`; `enums.g.dart:1909`, commit local `f914390`). Só estas três linhas foram conferidas; o restante da tabela segue como estava (o arquivo hoje tem 187 `enum`, a contagem abaixo é de antes).
+>
 > Arquivo gerado `seedgrid_components/lib/src/generated/enums.g.dart` (de `@seedgrid/fe-components` 2026.7.1). **Confirmado** (179 enums). Regra: alias TS compartilhado entre componentes vira enum compartilhado; união inline de um componente vira `Sg<Componente><Prop>`. Todo enum tem `final String value` (o texto do React) e `static T? fromValue(String?)`. Nomes Dart que colidem com palavra reservada ganham sufixo (`defaultValue` para `default`, `nullValue` para `null`) e valores com hífen viram camelCase (`top-left` → `topLeft`).
 
 Compartilhados (usados por vários componentes):
@@ -316,18 +318,17 @@ Tabela completa (inclusive os compartilhados acima):
 | `SgInputCPFTextInputType` | `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal` |
 | `SgInputCurrencyCurrencyDisplay` | `symbol`, `name`, `narrowSymbol`, `code` |
 | `SgInputCurrencyCurrencySymbolPlacement` | `prefix`, `auto`, `suffix` |
-| `SgInputCurrencyEmptyValue` | `nullValue` (`null`), `zero` |
 | `SgInputCurrencyTextInputType` | `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal` |
 | `SgInputDateElevation` | `none`, `sm`, `md`, `lg` |
 | `SgInputDateLabelAlign` | `start`, `center`, `end` |
 | `SgInputDateLabelPosition` | `float`, `top`, `left` |
 | `SgInputDateTextInputType` | `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal` |
+| `SgInputDateTimeValueMode` | `local`, `utc`, `offset` |
 | `SgInputEmailElevation` | `none`, `sm`, `md`, `lg` |
 | `SgInputEmailLabelAlign` | `start`, `center`, `end` |
 | `SgInputEmailLabelPosition` | `float`, `top`, `left` |
 | `SgInputEmailTextInputType` | `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal` |
 | `SgInputNumberElevation` | `none`, `sm`, `md`, `lg` |
-| `SgInputNumberEmptyValue` | `nullValue` (`null`), `zero` |
 | `SgInputNumberLabelAlign` | `start`, `center`, `end` |
 | `SgInputNumberLabelPosition` | `float`, `top`, `left` |
 | `SgInputNumberTextInputType` | `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal` |

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos do showcase de cada componente estão abaixo (React, 15 componentes, 174 exemplos), na ordem e com os títulos da página dele em pt-BR (`/components/<slug>`). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` do exemplo, indicado em `Fonte:` (caminho relativo à raiz do repositório `seedgrid-fe-components`), e é o mesmo código que o showcase renderiza e mostra no bloco de código. Conferência de 2026-11-09 (seedgrid-fe-components 0f304bb): os blocos foram regerados por script a partir dos `.sample` e comparados texto a texto (idênticos). Não foram compilados nem executados no navegador nesta conferência. O texto abaixo de cada título é a descrição que a página mostra (i18n pt-BR do showcase; alguns trechos ainda estão em inglês). A seção Playground de cada página não tem `.sample` e fica de fora. As classes utilitárias (`flex`, `gap-4`…) são Tailwind do app de exemplo. Os tipos e props usados estão descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API]].
+Todos os exemplos do showcase de cada componente estão abaixo (React, 15 componentes, 174 exemplos), na ordem e com os títulos da página dele em pt-BR (`/components/<slug>`). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` do exemplo, indicado em `Fonte:` (caminho relativo à raiz do repositório `seedgrid-fe-components`), e é o mesmo código que o showcase renderiza e mostra no bloco de código. Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (validação customizada e valor vazio mudaram com `emptyValueIsNull` e `validation(number | null)`; working tree do fe-components, HEAD local `4b150cc`, sem push) e, antes, de 2026-11-09 para os demais (seedgrid-fe-components 0f304bb): os blocos foram regerados por script a partir dos `.sample` e comparados texto a texto (idênticos). Não foram compilados nem executados no navegador nesta conferência. O texto abaixo de cada título é a descrição que a página mostra (i18n pt-BR do showcase; alguns trechos ainda estão em inglês). A seção Playground de cada página não tem `.sample` e fica de fora. As classes utilitárias (`flex`, `gap-4`…) são Tailwind do app de exemplo. Os tipos e props usados estão descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API]].
 
 ## Configuração de idioma (recomendada)
 
@@ -3186,8 +3186,7 @@ export default function Example() {
       name="validation"
       decimals={0}
       validation={(v) => {
-        const n = Number(v);
-        return Number.isFinite(n) && n % 2 === 0 ? null : "Apenas números pares";
+        return v !== null && v % 2 === 0 ? null : "Apenas números pares";
       }}
       onValidation={(msg) => console.log(msg)}
     />
@@ -3353,7 +3352,7 @@ export default function Example() {
 
 ### 11) 
 
-emptyValue="null" permite limpar totalmente.
+emptyValueIsNull permite limpar totalmente (o valor passa a ser null em vez de 0).
 
 Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-number/samples/empty-value.tsx.sample`
 
@@ -3366,7 +3365,7 @@ export default function Example() {
       id="demo-empty"
       label="Pode ser vazio"
       name="vazio"
-      emptyValue="null"
+      emptyValueIsNull
       decimals={2}
     />
   );
@@ -3635,8 +3634,7 @@ export default function Example() {
       register={register}
       currency="BRL"
       validation={(value) => {
-        const amount = Number(value);
-        return Number.isFinite(amount) && amount >= 1000 ? null : "O valor deve ser maior ou igual a 1000.";
+        return value !== null && value >= 1000 ? null : "O valor deve ser maior ou igual a 1000.";
       }}
       onValidation={(msg) => console.log(msg)}
     />
@@ -3832,7 +3830,7 @@ export default function Example() {
 
 ### 11) 
 
-emptyValue="null" permite limpar totalmente.
+emptyValueIsNull permite limpar totalmente (o valor passa a ser null em vez de 0).
 
 Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-currency/samples/valor-vazio.tsx.sample`
 
@@ -3850,7 +3848,7 @@ export default function Example() {
       label="Pode ficar vazio"
       name="vazio"
       register={register}
-      emptyValue="null"
+      emptyValueIsNull
       currency="BRL"
     />
   );
@@ -3972,6 +3970,105 @@ export default function Example() {
   );
 }
 ```
+
+## CRUD com valores da API (número, moeda e data/hora)
+
+Exemplo da KB (não é do showcase: o exemplo de CRUD do showcase é da sessão `front` e ainda não existe). Mostra o ciclo carregar da API, editar e salvar com `react-hook-form` e `control`, que é o padrão do CRUD. O código **compila** contra o `fe-components` local (`tsc --noEmit` sobre `src/index.ts`, 2026-11-12, HEAD `4b150cc`); **não foi executado no navegador**.
+
+O que o exemplo mostra:
+
+- **Carregar:** `reset(registro)` entrega os valores da API ao formulário e vira o novo valor inicial (`isDirty` volta a `false`). Número aceita número ou texto (`12.5` ou `"12,5"`); a data/hora aceita `local`, `utc` ou `offset`. Atribua **número** nos campos numéricos: o formulário guarda o que foi atribuído e só a edição do usuário grava número.
+- **Editar:** `quantidade` e `preco` voltam como `number` (`preco` é `null` com `emptyValueIsNull` e campo vazio); `entregaEm` volta como `Instant` em UTC (`2026-01-15T13:30:00Z`, `valueMode="utc"` com `timeZone="America/Sao_Paulo"`, então o usuário vê 10:30) e `""` quando vazio.
+- **`validation` recebe `number | null`:** em `quantidade` (vazio chega como `0`) e em `preco` (vazio chega como `null`, serve de "obrigatório").
+- **Salvar:** o payload sai no tipo certo; para o JSON, troque `""` por `null` (`values.entregaEm || null`). No Java, `entregaEm` lê com `Instant.parse(...)` e `quantidade`/`preco` como `BigDecimal` ou `double` (o número é um `double`: precisão para 2 casas, não para cripto).
+- **Sem `useState` na página:** o estado fica no `react-hook-form` (`formState.isDirty`, `watch()`).
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgButton, SgGrid, SgInputCurrency, SgInputDateTime, SgInputNumber, SgInputText } from "@seedgrid/fe-components";
+
+// O que a API devolve no JSON: número é número e a data/hora é um Instant em UTC.
+type Pedido = { descricao: string; quantidade: number; preco: number | null; entregaEm: string | null };
+
+// O que o formulário guarda: número, número (ou null) e texto ("" quando a data/hora está vazia).
+type PedidoForm = { descricao: string; quantidade: number; preco: number | null; entregaEm: string };
+
+// API simulada (troque por fetch).
+async function carregarPedido(): Promise<Pedido> {
+  return { descricao: "Cadeira de escritório", quantidade: 12.5, preco: 1234.56, entregaEm: "2026-01-15T13:30:00Z" };
+}
+
+async function salvarPedido(pedido: Pedido): Promise<void> {
+  console.log("PUT /pedidos/1", JSON.stringify(pedido));
+}
+
+export default function Example() {
+  const { control, handleSubmit, reset, watch, formState } = useForm<PedidoForm>({
+    defaultValues: { descricao: "", quantidade: 0, preco: null, entregaEm: "" }
+  });
+
+  // Carregar: reset(registro) vira o novo valor inicial; número e texto ("37,5") são aceitos, a data/hora em qualquer formato.
+  React.useEffect(() => {
+    carregarPedido().then((pedido) =>
+      reset({ descricao: pedido.descricao, quantidade: pedido.quantidade, preco: pedido.preco, entregaEm: pedido.entregaEm ?? "" })
+    );
+  }, [reset]);
+
+  // Salvar: os valores já saem no tipo certo (number, number | null, Instant em UTC).
+  const salvar = handleSubmit(async (values) => {
+    await salvarPedido({
+      descricao: values.descricao,
+      quantidade: values.quantidade,
+      preco: values.preco,
+      entregaEm: values.entregaEm || null
+    });
+    reset(values);
+  });
+
+  return (
+    <form className="w-96 space-y-3" onSubmit={salvar}>
+      <SgInputText id="crud-descricao" label="Descrição" name="descricao" control={control} required />
+      <SgInputNumber
+        id="crud-quantidade"
+        label="Quantidade"
+        name="quantidade"
+        control={control}
+        decimals={1}
+        validation={(value) => (value !== null && value > 0 ? null : "A quantidade deve ser maior que zero")}
+      />
+      <SgInputCurrency
+        id="crud-preco"
+        label="Preço"
+        name="preco"
+        control={control}
+        currency="BRL"
+        emptyValueIsNull
+        validation={(value) => (value === null ? "Informe o preço" : null)}
+      />
+      <SgInputDateTime
+        id="crud-entrega"
+        label="Entrega"
+        name="entregaEm"
+        control={control}
+        timeZone="America/Sao_Paulo"
+        valueMode="utc"
+        required
+      />
+      <SgGrid columns={{ base: 2 }} gap={8}>
+        <SgButton type="submit" size="sm" appearance="outline">Salvar</SgButton>
+        <SgButton type="button" size="sm" appearance="outline" onClick={() => carregarPedido().then((p) => reset({ descricao: p.descricao, quantidade: p.quantidade, preco: p.preco, entregaEm: p.entregaEm ?? "" }))}>
+          Recarregar
+        </SgButton>
+      </SgGrid>
+      <p className="text-xs text-muted-foreground">Alterado: {formState.isDirty ? "sim" : "não"}</p>
+      <pre className="text-xs">{JSON.stringify(watch(), null, 2)}</pre>
+    </form>
+  );
+}
+```
+
+Equivalente em Dart: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD no Flutter]]. Props e regras: [[SeedGrid/SeedGrid-components/inputs-texto/API#SgInputNumber|SgInputNumber]], [[SeedGrid/SeedGrid-components/inputs-texto/API#SgInputCurrency|SgInputCurrency]] e [[SeedGrid/SeedGrid-components/inputs-midia/API#Formato do valor (`valueMode`)|SgInputDateTime]].
 
 ## SgInputOTP
 

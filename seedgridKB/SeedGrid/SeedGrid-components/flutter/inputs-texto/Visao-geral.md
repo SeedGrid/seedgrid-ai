@@ -36,8 +36,8 @@ analisado-em: 2026-11-07
 | `SgInputPostalCode` | portado | CEP e códigos postais de 7 países, com consulta opcional ao ViaCEP. | `pages/sg_input_postal_code_page.dart` |
 | `SgInputDate` | portado | Data em texto com máscara e calendário próprio; valor ISO. | `pages/sg_input_date_page.dart` |
 | `SgInputBirthDate` | portado | Data de nascimento com idade mínima e máxima. | `pages/sg_input_birth_date_page.dart` |
-| `SgInputNumber` | portado | Número decimal formatado pelo idioma, com limites mínimo e máximo. | `pages/sg_input_number_page.dart` |
-| `SgInputCurrency` | portado | Valor monetário com símbolo, moeda e separadores do idioma. | `pages/sg_input_currency_page.dart` |
+| `SgInputNumber` | portado | Número decimal pelo idioma, com limites; entrega número (`double`; `null` só com `emptyValueIsNull`). | `pages/sg_input_number_page.dart` |
+| `SgInputCurrency` | portado | Valor monetário com símbolo e moeda; entrega número (`double`; `null` só com `emptyValueIsNull`). | `pages/sg_input_currency_page.dart` |
 | `SgInputOTP` | portado | Código de uso único em slots, com máscara, colagem e controller. | `pages/sg_input_otp_page.dart` |
 
 ## Quando usar
@@ -66,6 +66,7 @@ Os 15 componentes estão **portados** (`docs/paridade.json`, commit `e9989b8`), 
 - Campos com valor inicial mostram sempre o valor mascarado; telefone com DDI perde o `55`.
 - `SgInputDate` e `SgInputBirthDate` usam máscara por idioma e calendário próprio, não o `<input type="date">`; o valor continua ISO.
 - `SgInputNumber` e `SgInputCurrency` não usam `Intl`: tabelas geradas (30 locales latinos, 162 moedas).
+- `SgInputNumber` e `SgInputCurrency` entregam **número** em `onChange` e no formulário (antes, texto `"1234.50"`); `emptyValue` foi removida e entrou `emptyValueIsNull`; `validation` é `String? Function(num?)` e roda também com o campo vazio (`0` ou `null`). Para carregar da API e editar, use `reset`/`setValue` do `SgFormController`: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|exemplo de CRUD]].
 - `SgInputPassword`: barra de força neutra com o campo vazio.
 - Consultas de rede (ViaCEP, CNPJ público) são injetáveis (`viaCepFetch`, `publicaCnpjFetch`).
 

@@ -12,12 +12,12 @@ analisado-em: 2026-11-09
 
 > **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
-Os trechos são cópia 1:1 dos `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`), na ordem e com os títulos do showcase; `context.tx(...)`/`context.txf(...)` (i18n do showcase) viraram o literal e a interpolação. O showcase não usa `setState` de página: campos de formulário usam `name` + `control: SgFormController` e o estado de exibição é local (`ValueNotifier` com `ValueListenableBuilder`/`ListenableBuilder`); a linha **Ajuste** abaixo de cada bloco mostra a declaração dos campos da página que o trecho usa. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';`.
+Os trechos são cópia 1:1 dos `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (os de `SgInputDateTime` foram regerados em 2026-11-12 do working tree, HEAD local `19f7830`, sem push: o exemplo Fusos mudou com `valueMode` e entraram quatro novos, Valor local, Valor em UTC, Valor com deslocamento e Outro fuso) (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`), na ordem e com os títulos do showcase; `context.tx(...)`/`context.txf(...)` (i18n do showcase) viraram o literal e a interpolação. O showcase não usa `setState` de página: campos de formulário usam `name` + `control: SgFormController` e o estado de exibição é local (`ValueNotifier` com `ValueListenableBuilder`/`ListenableBuilder`); a linha **Ajuste** abaixo de cada bloco mostra a declaração dos campos da página que o trecho usa. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';`.
 
 
 ## SgInputDateTime: Básico
 
-O onChange entrega o instante em ISO 8601 UTC (ou null se o campo estiver incompleto).
+O onChange entrega o valor local do campo, sem fuso (ou null se o campo estiver incompleto).
 
 Região `sgInputDateTimeBasico` em `sg_input_date_time_page.snippets.g.dart`.
 
@@ -63,6 +63,7 @@ ValueListenableBuilder<String>(
         id: 'demo-zone-utc',
         labelText: 'UTC',
         timeZone: 'UTC',
+        valueMode: SgInputDateTimeValueMode.utc,
         value: fuso,
         // Campo incompleto (null) não mexe nos outros: só um instante válido atualiza.
         onChange: (value, local) {
@@ -74,6 +75,7 @@ ValueListenableBuilder<String>(
         id: 'demo-zone-sp',
         labelText: '-03:00',
         timeZone: '-03:00',
+        valueMode: SgInputDateTimeValueMode.utc,
         value: fuso,
         onChange: (value, local) {
           if (value != null) _fuso.value = value;
@@ -84,6 +86,7 @@ ValueListenableBuilder<String>(
         id: 'demo-zone-in',
         labelText: '+05:30',
         timeZone: '+05:30',
+        valueMode: SgInputDateTimeValueMode.utc,
         value: fuso,
         onChange: (value, local) {
           if (value != null) _fuso.value = value;
@@ -100,7 +103,7 @@ Ajuste: o trecho usa estado local do exemplo (`_fuso`), definido assim na págin
 
 ```dart
 final ValueNotifier<String> _fuso = ValueNotifier<String>(
-  '2026-11-03T17:30:00.000Z',
+  '2026-11-03T17:30:00Z',
 );
 ```
 
@@ -175,7 +178,7 @@ final ValueNotifier<String> _evento = ValueNotifier<String>('-');
 
 ## SgInputDateTime: Dentro de um formulário
 
-O formulário guarda o instante ISO 8601 UTC.
+O formulário guarda o valor no formato de valueMode (local, por padrão).
 
 Região `sgInputDateTimeFormulario` em `sg_input_date_time_page.snippets.g.dart`.
 
@@ -281,6 +284,176 @@ SgComponentsI18nProvider(
   ),
 )
 ```
+
+## SgInputDateTime: Valor local (padrão)
+
+valueMode="local": o valor é o relógio do campo, sem fuso (2026-01-15T10:30), no fuso America/Sao_Paulo.
+
+Região `sgInputDateTimeValorLocal` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'demo-mode-local',
+      labelText: 'Quando',
+      timeZone: 'America/Sao_Paulo',
+      valueMode: SgInputDateTimeValueMode.local,
+      onChange: (value, local) => _modoLocal.value = value,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String?>(
+      valueListenable: _modoLocal,
+      builder: (context, valor, _) => Text(
+        'Valor: ${valor ?? '-'}',
+      ),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_modoLocal`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String?> _modoLocal = ValueNotifier<String?>(null);
+```
+
+No host Java, leia com `LocalDateTime.parse(valor)`; um `Instant` não lê esse texto.
+
+## SgInputDateTime: Valor em UTC
+
+valueMode="utc": o valor é o instante em UTC (2026-01-15T13:30:00Z).
+
+Região `sgInputDateTimeValorUtc` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'demo-mode-utc',
+      labelText: 'Quando',
+      timeZone: 'America/Sao_Paulo',
+      valueMode: SgInputDateTimeValueMode.utc,
+      onChange: (value, local) => _modoUtc.value = value,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String?>(
+      valueListenable: _modoUtc,
+      builder: (context, valor, _) => Text(
+        'Valor: ${valor ?? '-'}',
+      ),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_modoUtc`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String?> _modoUtc = ValueNotifier<String?>(null);
+```
+
+No host Java, leia com `Instant.parse(valor)`. É o formato recomendado para back-end com `Instant`.
+
+## SgInputDateTime: Valor com deslocamento
+
+valueMode="offset": o valor é o relógio do campo com o deslocamento do fuso (2026-01-15T10:30:00-03:00).
+
+Região `sgInputDateTimeValorOffset` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'demo-mode-offset',
+      labelText: 'Quando',
+      timeZone: 'America/Sao_Paulo',
+      valueMode: SgInputDateTimeValueMode.offset,
+      onChange: (value, local) => _modoOffset.value = value,
+    ),
+    const SizedBox(height: 8),
+    ValueListenableBuilder<String?>(
+      valueListenable: _modoOffset,
+      builder: (context, valor, _) => Text(
+        'Valor: ${valor ?? '-'}',
+      ),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_modoOffset`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String?> _modoOffset = ValueNotifier<String?>(null);
+```
+
+No host Java, leia com `OffsetDateTime.parse(valor)`.
+
+## SgInputDateTime: Outro fuso nos três modos
+
+O mesmo campo em Asia/Tokyo (+09:00): digite 10:30 e veja o valor nos modos local, utc e offset.
+
+Região `sgInputDateTimeOutroFuso` em `sg_input_date_time_page.snippets.g.dart`.
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    SgInputDateTime(
+      id: 'demo-tz-local',
+      labelText: 'local',
+      timeZone: 'Asia/Tokyo',
+      valueMode: SgInputDateTimeValueMode.local,
+      onChange: (value, local) => _fusoLocal.value = value,
+    ),
+    const SizedBox(height: 12),
+    SgInputDateTime(
+      id: 'demo-tz-utc',
+      labelText: 'utc',
+      timeZone: 'Asia/Tokyo',
+      valueMode: SgInputDateTimeValueMode.utc,
+      onChange: (value, local) => _fusoUtc.value = value,
+    ),
+    const SizedBox(height: 12),
+    SgInputDateTime(
+      id: 'demo-tz-offset',
+      labelText: 'offset',
+      timeZone: 'Asia/Tokyo',
+      valueMode: SgInputDateTimeValueMode.offset,
+      onChange: (value, local) => _fusoOffset.value = value,
+    ),
+    const SizedBox(height: 12),
+    ValueListenableBuilder<String?>(
+      valueListenable: _fusoLocal,
+      builder: (context, valor, _) =>
+          Text('local: ${valor ?? '-'}'),
+    ),
+    ValueListenableBuilder<String?>(
+      valueListenable: _fusoUtc,
+      builder: (context, valor, _) => Text('utc: ${valor ?? '-'}'),
+    ),
+    ValueListenableBuilder<String?>(
+      valueListenable: _fusoOffset,
+      builder: (context, valor, _) =>
+          Text('offset: ${valor ?? '-'}'),
+    ),
+  ],
+)
+```
+
+Ajuste: o trecho usa estado local do exemplo (`_fusoLocal`, `_fusoUtc`, `_fusoOffset`), definido assim na página do showcase:
+
+```dart
+final ValueNotifier<String?> _fusoLocal = ValueNotifier<String?>(null);
+final ValueNotifier<String?> _fusoUtc = ValueNotifier<String?>(null);
+final ValueNotifier<String?> _fusoOffset = ValueNotifier<String?>(null);
+```
+
+Digitando 15/01/2026 10:30 em Asia/Tokyo (+09:00), o valor vira `2026-01-15T10:30` (local), `2026-01-15T01:30:00Z` (utc) e `2026-01-15T10:30:00+09:00` (offset).
 
 ## SgFileUpload: Básico
 

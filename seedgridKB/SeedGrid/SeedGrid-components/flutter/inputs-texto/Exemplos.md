@@ -12,7 +12,7 @@ analisado-em: 2026-11-09
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Todos os exemplos de cada componente do showcase estão abaixo, na ordem e com os títulos dele (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (standalone, validação e valor vazio mudaram com `emptyValueIsNull` e `validation(num?)`): blocos regerados das constantes em `*.snippets.g.dart` do working tree do `fe-flutter` (HEAD local `19f7830`, sem push) e comparados texto a texto. Conferência anterior de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Todos os exemplos de cada componente do showcase estão abaixo, na ordem e com os títulos dele (`apps/seedgrid_showcase`).
 
 ## SgInputText
 
@@ -4541,8 +4541,7 @@ SizedBox(
         labelText: 'Apenas número par',
         decimals: 0,
         validation: (v) {
-          final n = num.tryParse(v);
-          return n != null && n % 2 == 0
+          return v != null && v % 2 == 0
               ? null
               : 'Use um número par.';
         },
@@ -4763,7 +4762,7 @@ SizedBox(
 
 ### Valor vazio
 
-emptyValue="null" permite limpar totalmente.
+emptyValueIsNull permite limpar totalmente (o valor passa a ser null em vez de 0).
 
 Região `sgInputNumberVazio` em `sg_input_number_page.snippets.g.dart`.
 
@@ -4773,7 +4772,7 @@ SizedBox(
   child: SgInputNumber(
     id: 'demo-empty',
     labelText: 'Pode ficar vazio',
-    emptyValue: SgInputNumberEmptyValue.nullValue,
+    emptyValueIsNull: true,
     decimals: 2,
   ),
 )
@@ -4827,21 +4826,21 @@ SizedBox(
         id: 'standalone-a',
         labelText: 'Entrada 1',
         decimals: 2,
-        onChange: (v) => _standalone['a'] = v,
+        onChange: (v) => _standalone['a'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgInputNumber(
         id: 'standalone-b',
         labelText: 'Entrada 2',
         decimals: 2,
-        onChange: (v) => _standalone['b'] = v,
+        onChange: (v) => _standalone['b'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgInputNumber(
         id: 'standalone-c',
         labelText: 'Entrada 3',
         decimals: 2,
-        onChange: (v) => _standalone['c'] = v,
+        onChange: (v) => _standalone['c'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgButton(
@@ -5138,8 +5137,7 @@ SizedBox(
         labelText: 'Valor mínimo (>= 1000)',
         currency: 'BRL',
         validation: (v) {
-          final n = num.tryParse(v);
-          return n != null && n >= 1000
+          return v != null && v >= 1000
               ? null
               : 'Valor deve ser ≥ 1000.';
         },
@@ -5348,7 +5346,7 @@ SizedBox(
 
 ### Valor vazio
 
-emptyValue="null" permite limpar totalmente.
+emptyValueIsNull permite limpar totalmente (o valor passa a ser null em vez de 0).
 
 Região `sgInputCurrencyVazio` em `sg_input_currency_page.snippets.g.dart`.
 
@@ -5359,7 +5357,7 @@ SizedBox(
     id: 'demo-empty',
     currency: 'BRL',
     labelText: 'Pode ficar vazio',
-    emptyValue: SgInputCurrencyEmptyValue.nullValue,
+    emptyValueIsNull: true,
   ),
 )
 ```
@@ -5412,21 +5410,21 @@ SizedBox(
         id: 'standalone-a',
         currency: 'BRL',
         labelText: 'Entrada 1',
-        onChange: (v) => _standalone['a'] = v,
+        onChange: (v) => _standalone['a'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgInputCurrency(
         id: 'standalone-b',
         currency: 'BRL',
         labelText: 'Entrada 2',
-        onChange: (v) => _standalone['b'] = v,
+        onChange: (v) => _standalone['b'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgInputCurrency(
         id: 'standalone-c',
         currency: 'BRL',
         labelText: 'Entrada 3',
-        onChange: (v) => _standalone['c'] = v,
+        onChange: (v) => _standalone['c'] = '${v ?? ''}',
       ),
       const SizedBox(height: 12),
       SgButton(
@@ -5524,6 +5522,143 @@ Wrap(
   ],
 )
 ```
+
+## CRUD com valores da API (número, moeda e data/hora)
+
+Exemplo da KB (não é do showcase: o do showcase é da sessão `front` e ainda não existe). Ciclo carregar da API, editar e salvar com `SgFormController` (`name` + `control`). O código **passa no `flutter analyze`** contra o `seedgrid_components` local (2026-11-12, `19f7830`); **não foi executado**.
+
+- **Carregar:** `_form.reset(registro)` entrega os valores ao formulário e vira o novo valor inicial (`isDirty` volta a `false`). Número aceita número ou texto (`12.5` ou `"12,5"`); `SgInputDateTime` aceita `local`, `utc` ou `offset`. Atribua **número** nos campos numéricos: o formulário guarda o que foi atribuído e só a edição grava número. `initialValue` do número/moeda em formulário entra como texto (`'${initialValue}'`); para CRUD use `reset`.
+- **Editar:** `quantidade` e `preco` voltam como `double` (`preco` é `null` com `emptyValueIsNull` e campo vazio); `entregaEm` volta como `Instant` em UTC (`2026-01-15T13:30:00Z`, `valueMode: SgInputDateTimeValueMode.utc` com `timeZone: 'America/Sao_Paulo'`, o usuário vê 10:30).
+- **`validation` recebe `num?`:** em `quantidade` (vazio chega como `0`) e em `preco` (vazio chega como `null`, serve de "obrigatório").
+- **Salvar:** `handleSubmit` valida todos os campos (os validadores do componente rodam no submit) e entrega o `Map` com os tipos certos. No Java, `entregaEm` lê com `Instant.parse(...)`.
+- **Sem `setState`:** o `State` só cria e descarta o controlador; a tela reage por `ListenableBuilder`.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:seedgrid_components/seedgrid_components.dart';
+
+class PedidoPage extends StatefulWidget {
+  const PedidoPage({super.key});
+
+  @override
+  State<PedidoPage> createState() => _PedidoPageState();
+}
+
+class _PedidoPageState extends State<PedidoPage> {
+  final SgFormController _form = SgFormController();
+
+  // API simulada (troque por http): o JSON traz número como número e a data/hora como Instant em UTC.
+  Future<Map<String, Object?>> _carregarPedido() async => {
+    'descricao': 'Cadeira de escritório',
+    'quantidade': 12.5,
+    'preco': 1234.56,
+    'entregaEm': '2026-01-15T13:30:00Z',
+  };
+
+  Future<void> _salvarPedido(Map<String, Object?> pedido) async {
+    debugPrint('PUT /pedidos/1 $pedido');
+  }
+
+  // Carregar: reset(registro) vira o novo valor inicial; número ou texto ("12,5") e a data/hora em qualquer formato.
+  Future<void> _carregar() async {
+    final pedido = await _carregarPedido();
+    if (!mounted) return;
+    _form.reset(pedido);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _carregar();
+  }
+
+  @override
+  void dispose() {
+    _form.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 360,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SgInputText(
+            id: 'crud-descricao',
+            labelText: 'Descrição',
+            name: 'descricao',
+            control: _form,
+            required: true,
+          ),
+          const SizedBox(height: 12),
+          SgInputNumber(
+            id: 'crud-quantidade',
+            labelText: 'Quantidade',
+            name: 'quantidade',
+            control: _form,
+            decimals: 1,
+            validation: (value) => value != null && value > 0
+                ? null
+                : 'A quantidade deve ser maior que zero',
+          ),
+          const SizedBox(height: 12),
+          SgInputCurrency(
+            id: 'crud-preco',
+            labelText: 'Preço',
+            name: 'preco',
+            control: _form,
+            currency: 'BRL',
+            emptyValueIsNull: true,
+            validation: (value) => value == null ? 'Informe o preço' : null,
+          ),
+          const SizedBox(height: 12),
+          SgInputDateTime(
+            id: 'crud-entrega',
+            labelText: 'Entrega',
+            name: 'entregaEm',
+            control: _form,
+            timeZone: 'America/Sao_Paulo',
+            valueMode: SgInputDateTimeValueMode.utc,
+            required: true,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              SgButton(
+                size: SgSize.sm,
+                appearance: SgAppearance.outline,
+                label: const Text('Salvar'),
+                onClick: () => _form.handleSubmit((values) async {
+                  await _salvarPedido(values);
+                  _form.reset(values);
+                }),
+              ),
+              const SizedBox(width: 8),
+              SgButton(
+                size: SgSize.sm,
+                appearance: SgAppearance.outline,
+                label: const Text('Recarregar'),
+                onClick: _carregar,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ListenableBuilder(
+            listenable: _form,
+            builder: (context, _) => Text(
+              'Alterado: ${_form.isDirty ? 'sim' : 'não'}\n${_form.getValues()}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+Equivalente em React: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD no React]]. Props: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API#SgInputNumber|SgInputNumber]], [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API#SgInputCurrency|SgInputCurrency]] e [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API#SgInputDateTime|SgInputDateTime]].
 
 ## SgInputOTP
 

@@ -12,13 +12,13 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`; versões anteriores, até 2026.11.1, não têm `SgFileUpload`). Os trechos abaixo são todos os exemplos do showcase, na ordem e com os títulos do showcase (pt-BR), cada um cópia 1:1 do `*.tsx.sample` (comparada por script em 2026-11-09, seedgrid-fe-components `0f304bb`), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-file-upload/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
+> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`; versões anteriores, até 2026.11.1, não têm `SgFileUpload`). Os exemplos de `SgInputDateTime` (1 a 12) foram conferidos em 2026-11-12 contra os `*.tsx.sample` do working tree do `fe-components` (HEAD local `4b150cc`, ainda sem push; os exemplos 9 a 12 e o 2 mudaram com `valueMode`, commits `e1284d8` e `fa2684c`); os demais componentes seguem conferidos em `0f304bb`. Os trechos abaixo são todos os exemplos do showcase, na ordem e com os títulos do showcase (pt-BR), cada um cópia 1:1 do `*.tsx.sample` (comparada por script em 2026-11-09, seedgrid-fe-components `0f304bb`), em `apps/showcase/src/app/components/sg-input-date-time/samples/`, `sg-file-upload/samples/`, `sg-image-upload/samples/` e `sg-camera-capture/samples/`. API: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]].
 
 ## SgInputDateTime
 
 ### 1) Básico
 
-O onChange entrega o instante em ISO 8601 UTC (ou null se o campo estiver incompleto).
+O onChange entrega o valor local do campo, sem fuso (padrão `valueMode="local"`, ex.: `2026-11-03T14:30`), ou null se o campo estiver incompleto. Observação: o texto pt-BR do showcase ainda diz "instante em ISO 8601 UTC"; é o texto que está desatualizado, o código entrega `local`.
 
 Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/basico.tsx.sample`.
 
@@ -49,13 +49,13 @@ import * as React from "react";
 import { SgInputDateTime } from "@seedgrid/fe-components";
 
 export default function App() {
-  const [instant, setInstant] = React.useState("2026-11-03T17:30:00.000Z");
+  const [instant, setInstant] = React.useState("2026-11-03T17:30:00Z");
 
   return (
     <div className="w-80 space-y-4">
-      <SgInputDateTime id="demo-zone-utc" label="UTC" timeZone="UTC" value={instant} onChange={(value) => value !== null && setInstant(value)} />
-      <SgInputDateTime id="demo-zone-sp" label="-03:00" timeZone="-03:00" value={instant} onChange={(value) => value !== null && setInstant(value)} />
-      <SgInputDateTime id="demo-zone-in" label="+05:30" timeZone="+05:30" value={instant} onChange={(value) => value !== null && setInstant(value)} />
+      <SgInputDateTime id="demo-zone-utc" label="UTC" timeZone="UTC" valueMode="utc" value={instant} onChange={(value) => value !== null && setInstant(value)} />
+      <SgInputDateTime id="demo-zone-sp" label="-03:00" timeZone="-03:00" valueMode="utc" value={instant} onChange={(value) => value !== null && setInstant(value)} />
+      <SgInputDateTime id="demo-zone-in" label="+05:30" timeZone="+05:30" valueMode="utc" value={instant} onChange={(value) => value !== null && setInstant(value)} />
       <p className="text-xs text-muted-foreground">Valor: {instant || "-"}</p>
     </div>
   );
@@ -138,7 +138,7 @@ export default function App() {
 
 ### 6) Dentro de um formulário
 
-O formulário guarda o instante ISO 8601 UTC.
+O formulário guarda o valor no formato de valueMode (local, por padrão).
 
 Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/dentro-de-um-formulario.tsx.sample`.
 
@@ -223,6 +223,108 @@ export default function App() {
   );
 }
 ```
+
+### 9) Valor local (padrão)
+
+valueMode="local": o valor é o relógio do campo, sem fuso (2026-01-15T10:30), no fuso America/Sao_Paulo.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/valor-local.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [value, setValue] = React.useState<string | null>(null);
+
+  return (
+    <div className="w-80">
+      <SgInputDateTime id="demo-mode-local" label="Quando" timeZone="America/Sao_Paulo" valueMode="local" onChange={(next) => setValue(next)} />
+      <p className="mt-2 text-xs text-muted-foreground">Valor: {value ?? "-"}</p>
+    </div>
+  );
+}
+```
+
+No host Java, leia com `LocalDateTime.parse(valor)`; um `Instant` não lê esse texto.
+
+### 10) Valor em UTC
+
+valueMode="utc": o valor é o instante em UTC (2026-01-15T13:30:00Z).
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/valor-utc.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [value, setValue] = React.useState<string | null>(null);
+
+  return (
+    <div className="w-80">
+      <SgInputDateTime id="demo-mode-utc" label="Quando" timeZone="America/Sao_Paulo" valueMode="utc" onChange={(next) => setValue(next)} />
+      <p className="mt-2 text-xs text-muted-foreground">Valor: {value ?? "-"}</p>
+    </div>
+  );
+}
+```
+
+No host Java, leia com `Instant.parse(valor)`. É o formato recomendado para back-end com `Instant`.
+
+### 11) Valor com deslocamento
+
+valueMode="offset": o valor é o relógio do campo com o deslocamento do fuso (2026-01-15T10:30:00-03:00).
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/valor-offset.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [value, setValue] = React.useState<string | null>(null);
+
+  return (
+    <div className="w-80">
+      <SgInputDateTime id="demo-mode-offset" label="Quando" timeZone="America/Sao_Paulo" valueMode="offset" onChange={(next) => setValue(next)} />
+      <p className="mt-2 text-xs text-muted-foreground">Valor: {value ?? "-"}</p>
+    </div>
+  );
+}
+```
+
+No host Java, leia com `OffsetDateTime.parse(valor)`.
+
+### 12) Outro fuso nos três modos
+
+O mesmo campo em Asia/Tokyo (+09:00): digite 10:30 e veja o valor nos modos local, utc e offset.
+
+Fonte: `apps/showcase/src/app/components/sg-input-date-time/samples/outro-fuso.tsx.sample`.
+
+```tsx
+import * as React from "react";
+import { SgInputDateTime } from "@seedgrid/fe-components";
+
+export default function App() {
+  const [local, setLocal] = React.useState<string | null>(null);
+  const [utc, setUtc] = React.useState<string | null>(null);
+  const [offset, setOffset] = React.useState<string | null>(null);
+
+  return (
+    <div className="w-80 space-y-4">
+      <SgInputDateTime id="demo-tz-local" label="local" timeZone="Asia/Tokyo" valueMode="local" onChange={(next) => setLocal(next)} />
+      <SgInputDateTime id="demo-tz-utc" label="utc" timeZone="Asia/Tokyo" valueMode="utc" onChange={(next) => setUtc(next)} />
+      <SgInputDateTime id="demo-tz-offset" label="offset" timeZone="Asia/Tokyo" valueMode="offset" onChange={(next) => setOffset(next)} />
+      <p className="text-xs text-muted-foreground">local: {local ?? "-"}</p>
+      <p className="text-xs text-muted-foreground">utc: {utc ?? "-"}</p>
+      <p className="text-xs text-muted-foreground">offset: {offset ?? "-"}</p>
+    </div>
+  );
+}
+```
+
+Digitando 15/01/2026 10:30 em Asia/Tokyo (+09:00), o valor vira `2026-01-15T10:30` (local), `2026-01-15T01:30:00Z` (utc) e `2026-01-15T10:30:00+09:00` (offset).
 
 ## SgFileUpload
 

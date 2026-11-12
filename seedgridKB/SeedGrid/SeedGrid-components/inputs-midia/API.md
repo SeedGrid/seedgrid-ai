@@ -14,6 +14,8 @@ plataforma: react
 
 > **Nova API do upload (P141, validada pelo dono no Flutter em 2026-11-04):** `SgFileUpload` é o componente base de arquivos e `SgImageUpload` é composição dele. O valor é **sempre uma lista**, `maxFiles` (padrão `1`) substitui o `multiple`, `maxSizePerFile`/`maxSizeTotal` aceitam bytes ou texto como `"1.5MB"`, e o tipo é conferido pelo conteúdo. **Sem retrocompatibilidade**: `maxSizeBytes` e o valor `File | string | null` do `SgImageUpload` deixaram de existir. Código no commit local `bb0ad1f` do `fe-components`. Ver [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API Flutter]] (a mesma API).
 
+> **Atualização de 2026-11-12 (P155.F3.T9), `SgInputDateTime`.** Nova prop `valueMode` (`"local"`, `"utc"` ou `"offset"`) escolhe o formato do valor que sai (`onChange` e formulário) e que `value`/`defaultValue`/`defaultValues`/`setValue` aceitam. **Mudança que quebra:** o padrão agora é `local` (`2026-01-15T10:30`); antes o `onChange` entregava sempre o instante UTC com milissegundos (`2026-11-03T17:30:00.000Z`). Para manter o instante UTC use `valueMode="utc"` (agora sem milissegundos). Conferido no código local do `fe-components` (commits `e1284d8` e `fa2684c`, ainda sem push; `src/inputs/SgInputDateTime.tsx`, `src/inputs/dateTimeLogic.ts`, `CHANGELOG.md`).
+
 > **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`, a partir do commit `9552636`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
 
 Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].
@@ -25,12 +27,13 @@ Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
 | `id` | `string` | — | Sim | Identificador único do campo. |
-| `value` | `string \| Date \| null` | — | Não | Instante controlado: ISO 8601 (com offset ou `Z`) ou `Date`. `null` ou `""` limpa o campo. |
-| `defaultValue` | `string \| Date \| null` | — | Não | Instante inicial (não controlado). |
-| `onChange` | `(value: string \| null, local: string) => void` | — | Não | A cada alteração: instante ISO 8601 **UTC** (`2026-11-03T17:30:00.000Z`) ou `null` se vazio, incompleto ou inválido; `local` é o texto do campo no fuso do campo (`2026-11-03T14:30`). |
+| `value` | `string \| Date \| null` | — | Não | Valor controlado, **em qualquer formato**: texto local sem fuso (`"2026-01-15T10:30"`, já no relógio do campo), ISO 8601 com `Z` ou deslocamento (`"2026-01-15T13:30:00Z"`, `"2026-01-15T10:30:00-03:00"`) ou `Date`. `null` ou `""` limpa o campo. |
+| `defaultValue` | `string \| Date \| null` | — | Não | Valor inicial (não controlado), em qualquer formato (os mesmos de `value`). |
+| `onChange` | `(value: string \| null, local: string) => void` | — | Não | A cada alteração: o valor no formato de `valueMode` (`local` `2026-11-03T14:30`, `utc` `2026-11-03T17:30:00Z`, `offset` `2026-11-03T14:30:00-03:00`) ou `null` se vazio, incompleto ou inválido; `local` (2º argumento) é sempre o texto do campo no fuso do campo (`2026-11-03T14:30`). |
+| `valueMode` | `"local" \| "utc" \| "offset"` | `"local"` | Não | Formato do valor que **sai** (1º argumento do `onChange` e valor do formulário via `control`) e que o formulário/`value` **aceitam**. Ver [[#Formato do valor (`valueMode`)]]. |
 | `minDate` | `string \| Date` | — | Não | Menor instante permitido. |
 | `maxDate` | `string \| Date` | — | Não | Maior instante permitido. |
-| `timeZone` | `string` | `"local"` | Não | Fuso em que o campo mostra e interpreta a hora: `"local"`, `"UTC"`, deslocamento fixo (`"+03:00"`, `"-03:00"`) ou nome IANA. |
+| `timeZone` | `string` | `"local"` | Não | Fuso em que o campo mostra e interpreta a hora: `"local"` (o do dispositivo), `"UTC"`, deslocamento fixo (`"+03:00"`, `"-03:00"`) ou nome IANA (`"America/Sao_Paulo"`, `"Asia/Tokyo"`). Também define o deslocamento de `utc` e `offset`. |
 | `showSeconds` | `boolean` | `false` | Não | Mostra e aceita segundos. |
 | `minuteStep` | `number` | — | Não | Passo dos minutos (1, 5, 10, 15, 30…). Ignorado com `showSeconds`. |
 | `onEnter` | `() => void` | — | Não | Ao receber foco. |
@@ -39,9 +42,27 @@ Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange
 
 **Erros de validação** (`DateTimeErrorCode`, de `dateTimeLogic.ts`): `required`, `invalid`, `min`, `max`, `range`. As mensagens usam `components.inputs.datetime.*`.
 
-**Comportamento do valor (Confirmado):** o campo **mostra** a hora no `timeZone` escolhido, mas o `onChange` **sempre entrega UTC**. Com `react-hook-form`, o valor fica com o RHF (a prop `value` não é necessária).
+**Comportamento do valor (Confirmado):** o campo **mostra** a hora no `timeZone` escolhido; o formato do valor que sai e que entra vem do `valueMode` (ver a seção [[#Formato do valor (`valueMode`)]] abaixo). Com `react-hook-form`, o valor fica com o RHF (a prop `value` não é necessária).
 
 **Idioma (Confirmado em `dateTimeLogic.ts` e `SgInputDateTime.tsx`):** `formatWallClock` monta os limites mínimo e máximo que aparecem nas mensagens de erro, com a data no idioma ativo (`Intl.DateTimeFormat`: pt-BR e pt-PT `05/11/2026`, en-US `11/5/2026`, es `5/11/2026`, fr `05/11/2026`) e a hora sempre em 24h; ao trocar o idioma, a mensagem de erro já exibida é recalculada com o valor atual.
+
+## Formato do valor (`valueMode`)
+
+Fonte: `src/inputs/SgInputDateTime.tsx` (linhas 44-47, 66-100, 181-183) e `src/inputs/dateTimeLogic.ts` (`formatDateTimeValue`, linha 114; `parseDateTimeValue`, linha 130). O campo **mostra e interpreta** a hora no `timeZone`; o `valueMode` só escolhe como o valor **trafega**. Exemplo: o usuário digita `15/01/2026 10:30` com `timeZone="America/Sao_Paulo"` (-03:00).
+
+| `valueMode` | Valor que sai | Quando usar | Como o host Java lê (**Inferência**: `java.time` padrão) |
+|---|---|---|---|
+| `"local"` (padrão) | `2026-01-15T10:30` (com `showSeconds`, `2026-01-15T10:30:15`): o relógio do campo, sem fuso | hora de parede sem fuso (hora marcada na agenda do lugar) | `LocalDateTime.parse(valor)`. **`Instant` não lê** esse texto: sem fuso não há instante |
+| `"utc"` | `2026-01-15T13:30:00Z`: o instante em UTC, sempre com segundos e sem milissegundos | instante exato; recomendado para back-end com `Instant` | `Instant.parse(valor)` |
+| `"offset"` | `2026-01-15T10:30:00-03:00`: o relógio do campo com o deslocamento do `timeZone`, sempre com segundos | guardar instante **e** o relógio de quem digitou | `OffsetDateTime.parse(valor)` |
+
+- **Vazio, incompleto ou inválido:** o 1º argumento do `onChange` é `null`; no formulário (`control`) o campo grava `""` (`SgInputDateTime.tsx:79`), então o host converte `""` em `null` ao montar o JSON.
+- **O que o campo aceita (`value`, `defaultValue`, `defaultValues`, `setValue`, `reset`):** qualquer um dos três formatos acima ou um `Date`. Texto **sem fuso** é o relógio do próprio campo e **não** é convertido; texto com `Z` ou deslocamento é convertido para o `timeZone` do campo (`parseDateTimeValue`). Não existe prop `initialValue` no React: use `defaultValue` (sem formulário) ou `defaultValues`/`reset` (com formulário).
+- **Com `control` (padrão do CRUD):** o formulário guarda o valor no formato de `valueMode`, tanto o digitado quanto o que o host seta (`SgInputDateTime.tsx:67-94`; teste: 18 casos, 3 modos, `America/Sao_Paulo` e `Asia/Tokyo`, segundo o relato da `front`, não reexecutado).
+- **Com `register`:** `local` passa o texto do `<input>` direto. Em `utc` e `offset` o componente aplica `setValueAs` e converte **só o que é digitado** (`SgInputDateTime.tsx:96-99`); o que o host atribui por código **não** passa por essa conversão (CHANGELOG). **Para atribuir por código use `control`.**
+- **`validation`** (herdada do `SgInputText`) recebe sempre o texto **local** (`2026-01-15T10:30`), qualquer que seja o `valueMode` (`SgInputDateTime.tsx:151`).
+
+**Mudança que quebra** (`CHANGELOG.md`): antes de `e1284d8` o 1º argumento do `onChange` era sempre o instante UTC com milissegundos. Quem lê esse valor como `Instant` precisa passar `valueMode="utc"`; quem não mexer recebe `local`, que o `Instant` do Java não lê.
 
 ## `SgFileUpload`
 

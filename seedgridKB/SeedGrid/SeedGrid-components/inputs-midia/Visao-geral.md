@@ -22,7 +22,7 @@ Referência completa: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de dat
 
 | Componente | Para que serve | Exportado |
 |---|---|---|
-| `SgInputDateTime` | Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, mostrando a hora no fuso escolhido, com limites, passo de minutos e validação. | sim |
+| `SgInputDateTime` | Data e hora no fuso escolhido; o valor trafega em `local` (padrão), `utc` ou `offset` (`valueMode`). Com limites, passo de minutos e validação. | sim |
 | `SgFileUpload` | **Base de arquivos:** escolhe um ou vários arquivos de qualquer tipo (clique ou arrastar e soltar), confere o tipo pelo conteúdo, valida quantidade e tamanho (por arquivo e total) e mostra a lista com ícone do tipo. O valor é sempre uma lista. Não envia nada ao servidor. | sim |
 | `SgImageUpload` | **Composição** do `SgFileUpload` só para imagens: miniaturas (grade com `maxFiles` maior que 1), dimensão mínima e proporção. Funciona igual ao `SgFileUpload`. Não envia nada ao servidor. | sim |
 | `SgCameraCapture` | Pré-visualização da câmera com guia de enquadramento (oval ou retângulo), alternância frontal/traseira e captura que devolve um JPEG ao pai. Não envia nada ao servidor. | sim |
@@ -31,7 +31,7 @@ Os quatro ficam em `src/inputs/` e são exportados pela raiz do pacote. **Confir
 
 ## Quando usar
 
-- **`SgInputDateTime`:** agendamentos, compromissos, prazos e qualquer timestamp que precise trafegar como instante UTC. Para **só data**, use `SgInputDate`; para texto livre, `SgInputText`. Para intervalo início/fim, combine dois campos com `minDate`/`maxDate`.
+- **`SgInputDateTime`:** agendamentos, compromissos, prazos e qualquer timestamp. Para instante exato em back-end com `Instant`, use `valueMode="utc"`; para hora marcada sem fuso, o padrão `local`. Para **só data**, use `SgInputDate`; para texto livre, `SgInputText`. Para intervalo início/fim, combine dois campos com `minDate`/`maxDate`.
 - **`SgFileUpload`:** anexos e documentos (PDF, planilha, áudio, qualquer arquivo), um ou vários, com limite de quantidade e de tamanho. Não serve para recorte nem para enviar ao servidor (o envio é do host).
 - **`SgImageUpload`:** foto de perfil, avatar, logotipo, foto de documento, galeria de imagens (`maxFiles` maior que 1). Não serve para arquivos que não são imagem (use o `SgFileUpload`), nem para recorte ou compressão (**não fazem parte** do componente).
 - **`SgCameraCapture`:** tirar a foto na hora (selfie, documento, portaria) com tratamento de permissão negada. Não grava vídeo nem áudio; não analisa qualidade nem reconhece rosto (isso é do host).
@@ -62,7 +62,7 @@ Essas recomendações vêm dos `aiHints` dos `*.meta.ts` (**Confirmado**) e das 
 
 - **Câmera exige contexto seguro** (HTTPS ou `localhost`) e a permissão do usuário. Sem isso o componente mostra o estado `permission`, `noCamera` ou `failed`. **Inferência** a partir de `getUserMedia`.
 - **Não testado em dispositivo real**: a câmera só foi validada com mock. Teste em celular antes de depender dela em produção.
-- `SgInputDateTime`: o campo guarda **instantes**. Quem trabalha com "data e hora sem fuso" (horário de parede) deve fixar `timeZone`. O padrão é o fuso local do navegador.
+- `SgInputDateTime`: o **padrão agora é `valueMode="local"`** (`2026-01-15T10:30`, sem fuso; mudança que quebra, antes o `onChange` dava UTC com milissegundos). Um `Instant` do Java não lê esse texto: para instantes use `valueMode="utc"` (`2026-01-15T13:30:00Z`) ou `"offset"` (`2026-01-15T10:30:00-03:00`, `OffsetDateTime`). `timeZone` define em que fuso o campo mostra a hora; o padrão é o fuso do navegador. Com `register`, `utc`/`offset` convertem só o que é digitado: para atribuir por código use `control`. Detalhes: [[SeedGrid/SeedGrid-components/inputs-midia/API#Formato do valor (`valueMode`)|API]].
 - `SgFileUpload` e `SgImageUpload`: nada é enviado e nada é recortado ou comprimido. A leitura de dimensões do `SgImageUpload` só roda quando há `minWidth`, `minHeight` ou `aspect`. A paridade com o Flutter é **parcial**: o React aceita arrastar e soltar e entrega `File` do navegador; o Flutter abre o seletor do sistema e entrega `SgFile`.
 - `SgCameraCapture` não tem `onFrame`: a análise de qualidade fica fora da versão 1.
 - Nenhum dos quatro está publicado ainda (ver o aviso no topo).

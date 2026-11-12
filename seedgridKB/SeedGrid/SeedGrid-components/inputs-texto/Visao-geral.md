@@ -40,8 +40,8 @@ O padrão de nomes de eventos vem da casa: `onEnter` no foco, `onExit` no blur, 
 | `SgInputPostalCode` | CEP/código postal de BR, PT, US, ES, UY, AR e PY, com ViaCEP opcional. | `SgInputText` |
 | `SgInputDate` | Data com o widget nativo (`type="date"`) e limites min/max. | `SgInputText` |
 | `SgInputBirthDate` | Data de nascimento com idade mínima/máxima. | `SgInputDate` |
-| `SgInputNumber` | Número decimal formatado pelo locale, com min/max. | própria |
-| `SgInputCurrency` | Valor monetário com símbolo via `Intl` (padrão BRL). | própria (derivada do código do `SgInputNumber`) |
+| `SgInputNumber` | Número decimal formatado pelo locale, com min/max; entrega número (`null` só com `emptyValueIsNull`). | própria |
+| `SgInputCurrency` | Valor monetário com símbolo via `Intl` (padrão BRL); entrega número (`null` só com `emptyValueIsNull`). | própria (derivada do código do `SgInputNumber`) |
 | `SgInputOTP` | Código de uso único segmentado, com máscara (`999999`, `###-###`). | própria |
 
 Para escolhas fechadas, como combos e listas, use o grupo [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|inputs de seleção]]. Para texto rico, use o [[SeedGrid/SeedGrid-components/editor/Visao-geral|SgTextEditor]]. Esses mesmos encaminhamentos aparecem nos `aiHints.avoidUseCases` de `SgInputText.meta.ts`. **Confirmado**.

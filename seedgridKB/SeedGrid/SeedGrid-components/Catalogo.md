@@ -80,8 +80,8 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgInputPostalCode` | sim | CEP/código postal de BR, PT, US, ES, UY, AR e PY, com ViaCEP opcional | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
 | `SgInputDate` | sim | Data com o widget nativo (type="date") e limites min/max | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
 | `SgInputBirthDate` | sim | Data de nascimento com idade mínima/máxima | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
-| `SgInputNumber` | sim | Número decimal formatado pelo locale, com min/max | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
-| `SgInputCurrency` | sim | Valor monetário com símbolo via Intl (padrão BRL) | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
+| `SgInputNumber` | sim | Número decimal formatado pelo locale, com min/max; entrega número (null só com emptyValueIsNull) | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
+| `SgInputCurrency` | sim | Valor monetário com símbolo via Intl (padrão BRL); entrega número (null só com emptyValueIsNull) | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
 | `SgInputOTP` | sim | Código de uso único segmentado, com máscara (999999, ###-###) | [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] |
 
 ## Inputs de seleção e valores — React
@@ -107,7 +107,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 
 | Nome | Exportado | Resumo | Nota |
 |---|---|---|---|
-| `SgInputDateTime` | sim | Campo de data e hora que recebe e entrega instantes ISO 8601 em UTC, mostrando a hora no fuso… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
+| `SgInputDateTime` | sim | Data e hora no fuso escolhido; o valor trafega em local (padrão), utc ou offset (valueMode) | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
 | `SgFileUpload` | sim | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (clique ou arrastar e soltar)… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
 | `SgImageUpload` | sim | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles maior que 1), dimensão… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
 | `SgCameraCapture` | sim | Pré-visualização da câmera com guia de enquadramento (oval ou retângulo), alternância… | [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] |
@@ -376,8 +376,8 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 | `SgInputPostalCode` | portado | CEP e códigos postais de 7 países, com consulta opcional ao ViaCEP | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
 | `SgInputDate` | portado | Data em texto com máscara e calendário próprio; valor ISO | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
 | `SgInputBirthDate` | portado | Data de nascimento com idade mínima e máxima | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
-| `SgInputNumber` | portado | Número decimal formatado pelo idioma, com limites mínimo e máximo | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
-| `SgInputCurrency` | portado | Valor monetário com símbolo, moeda e separadores do idioma | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
+| `SgInputNumber` | portado | Número decimal pelo idioma, com limites; entrega número (double; null só com emptyValueIsNull) | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
+| `SgInputCurrency` | portado | Valor monetário com símbolo e moeda; entrega número (double; null só com emptyValueIsNull) | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
 | `SgInputOTP` | portado | Código de uso único em slots, com máscara, colagem e controller | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
 | `SgMaskFormatter` | sim | Aplica [mask] a cada edicao e posiciona o cursor depois do mesmo trecho significativo… | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
 | `sgPhoneStripDdi` | sim | Telefone brasileiro com DDI (+55 11 98765-4321, 5511987654321): tira o 55 | [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API\|API]] |
@@ -481,7 +481,7 @@ gerado-por: scripts/kb-catalogs.mjs --only catalogo
 
 | Nome | Estado de paridade (componente) / Exportado (símbolo) | Resumo | Nota |
 |---|---|---|---|
-| `SgInputDateTime` | portado | Campo de data e hora com máscara, calendário e seletor de hora; entrega o instante ISO 8601 UTC | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
+| `SgInputDateTime` | portado | Data e hora com máscara, calendário e seletor; o valor trafega em local (padrão), utc ou offset… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgFileUpload` | parcial | Base de arquivos: escolhe um ou vários arquivos de qualquer tipo (mediaType), valida o tipo pelo… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgImageUpload` | parcial | Composição do SgFileUpload só para imagens: miniaturas (grade com maxFiles > 1), dimensão mínima e… | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |
 | `SgCameraCapture` | portado | Pré-visualização da câmera com guia de enquadramento, troca frontal/traseira e captura em JPEG | [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API\|API]] |

@@ -12,6 +12,8 @@ analisado-em: 2026-11-07
 
 > **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-texto/API|API — Inputs de texto e documentos (React)]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos (Flutter)]].
 
+> **Atualização de 2026-11-12 (P155.F3.T9), `SgInputNumber` e `SgInputCurrency`.** Seções reescritas e conferidas contra o código Dart local do `fe-flutter` (commits locais ainda sem push: `c262a0f`, `d577401`, `2abdb89`; árvore em `19f7830`), com arquivo e linha. **Mudanças que quebram:** `onChange` e o valor do formulário passam a ser **número** (`double`; antes, texto como `"1234.50"`); a prop `emptyValue` (enum `SgInputNumberEmptyValue`/`SgInputCurrencyEmptyValue`) foi **removida** e entra `emptyValueIsNull` (`bool`); `validation` passa a ser `String? Function(num?)` (antes, `String`). As máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) estão em mudança (P155.F3.T13) e não foram tocadas aqui.
+
 > **Como ler as tabelas.** Extraídas por script do código Dart: o **tipo** é o do campo `final` do widget; o **padrão** é o do construtor (`this.x = valor`) e, quando o construtor não declara, o do contrato gerado do React (marcado com †); **Origem** = `React` (prop do contrato, nome e valores iguais aos do React; ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]]) ou `Flutter` (extra do Dart, como `controller`, `onClick`, `child`). Descrições: contrato gerado (texto original, sem acento quando assim na fonte) ou comentário `///` do widget. Valores de enum aparecem na descrição como o React os escreve; no Dart são os enums de `generated/enums.g.dart` (ex.: `SgSeverity.primary` ↔ `'primary'`).
 
 ## SgInputText
@@ -1173,7 +1175,7 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `decimals` | `num?` | — | não | React | Quantidade de casas decimais permitidas. |
 | `elevation` | `SgInputNumberElevation?` | — | não | React | Padrao `sm` (sombra leve), como no React. Valores: `none`, `sm`, `md`, `lg`. |
-| `emptyValue` | `SgInputNumberEmptyValue?` | — | não | React | `zero` (padrao: o campo mostra 0,00) ou `nullValue` ('null' no React: o campo comeca vazio). Valores: `null`, `zero`. |
+| `emptyValueIsNull` | `bool?` | `false` † | não | React | Se `true`, campo vazio vale `null`; se `false` (padrão), vale `0` (o campo mostra 0,00). Vale para `onChange`, formulário, botão limpar e `validation`. Substitui o antigo `emptyValue`, removido. |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1189,7 +1191,7 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `minValue` | `num?` | — | não | React | — |
 | `minValueMessage` | `String?` | — | não | React | — |
 | `name` | `String?` | — | não | React | Nome do campo para formularios. |
-| `onChange` | `ValueChanged<String>?` | — | não | React | Callback com o valor numerico atual. Tipo no React: `((value: string) => void)`. |
+| `onChange` | `ValueChanged<num?>?` | — | não | React | Recebe o valor como número (`double`; `null` somente com `emptyValueIsNull`). Tipo no React: `((value: number \| null) => void)`. |
 | `onClear` | `VoidCallback?` | — | não | React | Tipo no React: `(() => void)`. |
 | `onEnter` | `VoidCallback?` | — | não | React | Foco (nao a tecla Enter; igual ao React). Tipo no React: `(() => void)`. |
 | `onExit` | `VoidCallback?` | — | não | React | Perda de foco. Tipo no React: `(() => void)`. |
@@ -1204,11 +1206,11 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `textInputType` | `SgInputNumberTextInputType?` | — | não | React | Padrao `decimal` (teclado numerico com virgula). Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
 | `type` | `Object?` | — | não | React | `type` do `<input>`; sem efeito no Flutter. Tipo no React: `React.HTMLInputTypeAttribute`. |
 | `validateOnBlur` | `bool?` | — | não | React | — |
-| `validation` | `String? Function(String value)?` | — | não | React | Tipo no React: `((value: string) => string)`. |
+| `validation` | `String? Function(num? value)?` | — | não | React | Recebe o mesmo número do `onChange`; roda também com o campo vazio (`0`, ou `null` com `emptyValueIsNull`). Devolve a mensagem de erro ou `null`. Tipo no React: `((value: number \| null) => string \| null)`. |
 | `width` | `Object?` | — | não | React | Numero (px) ou texto ('50%'). Padrao: largura toda. Tipo no React: `string \| number`. |
 | `withBorder` | `bool?` | — | não | React | — |
-| `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulario (no React, `inputProps.defaultValue`): "1234.5", "12,5"... |
-| `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`); mudar atualiza o campo. |
+| `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulário (no React, `inputProps.defaultValue`): número ou texto (`1234.5` ou `"12,5"`). Com `name` + `control`, vale só se o campo ainda não existe no formulário, e o formulário guarda o valor como **texto** (`'${initialValue}'`) até a primeira edição (`numeric_field.dart:229`); prefira `defaultValues`/`reset` com número. |
+| `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`): número ou texto; mudar atualiza o campo (`numeric_field.dart:178-191`). |
 | `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
@@ -1219,19 +1221,19 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 
 - **Diferença de plataforma:** sem `Intl` no Dart. Separadores vêm de uma tabela gerada a partir do Node (30 locales latinos); fora da tabela cai no idioma e depois em `en-US`. O React trata cada tecla e o Flutter recebe a diferença de texto (um formatador a converte).
 - **Não portado:** `inputProps` (aceito e ignorado), `className`/`style`/`register` (3 props omitidas de propósito). `type` não tem efeito. Não há `focusNode` nem `autofocus` neste widget.
-- O valor (em `onChange` e no formulário) é a string canônica com ponto (`"1234.50"`), como no React; o campo mostra o número formatado pelo idioma do `SgComponentsI18nProvider`.
+- O valor (em `onChange` e no formulário, quando o usuário digita) é um **número** (`double`), como no React (`numeric_field.dart:322-335`, `_commit`); `null` somente com `emptyValueIsNull`. O campo mostra o número formatado pelo idioma do `SgComponentsI18nProvider`. O que o host **atribui** (`defaultValues`, `reset`, `setValue`, `initialValue`) fica no formulário como foi atribuído (número ou texto) até a primeira edição.
 - Os validadores do componente (`required`, `minValue`, `maxValue`, `validation`) rodam também em `handleSubmit` e `trigger` (decisão do dono).
 - Limitações de teste registradas: golden com a fonte de teste do Flutter e sem teste em IME nem em dispositivo.
 
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (`inputs/number/sg_input_number.dart`, motor em `inputs/number/numeric_field.dart`)
-- `onChange: ValueChanged<String>`: valor canônico (`"1234.50"`) a cada edição do usuário; também dentro de formulário. `onClear` (botão limpar volta ao zero ou a vazio, conforme `emptyValue`), `onEnter` (foco), `onExit`, `onValidation`.
-- Validação (`_messageFor`): vazio (ou zero quando `emptyValue` não é `null`) devolve `requiredMessage` se `required`; `minValue` e `maxValue` devolvem `minValueMessage`/`maxValueMessage` (padrão `components.inputs.number.min/max`); por fim `validation(valorCanônico)`. Roda na saída (`validateOnBlur ?? true` ou após interação) e a cada edição se `validateOnBlur == false`.
-- Padrões: `decimals` 2, `allowNegative` `true`, `emptyValue` `zero` (o campo mostra 0,00; com `null` começa vazio), `elevation` `sm`, `textInputType` `decimal`.
+- `onChange: ValueChanged<num?>`: o número (`1234.5`) a cada edição do usuário; também dentro de formulário. `onClear` (o botão limpar volta a `0`, ou a vazio/`null` com `emptyValueIsNull`), `onEnter` (foco), `onExit`, `onValidation: ValueChanged<String?>`.
+- Validação (`_messageFor`, `numeric_field.dart:279-305`): vazio (ou zero, quando `emptyValueIsNull` é `false`) devolve `requiredMessage` se `required`; senão chama `validation` com `0` (padrão) ou `null` (`emptyValueIsNull`), então a `validation` serve de "obrigatório"; para valor preenchido, `minValue` e `maxValue` devolvem `minValueMessage`/`maxValueMessage` (padrão `components.inputs.number.min/max`) e por fim vem `validation(numero)`. Roda na saída (`validateOnBlur ?? true` ou após interação) e a cada edição se `validateOnBlur == false`.
+- Padrões: `decimals` 2, `allowNegative` `true`, `emptyValueIsNull` `false` (vazio vale `0` e o campo mostra 0,00; com `true` começa vazio e vale `null`), `elevation` `sm`, `textInputType` `decimal`.
 
 **Controller, formulário e estado**
-- Sem controller. Formulário: `name` + `control`/`SgForm`; `registerField(validator: _formValidate)` roda em `trigger`/`handleSubmit`. `initialValue`/`value` são `Object?` (`"1234.5"`, `"12,5"`, números); `value` nulo sem formulário mantém o estado interno. O campo tem `FocusNode` interno, não exposto.
+- Sem controller. Formulário: `name` + `control`/`SgForm`; `registerField(validator: _formValidate)` roda em `trigger`/`handleSubmit`. `initialValue`/`value` são `Object?` (`1234.5`, `"12,5"`, números ou texto); `value` nulo sem formulário mantém o estado interno. **Carregar da API e editar:** `controller.reset({...})` ou `setValue(name, 12.5)` atualizam o campo (`_syncFromForm`, `numeric_field.dart:233`); exemplo completo em [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD com valores da API]]. O campo tem `FocusNode` interno, não exposto.
 - Implementa `SgSelfValidating` (`validateNow`) para o `SgWizard`.
 
 **Acessibilidade**
@@ -1262,7 +1264,7 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `currencySymbolOverride` | `String?` | — | não | React | — |
 | `currencySymbolPlacement` | `SgInputCurrencyCurrencySymbolPlacement?` | — | não | React | Padrao `auto` (a posicao do idioma). Valores: `prefix`, `auto`, `suffix`. |
 | `decimals` | `num?` | — | não | React | Padrao: as casas da moeda (BRL 2, JPY 0...). |
-| `emptyValue` | `SgInputCurrencyEmptyValue?` | — | não | React | Valores: `null`, `zero`. |
+| `emptyValueIsNull` | `bool?` | `false` † | não | React | Se `true`, campo vazio vale `null`; se `false` (padrão), vale `0` (o campo mostra 0,00). Vale para `onChange`, formulário, botão limpar e `validation`. Substitui o antigo `emptyValue`, removido. |
 | `error` | `String?` | — | não | React | — |
 | `filled` | `bool?` | — | não | React | — |
 | `hintText` | `String?` | — | não | React | — |
@@ -1276,7 +1278,7 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `minValue` | `num?` | — | não | React | — |
 | `minValueMessage` | `String?` | — | não | React | — |
 | `name` | `String?` | — | não | React | Nome do campo para formularios. |
-| `onChange` | `ValueChanged<String>?` | — | não | React | Callback com o valor monetario normalizado. Tipo no React: `((value: string) => void)`. |
+| `onChange` | `ValueChanged<num?>?` | — | não | React | Recebe o valor como número (`double`; `null` somente com `emptyValueIsNull`). Tipo no React: `((value: number \| null) => void)`. |
 | `onClear` | `VoidCallback?` | — | não | React | Tipo no React: `(() => void)`. |
 | `onEnter` | `VoidCallback?` | — | não | React | Foco (nao a tecla Enter; igual ao React). Tipo no React: `(() => void)`. |
 | `onExit` | `VoidCallback?` | — | não | React | Perda de foco. Tipo no React: `(() => void)`. |
@@ -1293,11 +1295,11 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `type` | `Object?` | — | não | React | `type` do `<input>`; sem efeito no Flutter. Tipo no React: `React.HTMLInputTypeAttribute`. |
 | `useGrouping` | `bool?` | — | não | React | Padrao `true`. |
 | `validateOnBlur` | `bool?` | — | não | React | — |
-| `validation` | `String? Function(String value)?` | — | não | React | Tipo no React: `((value: string) => string)`. |
+| `validation` | `String? Function(num? value)?` | — | não | React | Recebe o mesmo número do `onChange`; roda também com o campo vazio (`0`, ou `null` com `emptyValueIsNull`). Devolve a mensagem de erro ou `null`. Tipo no React: `((value: number \| null) => string \| null)`. |
 | `width` | `Object?` | — | não | React | Tipo no React: `string \| number`. |
 | `withBorder` | `bool?` | — | não | React | — |
-| `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulario (no React, `inputProps.defaultValue`): "1234.56". |
-| `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`). |
+| `initialValue` | `Object?` | — | não | Flutter | Valor inicial sem formulário (no React, `inputProps.defaultValue`): número ou texto (`1234.56` ou `"1234,56"`). Com `name` + `control`, vale só se o campo ainda não existe no formulário, e o formulário guarda o valor como **texto** (`'${initialValue}'`) até a primeira edição (`numeric_field.dart:229`); prefira `defaultValues`/`reset` com número. |
+| `value` | `Object?` | — | não | Flutter | Valor controlado de fora (no React, `inputProps.value`): número ou texto; mudar atualiza o campo (`numeric_field.dart:178-191`). |
 | `enabled` | `bool?` | — | não | React | — |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).
@@ -1308,18 +1310,18 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 
 - **Diferença de plataforma:** sem `Intl` no Dart. Símbolo, posição e separadores vêm de tabela gerada do Node (30 locales latinos; 162 moedas); locale sem dados cai no idioma e depois em `en-US`. O React trata cada tecla e o Flutter recebe a diferença de texto.
 - **Não portado:** `inputProps` (aceito e ignorado), `className`/`style`/`register` (3 props omitidas de propósito). O widget não tem `elevation`, `labelPosition`, `labelAlign` nem `labelWidth` (o rótulo só flutua; o React também não tem `labelPosition` aqui) nem `focusNode`.
-- O valor entregue é a string canônica com ponto (`"1234.56"`).
+- O valor entregue (`onChange` e formulário, ao digitar) é um **número** (`double`, `1234.56`); `null` somente com `emptyValueIsNull`. O que o host atribui fica no formulário como foi atribuído até a primeira edição.
 - Os validadores do componente rodam também em `handleSubmit` e `trigger` (decisão do dono).
 - Limitações de teste registradas: golden com a fonte de teste do Flutter e sem teste em IME nem em dispositivo.
 
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (`inputs/number/sg_input_currency.dart`, motor em `inputs/number/numeric_field.dart`)
-- Mesmos callbacks do `SgInputNumber` (`onChange` com a string canônica `"1234.56"`, `onClear`, `onEnter`, `onExit`, `onValidation`) e a mesma validação (`required`, `minValue`, `maxValue`, `validation`).
+- Mesmos callbacks do `SgInputNumber` (`onChange: ValueChanged<num?>` com o número `1234.56`, `onClear`, `onEnter`, `onExit`, `onValidation`) e a mesma validação (`required`, `minValue`, `maxValue`, `validation(num?)`, também chamada com o campo vazio: `0` ou `null` com `emptyValueIsNull`).
 - Moeda: `currency` (ISO 4217, padrão `BRL`), `locale` (padrão: o do `SgComponentsI18nProvider`), `currencyDisplay` (padrão `symbol`), `currencySymbolOverride`, `currencySymbolPlacement` (padrão `auto`), `showCurrencySymbol` (padrão `true`), `useGrouping` (padrão `true`). O símbolo vira prefixo ou sufixo, combinado com `prefixText`/`suffixText` (`combineAffix`). `decimals` omitido usa as casas da moeda (`meta.minorUnit`).
 
 **Controller, formulário e estado**
-- Igual ao `SgInputNumber` (mesmo `NumericField`): `name` + `control`/`SgForm`, `initialValue`/`value` como `Object?`, `FocusNode` interno não exposto, `SgSelfValidating` para o `SgWizard`.
+- Igual ao `SgInputNumber` (mesmo `NumericField`): `name` + `control`/`SgForm`, `initialValue`/`value` como `Object?` (número ou texto), `FocusNode` interno não exposto, `SgSelfValidating` para o `SgWizard`.
 
 **Acessibilidade**
 - Igual ao `SgInputNumber`: `Semantics(label, textField: true)` e botão de limpar com `Tooltip` do i18n.
