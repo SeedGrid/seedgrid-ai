@@ -100,7 +100,6 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 |---|---|---|---|---|---|---|---|---|---|
 | `seedgrid.security.2f.enabled` | boolean | `true`/`false` | **`true`** (mp-config; `@WithDefault` `false`) | Não | `false`: `/2f/enable` responde 400 "2FA is disabled" e o login não inicia desafio 2FA | Login e endpoints `/2f/*` | — | Runtime | Decl.: `…/security/configs/TwoFactorConfig#enabled()`; consumo: `services/AuthService` (login), `controllers/TwoFactorController#enable2FA`, `services/TwoFactorService` |
 | `seedgrid.security.2f.allowed-methods` | List\<String\> | `EMAIL`, `TOTP`, `WHATSAPP` (códigos das `TwoFactorStrategy` registradas; normalizados `trim().toUpperCase()`; ver [[SeedGrid/Extensions/security/Enums#TwoFactorMethodType\|TwoFactorMethodType]] — `BACKUP_CODE` existe no enum mas não tem estratégia) | `EMAIL,TOTP` | Não | Interseção com as estratégias disponíveis e com `canEnroll(user)` define o que o usuário pode ativar | `TwoFactorController#getAllowedMethods/isAllowedMethod` | `WHATSAPP` exige `whatsapp.channel-id` | Runtime | Decl.: `TwoFactorConfig#allowedMethods()`; consumo: `controllers/TwoFactorController` |
-| `seedgrid.security.2f.default-method` | String | um dos códigos de `allowed-methods` (ex.: `EMAIL`, `TOTP`, `WHATSAPP`) | `TOTP` | Não | Método de 2FA sugerido na interface; o Javadoc diz que deve ser um dos permitidos. **Declarada, mas nenhum código do módulo a lê** (busca por `defaultMethod()` sem consumidores): hoje não muda o comportamento do backend | — | Deve estar em `allowed-methods` | Runtime | Decl.: `…/security/configs/TwoFactorConfig#defaultMethod()`; consumo: nenhum no runtime (Confirmado por busca) |
 | `seedgrid.security.2f.totp.issuer` | String | texto | `SeedGrid` | Não | Issuer na URL `otpauth://` e no QR | Setup TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#issuer()`; consumo: `services/TwoFactorService` |
 | `seedgrid.security.2f.totp.digits` | int | ex.: 6 | `6` | Não | Dígitos do código TOTP | Setup e verificação TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#digits()`; consumo: `TwoFactorService`, `spis/impl/TotpTwoFactorStrategy` |
 | `seedgrid.security.2f.totp.period` | int | segundos | `30` | Não | Período do código | Setup e verificação TOTP | — | Runtime | Decl.: `TwoFactorConfig.Totp#period()`; consumo: idem |
@@ -109,7 +108,6 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 | `seedgrid.security.2f.otp-qrcode.logo` | Optional\<String\> | `classpath:...` ou caminho de arquivo | — | Condicional (só com branding) | Caminho do logo | idem | — | Runtime | Decl.: `TwoFactorConfig.OtpQrCode#logo()`; consumo: `TwoFactorService` |
 | `seedgrid.security.2f.otp-qrcode.size` | int | pixels | `256` | Não | Largura/altura da imagem QR | idem | — | Runtime | Decl.: `TwoFactorConfig.OtpQrCode#size()`; consumo: `TwoFactorService`, `TwoFactorController` |
 | `seedgrid.security.2f.verify.max-attempts` | int | ≥ 1 | `5` | Não | Ao exceder, a sessão 2FA (tempToken) é removida e a verificação falha | `TwoFactorService` (verify) | Somado ao rate-limit `2fa-verify` | Runtime | Decl.: `TwoFactorConfig.Verify#maxAttempts()`; consumo: `services/TwoFactorService` |
-| `seedgrid.security.2f.verify.lockout-duration` | Duration | ISO-8601 | `PT30M` | Não | Tempo de bloqueio depois de estourar `verify.max-attempts` (Javadoc: "Lockout duration after max attempts exceeded"). **Declarada, mas nenhum código do módulo a lê** (busca por `lockoutDuration()` sem consumidores): ao exceder as tentativas o `TwoFactorService` só remove a sessão 2FA, sem bloqueio temporizado | — | Complementa `2f.verify.max-attempts` | Runtime | Decl.: `TwoFactorConfig.Verify#lockoutDuration()`; consumo: nenhum no runtime (Confirmado por busca) |
 | `seedgrid.security.2f.session.ttl` | Duration | ISO-8601 | `PT5M` | Não | Validade do `tempToken` (sessão 2FA em cache) | `TwoFactorService` | — | Runtime | Decl.: `TwoFactorConfig.Session#ttl()`; consumo: `TwoFactorService` |
 | `seedgrid.security.2f.email.code-ttl` | Duration | ISO-8601 | `PT5M` | Não | Validade do código por e-mail | Estratégia EMAIL | — | Runtime | Decl.: `TwoFactorConfig.Email#codeTtl()`; consumo: `spis/impl/EmailTwoFactorStrategy` |
 | `seedgrid.security.2f.backup-codes.count` | int | ≥ 1 | `10` | Não | Quantidade de backup codes gerados | `BackupCodeService` | — | Runtime | Decl.: `TwoFactorConfig.BackupCodes#count()`; consumo: `services/BackupCodeService` |
@@ -134,8 +132,6 @@ Nenhuma tem `@WithDefault`. O mp-config fornece valores **permissivos** (coment�
 | `seedgrid.security.self-enter.cleanup.purge-after` | Duration | ISO-8601 | `PT168H` | Não | Idade após a qual solicitações APPROVED/REJECTED/EXPIRED são apagadas | Job de limpeza | — | Runtime | Decl.: `SelfEnterConfig.Cleanup#purgeAfter()`; consumo: `EntryRequestCleanupJob` |
 | `seedgrid.security.self-enter.email.confirm-subject` | String | texto | `Confirme seu e-mail` | Não | Assunto do e-mail com código de confirmação | `SelfEnterService` | — | Runtime | Decl.: `SelfEnterConfig.Email#confirmSubject()`; consumo: `SelfEnterService` |
 | `seedgrid.security.self-enter.email.invite-subject` | String | texto | `Voce recebeu um convite para cadastro` | Não | Assunto do e-mail de convite | `SelfEnterService` | — | Runtime | Decl.: `SelfEnterConfig.Email#inviteSubject()`; consumo: `SelfEnterService` |
-| `seedgrid.security.self-enter.email.approved-subject` | String | texto | `Seu acesso foi aprovado` | Não | Assunto do e-mail de aprovação. **Declarada, mas nenhum código do módulo a lê** (busca por `approvedSubject()` sem consumidores) | — | — | Runtime | Decl.: `SelfEnterConfig.Email#approvedSubject()`; consumo: nenhum no runtime (Confirmado por busca) |
-| `seedgrid.security.self-enter.email.from` | Optional\<String\> | endereço de e-mail | — (sem padrão) | Não | Remetente dos e-mails do self-enter. **Declarada, mas nenhum código do módulo a lê** (o `SelfEnterService` usa só `confirmSubject()` e `inviteSubject()`): o remetente efetivo é o do mailer `security` (`seedgrid.security.mailer.from`) | — | Ver §2.7 | Runtime | Decl.: `SelfEnterConfig.Email#from()`; consumo: nenhum no runtime (Confirmado por busca) |
 
 ### 2.7 E-mail / SMTP (`seedgrid.security.mailer.*`)
 
@@ -348,7 +344,7 @@ Recomendadas/exigidas para o host (README e `application.properties` de teste):
 | `quarkus.datasource.db-kind`, `quarkus.datasource.devservices.enabled`, `quarkus.hibernate-orm.database.generation`, `quarkus.hibernate-orm.sql-load-script`, `quarkus.flyway.clean-at-start`, `quarkus.index-dependency.seedgrid-filemanagement.*`, `quarkus.arc.exclude-types`, `quarkus.http.test-port`, `quarkus.http.root-path=/api`, `quarkus.log.*` | `application.properties` (teste) | Infra de teste (Postgres via `PostgreSqlTestResourceLifecycleManager`, que injeta `quarkus.datasource.username/password/jdbc.url` e `seedgrid.audit.jpa.*`) |
 | `smallrye.jwt.sign.key.location`, `smallrye.jwt.new-token.issuer`, `smallrye.jwt.new-token.lifespan`, `mp.jwt.verify.*` | idem | Chaves de teste `test-privatekey.pem`/`test-publickey.pem` |
 | `quarkus.mailer.mock`, `quarkus.mailer."security".mock` | idem | Mailer mock |
-| `seedgrid.audit.persistence.strategy=JPA`, `seedgrid.audit.jpa.db-kind` | idem | Audit |
+| `seedgrid.audit.persistence.strategy=JPA` | idem | Audit |
 | `seedgrid.security.refresh-token.reuse-grace-window=PT0S` | idem | Janela desligada; religada em `RefreshTokenGraceWindowProfile` |
 | `seedgrid.ratelimit.<todas as 14 chaves>.enabled=false` | idem | Evita flakiness da suite |
 | `seedgrid.security.account.assignable-permission-audiences=client` | idem | Convenção do login-tenancy |
@@ -360,6 +356,8 @@ O exemplo `platform-examples/examples/seedgrid-security-example` (repo próprio,
 ---
 
 ## 5. Aliases e defaults efetivos
+
+**Removidas em 2026-11-11 (P162, mudança incompatível):** `seedgrid.security.2f.default-method`, `seedgrid.security.2f.verify.lockout-duration`, `seedgrid.security.self-enter.email.from` e `seedgrid.security.self-enter.email.approved-subject` eram declaradas e nunca lidas. Com a chave ainda no `application.properties` o boot falha com `SRCFG00050`. Depois de `verify.max-attempts` a sessão 2FA é descartada, sem bloqueio temporizado; o remetente dos e-mails do self-enter é o do mailer (`seedgrid.security.mailer.from`).
 
 Não há aliases nem nomes alternativos lidos pelo código. Atenção ao default **efetivo**, que vem do mp-config e difere do `@WithDefault` em:
 
@@ -430,7 +428,6 @@ seedgrid.security.password.expiration-days=0
 # ---------- 2FA ----------
 seedgrid.security.2f.enabled=true
 seedgrid.security.2f.allowed-methods=EMAIL,TOTP,WHATSAPP
-seedgrid.security.2f.default-method=TOTP            # declarada; o backend não a consulta
 seedgrid.security.2f.totp.issuer=<NomeDoApp>
 seedgrid.security.2f.totp.digits=6
 seedgrid.security.2f.totp.period=30
@@ -439,7 +436,6 @@ seedgrid.security.2f.otp-qrcode.branding.enabled=false
 #seedgrid.security.2f.otp-qrcode.logo=classpath:/images/logo.png
 seedgrid.security.2f.otp-qrcode.size=256
 seedgrid.security.2f.verify.max-attempts=5
-seedgrid.security.2f.verify.lockout-duration=PT30M   # declarada; o backend não a consulta
 seedgrid.security.2f.session.ttl=PT5M
 seedgrid.security.2f.email.code-ttl=PT5M
 seedgrid.security.2f.backup-codes.count=10
@@ -461,8 +457,6 @@ seedgrid.security.self-enter.cleanup.cron=0 */10 * * * ?
 seedgrid.security.self-enter.cleanup.purge-after=PT168H
 seedgrid.security.self-enter.email.confirm-subject=Confirme seu e-mail
 seedgrid.security.self-enter.email.invite-subject=Voce recebeu um convite para cadastro
-seedgrid.security.self-enter.email.approved-subject=Seu acesso foi aprovado   # declarada; o backend não a consulta
-#seedgrid.security.self-enter.email.from=<remetente>   # declarada; o backend não a consulta
 
 # ---------- E-mail (mailer nomeado "security") ----------
 seedgrid.security.mailer.from=noreply@<seu-dominio>

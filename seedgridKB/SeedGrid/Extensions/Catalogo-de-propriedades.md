@@ -22,7 +22,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|
 | Quarkus | ai-pricing | 5 |
 | Quarkus | apikeys | 2 |
-| Quarkus | audit | 9 |
+| Quarkus | audit | 6 |
 | Quarkus | backup | 46 |
 | Quarkus | billing | 33 |
 | Quarkus | business-days | 5 |
@@ -36,9 +36,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | privacy | 3 |
 | Quarkus | realtime | 6 |
 | Quarkus | resilience | 15 |
-| Quarkus | security | 149 |
+| Quarkus | security | 145 |
 | Quarkus | security-social | 15 |
-| Quarkus | subdomain-tenancy | 60 |
+| Quarkus | subdomain-tenancy | 59 |
 | Quarkus | user-notifications | 7 |
 | Quarkus | whatsapp | 5 |
 | Rust | apikeys | 2 |
@@ -65,7 +65,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-security | 44 |
 | Front | fe-self-enter | 3 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **884** |
+| **Total** | | **876** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -90,12 +90,9 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 
 | Propriedade | Grupo | Tipo | Padrão | Fase | Finalidade | Nota |
 |---|---|---|---|---|---|---|
-| `seedgrid.audit.enabled` | Geral e strategy | `boolean` | `true` (`@WithDefault("true")`) | Runtime | Declarada no AuditConfig | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | `seedgrid.audit.persistence.strategy` | Geral e strategy | enum [[SeedGrid/Extensions/audit/Enums#AuditPersistenceStrategy\|AuditPersistenceStrategy]] | JPA (@WithDefault); o módulo postgresql define ${AUDIT_STRATEGY:JPA} e o módulo mongodb… | Runtime | Seleciona o AuditPersistenceProvider cuja strategy() coincide; sem provider correspondente → IllegalStateException("No… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | `seedgrid.audit.jpa.jdbc.url` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_URL:}` = vazio) | Runtime | Vazia → IllegalStateException("Audit JPA strategy configured but seedgrid.audit.jpa.jdbc.url not set"); outro esquema… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | `seedgrid.audit.jpa.username` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_USERNAME:}`) | Runtime | Usuário do datasource standalone | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
-| `seedgrid.audit.jpa.db-kind` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — no mapping; o módulo postgresql define `${SEEDGRID_AUDIT_DB_KIND:postgresql}` | Runtime | Só ecoado por effectiveJpaDbKind() (com strategy=JPA); nenhum código Java do repositório audit chama… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
-| `seedgrid.audit.jpa.packages` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — | Runtime | Declarada no AuditConfig.Jpa; o javadoc diz que os pacotes das entidades já vêm de… | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | 🔒 `seedgrid.audit.jpa.password` | JPA / PostgreSQL (seedgrid.audit.jpa.*) | `Optional<String>` | — (módulo: `${SEEDGRID_AUDIT_DB_PASSWORD:}`) | Runtime | Senha do datasource standalone | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | 🔒 `seedgrid.audit.mongodb.connection-string` | MongoDB (seedgrid.audit.mongodb.*) | `Optional<String>` | — no mapping; o módulo mongodb define ${SEEDGRID_AUDIT_MONGODB_URI:<URI local com credenciais de… | Runtime | Não é lida por Java; o módulo faz a ponte quarkus.mongodb.connection-string=${seedgrid.audit.mongodb.connection-string} | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
 | `seedgrid.audit.mongodb.database` | MongoDB (seedgrid.audit.mongodb.*) | `Optional<String>` | — (fallback do producer: `<seedgrid.login-tenancy.app.code>_audit_db`, ou `audit_db`) | Runtime | Não é lida pelo módulo audit | [[SeedGrid/Extensions/audit/Configuracao\|audit/Configuracao]] |
@@ -429,7 +426,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.security.password.expiration-days` | Política de senha (seedgrid.security.password.*) | int | `0` (mp-config) | Runtime | Calcula passwordExpiresAt = now + N dias | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.enabled` | 2FA (seedgrid.security.2f.*) | boolean | **`true`** (mp-config; `@WithDefault` `false`) | Runtime | false: /2f/enable responde 400 "2FA is disabled" e o login não inicia desafio 2FA | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.allowed-methods` | 2FA (seedgrid.security.2f.*) | List\<String\> | `EMAIL,TOTP` | Runtime | Interseção com as estratégias disponíveis e com canEnroll(user) define o que o usuário pode ativar | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
-| `seedgrid.security.2f.default-method` | 2FA (seedgrid.security.2f.*) | String | `TOTP` | Runtime | Método de 2FA sugerido na interface; o Javadoc diz que deve ser um dos permitidos | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.totp.issuer` | 2FA (seedgrid.security.2f.*) | String | `SeedGrid` | Runtime | Issuer na URL otpauth:// e no QR | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.totp.digits` | 2FA (seedgrid.security.2f.*) | int | `6` | Runtime | Dígitos do código TOTP | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.totp.period` | 2FA (seedgrid.security.2f.*) | int | `30` | Runtime | Período do código | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
@@ -438,7 +434,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.security.2f.otp-qrcode.logo` | 2FA (seedgrid.security.2f.*) | Optional\<String\> | — | Runtime | Caminho do logo | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.otp-qrcode.size` | 2FA (seedgrid.security.2f.*) | int | `256` | Runtime | Largura/altura da imagem QR | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.verify.max-attempts` | 2FA (seedgrid.security.2f.*) | int | `5` | Runtime | Ao exceder, a sessão 2FA (tempToken) é removida e a verificação falha | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
-| `seedgrid.security.2f.verify.lockout-duration` | 2FA (seedgrid.security.2f.*) | Duration | `PT30M` | Runtime | Tempo de bloqueio depois de estourar verify.max-attempts (Javadoc: "Lockout duration after max attempts exceeded") | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.session.ttl` | 2FA (seedgrid.security.2f.*) | Duration | `PT5M` | Runtime | Validade do tempToken (sessão 2FA em cache) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.email.code-ttl` | 2FA (seedgrid.security.2f.*) | Duration | `PT5M` | Runtime | Validade do código por e-mail | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.2f.backup-codes.count` | 2FA (seedgrid.security.2f.*) | int | `10` | Runtime | Quantidade de backup codes gerados | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
@@ -458,8 +453,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.security.self-enter.cleanup.purge-after` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Duration | `PT168H` | Runtime | Idade após a qual solicitações APPROVED/REJECTED/EXPIRED são apagadas | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.self-enter.email.confirm-subject` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `Confirme seu e-mail` | Runtime | Assunto do e-mail com código de confirmação | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.self-enter.email.invite-subject` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `Voce recebeu um convite para cadastro` | Runtime | Assunto do e-mail de convite | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
-| `seedgrid.security.self-enter.email.approved-subject` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | String | `Seu acesso foi aprovado` | Runtime | Assunto do e-mail de aprovação | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
-| `seedgrid.security.self-enter.email.from` | Self-enter — auto-cadastro e convites (seedgrid.security.self-enter.*) | Optional\<String\> | — (sem padrão) | Runtime | Remetente dos e-mails do self-enter | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.mailer.from` | E-mail / SMTP (seedgrid.security.mailer.*) | String | `noreply@example.com` (mp-config) | Runtime | From de todos os e-mails do DefaultEmailService | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.mailer.host` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<String\> | `smtp.gmail.com` (mp-config) | Runtime | Efeito só pela ponte (quarkus.mailer."security".host) | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
 | `seedgrid.security.mailer.port` | E-mail / SMTP (seedgrid.security.mailer.*) | Optional\<Integer\> | `587` (mp-config) | Runtime | idem | [[SeedGrid/Extensions/security/Configuracao\|security/Configuracao]] |
@@ -588,7 +581,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.subdomain-tenancy.tenant-header` | Resolução de tenant e rotas | `Optional<String>` | `—` | Escopo e acesso]]) | Se presente e o header vier preenchido, QuarkusTenantResolver usa seu valor como tenant — mas só quando o… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.default-tenant` | Resolução de tenant e rotas | `String` | `master` | runtime | Tenant devolvido quando nada é resolvido; também decide "contexto master" no OpenAPI e a claim audience (platform ×… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.product-prefix` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Nome do banco do tenant = <prefix>_<tenant> (sem prefixo: <tenant>) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
-| `seedgrid.subdomain-tenancy.mode` | Resolução de tenant e rotas | `Optional<String>` | `—` | runtime | Só declarada para entrar no mapping estrito: nenhum código da extension lê o valor (não há @ConfigProperty nem chamada… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.public-routes` | Resolução de tenant e rotas | `List<String>` (CSV) | /q/health,/q/metrics,/q/swagger-ui,/q/openapi,/public,/public/tenant-openapi (MPC; o defaultValue… | runtime | Lista de rotas públicas (sem detecção de tenant); SubdomainTenancyConfig#isPublicRoute(path) faz startsWith em cada… | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.use-https` | Resolução de tenant e rotas | `boolean` | `true` (`@WithDefault("true")`) | runtime | Se as URLs geradas usam HTTPS; o Javadoc manda pôr false em desenvolvimento local | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
 | `seedgrid.subdomain-tenancy.port` | Resolução de tenant e rotas | `Optional<Integer>` | `—` | runtime | Porta das URLs geradas; sem ela não se acrescenta porta (80/443 padrão) | [[SeedGrid/Extensions/subdomain-tenancy/Configuracao\|subdomain-tenancy/Configuracao]] |
@@ -682,8 +674,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 |---|---|---|---|---|---|---|
 | `SEEDGRID_AUDIT_ENABLED` | Ativação e estratégia | bool | `true` | from_env() | false torna Auditor::record no-op e faz AuditPlatform::assemble devolver Ok(None) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
 | `AUDIT_STRATEGY` (Java: `seedgrid.audit.persistence.strategy`, via `${AUDIT_STRATEGY:...}`) | Ativação e estratégia | enum `AuditPersistenceStrategy` | derivado da feature: Jpa com postgres (também quando ambas ou nenhuma); Mongodb só com mongodb sem… | from_env() | valor desconhecido → default da feature | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
-| `SEEDGRID_AUDIT_DB_KIND` (Java: `seedgrid.audit.jpa.db-kind`, via `${SEEDGRID_AUDIT_DB_KIND:postgresql}`) | Relacional (JPA/Postgres) | `Option<String>` | `postgresql` quando a estratégia é `Jpa`; `None` com `Mongodb` | from_env() | Guardado em AuditConfig.jpa.db_kind; sem consumidor no crate (informativo) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
-| `SEEDGRID_AUDIT_JPA_PACKAGES` (Java: `seedgrid.audit.jpa.packages`) | Relacional (JPA/Postgres) | `Option<String>` | — | from_env() | Guardado em AuditConfig.jpa.packages; sem consumidor no crate | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| `SEEDGRID_AUDIT_DB_KIND` (Java: chave removida em 2026-11-11, P162) | Relacional (JPA/Postgres) | `Option<String>` | `postgresql` quando a estratégia é `Jpa`; `None` com `Mongodb` | from_env() | Guardado em AuditConfig.jpa.db_kind; sem consumidor no crate (informativo) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
+| `SEEDGRID_AUDIT_JPA_PACKAGES` (Java: chave removida em 2026-11-11, P162) | Relacional (JPA/Postgres) | `Option<String>` | — | from_env() | Guardado em AuditConfig.jpa.packages; sem consumidor no crate | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
 | `SEEDGRID_AUDIT_DB_PACKAGES` (alias histórico do Rust de `SEEDGRID_AUDIT_JPA_PACKAGES`) | Relacional (JPA/Postgres) | `Option<String>` | — | from_env() | Lida só se SEEDGRID_AUDIT_JPA_PACKAGES estiver ausente ou vazia | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
 | `SEEDGRID_AUDIT_DB_URL` (Java: `seedgrid.audit.jpa.jdbc.url`) | Relacional (JPA/Postgres) | `Option<String>` | — | from_env() | AuditConfig::pg_connection_url() remove jdbc:; outro formato → AuditError::Config | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |
 | 🔒 `SEEDGRID_AUDIT_MONGODB_URI` (Java: `seedgrid.audit.mongodb.connection-string`, via `${SEEDGRID_AUDIT_MONGODB_URI:...}`) | MongoDB | `Option<String>` (sempre `Some` após `from_env`) | DEFAULT_MONGODB_URI = mongodb://<usuario>:<SEGREDO:mongo-dev>@localhost:27017 (credenciais de dev… | from_env() | URI usada por effective_mongo_uri(); falha de conexão → auditoria no-op (Ok(None)) | [[SeedGrid/Extensions/audit/Configuracao-Rust\|audit/Configuracao-Rust]] |

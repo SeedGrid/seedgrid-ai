@@ -142,7 +142,7 @@ A login-tenancy define os `configKey`; o mecanismo (`RateLimitService`) lê `ena
 | Quarkus | `quarkus.datasource.db-kind`, `quarkus.hibernate-orm.schema-management.strategy`, `quarkus.hibernate-orm.sql-load-script=no-file`, `quarkus.index-dependency.seedgrid-filemanagement.group-id/artifact-id`, `quarkus.arc.exclude-types` (storages de nuvem do filemanagement), `quarkus.mailer.mock`, `quarkus.mailer."security".mock`, `quarkus.http.test-port=0` |
 | JWT | `seedgrid.security.jwt.issuer`, `.kid`, `.private-key-location`, `.public-key-location`; `mp.jwt.verify.publickey.location`, `mp.jwt.verify.issuer`, `smallrye.jwt.sign.key.location`, `smallrye.jwt.new-token.issuer`, `smallrye.jwt.new-token.lifespan` (chaves PEM de teste) |
 | Security | 🔒 `seedgrid.security.encryption.key` (`<SEGREDO:security-encryption-key>`), `seedgrid.security.mailer.from`, `seedgrid.security.frontend.*` (base-url e paths), `seedgrid.security.default-company.*`, `seedgrid.security.first-admin-user.*` (🔒 `initial-password`), `seedgrid.security.password.*` |
-| Audit | `seedgrid.audit.persistence.strategy=JPA`, `seedgrid.audit.jpa.db-kind=postgresql` |
+| Audit | `seedgrid.audit.persistence.strategy=JPA` |
 | Login-tenancy | `seedgrid.login-tenancy.app.code=login-tenancy-it`, `seedgrid.login-tenancy.app.name=LoginTenancy IT` |
 | Rate limit | `seedgrid.ratelimit.signup.enabled`, `signup-email-exists.enabled`, `signup-confirm-email.enabled`, `signup-resend-email.enabled`, `user-activation-resend.enabled` = `false` (o último é `configKey` de outro módulo) |
 
