@@ -55,12 +55,13 @@ test('Dockerfiles: FROM, EXPOSE, porta e CMD corretos', () => {
 test('workflow parseia como YAML e tem um job por servico com secrets por expressao', () => {
   const wf = parse(saida['.github/workflows/publicar.yml']!) as {
     on: unknown;
-    jobs: Record<string, { needs?: string; steps: { run?: string }[] }>;
+    jobs: Record<string, { needs?: string | string[]; steps: { run?: string }[] }>;
   };
   assert.ok(wf.on);
   const nomes = produto.servicos.map((s) => `publicar-${s.nome}`);
-  assert.deepEqual(Object.keys(wf.jobs).sort(), ['segredos', 'versao', ...nomes].sort());
-  assert.equal(wf.jobs.versao!.needs, 'segredos', 'nada e publicado antes da conferencia de segredos');
+  assert.deepEqual(Object.keys(wf.jobs).sort(), ['migrations', 'segredos', 'versao', ...nomes].sort());
+  assert.deepEqual(wf.jobs.versao!.needs, ['segredos', 'migrations'], 'nada e publicado antes das conferencias de segredos e de migrations');
+  assert.ok(wf.jobs.migrations!.steps.some((x) => (x.run ?? '').includes('sg-validate-change/scripts/check-migrations.mjs')), 'barreira de migration no pipeline');
   assert.ok(wf.jobs.segredos!.steps.some((x) => (x.run ?? '').includes('sg-check-secrets/scripts/check-secrets.mjs')));
   for (const s of produto.servicos) {
     const job = wf.jobs[`publicar-${s.nome}`]!;

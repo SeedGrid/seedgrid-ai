@@ -29,8 +29,30 @@ jobs:
         with:
           node-version: 20
       - run: node .ai/skills/sg-check-secrets/scripts/check-secrets.mjs --ignore '^\.ai/' --ignore '^\.agents/' --ignore '^\.claude/'
-  versao:
+  # Terceira barreira contra migration incompativel com a versao anterior (ADR 65): a migration do release N so
+  # acrescenta; DROP, RENAME, troca de tipo e NOT NULL sem DEFAULT vao em release posterior, ou o script leva a
+  # marca `-- sg:contrair <motivo>`. Reprova antes de publicar uma imagem que o rollback nao desfaria.
+  migrations:
     needs: segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Migrations so acrescentam
+        run: |
+          dir=backend/src/main/resources/db/migration
+          base="${{ github.event.before }}"
+          if [ -n "$base" ] && [ "$base" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$base" 2>/dev/null; then
+            node .ai/skills/sg-validate-change/scripts/check-migrations.mjs "$dir" --new-since "$base"
+          else
+            node .ai/skills/sg-validate-change/scripts/check-migrations.mjs "$dir"
+          fi
+  versao:
+    needs: [segredos, migrations]
     runs-on: ubuntu-latest
     outputs:
       versao: ${{ steps.v.outputs.versao }}
