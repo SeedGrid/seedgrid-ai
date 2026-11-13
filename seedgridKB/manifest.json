@@ -11,6 +11,13 @@
         "agents/backend-java.md",
         "agents/backend-rust.md",
         "agents/frontend-react.md",
+        "agents/frontend-flutter.md",
+        "agents/frontend-tester.md",
+        "agents/ux-design.md",
+        "agents/documentador.md",
+        "agents/seguranca.md",
+        "agents/dados-migracao.md",
+        "agents/a11y-i18n.md",
         "agents/qa.md",
         "agents/revisor.md"
       ]
@@ -36,7 +43,8 @@
       "files": [
         "templates/especificacao-tarefa.md",
         "templates/decisao-arquitetura.md",
-        "templates/relatorio-validacao.md"
+        "templates/relatorio-validacao.md",
+        "templates/especificacao-de-tela.md"
       ]
     },
     {
@@ -88,6 +96,7 @@
       "name": "sg-validate-change",
       "files": [
         "SKILL.md",
+        "scripts/check-migrations.mjs",
         {
           "path": "assets/relatorio-validacao.md",
           "from": "templates/relatorio-validacao.md"

@@ -26,7 +26,7 @@ Escopo só React. Tela de app Flutter é do `frontend-flutter`. Quando a mesma m
 ## Responsabilidades
 
 - Seguir `.ai/rules/frontend-seedgrid.md` (regras comuns e regras de React): sempre componentes `@seedgrid/fe-components` e o componente específico de cada dado (`SgInputPhone`, `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`...).
-- Manter a paridade com o app Flutter: o contrato de valores e o comportamento do componente são os mesmos nas duas plataformas; diferença conhecida está em [Paridade](../../SeedGrid-components/flutter/Paridade.md) e [Divergências](../../SeedGrid-components/flutter/Divergencias.md). Não altere o comportamento de um componente por conta própria: diferença nova é reportada ao coordenador.
+- Manter a paridade com o app Flutter: o contrato de valores e o comportamento do componente são os mesmos nas duas plataformas; diferença conhecida está em `SeedGrid-components/flutter/Paridade.md` e `SeedGrid-components/flutter/Divergencias.md`. Não altere o comportamento de um componente por conta própria: diferença nova é reportada ao coordenador.
 - Reutilizar componentes e padrões existentes antes de criar novos; descobri-los lendo o código.
 - Tratar estados de carregamento, vazio e erro; manter acessibilidade básica (rótulos, foco, contraste).
 - Manter tipagem estrita quando o projeto usa TypeScript.
