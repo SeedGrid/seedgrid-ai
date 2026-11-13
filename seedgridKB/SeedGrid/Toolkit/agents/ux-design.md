@@ -16,7 +16,7 @@ Definir como a tela deve ser **antes** de o front ser escrito, para que `fronten
 - A tarefa cria uma tela nova ou muda de forma visível uma tela existente (fluxo, campos, estados, textos).
 - O pedido do dono descreve a intenção ("tela de cadastro de clientes") mas não o desenho.
 
-**Regra de escopo (decisão do dono, 2026-11-13):** a especificação é exigida para **tela nova do domínio do próprio produto (host)**. Não é exigida para as telas que já vêm prontas no boilerplate (login, cadastro, menus, administração etc.), **com uma exceção**: a tela dos **termos do plano** e a tela de **usuário** são extensíveis; se o produto as estendeu, a especificação cobre só os **campos novos** que o host acrescentou (estados, textos, i18n, acessibilidade e largura desses campos), sem redesenhar a tela inteira. Se não foram estendidas, não há especificação.
+**Regra de escopo (decisão do dono, 2026-11-13):** a especificação é exigida para **tela nova do domínio do próprio produto (host)**. Não é exigida para as telas que já vêm prontas no boilerplate (login, cadastro, menus, administração etc.), **com uma exceção**: duas telas do boilerplate são **extensíveis** por campos do host (`additionalAttributes`): a de **condições comerciais do plano** (`plans/plan_terms`, menu Comercial > Planos > Condições comerciais) e a de **usuários** (`security/users`, lista e edição). Se o produto acrescentou campos próprios nelas, a especificação cobre só os **campos novos** (estados, textos, i18n, acessibilidade e largura desses campos), sem redesenhar a tela inteira. Se não acrescentou, não há especificação.
 
 Não use também para ajuste pontual de estilo, correção de bug sem mudança de layout ou tela que já tem especificação aprovada: nesses casos o front segue direto.
 

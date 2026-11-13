@@ -16,8 +16,9 @@ Se existe especificacao de tela aprovada em `docs/ai/designs/` (papel `ux-design
 "Antes de comecar" (permissoes, menu, rota), os componentes, os estados e os textos/i18n vem dela. Divergencia
 entre o design e o que o codigo permite volta ao coordenador; nao decida sozinho. Sem design e a tela e nova do dominio do produto
 (com layout proprio), sugira ao coordenador acionar o `ux-design` antes. Nao precisam de design: tela so de
-registro (menu/permissao) e as telas que ja vem no boilerplate; excecao: a tela dos termos do plano e a de
-usuario sao extensiveis e, se o produto as estendeu, os campos novos precisam de especificacao.
+registro (menu/permissao) e as telas que ja vem no boilerplate; excecao: as telas de condicoes comerciais do
+plano (`plans/plan_terms`) e de usuarios (`security/users`) aceitam campos do host (`additionalAttributes`); se o produto
+acrescentou campos nelas, os campos novos precisam de especificacao.
 
 ## Antes de comecar, responda
 
