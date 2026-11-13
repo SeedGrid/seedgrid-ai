@@ -10,12 +10,21 @@ Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]]
 
 ## Papéis (agents)
 
+São 13 papéis, um arquivo para cada em `SeedGrid/Toolkit/agents/`. O coordenador não é um papel: é a sessão principal com quem o dono fala.
+
 | Papel | Para que serve | Documentação relacionada |
 |---|---|---|
 | [[SeedGrid/Toolkit/agents/arquiteto\|arquiteto]] | Porta de entrada: classifica, tira dúvidas e planeja. | [[SeedGrid/Visao-geral\|Visão geral]] · [[SeedGrid/Mapa-dos-repositorios\|Mapa dos repositórios]] |
 | [[SeedGrid/Toolkit/agents/backend-java\|backend-java]] | APIs, regras de negócio e persistência em Java. | [[SeedGrid/Extensions/Indice\|Extensions]] · [[SeedGrid/Extensions/Catalogo-de-propriedades\|Catálogo de propriedades]] · [[SeedGrid/Extensions/Catalogo-de-enums\|Catálogo de enums]] |
 | [[SeedGrid/Toolkit/agents/backend-rust\|backend-rust]] | O mesmo em Rust, com os crates SeedGrid. | [[SeedGrid/Extensions/Indice\|Extensions]] (notas `Rust` de cada extension) |
 | [[SeedGrid/Toolkit/agents/frontend-react\|frontend-react]] | Telas e componentes em React. | [[SeedGrid/SeedGrid-components/Indice\|Componentes]] · [[SeedGrid/SeedGrid-components/inputs-texto/API\|Inputs de texto (SgInputPhone, SgInputCPF…)]] · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral\|Fundamentos]] |
+| [[SeedGrid/Toolkit/agents/frontend-flutter\|frontend-flutter]] | Telas e componentes em Flutter (`seedgrid_components`), com paridade com o React. | [[SeedGrid/SeedGrid-components/Indice\|Componentes]] |
+| [[SeedGrid/Toolkit/agents/ux-design\|ux-design]] | Especificação da tela antes do front (`docs/ai/designs/`), quando há tela nova ou mudança de tela. | [[SeedGrid/Toolkit/templates/especificacao-de-tela\|Especificação de tela]] |
+| [[SeedGrid/Toolkit/agents/dados-migracao\|dados-migracao]] | Migrations, convergência de schema e conversão de dados do produto. |  |
+| [[SeedGrid/Toolkit/agents/seguranca\|seguranca]] | Autenticação, permissões, LGPD, dependências e segredos. |  |
+| [[SeedGrid/Toolkit/agents/a11y-i18n\|a11y-i18n]] | Acessibilidade e varredura dos cinco idiomas. |  |
+| [[SeedGrid/Toolkit/agents/frontend-tester\|frontend-tester]] | Teste do front do produto em navegador real e emulador; só reporta. |  |
+| [[SeedGrid/Toolkit/agents/documentador\|documentador]] | Escreve o `docs/` do produto e mantém `docs/ai/`; não escreve código. |  |
 | [[SeedGrid/Toolkit/agents/qa\|qa]] | Testes a partir dos critérios de aceite. | |
 | [[SeedGrid/Toolkit/agents/revisor\|revisor]] | Revisão de defeitos, segurança e convenções. | |
 
@@ -25,8 +34,17 @@ Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]]
 
 ## Skills
 
+São 20 skills, uma pasta para cada em `SeedGrid/Toolkit/skills/` (não existe `skills/index.md`; esta tabela é a lista).
+
 | Skill | Uso |
 |---|---|
+| [[SeedGrid/Toolkit/skills/sg-new-product/SKILL\|sg-new-product]] | Cria um produto SeedGrid novo (entrevista fixa e script gerador); é a primeira ação, antes do `arquiteto`. |
+| [[SeedGrid/Toolkit/skills/sg-plan-goal/SKILL\|sg-plan-goal]] | Leva uma tarefa não trivial a um plano de tarefas no formato fixo do toolkit. |
+| [[SeedGrid/Toolkit/skills/sg-diagnostico/SKILL\|sg-diagnostico]] | Diagnostica um plano ou briefing livre contra o formato da `sg-plan-goal`. |
+| [[SeedGrid/Toolkit/skills/sg-componente/SKILL\|sg-componente]] | Escolhe o componente React certo e confere as props contra o tipo real. |
+| [[SeedGrid/Toolkit/skills/sg-adr/SKILL\|sg-adr]] | Registra uma decisão de arquitetura ou de comportamento como ADR. |
+| [[SeedGrid/Toolkit/skills/sg-docs-index/SKILL\|sg-docs-index]] | Gera e confere o índice geral de `docs/ai/`. |
+| [[SeedGrid/Toolkit/skills/sg-branch-status/SKILL\|sg-branch-status]] | Lista e limpa branches e worktrees já mergeados ou sem dono. |
 | [[SeedGrid/Toolkit/skills/sg-plan-change/SKILL\|sg-plan-change]] | Planejar uma mudança antes de implementar. |
 | [[SeedGrid/Toolkit/skills/sg-validate-change/SKILL\|sg-validate-change]] | Validar com build, testes e evidências. |
 | [[SeedGrid/Toolkit/skills/sg-review/SKILL\|sg-review]] | Conferir se o código segue os padrões SeedGrid. |
@@ -43,4 +61,4 @@ Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]]
 
 ## Modelos
 
-[[SeedGrid/Toolkit/templates/especificacao-tarefa|Especificação de tarefa]] · [[SeedGrid/Toolkit/templates/decisao-arquitetura|Decisão de arquitetura (ADR)]] · [[SeedGrid/Toolkit/templates/relatorio-validacao|Relatório de validação]]
+[[SeedGrid/Toolkit/templates/especificacao-tarefa|Especificação de tarefa]] · [[SeedGrid/Toolkit/templates/especificacao-de-tela|Especificação de tela]] · [[SeedGrid/Toolkit/templates/decisao-arquitetura|Decisão de arquitetura (ADR)]] · [[SeedGrid/Toolkit/templates/relatorio-validacao|Relatório de validação]]
