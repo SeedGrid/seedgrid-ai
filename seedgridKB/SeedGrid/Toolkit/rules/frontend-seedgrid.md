@@ -1,17 +1,26 @@
 ---
-description: "Padrões obrigatórios do front-end SeedGrid: usar sempre os componentes @seedgrid/fe-components e o componente certo para cada tipo de dado (telefone, CPF, CNPJ, e-mail, moeda...). Leia antes de criar ou alterar qualquer tela React."
+description: "Padrões obrigatórios do front-end SeedGrid: usar sempre os componentes SeedGrid (@seedgrid/fe-components no React, seedgrid_components no Flutter) e o componente certo para cada tipo de dado (telefone, CPF, CNPJ, e-mail, moeda...). Leia antes de criar ou alterar qualquer tela React ou Flutter."
 ---
 # Padrões do front-end SeedGrid
 
-Regras **obrigatórias** para telas React que usam `@seedgrid/fe-components`. Cada regra tem um id (`FE-nn`) para citar em revisões (`sg-review`). Para detalhes de props e exemplos, consulte a KB: comece por `.ai/brain/SeedGrid/SeedGrid-components/Indice.md` e abra só a nota do grupo necessário.
+Regras **obrigatórias** para telas que usam os componentes SeedGrid. Cada regra tem um id (`FE-nn`) para citar em revisões (`sg-review`). Para detalhes de props e exemplos, consulte a KB: comece por `.ai/brain/SeedGrid/SeedGrid-components/Indice.md` e abra só a nota do grupo necessário.
 
-## Componentes SeedGrid primeiro
+Como ler:
+
+- **Regras comuns** (FE-01 a FE-35 e a seção "CRUDs") valem para React e para Flutter, com o mesmo nome de componente `Sg...`. O papel de React é o `frontend-react`; o de Flutter é o `frontend-flutter`.
+- **Regras só de Flutter** (FE-50 em diante, seção "Só Flutter") ficam no fim.
+- Os dois lados mantêm **paridade de comportamento**: o contrato de valores é o mesmo e a diferença deliberada está registrada em `SeedGrid-components/flutter/Paridade.md` e `SeedGrid-components/flutter/Divergencias.md`. Quem encontrar uma diferença nova a reporta ao coordenador (sessão principal); não a "corrige" no outro lado.
+- Nas regras comuns, os exemplos de código e a coluna "O que o `onChange` entrega" descrevem o **React**. No Flutter confira o tipo na nota `API` do grupo em `SeedGrid-components/flutter/` antes de afirmar (FE-03).
+
+## Regras comuns (React e Flutter)
+
+### Componentes SeedGrid primeiro
 
 - **FE-01.** Use componentes SeedGrid para toda a interface. Só use elemento HTML cru (`<input>`, `<button>`, `<select>`, `<textarea>`, `<table>`) se **não existir** componente SeedGrid equivalente; nesse caso, justifique em comentário curto.
 - **FE-02.** Antes de criar um componente novo, procure no índice da KB se já existe um que atenda. Não reimplemente o que o SeedGrid já oferece. Se não existir, crie o componente local no padrão SeedGrid (HO-10) e sugira a promoção no fim do plano.
 - **FE-03.** Não invente props. Confirme nome e tipo na nota `API` do grupo; se não achar, diga que não encontrou.
 
-## Componente certo para cada dado
+### Componente certo para cada dado
 
 Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que tem componente específico:
 
@@ -34,7 +43,7 @@ Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que t
 | **FE-23.** Uma opção de lista fixa ou carregada uma vez | `SgCombobox` (lista remota ou grande: `SgAutocomplete`) |
 | **FE-24.** Texto longo | `SgInputTextArea` |
 
-### Como aplicar FE-10 a FE-19
+#### Como aplicar FE-10 a FE-19
 
 - **FE-25. Valor monetário é sempre `SgInputCurrency`.** Preço, mensalidade, taxa, saldo, limite, desconto, excedente: tudo que é dinheiro. Nunca `SgInputText`, `SgInputNumber` nem `<input type="number">`, mesmo que o campo "só guarde um número". A moeda vem de `currency` (padrão `BRL`) e as casas de `decimals`; limites em `minValue`/`maxValue`.
 - **FE-26. Estado do formulário guarda o texto que o componente entrega** e a conversão acontece só no envio: dinheiro e decimais com `parseDecimalInput` (a API recebe número ou string decimal, conforme o contrato); data como ISO; inteiro com `Number.parseInt(v, 10)`. Não converta a cada tecla.
@@ -42,7 +51,7 @@ Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que t
 - **FE-28. Não reimplemente a validação** que o componente já faz (dígito verificador do CPF/CNPJ, formato de e-mail, tamanho do CEP, idade mínima). Use `required`, `validation` e `onValidation` do próprio componente. Consulta externa é opt-in: `validateWithPublicaCnpj` (CNPJ) e `validateWithViaCep` (CEP).
 - **FE-29. Campo "documento" sem tipo fixo** (cliente pessoa física ou jurídica) usa `SgInputCPFCNPJ`; com tipo fixo, `SgInputCPF` ou `SgInputCNPJ`. Dois campos `SgInputText` com troca manual de máscara violam a regra.
 
-## Estrutura e feedback
+### Estrutura e feedback
 
 - **FE-30.** Botões: `SgButton`. Layout: `SgStack`, `SgGrid`, `SgCard` etc. no lugar de `div` com flex/grid escritos à mão.
 - **FE-31.** Tabelas de dados: `SgDatatable`, paginada e ordenada no servidor quando a lista puder crescer.
@@ -51,6 +60,14 @@ Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que t
 - **FE-34.** Carregamento: `SgSkeleton` (tabelas com skeleton em formato de tabela).
 - **FE-35.** Textos para o usuário em linguagem de negócio, não detalhe técnico.
 
-## CRUDs
+### CRUDs
 
-Telas de cadastro seguem a skill `sg-crud-front` (páginas `*_list` e `*_edit`, `publicId` nas URLs, proxy em `app/api/...`). Nunca exponha o `id` numérico ao navegador quando houver `publicId`.
+Telas de cadastro seguem a skill do lado: `sg-crud-front` (React/Next: páginas `*_list` e `*_edit`, `publicId` nas URLs, proxy em `app/api/...`) ou `sg-crud-front-flutter` (Flutter: telas separadas de lista e de formulário). Nunca exponha o `id` numérico quando houver `publicId`.
+
+## Só Flutter (`frontend-flutter`)
+
+- **FE-50.** Use o pacote `seedgrid_components`; para traduzir um padrão do React use `SeedGrid-components/flutter/Traducao-React-para-Dart.md`, não invente equivalente.
+- **FE-51.** Valor inicial de componente de entrada: `initialValue`; `SgInputDateTime` não tem `initialValue` e usa `defaultValue`. Dentro de `SgForm`, dê o valor inicial por `defaultValues` do `SgFormController` (ou `reset`) com o tipo certo (número para número); ver `SeedGrid-components/flutter/Divergencias.md`.
+- **FE-52.** Formulário com `SgForm` e `SgFormController` (no lugar do react-hook-form); `dispose` do controller. Sem `setState` de página para valor de campo (ADR 63): `ListenableBuilder`/`ValueListenableBuilder`.
+- **FE-53 (proposta, a confirmar com o dono).** Mudança visual leva teste de widget e golden test; golden usa a fonte de teste do Flutter e não compara texto com o React.
+- **FE-54.** Componente `parcial` ou com ressalva em `Paridade.md` tem limite conhecido; cite-o na entrega em vez de contornar com widget local.

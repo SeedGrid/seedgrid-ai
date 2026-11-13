@@ -9,6 +9,15 @@ Hoje menu e catalogo de permissoes sao mantidos **a mao, em varios lugares**. Es
 esquecido. (Plano futuro para centralizar: `seedgrid-quarkus-ext-security/docs/refactor-permission-catalog.md`.
 Nao executar sem o usuario pedir.)
 
+## Entrada: design aprovado
+
+Se existe especificacao de tela aprovada em `docs/ai/designs/` (papel `ux-design`, modelo
+`.ai/templates/especificacao-de-tela.md`), peca o caminho dela e use-a como entrada: as respostas de
+"Antes de comecar" (permissoes, menu, rota), os componentes, os estados e os textos/i18n vem dela. Divergencia
+entre o design e o que o codigo permite volta ao coordenador; nao decida sozinho. Sem design e a tela e nova
+com layout proprio, sugira ao coordenador acionar o `ux-design` antes. Tela so de registro (menu/permissao)
+nao precisa de design.
+
 ## Antes de comecar, responda
 
 1. **Qual app?** `frontend/` (cliente final, audience `client`) ou `admin/` (plataforma, audience `platform`).

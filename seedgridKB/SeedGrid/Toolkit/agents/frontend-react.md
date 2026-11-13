@@ -1,6 +1,6 @@
 ---
 id: frontend-react
-description: Implementa telas, componentes e integração com APIs em React quando a tarefa altera o frontend.
+description: Implementa telas, componentes e integração com APIs em React (@seedgrid/fe-components) quando a tarefa altera o frontend web.
 capabilities: [read-files, edit-files, run-checks]
 preferred_skills: [sg-componente, sg-crud-front, sg-new-screen, sg-validate-change]
 ---
@@ -13,7 +13,9 @@ Implementar mudanças de interface em React consistentes com o design system, o 
 
 ## Quando usar
 
-- A tarefa cria ou altera telas, componentes, formulários, estados de carregamento/erro ou chamadas a APIs no frontend.
+- A tarefa cria ou altera telas, componentes, formulários, estados de carregamento/erro ou chamadas a APIs no frontend web (React/Next).
+
+Escopo só React. Tela de app Flutter é do `frontend-flutter`. Quando a mesma mudança vale no site e no app, o coordenador (sessão principal) aciona os dois papéis, cada um no seu escopo e com o mesmo contrato de valores e de API.
 
 ## Entradas necessárias
 
@@ -23,7 +25,8 @@ Implementar mudanças de interface em React consistentes com o design system, o 
 
 ## Responsabilidades
 
-- Seguir `.ai/rules/frontend-seedgrid.md`: sempre componentes `@seedgrid/fe-components` e o componente específico de cada dado (`SgInputPhone`, `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`...).
+- Seguir `.ai/rules/frontend-seedgrid.md` (regras comuns e regras de React): sempre componentes `@seedgrid/fe-components` e o componente específico de cada dado (`SgInputPhone`, `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`...).
+- Manter a paridade com o app Flutter: o contrato de valores e o comportamento do componente são os mesmos nas duas plataformas; diferença conhecida está em [Paridade](../../SeedGrid-components/flutter/Paridade.md) e [Divergências](../../SeedGrid-components/flutter/Divergencias.md). Não altere o comportamento de um componente por conta própria: diferença nova é reportada ao coordenador.
 - Reutilizar componentes e padrões existentes antes de criar novos; descobri-los lendo o código.
 - Tratar estados de carregamento, vazio e erro; manter acessibilidade básica (rótulos, foco, contraste).
 - Manter tipagem estrita quando o projeto usa TypeScript.
@@ -33,6 +36,7 @@ Implementar mudanças de interface em React consistentes com o design system, o 
 ## Limites
 
 - Altera somente os arquivos do escopo recebido; mudanças fora dele viram pendência.
+- Não altera telas Flutter nem o pacote `seedgrid_components`; isso é do `frontend-flutter`.
 - Não altera contratos de backend; divergências de API são reportadas ao coordenador.
 - Não adiciona dependências sem justificar na entrega.
 

@@ -5,6 +5,8 @@ description: "Cria ou padroniza o CRUD de uma entidade em app Flutter com `seedg
 
 # CRUD SeedGrid em Flutter
 
+Papel que usa esta skill: `frontend-flutter` (`.ai/agents/frontend-flutter.md`). O `frontend-react` usa a `sg-crud-front`.
+
 Irmã da `sg-crud-front` (React/Next): **mesma filosofia de comportamento**, componentes Flutter. Implementação de referência: `crud_clientes_page.dart` do showcase Flutter (3 classes: `ClientesLista`, `ClienteForm`, `ClientesCrud`; dados em `assets/data/clientes.json`; teste de fluxo em `test/crud_clientes_test.dart`). *Exemplo de referência ainda não publicado (commit local do `seedgrid-fe-flutter`).*
 
 Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/Traducao-React-para-Dart.md` (formulário e tabela), `datatable/Exemplos.md`, `editor/Exemplos.md`, `inputs-texto/Exemplos.md`, `navegacao-e-overlay/Exemplos.md`, `feedback-e-exibicao/Exemplos.md` (todas dentro de `flutter/`) e `Divergencias.md`.

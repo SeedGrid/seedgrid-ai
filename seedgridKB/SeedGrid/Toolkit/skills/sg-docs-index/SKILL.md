@@ -26,6 +26,10 @@ A ordem das seções **não depende do conteúdo**: todo `INDEX.md` tem as mesma
 
 Em cada seção a tabela é `Id | Título | Status | Data | Plano.Fase`, ordenada pelo id.
 
+## Dono do índice
+
+O dono do índice é o papel `documentador` (`.ai/agents/documentador.md`): é ele quem roda esta skill, regera o `INDEX.md` e confere o `--check` ao fechar uma mudança. Qualquer outro papel que criar, renomear ou mudar o status de um documento em `docs/ai/` avisa o `documentador` (ou roda a skill ele mesmo, se o `documentador` não estiver no fluxo); ninguém edita o `INDEX.md` à mão.
+
 ## Quando rodar
 
 - Criou, renomeou, apagou ou mudou o `status:` de qualquer documento em `docs/ai/` (plano, demanda, ADR, handoff, relatório, especificação, análise).
