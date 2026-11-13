@@ -61,4 +61,4 @@ São 20 skills, uma pasta para cada em `SeedGrid/Toolkit/skills/` (não existe `
 
 ## Modelos
 
-[[SeedGrid/Toolkit/templates/especificacao-tarefa|Especificação de tarefa]] · [[SeedGrid/Toolkit/templates/especificacao-de-tela|Especificação de tela]] · [[SeedGrid/Toolkit/templates/decisao-arquitetura|Decisão de arquitetura (ADR)]] · [[SeedGrid/Toolkit/templates/relatorio-validacao|Relatório de validação]]
+[[SeedGrid/Toolkit/templates/especificacao-tarefa|Especificação de tarefa]] · [[SeedGrid/Toolkit/templates/especificacao-de-tela|Especificação de tela]] · [[SeedGrid/Toolkit/templates/demanda|Demanda]] · [[SeedGrid/Toolkit/templates/decisao-arquitetura|Decisão de arquitetura (ADR)]] · [[SeedGrid/Toolkit/templates/relatorio-validacao|Relatório de validação]]

@@ -44,7 +44,8 @@
         "templates/especificacao-tarefa.md",
         "templates/decisao-arquitetura.md",
         "templates/relatorio-validacao.md",
-        "templates/especificacao-de-tela.md"
+        "templates/especificacao-de-tela.md",
+        "templates/demanda.md"
       ]
     },
     {
