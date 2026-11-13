@@ -120,7 +120,7 @@ Diferente do Exchange, o calendario e de **cada banco**: a tenancy migra o schem
 (historico proprio `sg_flyway_schema_history_business_days`; toggle `seedgrid.subdomain-tenancy.modules.business-days.enabled`,
 default `true`), entao o master e cada empresa tem o seu calendario. `br.com.seedgrid.businessdays.entities` entra em
 `quarkus.hibernate-orm.packages` (PU default, que no dominio do admin aponta para o master). Em tenants ja migrados,
-mude `seedgrid.subdomain-tenancy.migration.target-version` para o schema novo ser aplicado.
+suba a versão do jar do host (`quarkus.application.version`) para o schema novo ser aplicado.
 No front: menu **Dias uteis** (`/dias-uteis/*`), proxy em `app/api/business-days/[...path]` e permissoes
 `BUSINESS_DAY_*`.
 

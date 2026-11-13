@@ -175,8 +175,8 @@ Migrations e históricos das extensions permanecem nas próprias locations; não
 seeds de extensions para `app`.
 AI Pricing e Exchange rodam no master; Business days roda no master e em cada tenant. Todos vêm ligados
 (`seedgrid.subdomain-tenancy.modules.<módulo>.enabled`, default `true`); cada extension mantém sua tabela de
-histórico. Tenants já migrados só recebem o schema novo quando `seedgrid.subdomain-tenancy.migration.target-version`
-muda.
+histórico. Tenants já migrados só recebem o schema novo quando a versão do jar do host
+(`quarkus.application.version`) sobe.
 
 ## Notifications pela extensão
 

@@ -30,8 +30,8 @@ Caminhos relativos a `java/seedgrid-quarkus-ext-subdomain-tenancy/runtime/src/ma
 
 | Valor | Significado | Efeito / onde é tratado | Observações |
 |---|---|---|---|
-| `PENDING` | Estado inicial; ainda não migrado para a `target-version` | Gravado por `TenantMigrationStateStore#ensureStateExists`/`getOrCreate`; `TenantHealthService` devolve `MIGRATION_PENDING`; é o valor devolvido por `parseStatus` quando a coluna é nula, vazia ou inválida | `markPending(...)` existe no store, mas nenhum código o chama |
-| `READY` | Tenant migrado | `TenantMigrationCoordinator#isAlreadyReady` exige `READY` **e** `target_version == current_version == migration.target-version`; gravado por `markReady` e `markReadyWithoutLock` (pós-provisionamento) | O master é representado em memória com `READY` (`buildMasterState`), sem linha na tabela |
+| `PENDING` | Estado inicial; ainda não migrado para a versão do jar do host | Gravado por `TenantMigrationStateStore#ensureStateExists`/`getOrCreate`; `TenantHealthService` devolve `MIGRATION_PENDING`; é o valor devolvido por `parseStatus` quando a coluna é nula, vazia ou inválida | `markPending(...)` existe no store, mas nenhum código o chama |
+| `READY` | Tenant migrado | `TenantMigrationCoordinator#isAlreadyReady` exige `READY` **e** `current_version >= versão do jar do host` (`quarkus.application.version`, comparada por partes numéricas); gravado por `markReady` e `markReadyWithoutLock` (pós-provisionamento) | O master é representado em memória com `READY` (`buildMasterState`), sem linha na tabela |
 | `MIGRATING` | Migração em andamento com lock | Gravado por `tryAcquireLock`; se outra instância tem lock ativo, o gate de login devolve 503 `tenant_migration_in_progress`; `TenantHealthService` → `MIGRATION_RUNNING` | — |
 | `FAILED` | Última tentativa falhou | Gravado por `markFailed` (com `last_error`); gate devolve 503 `tenant_migration_failed`; health → `MIGRATION_FAILED` | Nova tentativa é permitida (login ou `trigger`) |
 
@@ -44,13 +44,13 @@ stateDiagram-v2
     [*] --> PENDING: ensureStateExists / getOrCreate
     PENDING --> MIGRATING: tryAcquireLock
     FAILED --> MIGRATING: tryAcquireLock
-    READY --> MIGRATING: tryAcquireLock (force ou target-version mudou)
+    READY --> MIGRATING: tryAcquireLock (force ou versão do jar maior que a do tenant)
     MIGRATING --> READY: markReady (lock e token válidos)
     MIGRATING --> FAILED: markFailed
     PENDING --> READY: markReadyWithoutLock (provisionamento)
 ```
 
-  Que `tryAcquireLock` aceita partir de `READY`/`FAILED`/lock expirado é **Inferência** do uso (`force=true`, mudança de `target-version`, tentativa após falha); as condições SQL exatas não foram detalhadas aqui.
+  Que `tryAcquireLock` aceita partir de `READY`/`FAILED`/lock expirado é **Inferência** do uso (`force=true`, versão do jar maior que a do tenant, tentativa após falha); as condições SQL exatas não foram detalhadas aqui.
 - **Usado em:** [[SeedGrid/Extensions/subdomain-tenancy/Configuracao|`migration.*`]]; endpoints `GET /internal/migrations/tenants/{id}/status`, `POST …/trigger`, `GET /internal/health/tenants/{id}`.
 
 ## TenantMigrationDecision
