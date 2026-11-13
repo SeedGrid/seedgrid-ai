@@ -14,9 +14,10 @@ Nao executar sem o usuario pedir.)
 Se existe especificacao de tela aprovada em `docs/ai/designs/` (papel `ux-design`, modelo
 `.ai/templates/especificacao-de-tela.md`), peca o caminho dela e use-a como entrada: as respostas de
 "Antes de comecar" (permissoes, menu, rota), os componentes, os estados e os textos/i18n vem dela. Divergencia
-entre o design e o que o codigo permite volta ao coordenador; nao decida sozinho. Sem design e a tela e nova
-com layout proprio, sugira ao coordenador acionar o `ux-design` antes. Tela so de registro (menu/permissao)
-nao precisa de design.
+entre o design e o que o codigo permite volta ao coordenador; nao decida sozinho. Sem design e a tela e nova do dominio do produto
+(com layout proprio), sugira ao coordenador acionar o `ux-design` antes. Nao precisam de design: tela so de
+registro (menu/permissao) e as telas que ja vem no boilerplate; excecao: a tela dos termos do plano e a de
+usuario sao extensiveis e, se o produto as estendeu, os campos novos precisam de especificacao.
 
 ## Antes de comecar, responda
 
