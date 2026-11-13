@@ -18,7 +18,7 @@ import { TK, cleanupAll, copyContent, editManifest, readText, snapshot, tempProj
 after(cleanupAll);
 
 const SKILLS = ['sg-adr', 'sg-branch-status', 'sg-bump', 'sg-check-secrets', 'sg-code-review', 'sg-componente', 'sg-crud-back', 'sg-crud-front', 'sg-crud-front-flutter', 'sg-dev-env', 'sg-diagnostico', 'sg-docs-index', 'sg-new-product', 'sg-new-screen', 'sg-new-skill', 'sg-plan-change', 'sg-plan-goal', 'sg-release', 'sg-review', 'sg-validate-change'];
-const AGENTS = ['arquiteto', 'backend-java', 'backend-rust', 'frontend-react', 'qa', 'revisor'];
+const AGENTS = ['a11y-i18n', 'arquiteto', 'backend-java', 'backend-rust', 'dados-migracao', 'documentador', 'frontend-flutter', 'frontend-react', 'frontend-tester', 'qa', 'revisor', 'seguranca', 'ux-design'];
 
 /** Gera uma nova versão de conteúdo alterando uma regra. */
 async function bumpContent(dir: string, version: string, marker: string) {
@@ -129,7 +129,7 @@ describe('instalação', () => {
       assert.ok(files[`.ai/skills/${name}/SKILL.md`], `${name} tem cópia canônica em .ai/skills`);
       assert.equal(files[`.claude/skills/${name}/SKILL.md`], files[`.ai/skills/${name}/SKILL.md`], `${name}: cópia nativa igual à canônica`);
     }
-    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((20))\)/);
+    assert.match(files['AGENTS.md']!, /Skills: `\.ai\/skills\/` \(((21))\)/);
     // HO-08: extension so pela KB; o bloco nao pode mandar conferir no fonte, no jar ou no pacote.
     assert.match(files['AGENTS.md']!, /Extension: só pela KB \(HO-08\)/);
     assert.doesNotMatch(files['AGENTS.md']!, /confirme no código-fonte|confirme no código, no jar/);
@@ -244,7 +244,7 @@ describe('instalação', () => {
     await rm(path.join(old, TK, 'skills', 'sg-new-skill'), { recursive: true });
     await rm(path.join(old, TK, 'skills', 'sg-new-product'), { recursive: true });
     // Os papéis atuais citam essas skills; no conteúdo "anterior" elas deixam de existir.
-    for (const id of ['backend-java', 'frontend-react', 'revisor']) {
+    for (const id of ['a11y-i18n', 'backend-java', 'dados-migracao', 'frontend-flutter', 'frontend-react', 'revisor', 'ux-design']) {
       const p = `${TK}agents/${id}.md`;
       await writeText(old, p, (await readText(old, p)).replace(/^preferred_skills: .*$/m, 'preferred_skills: []'));
     }
