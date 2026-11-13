@@ -8,7 +8,7 @@ import { test } from 'node:test';
 const SCRIPT = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-custo/scripts/custo.mjs');
 type Tokens = Record<'entrada' | 'saida' | 'cache_lido' | 'cache_criado_5m' | 'cache_criado_1h', number>;
 type Reg = { modelo: string; timestamp: string; tokens: Tokens; plano: number | null; fase: number | null; tarefa: string; papel: string };
-type Ag = { linhas: { tarefa: string; fase: number; tokens: Tokens; valor: number; parcial: boolean; requisicoes: number }[]; fases: { fase: number; valor: number; parcial: boolean; tokens: Tokens }[]; total: { valor: number; parcial: boolean; tokens: Tokens }; semTarefa: { requisicoes: number }; avisos: string[] };
+type Ag = { linhas: { tarefa: string; fase: number; tokens: Tokens; valor: number; parcial: boolean; requisicoes: number }[]; fases: { fase: number; valor: number; parcial: boolean; tokens: Tokens }[]; total: { valor: number; parcial: boolean; tokens: Tokens }; semTarefa: { principal: { requisicoes: number }; subagentes: { requisicoes: number } }; avisos: string[] };
 const mod = (await import(pathToFileURL(SCRIPT).href)) as {
   tokensDoUso: (u: unknown) => Tokens | null;
   lerRequisicoes: (f: string) => { tokens: Tokens }[];
@@ -69,7 +69,7 @@ test('agregar liga o subagente à tarefa pelo description e separa planos', () =
     assert.equal(ag.linhas.length, 1);
     assert.equal(ag.linhas[0]!.tarefa, 'P7.F1.T1');
     assert.equal(ag.total.tokens.cache_criado_1h, 200);
-    assert.equal(ag.semTarefa.requisicoes, 2, 'sessão principal sem janela fica à parte');
+    assert.equal(ag.semTarefa.principal.requisicoes, 2, 'sessão principal sem janela fica à parte');
     assert.equal(ag.total.tokens.saida, 50, 'nada do plano 8 nem da sessão principal');
   } finally { rmSync(raiz, { recursive: true, force: true }); }
 });
@@ -83,7 +83,40 @@ test('resposta repetida em outro arquivo (sessão retomada) conta uma vez e fica
     assert.equal(regs.filter((r) => r.tokens.saida === 50).length, 1);
     const ag = mod.agregar(regs, PRECOS, 7);
     assert.equal(ag.total.tokens.saida, 50);
-    assert.equal(ag.semTarefa.requisicoes, 2);
+    assert.equal(ag.semTarefa.principal.requisicoes, 2);
+  } finally { rmSync(raiz, { recursive: true, force: true }); }
+});
+
+test('subagente sem marca aparece separado da sessão principal', () => {
+  const { raiz, transcritos } = projeto();
+  try {
+    writeFileSync(join(transcritos, 'sess1', 'subagents', 'agent-a3.jsonl'), linha('s3', '2026-11-13T10:50:00Z', { input_tokens: 1, output_tokens: 7 }) + '\n');
+    writeFileSync(join(transcritos, 'sess1', 'subagents', 'agent-a3.meta.json'), JSON.stringify({ agentType: 'qa', description: 'rodar testes' }));
+    const ag = mod.agregar(mod.coletar(transcritos), PRECOS, 7);
+    assert.equal(ag.semTarefa.subagentes.requisicoes, 1);
+    assert.equal(ag.semTarefa.principal.requisicoes, 2);
+    let out = '';
+    mod.main(['7', 'resumo', '--transcritos', transcritos], { cwd: raiz, saida: (s) => (out += s), erro: () => {} });
+    assert.match(out, /Sessão principal sem tarefa atribuída.*2 requisições/);
+    assert.match(out, /Subagentes sem marca.*1 requisições/);
+  } finally { rmSync(raiz, { recursive: true, force: true }); }
+});
+
+test('--sessao filtra por sessão (e pelos subagentes dela) antes da janela', () => {
+  const { raiz, transcritos } = projeto();
+  try {
+    // Outra sessão, no mesmo horário da janela.
+    writeFileSync(join(transcritos, 'sess9.jsonl'), linha('x1', '2026-11-13T10:05:00Z', { input_tokens: 1, output_tokens: 1000 }) + '\n');
+    const janela = 'P7.F1.T2=2026-11-13T09:00:00Z,2026-11-13T10:10:00Z';
+    const rodar = (extra: string[]) => {
+      let out = '';
+      mod.main(['7', 'resumo', '--json', '--transcritos', transcritos, '--janela', janela, ...extra], { cwd: raiz, saida: (s) => (out += s), erro: () => {} });
+      return JSON.parse(out) as Ag;
+    };
+    assert.equal(rodar([]).total.tokens.saida, 50 + 100 + 1000, 'sem --sessao a janela mistura as sessões');
+    const so1 = rodar(['--sessao', 'sess1']);
+    assert.equal(so1.total.tokens.saida, 50 + 100);
+    assert.equal(rodar(['--sessao', 'sess9']).total.tokens.saida, 1000);
   } finally { rmSync(raiz, { recursive: true, force: true }); }
 });
 
