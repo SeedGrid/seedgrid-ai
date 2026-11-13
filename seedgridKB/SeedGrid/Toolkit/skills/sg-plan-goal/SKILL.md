@@ -36,6 +36,7 @@ Copie [assets/plano-de-tarefas.md](assets/plano-de-tarefas.md) e preencha, **inc
 - **Fases** (`## Fase N — nome`) com dependência explícita e aceite da fase.
 - **Cada tarefa** é uma linha `- [ ] **P111.F1.T1 Título** (`depende-de`: P111.F0.T1, P111.F0.T2; `escreve`: caminhos)` seguida de `Aceite`, `Testes` e, ao concluir, `Evidencia`.
 - `[ ]` vira `[x]` **somente** com a linha `  - Evidencia: <comando, teste ou hash>` embaixo. Sem evidência, a tarefa não está feita.
+- **Linha opcional `Custo:`** abaixo de `Evidencia:`, com o resumo do custo da tarefa (tokens e valor) e o caminho do relatório em `docs/ai/custos/`; é gerada com a skill `sg-custo` e explicada em `.ai/references/custo-por-fase.md`. Plano sem a linha continua válido: `controle.mjs` não exige nem reprova a ausência.
 - **`depende-de` e `escreve` são obrigatórios**: sem eles o executor não pode provar o que roda em paralelo. `escreve` lista os arquivos, pastas ou módulos que a tarefa grava.
 - **Um bloco `/goal` por fase** e **um `/goal` do plano inteiro** (seção "Goal do plano inteiro" do template), com limite de turnos e condição que exige evidência visível na saída (etapa 12).
 - **Decisão do dono no goal geral:** o executor não decide sozinho. Marca a tarefa `[?]` com `Pergunta:` e `Recomendacao:`, faz todas as tarefas que não dependem dela e, ao final, pergunta tudo de uma vez ao dono. Só é `[?]` o que é decisão do dono (produto, custo, dependência nova, algo irreversível); dúvida técnica se resolve com teste ou spike.

@@ -20,6 +20,7 @@ Todo documento de trabalho que a IA produzir (plano, handoff, decisão, especifi
 | Especificação | `docs/ai/specs/` | Especificação de tarefa (modelo: `especificacao-tarefa.md`) |
 | Design de tela | `docs/ai/designs/` | Especificação de tela feita **antes** do front (modelo: `especificacao-de-tela.md`, papel `ux-design`); o front recebe o design aprovado |
 | Validação | `docs/ai/reports/` | Relatórios de validação, revisão e testes (modelo: `relatorio-validacao.md`) |
+| Custo | `docs/ai/custos/` | Relatório de custo por tarefa, fase e plano, gerado pela skill `sg-custo` (`--gravar`); nome `P<plano>[-F<fase>]-custo-AAAA-MM-DD.md`; como ler em `.ai/references/custo-por-fase.md` |
 | Outros | `docs/ai/<assunto>/` | Qualquer outro documento; crie a pasta com um nome curto no plural |
 
 ## Convenções

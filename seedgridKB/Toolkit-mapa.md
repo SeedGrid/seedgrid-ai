@@ -6,7 +6,7 @@ tags: [seedgrid, toolkit, indice]
 
 Conteúdo distribuído pelo `seedgrid-ai` e instalado nos projetos (`.ai/`, `.claude/`, `.agents/`). Fica em `SeedGrid/Toolkit/` e **não contêm wikilinks de propósito**: os arquivos são copiados como estão, e links para o vault quebrariam nos projetos. Esta nota fica na raiz do vault, fora de `SeedGrid/`, porque a base `SeedGrid/` também é instalada nos projetos (sem o `Toolkit/`) e links daqui para lá quebrariam. Ela é o ponto de ligação com o resto da base.
 
-Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]] · [[SeedGrid/Toolkit/rules/coordenacao|Coordenação]] · [[SeedGrid/Toolkit/references/glossario|Glossário]] · [[SeedGrid/Toolkit/references/modos-shared-native|Modos shared/native]].
+Fluxo geral: [[SeedGrid/Toolkit/references/fluxo-de-trabalho|Fluxo de trabalho]] · [[SeedGrid/Toolkit/rules/coordenacao|Coordenação]] · [[SeedGrid/Toolkit/references/glossario|Glossário]] · [[SeedGrid/Toolkit/references/custo-por-fase|Custo por fase]] · [[SeedGrid/Toolkit/references/modos-shared-native|Modos shared/native]].
 
 ## Papéis (agents)
 
