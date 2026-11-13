@@ -12,7 +12,7 @@ analisado-em: 2026-11-07
 
 > **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-texto/API|API — Inputs de texto e documentos (React)]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos (Flutter)]].
 
-> **Atualização de 2026-11-12 (P155.F3.T9), `SgInputNumber` e `SgInputCurrency`.** Seções reescritas e conferidas contra o código Dart local do `fe-flutter` (commits locais ainda sem push: `c262a0f`, `d577401`, `2abdb89`; árvore em `19f7830`), com arquivo e linha. **Mudanças que quebram:** `onChange` e o valor do formulário passam a ser **número** (`double`; antes, texto como `"1234.50"`); a prop `emptyValue` (enum `SgInputNumberEmptyValue`/`SgInputCurrencyEmptyValue`) foi **removida** e entra `emptyValueIsNull` (`bool`); `validation` passa a ser `String? Function(num?)` (antes, `String`). As máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) estão em mudança (P155.F3.T13) e não foram tocadas aqui.
+> **Atualização de 2026-11-12, `SgInputNumber` e `SgInputCurrency`.** Seções reescritas e conferidas contra o código Dart local do `fe-flutter` (commits locais ainda sem push: `c262a0f`, `d577401`, `2abdb89`; árvore em `19f7830`), com arquivo e linha. **Mudanças que quebram:** `onChange` e o valor do formulário passam a ser **número** (`double`; antes, texto como `"1234.50"`); a prop `emptyValue` (enum `SgInputNumberEmptyValue`/`SgInputCurrencyEmptyValue`) foi **removida** e entra `emptyValueIsNull` (`bool`); `validation` passa a ser `String? Function(num?)` (antes, `String`). O contrato de valor das máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) está na seção [[#Campos com máscara: contrato de valor]].
 
 > **Como ler as tabelas.** Extraídas por script do código Dart: o **tipo** é o do campo `final` do widget; o **padrão** é o do construtor (`this.x = valor`) e, quando o construtor não declara, o do contrato gerado do React (marcado com †); **Origem** = `React` (prop do contrato, nome e valores iguais aos do React; ver [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]]) ou `Flutter` (extra do Dart, como `controller`, `onClick`, `child`). Descrições: contrato gerado (texto original, sem acento quando assim na fonte) ou comentário `///` do widget. Valores de enum aparecem na descrição como o React os escreve; no Dart são os enums de `generated/enums.g.dart` (ex.: `SgSeverity.primary` ↔ `'primary'`).
 
@@ -493,6 +493,27 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 **Acessibilidade**
 - O botão de mostrar/ocultar usa `Semantics(label: i18n components.password.show/hide, button: true)`; o botão de gerar senha tem `tooltip` do i18n (`components.password.generate`). A barra de força e a lista de requisitos não têm `Semantics` próprio (só `ValueKey`); **não confirmado** se leitores de tela leem a lista, que é um `Text` comum.
 
+## Campos com máscara: contrato de valor
+
+Vale para `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone` e `SgInputPostalCode`; é o mesmo contrato do React (ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Campos com máscara: contrato de valor|API React]]). **Confirmado** em `inputs/masked/masked_core.dart` (`SgMaskFormatter`, `sgPhoneStripDdi`) e em `inputs/sg_input_text.dart` (`_display`, `_writeBackMasked`).
+
+1. **O valor do formulário é SEMPRE o mascarado**: em uso avulso (`onChange`), com `name` + `control` e com `name` dentro de um `SgForm` (o equivalente do `register` do React, que não existe no Flutter). Se o formulário guarda outra forma do mesmo valor, o campo regrava o mascarado sem marcá-lo como alterado.
+2. **A entrada pode ser crua (só dígitos) ou mascarada**: `'52998224725'` e `'529.982.247-25'` resultam em `529.982.247-25`.
+3. **Valor que chega por código maior que a máscara é CORTADO na máscara**, igual a colar e a digitar. Vale para `initialValue`, `defaultValues`, `setValue`, `reset` e `value` controlado:
+
+| Campo | Valor posto por código | Resultado |
+|---|---|---|
+| `SgInputCPF` | `'529982247251234'` | `529.982.247-25` |
+| `SgInputCNPJ` | `'112223330001819999'` | `11.222.333/0001-81` |
+| `SgInputPostalCode` (BR) | `'045381329999'` | `04538-132` |
+| `SgInputPhone` | `'11987654321999'` | `(11) 98765-4321` |
+
+4. **Telefone com DDI do Brasil**: `+55` colado ou posto por código perde o `55` (`'+5511987654321'` vira `(11) 98765-4321`; `sgPhoneStripDdi`: 12 ou 13 dígitos começados em `55`). Digitar um dígito por vez não tira o `55`, porque também é um DDD válido.
+5. **Sem `register` no Flutter**: o limite do React (`reset()` com `register` não atualiza o DOM) não existe aqui; `reset` e `setValue` do `SgFormController` atualizam o campo.
+6. **Para guardar só os dígitos**, tire a máscara na hora de salvar: `value.replaceAll(RegExp(r'\D'), '')`. O componente nunca entrega o valor cru ao formulário.
+
+Particularidade: no `SgInputCPFCNPJ`, mais de 11 dígitos são lidos como CNPJ e cortados em 14 (`'529982247251234'` vira `52.998.224/7251-23`). Exemplos: "Formulário com control" e "Formulário com register" em [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos (Flutter)]].
+
 ## SgInputPhone
 
 > **Flutter** · estado de paridade: **portado** · equivalente React: `SgInputPhone` (mesmo nome).
@@ -567,7 +588,7 @@ Campo especializado para telefone com mascara, validacao de comprimento e integr
 Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flutter; itens marcados como confirmados no código foram conferidos no widget.
 
 - Nenhuma ressalva registrada na tabela de paridade.
-- **Confirmado no código:** um número do Brasil com DDI (`+55 11 98765-4321`, `5511987654321`) perde o `55` ao entrar por valor inicial, `value`, `setValue` ou colar (`sgPhoneStripDdi`); o React mostraria outro telefone (decisão de valor programático D6; ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]). O campo exibe sempre o valor mascarado.
+- **Confirmado no código:** um número do Brasil com DDI (`+55 11 98765-4321`, `5511987654321`) perde o `55` ao entrar por valor inicial, `value`, `setValue` ou colar (`sgPhoneStripDdi`); o React também tira o `55` (paridade; antes, mostrava outro telefone; ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]). O campo exibe sempre o valor mascarado, e valor maior que a máscara é cortado (`'11987654321999'` vira `(11) 98765-4321`). Ver [[#Campos com máscara: contrato de valor]].
 - Os validadores do componente rodam também em `handleSubmit` e `trigger` (decisão do dono, aceita como paridade).
 
 ### Eventos, controllers e acessibilidade
@@ -658,7 +679,7 @@ Campo especializado para CPF com mascara, validacao de digitos e integracao com 
 Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flutter; itens marcados como confirmados no código foram conferidos no widget.
 
 - Nenhuma ressalva registrada na tabela de paridade.
-- **Confirmado no código:** não repassa `required` ao `SgInputText` (como no React: o rótulo não ganha `*`; a validação própria trata o obrigatório). Valor inicial, `value` e `setValue` aparecem sempre mascarados (decisão do dono D1 de valor programático; ver [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]).
+- **Confirmado no código:** não repassa `required` ao `SgInputText` (como no React: o rótulo não ganha `*`; a validação própria trata o obrigatório). Valor inicial, `value`, `setValue` e `reset` aparecem sempre mascarados, e valor maior que a máscara é cortado (`'529982247251234'` vira `529.982.247-25`; ver [[#Campos com máscara: contrato de valor]] e [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]]).
 - Os validadores do componente rodam também em `handleSubmit` e `trigger` (decisão do dono, aceita como paridade): um CPF inválido não passa no envio.
 
 ### Eventos, controllers e acessibilidade

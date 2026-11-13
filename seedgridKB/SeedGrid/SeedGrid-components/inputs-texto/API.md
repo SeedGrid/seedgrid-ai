@@ -14,7 +14,7 @@ plataforma: react
 
 Pacote `@seedgrid/fe-components` versão `2026.7.1` (`packages/seedgrid-fe-components/package.json`). Visão geral: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Visão geral dos inputs de texto]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]].
 
-> **Atualização de 2026-11-12 (P155.F3.T9).** As seções `SgInputNumber` e `SgInputCurrency` foram reescritas e conferidas contra o código atual do `fe-components` (commits locais ainda sem push: `8642e19`, `5c497c3`, `019a253`; árvore em `4b150cc`), com arquivo e linha citados em cada ponto. **Mudanças que quebram** (também no `CHANGELOG.md` do pacote, seção "Nao publicado"): `onChange` e o valor do formulário passam a ser **número** (antes, texto como `"37.00"`); a prop `emptyValue` foi **removida, sem alias**, e entra `emptyValueIsNull`; `validation` recebe `number | null` (antes, `string`). As demais seções seguem conferidas em `0f304bb`; as máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) estão em mudança (P155.F3.T13) e não foram tocadas aqui.
+> **Atualização de 2026-11-12.** As seções `SgInputNumber` e `SgInputCurrency` foram reescritas e conferidas contra o código atual do `fe-components` (commits locais ainda sem push: `8642e19`, `5c497c3`, `019a253`; árvore em `4b150cc`), com arquivo e linha citados em cada ponto. **Mudanças que quebram** (também no `CHANGELOG.md` do pacote, seção "Nao publicado"): `onChange` e o valor do formulário passam a ser **número** (antes, texto como `"37.00"`); a prop `emptyValue` foi **removida, sem alias**, e entra `emptyValueIsNull`; `validation` recebe `number | null` (antes, `string`). As demais seções seguem conferidas em `0f304bb`; o contrato de valor das máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) está na seção [[#Campos com máscara: contrato de valor]].
 
 ## Como as tabelas foram montadas
 
@@ -69,8 +69,30 @@ Regras comuns, todas **Confirmado** no código de cada componente:
 - **Valor gravado no formulário:**
   - `SgInputText` e derivados gravam a string do input, já com `prefixText`/`suffixText`.
   - `SgInputNumber`/`SgInputCurrency` gravam **número** (`1234.5`) quando o usuário digita, cola ou limpa (`null` só com `emptyValueIsNull` e campo vazio). O que o host **atribui** (`defaultValues`, `setValue`, `reset`) fica no formulário **como foi atribuído** (número ou texto como `"37,5"`); o campo mostra o valor normalizado, mas o formulário só passa a guardar número depois da primeira edição. Atribua número para ler número. Ver [[#SgInputNumber]].
+  - Os campos com máscara (`SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone`, `SgInputPostalCode`) gravam SEMPRE o texto **mascarado** (`000.000.000-00`), com `control`, com `register` e em uso avulso. Ver [[#Campos com máscara: contrato de valor]].
   - `SgInputOTP` grava o valor **bruto** (sem separadores da máscara).
 - Os wrappers que não fazem a integração sozinhos (Email, Password, Phone, CPF, CNPJ, CPFCNPJ, PostalCode, Date, BirthDate, TextSearch) repassam `name`/`control`/`register`/`rules` ao `SgInputText`, que faz a ligação. Exceção: o `SgInputPassword` também repassa, mas não está coberto por teste de RHF.
+
+## Campos com máscara: contrato de valor
+
+Vale para `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone` e `SgInputPostalCode`; o Flutter tem o mesmo contrato (ver [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API#Campos com máscara: contrato de valor|API Flutter]]). **Confirmado** em `src/inputs/SgInputText.tsx` (`SgValueMaskContext`, `maskExternal`, `MaskSync`, `patchValueSetter`), em `src/masks.ts` e em cada wrapper (`SgValueMaskContext.Provider`).
+
+1. **O valor do formulário é SEMPRE o mascarado**, em uso avulso (`onChange`), com `control` e com `register`. Com `control`, o `Controller` grava o texto mascarado e, se o host posta por código um texto diferente da forma mascarada, o componente regrava o mascarado no formulário. Com `register`, o `onChange` mascara antes de o RHF ler e o valor que o RHF escreve no `<input>` também passa pela máscara.
+2. **A entrada pode ser crua (só dígitos) ou mascarada**: `"52998224725"` e `"529.982.247-25"` resultam no mesmo texto `529.982.247-25`.
+3. **Valor que chega por código maior que a máscara é CORTADO na máscara**, igual a colar e a digitar. Vale para `defaultValue`, `setValue`, `reset` e `value` controlado:
+
+| Campo | Valor posto por código | Resultado |
+|---|---|---|
+| `SgInputCPF` | `"529982247251234"` | `529.982.247-25` |
+| `SgInputCNPJ` | `"112223330001819999"` | `11.222.333/0001-81` |
+| `SgInputPostalCode` (BR) | `"045381329999"` | `04538-132` |
+| `SgInputPhone` | `"11987654321999"` | `(11) 98765-4321` |
+
+4. **Telefone com DDI do Brasil**: `+55` colado ou digitado perde o `55` (`"+5511987654321"` vira `(11) 98765-4321`). A regra vale para 12 ou 13 dígitos começados em `55` (`stripPhoneDdi`); ao digitar um dígito por vez o `55` não é tirado, porque também é um DDD válido.
+5. **Com `register`**, o `defaultValue`/`defaultValues` segue como o react-hook-form o entrega, e `reset()` com `register` **não atualiza o DOM** (limite conhecido do RHF): para `reset` e `setValue` por código, use `control`.
+6. **Para guardar só os dígitos**, tire a máscara na hora de salvar: `value.replace(/\D/g, "")`. O componente nunca entrega o valor cru ao formulário.
+
+Particularidades: no `SgInputCPFCNPJ`, mais de 11 dígitos são lidos como CNPJ e cortados em 14 (`"529982247251234"` vira `52.998.224/7251-23`, não um CPF); o `SgInputCNPJ` e o `SgInputCPFCNPJ` aceitam letras (CNPJ alfanumérico, em maiúsculas); no `SgInputPostalCode` o corte e a máscara dependem de `country`.
 
 ## Contrato base SgInputText
 
@@ -244,6 +266,14 @@ Fonte: `src/inputs/SgInputTextSearch.tsx`. Envolve o `SgInputText` e acrescenta 
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (45):** `required`, `maxLength`, `minLength`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -298,6 +328,14 @@ Fonte: `src/inputs/SgInputEmail.tsx`. Fixa `type="email"` e usa `textInputType` 
 | `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `readOnly`.
 
@@ -366,6 +404,14 @@ Fonte: `src/inputs/SgInputPassword.tsx`. Usa `type="password"` ou `"text"` confo
 | `textInputType` | `"none" \| "text" \| "email" \| "search" \| "tel" \| "url" \| "numeric" \| "decimal"` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (36):** `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -431,12 +477,21 @@ Fonte: `src/inputs/SgInputPhone.tsx`. Aplica a máscara `maskPhone` a cada digit
 | `type` | `HTMLInputTypeAttribute` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. O valor que o react-hook-form entrega (`watch`, `getValues`, `handleSubmit`) é SEMPRE o texto mascarado; para guardar só dígitos, tire na hora de salvar com `value.replace(/\D/g, "")`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo (`register(name, rules)`). O valor do formulário é o texto mascarado do `<input>`; `defaultValue` segue como o react-hook-form o entrega, e `reset()` com `register` não atualiza o DOM (limite conhecido do RHF): para `reset`/`setValue` por código, use `control`. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
 **Removidas do contrato base:** nenhuma.
 
 Teste: "SgInputPhone shows the required asterisk when required is true". **Confirmado**.
+
+Contrato de valor: o formulário guarda sempre o texto mascarado (`(11) 98765-4321`), aceita entrada crua ou mascarada, corta o excesso na máscara (`"11987654321999"` vira `(11) 98765-4321`) e tira o `55` de um número com DDI (`"+5511987654321"` vira `(11) 98765-4321`), inclusive em `defaultValue`, `setValue`, `reset` e `value`. Ver [[#Campos com máscara: contrato de valor]]. **Confirmado** (`stripPhoneDdi`, `maskPhoneInput` e `SgValueMaskContext` em `SgInputPhone.tsx`).
 
 ## SgInputCPF
 
@@ -485,12 +540,19 @@ Fonte: `src/inputs/SgInputCPF.tsx`. Aplica `maskCpf`, exige 11 dígitos e valida
 | `type` | `HTMLInputTypeAttribute` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. O valor que o react-hook-form entrega (`watch`, `getValues`, `handleSubmit`) é SEMPRE o texto mascarado; para guardar só dígitos, tire na hora de salvar com `value.replace(/\D/g, "")`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo (`register(name, rules)`). O valor do formulário é o texto mascarado do `<input>`; `defaultValue` segue como o react-hook-form o entrega, e `reset()` com `register` não atualiza o DOM (limite conhecido do RHF): para `reset`/`setValue` por código, use `control`. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
 **Removidas do contrato base:** nenhuma.
 
-O valor emitido em `onChange` e no RHF é a string **mascarada** (`000.000.000-00`). **Confirmado**: a máscara é aplicada ao `event.target.value` antes de propagar.
+O valor emitido em `onChange` e no RHF é a string **mascarada** (`000.000.000-00`), seja a entrada crua ou mascarada, e vale também para o que o host posta por código: `"529982247251234"` (`defaultValue`, `setValue`, `reset`, `value`) vira `529.982.247-25`, cortado na máscara como ao colar. Com `register`, `reset()` não atualiza o DOM (use `control`). Para só os dígitos, `value.replace(/\D/g, "")` ao salvar. Ver [[#Campos com máscara: contrato de valor]]. **Confirmado**: a máscara é aplicada ao `event.target.value` antes de propagar e ao valor externo (`maskExternal`).
 
 ## SgInputCNPJ
 
@@ -544,6 +606,13 @@ Fonte: `src/inputs/SgInputCNPJ.tsx`. Aplica `maskCnpj` e aceita CNPJ **alfanumé
 | `type` | `HTMLInputTypeAttribute` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. O valor que o react-hook-form entrega (`watch`, `getValues`, `handleSubmit`) é SEMPRE o texto mascarado; para guardar só dígitos, tire na hora de salvar com `value.replace(/\D/g, "")`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo (`register(name, rules)`). O valor do formulário é o texto mascarado do `<input>`; `defaultValue` segue como o react-hook-form o entrega, e `reset()` com `register` não atualiza o DOM (limite conhecido do RHF): para `reset`/`setValue` por código, use `control`. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -551,7 +620,7 @@ Fonte: `src/inputs/SgInputCNPJ.tsx`. Aplica `maskCnpj` e aceita CNPJ **alfanumé
 
 - A consulta externa só acontece para CNPJ totalmente numérico (`!/[A-Z]/.test(raw)`). É uma chamada de rede ao vivo para `https://publica.cnpj.ws/cnpj/<cnpj>`, salvo quando `publicaCnpjFetch` é passado.
 - A validação é `async`. O erro é atualizado quando a promise resolve.
-
+- **Contrato de valor:** o formulário guarda sempre o texto mascarado (`11.222.333/0001-81`); entrada crua ou mascarada; valor por código maior que a máscara é cortado (`"112223330001819999"` vira `11.222.333/0001-81`). Com `register`, `reset()` não atualiza o DOM (use `control`). Para só os dígitos, `value.replace(/\D/g, "")` ao salvar. Ver [[#Campos com máscara: contrato de valor]].
 **Confirmado**.
 
 ## SgInputCPFCNPJ
@@ -606,10 +675,19 @@ Fonte: `src/inputs/SgInputCPFCNPJ.tsx`. Aplica `maskCpfCnpj`. Trata o valor como
 | `validateWithPublicaCnpj` | `boolean` | — | Não | Quando o documento e um CNPJ numerico valido, confirma na base publica (publica.cnpj.ws) que ele existe. |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. O valor que o react-hook-form entrega (`watch`, `getValues`, `handleSubmit`) é SEMPRE o texto mascarado; para guardar só dígitos, tire na hora de salvar com `value.replace(/\D/g, "")`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo (`register(name, rules)`). O valor do formulário é o texto mascarado do `<input>`; `defaultValue` segue como o react-hook-form o entrega, e `reset()` com `register` não atualiza o DOM (limite conhecido do RHF): para `reset`/`setValue` por código, use `control`. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
 **Removidas do contrato base:** nenhuma.
+
+- **Contrato de valor:** o formulário guarda sempre o texto mascarado; entrada crua ou mascarada; valor por código maior que a máscara é cortado, e com mais de 11 dígitos o valor é lido como CNPJ (`"529982247251234"` vira `52.998.224/7251-23`). Com `register`, `reset()` não atualiza o DOM (use `control`). Para só os dígitos, `value.replace(/\D/g, "")` ao salvar. Ver [[#Campos com máscara: contrato de valor]].
 
 ## SgInputPostalCode
 
@@ -674,6 +752,13 @@ Fonte: `src/inputs/SgInputPostalCode.tsx` → `COUNTRY_CONFIGS`. A máscara, o t
 | `type` | `HTMLInputTypeAttribute` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. O valor que o react-hook-form entrega (`watch`, `getValues`, `handleSubmit`) é SEMPRE o texto mascarado; para guardar só dígitos, tire na hora de salvar com `value.replace(/\D/g, "")`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo (`register(name, rules)`). O valor do formulário é o texto mascarado do `<input>`; `defaultValue` segue como o react-hook-form o entrega, e `reset()` com `register` não atualiza o DOM (limite conhecido do RHF): para `reset`/`setValue` por código, use `control`. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`.
 
@@ -683,6 +768,8 @@ Fonte: `src/inputs/SgInputPostalCode.tsx` → `COUNTRY_CONFIGS`. A máscara, o t
 - A configuração de cada país tem um campo `placeholder` (por exemplo `"00000-000"`), mas ele **não é usado** na renderização: uso não encontrado.
 
 **Confirmado**.
+
+- **Contrato de valor:** o formulário guarda sempre o texto mascarado do país (BR: `04538-132`); entrada crua ou mascarada; valor por código maior que a máscara é cortado (`"045381329999"` em `country="br"` vira `04538-132`). Com `register`, `reset()` não atualiza o DOM (use `control`). Para só os dígitos, `value.replace(/\D/g, "")` ao salvar. Ver [[#Campos com máscara: contrato de valor]].
 
 ## SgInputDate
 
@@ -730,6 +817,14 @@ Fonte: `src/inputs/SgInputDate.tsx`. Envolve um `SgInputText` com `type="date"` 
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (37):** `required`, `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `prefixText`, `suffixText`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `enabled`, `textInputType`, `onClear`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -794,6 +889,14 @@ Fonte: `src/inputs/SgInputBirthDate.tsx`. Envolve o `SgInputDate` e acrescenta a
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (32):** `maxLength`, `minLength`, `onChange`, `name`, `control`, `register`, `rules`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `prefixText`, `suffixText`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `enabled`, `textInputType`, `onClear`, `borderRadius`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`.
 
@@ -994,6 +1097,7 @@ Fonte: `src/inputs/SgInputOTP.tsx`. Usa um `<input>` por slot e um `<input type=
 - **`SgInputCNPJ`, consulta pública:** com `validateWithPublicaCnpj`, o componente faz uma chamada HTTP real a `https://publica.cnpj.ws/cnpj/<14 dígitos>` (resposta não 2xx conta como "não encontrado"). A consulta só ocorre depois que o dígito verificador é válido e quando o CNPJ não é alfanumérico, e o resultado do último CNPJ consultado fica em cache no componente. Em testes, injete `publicaCnpjFetch={async () => ({ ok: true })}` (qualquer retorno verdadeiro vale como "encontrado"; `null` vale como "não encontrado"). Erro de rede ou exceção do fetch chama `onPublicaCnpjError` e não bloqueia a validação. **Confirmado** (`src/inputs/SgInputCNPJ.tsx`; `src/inputs/publicaCnpj.ts`, `defaultPublicaCnpjFetch`).
 - **`SgInputPassword`, `maxLength` padrão:** o campo limita a entrada a 15 caracteres quando `maxLength` não é informado. Em política de senha mais longa (por exemplo `minSize` acima de 15), informe `maxLength` explicitamente. **Confirmado** (`src/inputs/SgInputPassword.tsx`, `maxLength={maxLength ?? 15}`).
 - **`SgInputPassword`, gerador de senha:** `createNewPasswordButton` exibe o botão que gera uma senha aleatória respeitando a política; o tamanho vem de `newPasswordLength` (padrão `minSize`) e nunca de `maxLength`, que só serve de teto. `onValidation` recebe a primeira regra pendente ou `null`. **Confirmado** (`SgInputPassword.tsx`, comentário de `newPasswordLength` e cálculo do alvo).
+- **Campos com máscara (CPF, CNPJ, CPFCNPJ, Telefone, CEP), valor do formulário:** é sempre o texto **mascarado**, com `control`, com `register` e em uso avulso; aceita entrada crua ou mascarada; valor por código (`defaultValue`, `setValue`, `reset`, `value`) maior que a máscara é cortado, igual a colar e a digitar; telefone com DDI `+55` perde o `55`. Com `register`, `reset()` não atualiza o DOM (limite do RHF; use `control`). Quem quer só dígitos tira na hora de salvar com `value.replace(/\D/g, "")`. Detalhes em [[#Campos com máscara: contrato de valor]]. **Confirmado** (`SgInputText.tsx`, `masks.ts`).
 - **`SgInputOTP`, três saídas:** `onChange` entrega o valor mascarado, `onRawChange` o valor bruto, e `onComplete` (com o valor mascarado) dispara quando todos os slots estão preenchidos. **Confirmado** (`src/inputs/SgInputOTP.tsx`; exemplo `sg-input-otp/samples/colagem-on-complete.tsx.sample`).
 - **`SgInputCurrency` e `SgInputNumber`, valor emitido ao formulário:** `onChange` e o valor gravado pelo usuário no `react-hook-form` são **número** (`37.5`), com `0` ou `null` (`emptyValueIsNull`) para o vazio. Mudança que quebra em relação ao texto `"37.00"` de antes: backends que esperavam texto devem aceitar número no JSON. O valor **atribuído** pelo host (`defaultValues`, `setValue`, `reset`) fica como foi atribuído (número ou texto), então atribua número. Números com muitas casas viram `double` e perdem precisão. **Confirmado** (`SgInputNumber.tsx`, `SgInputCurrency.tsx`, `CHANGELOG.md`).
 - **`SgInputCurrency` e `SgInputNumber`, `validation`:** o tipo é `(value: number | null) => string | null`; é chamada também com o campo vazio (`0` ou `null`). Quem escreveu `validation` com `value: string` precisa ajustar. **Confirmado**.

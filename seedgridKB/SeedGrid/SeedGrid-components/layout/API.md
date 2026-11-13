@@ -263,7 +263,7 @@ import { SgCard, type SgCardProps, type SgCardVariant, type SgCardSize, type SgC
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
 | `className` | `string` | — | Não | Customizacao de estilos por bloco. |
-| `draggable` | `boolean` | `false` | Não | Arrasta o card ao segurar o cabecalho. |
+| `draggable` | `boolean` | `false` | Não | Arrasta o card ao segurar o cabecalho. O `SgCard` avulso NÃO arrasta por padrão (`false`); `true` arrasta sempre, sem corte de largura. `SgClock` e `SgCalendar` resolvem esse valor sozinhos (automático em >= 640 px) a partir de `cardProps.draggable`. |
 | `children` | `React.ReactNode` | — | Não | Conteudo principal exibido dentro do card. |
 | `headerClassName` | `string` | — | Não | Customizacao de estilos por bloco. |
 | `bodyClassName` | `string` | — | Não | Customizacao de estilos por bloco. |
@@ -311,7 +311,7 @@ Não aceita `ref`.
 ### Children, slots e composição
 - Slots: `header` (substitui o cabeçalho padrão inteiro), `title`, `description`, `leading`, `trailing` (alias legado `trailer`; `trailing ?? trailer`), `actions`, `footer`, `collapseIcon`, `children` (corpo).
 - Raiz: `<section>` (ou `<button>` quando interativo); demais atributos via `{...rest}`.
-- **Arraste** (`draggable`): arrasta segurando o cabeçalho (ignora cliques em botões, links, inputs e elementos com `data-sg-card-no-drag="true"`); aplica `transform: translate3d`. A posição é salva na chave `dragPersistKey` ou, na falta, `sg-card-pos:<id>`; sem chave, não persiste. Com `SgEnvironmentProvider` presente usa `useSgPersistence` (load/save/clear); sem provider usa `localStorage`. Valores inválidos são removidos (Confirmado).
+- **Arraste** (`draggable`): arrasta segurando o cabeçalho (ignora cliques em botões, links, inputs e elementos com `data-sg-card-no-drag="true"`); aplica `transform: translate3d`. A posição é salva na chave `dragPersistKey` ou, na falta, `sg-card-pos:<id>`; sem chave, não persiste. Com `SgEnvironmentProvider` presente usa `useSgPersistence` (load/save/clear); sem provider usa `localStorage`. Valores inválidos são removidos (Confirmado). Depois de aplicar a posição salva, se o card ficou todo fora da viewport (`getBoundingClientRect`) e a posição difere da padrão, ela é descartada e o card volta a `defaultPosition` (ou `{ x: 0, y: 0 }`); só roda na hidratação. Sem corte por largura no `SgCard`: o arraste automático em >= 640 px (`cardProps.draggable` não informada) é do `SgClock` e do `SgCalendar` (`useSgAutoDraggable`). **Confirmado** (`src/layout/SgCard.tsx`, `src/layout/useSgAutoDraggable.ts`).
 
 ### Contexto, providers e hooks
 Consome `useHasSgEnvironmentProvider`/`useSgPersistence` (environment) e `useComponentsI18n` (rótulos "expandir/recolher").

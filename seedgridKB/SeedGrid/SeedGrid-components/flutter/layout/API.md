@@ -284,7 +284,7 @@ Container visual para destacar conteudo em blocos com cabecalho, descricao, acoe
 | `defaultPosition` | `SgCardPosition?` | — | não | React | Tipo no React: `SgCardPosition`. |
 | `description` | `Object?` | — | não | React | Descricao ou subtitulo complementar do cabecalho. |
 | `dragPersistKey` | `String?` | — | não | React | — |
-| `draggable` | `bool` | `false` | não | React | `draggable` do React: o cabecalho arrasta o cartao. |
+| `draggable` | `bool` | `false` | não | React | `draggable` do React: o cabecalho arrasta o cartao. O `SgCard` avulso NÃO arrasta por padrão (`false`); `true` arrasta sempre, sem corte de largura. `SgClock` e `SgCalendar` resolvem esse valor sozinhos (automático em >= 640 px, `sgAutoDraggable`) a partir de `cardProps.draggable`. |
 | `footer` | `Widget?` | — | não | React | — |
 | `footerClassName` | `String?` | — | não | React | Sem efeito: `className` nao existe no Flutter (ADR 50). |
 | `header` | `Widget?` | — | não | React | — |
@@ -322,6 +322,7 @@ Container visual para destacar conteudo em blocos com cabecalho, descricao, acoe
 - `open` controlado, ou `defaultOpen` (padrão `true`). `toggleOnHeaderClick` (padrão `true`) decide se tocar no cabeçalho alterna; o botão de seta (`collapseToggleAlign`, `collapseIcon`) sempre alterna.
 - `draggable: true`: o **cabeçalho** arrasta o cartão; depois de deslocado ele passa a flutuar no `Overlay` (`OverlayPortal`) para continuar agarrável fora da área dos pais, e volta ao fluxo se retornar à origem.
 - Persistência da posição: chave `dragPersistKey` ou `sg-card-pos:<id>` (`id` é extra do Flutter). `SgCardPositionStore` (`read`/`write`/`clear`) guarda em memória do processo; o disco usa `useSgPersistence` quando há `SgEnvironmentProvider` e `SharedPreferences` caso contrário; grava ao soltar (`_dragEnd`) e lê depois de montar, sem sobrescrever se o usuário já moveu.
+- Posição salva fora da tela: com `draggable` e o cartão deslocado, depois de carregar a posição salva o card é medido (até 3 quadros); se ficou todo fora da área visível (`MediaQuery.sizeOf`), volta a `defaultPosition` (ou `0, 0`), a posição padrão é regravada no armazenamento e `onPositionChange` é chamado (mesma regra do React). O corte de 640 px (`kSgAutoDragMinWidth`) não é do `SgCard`: vale só para `SgClock` e `SgCalendar` com `cardProps.draggable` nulo. **Confirmado** (`layout/containers/sg_card.dart`, `_scheduleOffscreenCheck`).
 - `title` e `description` são `Object?` (`String` ou `Widget`).
 
 **Acessibilidade**

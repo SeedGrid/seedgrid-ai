@@ -34,11 +34,11 @@ Pergunta que os testes respondem: setar valor por código funciona sem quebrar m
 
 | Id | Decisão |
 |---|---|
-| D1 | O campo sempre mostra o valor mascarado, venha de onde vier (inicial, `value`, `setValue`, `reset`). O React mostra o valor cru de `initialValue`/`defaultValues`. |
+| D1 | O campo sempre mostra o valor mascarado, venha de onde vier (inicial, `value`, `setValue`, `reset`). O React passou a fazer o mesmo nos campos de máscara (CPF, CNPJ, CPFCNPJ, Telefone, CEP): o valor do formulário é sempre o mascarado (com `register`, `reset()` não atualiza o DOM; use `control`). |
 | D2 | O formulário guarda o valor como foi setado (cru ou formatado), como o React; `onChange` não dispara em `setValue`/`reset`/`value`. |
-| D4 | Valor maior que a máscara é exibido cortado/limpo, mas a validação olha o texto cru setado (aparece o erro de tamanho). |
+| D4 | Valor maior que a máscara é cortado na máscara, igual a colar e a digitar (CPF `'529982247251234'` vira `529.982.247-25`), e a validação olha o texto cortado. O React faz o mesmo nos campos de máscara. |
 | D5 | Se há erro visível e o valor muda por fora, ele é revalidado; `reset` limpa o erro. |
-| D6 | Telefone com DDI (`+5511987654321`) perde o DDI na tela. O React mostra número errado. |
+| D6 | Telefone com DDI (`+5511987654321`) perde o DDI (vira `(11) 98765-4321`). O React também tira o `55` agora. |
 | D7, D8 | E-mail: espaços e quebras das pontas são removidos; textarea: `\r\n` vira `\n`. |
 | D9 | `maxLength` com semântica de navegador (`SgMaxLengthFormatter`): valor programático acima do limite não é cortado; só impede crescer. |
 | D10 | Data aceita ISO, ISO com hora e o texto do locale; o React (`input type=date`) só entende ISO. |
@@ -75,15 +75,15 @@ Diferenças que **permanecem** (confirmadas no código):
 - `initialValue` existe no Flutter (`SgInputNumber`/`SgInputCurrency`) e não no React (lá é `inputProps.defaultValue`). Dentro de formulário o Flutter registra o `initialValue` como **texto** (`numeric_field.dart:229`), o que contradiz "o valor do formulário é sempre número" até a primeira edição; em CRUD use `reset`/`defaultValues` com número.
 - `SgInputDateTime` não tem `initialValue` em nenhum dos lados (use `defaultValue`).
 - Sem `register` no Flutter (ADR 49): o aviso do React "com `register`, `utc`/`offset` convertem só o digitado" não se aplica; `name` + `control`/`SgForm` seguem o `valueMode` em todos os caminhos.
-- As máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) seguem em mudança (P155.F3.T13) e não estão descritas aqui.
+- Máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP): o contrato de valor é o mesmo nos dois lados e está em [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API#Campos com máscara: contrato de valor|API (Flutter)]]; a única diferença é o `register`, que só existe no React.
 
 ## Que defeitos do React foram encontrados?
 
-Só registrados, não corrigidos.
+Só registrados, não corrigidos (exceto os itens riscados, que o React já corrigiu).
 
 Texto, máscara, data e número (`docs/VALOR_PROGRAMATICO.md`):
-1. `initialValue`/`defaultValues` não passam pela máscara.
-2. Telefone com DDI mostra número errado.
+1. ~~`initialValue`/`defaultValues` não passam pela máscara.~~ Corrigido nos campos de máscara (CPF, CNPJ, CPFCNPJ, Telefone, CEP); em campos de texto sem máscara não há o que mascarar.
+2. ~~Telefone com DDI mostra número errado.~~ Corrigido: o `55` é tirado ao colar e por código.
 3. Erro de validação antigo permanece depois de mudar o valor por fora.
 4. `reset()` sem valores / `setValue(null)` deixam texto antigo em número e moeda.
 5. Stepper em formulário ignora o `onChange` do usuário.

@@ -521,6 +521,7 @@ import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification,
 | `onNotificationDelete` | `(notification: SgNotification) => void` | — | Não | O usuário excluiu uma notificação. |
 | `onOpen` | `(notification: SgNotification) => void` | — | Não | O usuário abriu uma notificação (depois do `onOpen` do tipo). |
 | `onPollingTick` | `(stats: SgPollingStats) => void` | — | Não | O polling consultou a API: `{ count, lastAt, reason }` (`disabled` ou `unavailable`). |
+| `className` | `string` | — | Não | Classes extras no contêiner externo (`relative inline-block`). |
 
 ### Comportamento
 

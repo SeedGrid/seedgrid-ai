@@ -48,7 +48,7 @@ import { SgCalendar, type SgCalendarProps, type SgCalendarWeekdayFormat } from "
 | `isDateDisabled` | `(date: Date) => boolean` | — | Não | Regra adicional para desabilitar datas especificas. |
 | `showTodayShortcut` | `boolean` | `true` | Não | Mostra/oculta o botao de atalho para voltar para hoje. |
 | `cardTitle` | `React.ReactNode` | `?? t(i18n, "components.gadgets.calendar.title")` ᶠ | Não | Configura titulo e props do SgCard do gadget. |
-| `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Props repassadas ao `SgCard` que envolve o calendário (o componente já define `collapsible`, `defaultOpen`, `draggable`, `cardStyle="outlined"` etc., sobrescrevíveis aqui). |
+| `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Props repassadas ao `SgCard` que envolve o calendário (o componente já define `collapsible`, `defaultOpen`, `cardStyle="outlined"` etc., sobrescrevíveis aqui). `cardProps.draggable`: não informada = automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` = arrasta sempre, `false` = nunca arrasta. |
 | `enabled` | `boolean` | — | Não | Habilita o calendario (padrao `true`). Com `false` os dias, os botoes de mes anterior/proximo e o atalho "hoje" ficam desabilitados (nao focaveis, sem clique); a data e o mes atuais seguem legiveis. |
 
 - **Atributos DOM herdados**: o tipo é `Omit<React.HTMLAttributes<HTMLDivElement>, "children" \| "onChange"> & { ... }`; acrescenta 275 props de `@types/react` (`HTMLAttributes` 54, `AriaAttributes` 53, `DOMAttributes` 168). Não listadas individualmente — ver contrato base `React.HTMLAttributes` em `@types/react`.
@@ -107,7 +107,7 @@ import { SgClock, type SgClockProps, type SgClockDigitalStyle, type SgClockDigit
 | `style` | `React.CSSProperties` | — | Não | Inline style extra no container do relogio. |
 | `centerOverlay` | `React.ReactNode` | — | Não | Conteudo opcional sobreposto ao centro do relogio analogico (ignorado no digital). |
 | `cardTitle` | `React.ReactNode` | `?? t(i18n, "components.gadgets.clock.title")` ᶠ | Não | Titulo do SgCard usado pelo gadget. |
-| `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Sobrescreve configuracoes padrao do SgCard do gadget. `dragPersistKey` padrão: `cardProps.dragPersistKey` → `sg-clock:<cardProps.id>` → `"sg-clock"`. |
+| `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Sobrescreve configuracoes padrao do SgCard do gadget. `dragPersistKey` padrão: `cardProps.dragPersistKey` → `sg-clock:<cardProps.id>` → `"sg-clock"`. `cardProps.draggable`: não informada = automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` = arrasta sempre, `false` = nunca arrasta. |
 
 Mapeamento `digitalStyle` → componente (Confirmado): `flip`→`SgFlipDigit`, `roller3d`→`SgRoller3DDigit`, `fade`→`SgFadeDigit`, `discard`→`SgDiscardDigit`, `matrix`→`SgMatrixDigit`, `neon`→`SgNeonDigit`, `sevenSegment`→`SgSevenSegmentDigit`, `segment`→`SgSegmentDigit`, `default`→texto simples.
 
@@ -542,6 +542,7 @@ Lacuna: o JSDoc de `SgStringAnimator` mostra `style="neon"`/`style="fade"` nos `
 
 Avisos práticos recuperados das notas antigas de exemplos e conferidos contra o código atual (`packages/seedgrid-fe-components/src/gadgets/clock`).
 
+- **`SgClock` e `SgCalendar`, arraste do cartão (`cardProps.draggable`):** `cardProps.draggable` tem três estados: **não informada = automático** (arrasta em largura >= 640 px; abaixo disso fica desligado e a posição salva é ignorada), **`true`** = arrasta sempre e **`false`** = nunca arrasta. Posição salva em que o cartão fica todo fora da viewport é descartada (volta à posição padrão). **Confirmado** (`src/layout/useSgAutoDraggable.ts`, `SG_AUTO_DRAG_MIN_WIDTH = 640`; `SgClock.tsx`, `SgCalendar.tsx`, `SgCard.tsx`). O `SgCard` avulso continua NÃO arrastável por padrão (`draggable={false}`); só esses dois gadgets arrastam sozinhos. Para fixar o cartão em qualquer largura, passe `cardProps={{ draggable: false }}`.
 - **Os temas embutidos precisam ser registrados.** `sgClockThemesBuiltIn` só passa a existir para o `SgClock`, o `SgClockThemePicker` e o resolvedor depois de `registerThemes(sgClockThemesBuiltIn)` (o showcase faz isso em `sg-clock-showcase-client.tsx`) ou de serem passados em `SgClockThemeProvider value.themes`. Sem registro, `themeId="seedgrid"` não resolve. **Confirmado** (`themes/registry.ts` começa com mapa vazio; `SgClock.tsx` linhas 185-187).
 - **Sem tema resolvido o relógio analógico não desenha o mostrador.** `themeId` tem padrão `"classic"`, que também precisa estar registrado; para dispensar registro e provider, passe o objeto `theme` direto. **Confirmado** (`SgClock.tsx`: `theme ?? resolver... ?? getTheme(themeId) ?? getTheme("classic")`, e `ThemeLayer` só entra se `themeObj` existir).
 - **`SgClockThemePicker` lista os temas do `SgClockThemeProvider`.** A lista vem de `resolver.list()`, que mescla os temas globais registrados com os locais do provider. **Confirmado** (`themes/provider.tsx`, `createThemeResolver().list`).

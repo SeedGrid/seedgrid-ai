@@ -128,6 +128,14 @@ Fonte: `src/inputs/SgAutocomplete.tsx`. É um componente genérico, `SgAutocompl
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `inputProps` | `(InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement>; })` | — | Não | Atributos do `<input>` nativo, espalhados depois dos atributos calculados (podem sobrescrevê-los). `ref`, `onChange` e `onBlur` são encadeados; `onFocus` de `inputProps` não é chamado (use `onEnter`). `value` torna o campo controlado. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (45):** `required`, `maxLength`, `minLength`, `name`, `control`, `register`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `type`, `placeholder`, `className`, `labelClassName`, `inputProps`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `clearButton`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `iconButtons`, `readOnly`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -205,6 +213,13 @@ Fonte: `src/inputs/SgCombobox.tsx`. É um componente genérico, `SgCombobox<T = 
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (39):** `required`, `maxLength`, `minLength`, `name`, `control`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `filled`, `enabled`, `textInputType`, `onEnter`, `onExit`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `showCharCounter`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -349,6 +364,13 @@ Fonte: `src/inputs/SgMultiSelect.tsx`, `useSgMultiSelect.ts` e `SgMultiSelectDro
 | `validation` | `((value: string) => string \| null)` | — | Não | — |
 | `width` | `string \| number` | — | Não | — |
 | `withBorder` | `boolean` | — | Não | — |
+| `borderRadius` | `string \| number` | — | Não | Raio da borda (número = px). |
+| `className` | `string` | classes internas | Não | SUBSTITUI toda a classe padrão do `<input>` (não concatena). Repassada ao `SgInputText`. |
+| `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
+| `elevation` | `"sm" \| "md" \| "lg" \| "none"` | sombra `sm` | Não | Sombra: `none`, `md`, `lg`; qualquer outro valor (inclusive ausente) aplica `shadow-sm`. |
+| `labelClassName` | `string` | — | Não | Classes extras no `<label>`. Repassada ao `SgInputText`. |
+| `register` | `UseFormRegister<any>` | — | Não | `register` do `useForm()`; com `name`, registra o elemento nativo. |
+| `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 
 **Herdadas de `SgInputText` (tipo inalterado; ver contrato base) (34):** `required`, `name`, `control`, `rules`, `error`, `id`, `label`, `labelText`, `labelPosition`, `labelWidth`, `labelAlign`, `elevation`, `hintText`, `prefixText`, `suffixText`, `placeholder`, `className`, `labelClassName`, `maxLengthMessage`, `minLengthMessage`, `minNumberOfWords`, `minNumberOfWordsMessage`, `prefixIcon`, `width`, `filled`, `enabled`, `textInputType`, `onClear`, `withBorder`, `borderRadius`, `requiredMessage`, `validation`, `validateOnBlur`, `onValidation`.
 
@@ -401,6 +423,7 @@ Fonte: `src/inputs/SgMultiSelectChips.tsx`. Mesma lógica e dropdown do `SgMulti
 | `placeholder` | `string` | i18n `components.inputs.select.placeholder` | Não | Texto sem seleção. |
 | `onEnter` | `(() => void)` | — | Não | Chamado ao receber foco. |
 | `onExit` | `(() => void)` | — | Não | Chamado ao perder o foco (após a validação). |
+| `register` | `UseFormRegister<any>` | — | Não | Declarada pelo contrato RHF, mas o componente não a usa: só `control` + `name` liga ao formulário. |
 
 - **Acessibilidade:**
   - Gatilho com `role="combobox"`, `aria-expanded`, `aria-haspopup="listbox"`.
@@ -440,6 +463,7 @@ Fonte: `src/inputs/SgOrderList.tsx`. Lista reordenável por botões, por teclado
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 | `enabled` | `boolean` | — | Não | — |
+| `register` | `UseFormRegister<any>` | — | Não | Declarada pelo contrato RHF, mas o componente não a usa: só `control` + `name` liga ao formulário. |
 
 **Ref (`SgOrderListRef`)**: `getItems()`, `setItems(items)`, `getSelection()`, `setSelection(values)`, `moveTop()`, `moveUp()`, `moveDown()`, `moveBottom()`, `clearSelection()`.
 
@@ -493,6 +517,7 @@ Fonte: `src/inputs/SgPickList.tsx`. Duas listas, origem e destino, com transfer�
 | `control` | `any` | — | Não | `Control` do `useForm()`; com `name`, envolve o componente em `<Controller>`. |
 | `rules` | `RegisterOptions<any>` | — | Não | Regras de validação do RHF (`RegisterOptions`). |
 | `enabled` | `boolean` | — | Não | — |
+| `register` | `UseFormRegister<any>` | — | Não | Declarada pelo contrato RHF, mas o componente não a usa: só `control` + `name` liga ao formulário. |
 
 - **Ref (`SgPickListRef`):** `getValue()`, `setValue(value)` (emite `onChange` com `type: "dragdrop"`), `moveToTarget()`, `moveAllToTarget()`, `moveToSource()`, `moveAllToSource()`, `clearSelection()`.
 - **Evento:** `onChange({ source, target, type })`. No RHF, `field.onChange({ source, target })`, sem o `type`.
@@ -641,6 +666,7 @@ Fonte: `src/inputs/SgRating.tsx`. Estrelas em SVG, com meia estrela opcional.
 | `error` | `string` | — | Não | Erro. |
 | `enabled` | `boolean` | — | Não | Disabled state |
 | `id` | `string` | — | Não | Unique identifier |
+| `register` | `UseFormRegister<any>` | — | Não | Aceita `register`, mas não registra nada: com `name` + `register` o componente é renderizado sem ligação ao formulário (e o `control` é ignorado). Use `control`. |
 
 - **RHF:** via `control` + `name`, com `mergeRequiredRule`.
 - **Validação:** a regra de obrigatório interna só é avaliada em clique ou cancelamento.

@@ -12,7 +12,7 @@ analisado-em: 2026-11-09
 
 > **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]].
 
-> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (standalone, validação e valor vazio mudaram com `emptyValueIsNull` e `validation(num?)`): blocos regerados das constantes em `*.snippets.g.dart` do working tree do `fe-flutter` (HEAD local `19f7830`, sem push) e comparados texto a texto. Conferência anterior de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Todos os exemplos de cada componente do showcase estão abaixo, na ordem e com os títulos dele (`apps/seedgrid_showcase`).
+> **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Conferência de 2026-11-13 dos exemplos novos "Formulário com control" e "Formulário com register" de `SgInputPhone`, `SgInputCPF`, `SgInputCNPJ` e `SgInputCPFCNPJ` (regiões `*FormularioControl` e `*FormularioRegister` de `*.snippets.g.dart` do working tree do fe-flutter; `context.tx` resolvido como acima; não compilados nem executados). Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (standalone, validação e valor vazio mudaram com `emptyValueIsNull` e `validation(num?)`): blocos regerados das constantes em `*.snippets.g.dart` do working tree do `fe-flutter` (HEAD local `19f7830`, sem push) e comparados texto a texto. Conferência anterior de 2026-11-09: cada bloco foi regerado a partir da constante correspondente em `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 e comparado texto a texto (idêntico). Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`, `${context.tx('texto')}` dentro de uma string virou `texto` e `context.txf('texto {k}', {'k': v})` virou a interpolação `'texto $v'`. O showcase não usa `setState` de página: o estado dos exemplos fica em `ValueNotifier`/`SgFormController` (campos com `name` + `control`) lidos por `ValueListenableBuilder`/`ListenableBuilder`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que usam membros `_x` definidos na página trazem uma **Nota** logo abaixo do bloco com as declarações correspondentes. Todos os exemplos de cada componente do showcase estão abaixo, na ordem e com os títulos dele (`apps/seedgrid_showcase`).
 
 ## SgInputText
 
@@ -1999,7 +1999,7 @@ const SgInputPassword(
 
 ## SgInputPhone
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_phone_page.dart` (10 exemplo(s) na página; abaixo 10).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_phone_page.dart` (12 exemplo(s) na página; abaixo 12).
 
 ### Básico
 
@@ -2300,9 +2300,102 @@ Wrap(
 )
 ```
 
+### Formulário com control
+
+Com `name` e `control`, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputPhoneFormularioControl` em `sg_input_phone_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputPhone(
+        id: 'telefone-control',
+        name: 'telefone',
+        labelText: 'Telefone',
+        control: _formControl,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: _formControl,
+        builder: (context, _) {
+          final value =
+              '${_formControl.getValue('telefone') ?? ''}';
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Valor no formulário: "$value"',
+              ),
+              Text(
+                'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+              ),
+            ],
+          );
+        },
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `SgFormController`, lido por `ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _formControl = SgFormController(defaultValues: {'telefone': '11987654321'});`
+
+### Formulário com register
+
+Dentro de um SgForm, o campo com `name` se liga ao formulário (equivale ao register do React) e o valor também vem mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputPhoneFormularioRegister` em `sg_input_phone_page.snippets.g.dart`.
+
+```dart
+SgForm(
+  defaultValues: {'telefone': '11987654321'},
+  child: Builder(
+    builder: (context) {
+      final form = SgForm.of(context);
+      return SizedBox(
+        width: 320,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgInputPhone(
+              id: 'telefone-register',
+              name: 'telefone',
+              labelText: 'Telefone',
+            ),
+            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: form,
+              builder: (context, _) {
+                final value = '${form.getValue('telefone') ?? ''}';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Valor no formulário: "$value"',
+                    ),
+                    Text(
+                      'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+```
+
 ## SgInputCPF
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpf_page.dart` (11 exemplo(s) na página; abaixo 11).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpf_page.dart` (13 exemplo(s) na página; abaixo 13).
 
 ### Básico
 
@@ -2621,9 +2714,101 @@ Wrap(
 )
 ```
 
+### Formulário com control
+
+Com `name` e `control`, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCpfFormularioControl` em `sg_input_cpf_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCPF(
+        id: 'cpf-control',
+        name: 'cpf',
+        labelText: 'CPF',
+        control: _formControl,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: _formControl,
+        builder: (context, _) {
+          final value = '${_formControl.getValue('cpf') ?? ''}';
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Valor no formulário: "$value"',
+              ),
+              Text(
+                'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+              ),
+            ],
+          );
+        },
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `SgFormController`, lido por `ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _formControl = SgFormController(defaultValues: {'cpf': '52998224725'});`
+
+### Formulário com register
+
+Dentro de um SgForm, o campo com `name` se liga ao formulário (equivale ao register do React) e o valor também vem mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCpfFormularioRegister` em `sg_input_cpf_page.snippets.g.dart`.
+
+```dart
+SgForm(
+  defaultValues: {'cpf': '52998224725'},
+  child: Builder(
+    builder: (context) {
+      final form = SgForm.of(context);
+      return SizedBox(
+        width: 320,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgInputCPF(
+              id: 'cpf-register',
+              name: 'cpf',
+              labelText: 'CPF',
+            ),
+            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: form,
+              builder: (context, _) {
+                final value = '${form.getValue('cpf') ?? ''}';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Valor no formulário: "$value"',
+                    ),
+                    Text(
+                      'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+```
+
 ## SgInputCNPJ
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cnpj_page.dart` (14 exemplo(s) na página; abaixo 14).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cnpj_page.dart` (16 exemplo(s) na página; abaixo 16).
 
 ### Básico
 
@@ -3050,9 +3235,101 @@ Wrap(
 )
 ```
 
+### Formulário com control
+
+Com `name` e `control`, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCnpjFormularioControl` em `sg_input_cnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCNPJ(
+        id: 'cnpj-control',
+        name: 'cnpj',
+        labelText: 'CNPJ',
+        control: _formControl,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: _formControl,
+        builder: (context, _) {
+          final value = '${_formControl.getValue('cnpj') ?? ''}';
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Valor no formulário: "$value"',
+              ),
+              Text(
+                'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+              ),
+            ],
+          );
+        },
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `SgFormController`, lido por `ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _formControl = SgFormController(defaultValues: {'cnpj': '11222333000181'});`
+
+### Formulário com register
+
+Dentro de um SgForm, o campo com `name` se liga ao formulário (equivale ao register do React) e o valor também vem mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCnpjFormularioRegister` em `sg_input_cnpj_page.snippets.g.dart`.
+
+```dart
+SgForm(
+  defaultValues: {'cnpj': '11222333000181'},
+  child: Builder(
+    builder: (context) {
+      final form = SgForm.of(context);
+      return SizedBox(
+        width: 320,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgInputCNPJ(
+              id: 'cnpj-register',
+              name: 'cnpj',
+              labelText: 'CNPJ',
+            ),
+            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: form,
+              builder: (context, _) {
+                final value = '${form.getValue('cnpj') ?? ''}';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Valor no formulário: "$value"',
+                    ),
+                    Text(
+                      'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+```
+
 ## SgInputCPFCNPJ
 
-Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpfcnpj_page.dart` (13 exemplo(s) na página; abaixo 13).
+Página: `apps/seedgrid_showcase/lib/pages/sg_input_cpfcnpj_page.dart` (15 exemplo(s) na página; abaixo 15).
 
 ### Básico
 
@@ -3454,6 +3731,99 @@ Column(
 Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `ValueNotifier`/`SgFormController`, lido por `ValueListenableBuilder`/`ListenableBuilder`); para copiar, declare no seu widget:
 - `final ValueNotifier<Object?> _publicaResultado = ValueNotifier(null);`
 - `final ValueNotifier<String?> _publicaErro = ValueNotifier(null);`
+
+### Formulário com control
+
+Com `name` e `control`, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCpfCnpjFormularioControl` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+
+```dart
+SizedBox(
+  width: 320,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SgInputCPFCNPJ(
+        id: 'documento-control',
+        name: 'documento',
+        labelText: 'Documento',
+        control: _formControl,
+      ),
+      const SizedBox(height: 8),
+      ListenableBuilder(
+        listenable: _formControl,
+        builder: (context, _) {
+          final value =
+              '${_formControl.getValue('documento') ?? ''}';
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Valor no formulário: "$value"',
+              ),
+              Text(
+                'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+              ),
+            ],
+          );
+        },
+      ),
+    ],
+  ),
+)
+```
+
+Nota: este trecho usa membros definidos fora dele na página do showcase (estado em `SgFormController`, lido por `ListenableBuilder`); para copiar, declare no seu widget:
+- `final SgFormController _formControl = SgFormController(defaultValues: {'documento': '52998224725'});`
+
+### Formulário com register
+
+Dentro de um SgForm, o campo com `name` se liga ao formulário (equivale ao register do React) e o valor também vem mascarado. Para enviar só os dígitos, limpe com value.replaceAll(RegExp(r'\D'), '').
+
+Região `sgInputCpfCnpjFormularioRegister` em `sg_input_cpfcnpj_page.snippets.g.dart`.
+
+```dart
+SgForm(
+  defaultValues: {'documento': '52998224725'},
+  child: Builder(
+    builder: (context) {
+      final form = SgForm.of(context);
+      return SizedBox(
+        width: 320,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SgInputCPFCNPJ(
+              id: 'documento-register',
+              name: 'documento',
+              labelText: 'Documento',
+            ),
+            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: form,
+              builder: (context, _) {
+                final value = '${form.getValue('documento') ?? ''}';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Valor no formulário: "$value"',
+                    ),
+                    Text(
+                      'Só os dígitos: "${value.replaceAll(RegExp(r'\D'), '')}"',
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+```
 
 ## SgInputPostalCode
 

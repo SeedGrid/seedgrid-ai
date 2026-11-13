@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos do showcase de cada componente estão abaixo (React, 15 componentes, 174 exemplos), na ordem e com os títulos da página dele em pt-BR (`/components/<slug>`). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` do exemplo, indicado em `Fonte:` (caminho relativo à raiz do repositório `seedgrid-fe-components`), e é o mesmo código que o showcase renderiza e mostra no bloco de código. Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (validação customizada e valor vazio mudaram com `emptyValueIsNull` e `validation(number | null)`; working tree do fe-components, HEAD local `4b150cc`, sem push) e, antes, de 2026-11-09 para os demais (seedgrid-fe-components 0f304bb): os blocos foram regerados por script a partir dos `.sample` e comparados texto a texto (idênticos). Não foram compilados nem executados no navegador nesta conferência. O texto abaixo de cada título é a descrição que a página mostra (i18n pt-BR do showcase; alguns trechos ainda estão em inglês). A seção Playground de cada página não tem `.sample` e fica de fora. As classes utilitárias (`flex`, `gap-4`…) são Tailwind do app de exemplo. Os tipos e props usados estão descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API]].
+Todos os exemplos do showcase de cada componente estão abaixo (React, 15 componentes, 182 exemplos), na ordem e com os títulos da página dele em pt-BR (`/components/<slug>`). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` do exemplo, indicado em `Fonte:` (caminho relativo à raiz do repositório `seedgrid-fe-components`), e é o mesmo código que o showcase renderiza e mostra no bloco de código. Conferência de 2026-11-13 dos exemplos novos "Formulário com control" e "Formulário com register" de `SgInputPhone`, `SgInputCPF`, `SgInputCNPJ` e `SgInputCPFCNPJ` (cópia 1:1 dos `formulario-control.tsx.sample` e `formulario-register.tsx.sample` do working tree do fe-components; não compilados nem executados). Conferência de 2026-11-12 dos exemplos de `SgInputNumber` e `SgInputCurrency` (validação customizada e valor vazio mudaram com `emptyValueIsNull` e `validation(number | null)`; working tree do fe-components, HEAD local `4b150cc`, sem push) e, antes, de 2026-11-09 para os demais (seedgrid-fe-components 0f304bb): os blocos foram regerados por script a partir dos `.sample` e comparados texto a texto (idênticos). Não foram compilados nem executados no navegador nesta conferência. O texto abaixo de cada título é a descrição que a página mostra (i18n pt-BR do showcase; alguns trechos ainda estão em inglês). A seção Playground de cada página não tem `.sample` e fica de fora. As classes utilitárias (`flex`, `gap-4`…) são Tailwind do app de exemplo. Os tipos e props usados estão descritos em [[SeedGrid/SeedGrid-components/inputs-texto/API|API]].
 
 ## Configuração de idioma (recomendada)
 
@@ -1399,7 +1399,7 @@ export default function App() {
 
 ## SgInputPhone
 
-Página: `sg-input-phone/page.tsx` (10 exemplo(s) com código na página; abaixo 10).
+Página: `sg-input-phone/page.tsx` (12 exemplo(s) com código na página; abaixo 12).
 
 ### 1) 
 
@@ -1595,9 +1595,69 @@ export default function App() {
 }
 ```
 
+### 11) Formulário com control
+
+Com react-hook-form e control, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-phone/samples/formulario-control.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputPhone } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { control, watch } = useForm({ defaultValues: { telefone: "11987654321" } });
+  const value = String(watch("telefone") ?? "");
+
+  return (
+    <div>
+      <SgInputPhone
+        id="telefone-control"
+        name="telefone"
+        label="Telefone"
+        control={control}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
+### 12) Formulário com register
+
+Com react-hook-form e register, o valor do formulário também vem mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-phone/samples/formulario-register.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputPhone } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { register, watch } = useForm({ defaultValues: { telefone: "11987654321" } });
+  const value = String(watch("telefone") ?? "");
+
+  return (
+    <div>
+      <SgInputPhone
+        id="telefone-register"
+        name="telefone"
+        label="Telefone"
+        register={register}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
 ## SgInputCPF
 
-Página: `sg-input-cpf/page.tsx` (11 exemplo(s) com código na página; abaixo 11).
+Página: `sg-input-cpf/page.tsx` (13 exemplo(s) com código na página; abaixo 13).
 
 ### 1) 
 
@@ -1835,9 +1895,69 @@ export default function App() {
 }
 ```
 
+### 12) Formulário com control
+
+Com react-hook-form e control, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cpf/samples/formulario-control.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCPF } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { control, watch } = useForm({ defaultValues: { cpf: "52998224725" } });
+  const value = String(watch("cpf") ?? "");
+
+  return (
+    <div>
+      <SgInputCPF
+        id="cpf-control"
+        name="cpf"
+        label="CPF"
+        control={control}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
+### 13) Formulário com register
+
+Com react-hook-form e register, o valor do formulário também vem mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cpf/samples/formulario-register.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCPF } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { register, watch } = useForm({ defaultValues: { cpf: "52998224725" } });
+  const value = String(watch("cpf") ?? "");
+
+  return (
+    <div>
+      <SgInputCPF
+        id="cpf-register"
+        name="cpf"
+        label="CPF"
+        register={register}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
 ## SgInputCNPJ
 
-Página: `sg-input-cnpj/page.tsx` (14 exemplo(s) com código na página; abaixo 14).
+Página: `sg-input-cnpj/page.tsx` (16 exemplo(s) com código na página; abaixo 16).
 
 ### 1) 
 
@@ -2139,9 +2259,69 @@ export default function App() {
 }
 ```
 
+### 15) Formulário com control
+
+Com react-hook-form e control, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cnpj/samples/formulario-control.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCNPJ } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { control, watch } = useForm({ defaultValues: { cnpj: "11222333000181" } });
+  const value = String(watch("cnpj") ?? "");
+
+  return (
+    <div>
+      <SgInputCNPJ
+        id="cnpj-control"
+        name="cnpj"
+        label="CNPJ"
+        control={control}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
+### 16) Formulário com register
+
+Com react-hook-form e register, o valor do formulário também vem mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cnpj/samples/formulario-register.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCNPJ } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { register, watch } = useForm({ defaultValues: { cnpj: "11222333000181" } });
+  const value = String(watch("cnpj") ?? "");
+
+  return (
+    <div>
+      <SgInputCNPJ
+        id="cnpj-register"
+        name="cnpj"
+        label="CNPJ"
+        register={register}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
 ## SgInputCPFCNPJ
 
-Página: `sg-input-cpf-cnpj/page.tsx` (13 exemplo(s) com código na página; abaixo 13).
+Página: `sg-input-cpf-cnpj/page.tsx` (15 exemplo(s) com código na página; abaixo 15).
 
 ### 1) 
 
@@ -2420,6 +2600,66 @@ export default function App() {
       />
       {result ? <pre>{JSON.stringify(result, null, 2)}</pre> : null}
     </>
+  );
+}
+```
+
+### 14) Formulário com control
+
+Com react-hook-form e control, o valor do formulário vem sempre mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cpf-cnpj/samples/formulario-control.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCPFCNPJ } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { control, watch } = useForm({ defaultValues: { documento: "52998224725" } });
+  const value = String(watch("documento") ?? "");
+
+  return (
+    <div>
+      <SgInputCPFCNPJ
+        id="documento-control"
+        name="documento"
+        label="CPF/CNPJ"
+        control={control}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
+  );
+}
+```
+
+### 15) Formulário com register
+
+Com react-hook-form e register, o valor do formulário também vem mascarado. Para enviar só os dígitos, limpe com value.replace(/\D/g, "").
+
+Fonte: `front/seedgrid-fe-components/apps/showcase/src/app/components/sg-input-cpf-cnpj/samples/formulario-register.tsx.sample`
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { SgInputCPFCNPJ } from "@seedgrid/fe-components";
+
+export default function App() {
+  const { register, watch } = useForm({ defaultValues: { documento: "52998224725" } });
+  const value = String(watch("documento") ?? "");
+
+  return (
+    <div>
+      <SgInputCPFCNPJ
+        id="documento-register"
+        name="documento"
+        label="CPF/CNPJ"
+        register={register}
+      />
+      <p>Valor no formulário: "{value}"</p>
+      <p>Só os dígitos: "{value.replace(/\D/g, "")}"</p>
+    </div>
   );
 }
 ```

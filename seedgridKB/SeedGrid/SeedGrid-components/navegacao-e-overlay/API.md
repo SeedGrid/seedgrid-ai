@@ -228,7 +228,7 @@ import { SgDialog, type SgDialogProps, type SgDialogSize, type SgDialogSeverity,
 | `className` | `string` | — | Não | Customização de estilos por seção. |
 | `style` | `React.CSSProperties` | — | Não | Customização de estilos por seção. |
 | `customColor` | `React.CSSProperties["backgroundColor"]` | — | Não | Customiza cor de fundo e elevacao do card do dialog. |
-| `elevation` | `"none" \| "sm" \| "md" \| "lg" \| React.CSSProperties["boxShadow"]` | — | Não | Customiza cor de fundo e elevacao do card do dialog. |
+| `elevation` | `"sm" \| "md" \| "lg" \| BoxShadow` | — | Não | Elevação do card do dialog: `"sm"`, `"md"` e `"lg"` mapeiam para sombras fixas; qualquer outra string é usada como `box-shadow` literal, inclusive `"none"` (sem sombra). `BoxShadow` é o `React.CSSProperties["boxShadow"]` (texto CSS) como o gerador de props o resolve. |
 | `shadow` | `React.CSSProperties["boxShadow"]` | — | Não | **Obsoleta** (`@deprecated`). Sombra CSS (box-shadow) do card; usada apenas quando `elevation` não é informado. Substituída por `elevation`. *(Inferência)* |
 | `showTopAccent` | `boolean` | `true` | Não | Exibe a borda superior colorida (border-t-4) com a cor da `severity`. *(Inferência)* |
 | `overlayClassName` | `string` | — | Não | Customização de estilos por seção. |
@@ -303,7 +303,7 @@ O tipo é `Omit<SgDialogProps, "title" | "children" | "footer" | "severity" | "s
 | `className` | `string` | — | Não | Customização de estilos por seção. |
 | `style` | `React.CSSProperties` | — | Não | Customização de estilos por seção. |
 | `size` | `SgDialogSize` = `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"sm"` | Não | Escala do container modal. |
-| `elevation` | `"none" \| "sm" \| "md" \| "lg" \| React.CSSProperties["boxShadow"]` | — | Não | Customiza customColor e elevation do card do dialog. |
+| `elevation` | `"sm" \| "md" \| "lg" \| BoxShadow` | — | Não | Elevação do card do dialog (repassada ao `SgDialog`): `"sm"`, `"md"` e `"lg"` mapeiam para sombras fixas; qualquer outra string é usada como `box-shadow` literal, inclusive `"none"` (sem sombra). `BoxShadow` é o `React.CSSProperties["boxShadow"]` (texto CSS). |
 | `animation` | `SgDialogAnimation` = `"fade" \| "zoom" \| "slideUp"` | `"zoom"` ᵇ | Não | Animação e duração da transição. |
 | `transitionMs` | `number` | `160` ᵇ | Não | Animação e duração da transição. |
 | `headerClassName` | `string` | — | Não | Customização de estilos por seção. |
