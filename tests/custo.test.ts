@@ -74,6 +74,19 @@ test('agregar liga o subagente à tarefa pelo description e separa planos', () =
   } finally { rmSync(raiz, { recursive: true, force: true }); }
 });
 
+test('resposta repetida em outro arquivo (sessão retomada) conta uma vez e fica com a tarefa do subagente', () => {
+  const { raiz, transcritos } = projeto();
+  try {
+    // Mesma resposta s1 (do subagente P7.F1.T1) copiada num transcrito de outra sessão.
+    writeFileSync(join(transcritos, 'sess2.jsonl'), linha('s1', '2026-11-13T10:30:00Z', { input_tokens: 2, output_tokens: 50 }) + '\n');
+    const regs = mod.coletar(transcritos);
+    assert.equal(regs.filter((r) => r.tokens.saida === 50).length, 1);
+    const ag = mod.agregar(regs, PRECOS, 7);
+    assert.equal(ag.total.tokens.saida, 50);
+    assert.equal(ag.semTarefa.requisicoes, 2);
+  } finally { rmSync(raiz, { recursive: true, force: true }); }
+});
+
 test('--janela atribui o uso da sessão principal à tarefa', () => {
   const { raiz, transcritos } = projeto();
   try {

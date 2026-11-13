@@ -38,7 +38,7 @@ export function tokensDoUso(u) {
 }
 
 /** Le um .jsonl e devolve requisicoes deduplicadas por message.id: so modelo, instante e tokens. */
-export function lerRequisicoes(arquivo) {
+export function lerRequisicoes(arquivo, globais = null) {
   const vistos = new Map();
   let texto;
   try { texto = readFileSync(arquivo, 'utf8'); } catch { return []; }
@@ -51,6 +51,7 @@ export function lerRequisicoes(arquivo) {
     if (!tokens) continue;
     const id = o.message.id || o.requestId || o.uuid;
     if (!id) continue;
+    if (globais) { if (globais.has(id)) continue; globais.add(id); } // sessao retomada repete respostas em outro arquivo
     vistos.set(id, { modelo: String(o.message.model || 'desconhecido'), timestamp: String(o.timestamp || ''), tokens });
   }
   return [...vistos.values()];
@@ -65,24 +66,27 @@ export function pastaDeTranscritos(cwd, home = homedir()) {
 export function coletar(pasta) {
   const regs = [];
   if (!existsSync(pasta)) return regs;
-  for (const nome of readdirSync(pasta)) {
-    if (nome.endsWith('.jsonl')) {
-      const sessao = basename(nome, '.jsonl');
-      for (const r of lerRequisicoes(join(pasta, nome))) regs.push({ ...r, plano: null, fase: null, tarefa: '', papel: 'sessao-principal', origem: sessao });
-    } else {
-      const sub = join(pasta, nome, 'subagents');
-      if (!existsSync(sub)) continue;
-      for (const f of readdirSync(sub)) {
-        if (!f.endsWith('.jsonl')) continue;
-        const agente = basename(f, '.jsonl');
-        let meta = {};
-        try { meta = JSON.parse(readFileSync(join(sub, `${agente}.meta.json`), 'utf8')); } catch { /* subagente sem meta: fica sem tarefa */ }
-        const m = MARCA.exec(String(meta.description || ''));
-        for (const r of lerRequisicoes(join(sub, f))) {
-          regs.push({ ...r, plano: m ? Number(m[1]) : null, fase: m ? Number(m[2]) : null, tarefa: m ? `P${m[1]}.F${m[2]}.T${m[3]}` : '', papel: String(meta.agentType || 'subagente'), origem: agente });
-        }
+  const globais = new Set();
+  const nomes = readdirSync(pasta);
+  // Subagentes primeiro: se a mesma resposta aparece no pai e no subagente, fica com a tarefa.
+  for (const nome of nomes) {
+    const sub = join(pasta, nome, 'subagents');
+    if (nome.endsWith('.jsonl') || !existsSync(sub)) continue;
+    for (const f of readdirSync(sub)) {
+      if (!f.endsWith('.jsonl')) continue;
+      const agente = basename(f, '.jsonl');
+      let meta = {};
+      try { meta = JSON.parse(readFileSync(join(sub, `${agente}.meta.json`), 'utf8')); } catch { /* subagente sem meta: fica sem tarefa */ }
+      const m = MARCA.exec(String(meta.description || ''));
+      for (const r of lerRequisicoes(join(sub, f), globais)) {
+        regs.push({ ...r, plano: m ? Number(m[1]) : null, fase: m ? Number(m[2]) : null, tarefa: m ? `P${m[1]}.F${m[2]}.T${m[3]}` : '', papel: String(meta.agentType || 'subagente'), origem: agente });
       }
     }
+  }
+  for (const nome of nomes) {
+    if (!nome.endsWith('.jsonl')) continue;
+    const sessao = basename(nome, '.jsonl');
+    for (const r of lerRequisicoes(join(pasta, nome), globais)) regs.push({ ...r, plano: null, fase: null, tarefa: '', papel: 'sessao-principal', origem: sessao });
   }
   return regs;
 }
