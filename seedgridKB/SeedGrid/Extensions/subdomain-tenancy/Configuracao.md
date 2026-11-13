@@ -10,6 +10,8 @@ analisado-em: 2026-11-11
 
 Visão geral: [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral|Visão geral do subdomain-tenancy]] · Exemplos: [[SeedGrid/Extensions/subdomain-tenancy/Exemplos|Exemplos do subdomain-tenancy]] · Porte Rust: [[SeedGrid/Extensions/subdomain-tenancy/Rust|Porte Rust]]
 
+> [!warning] Não use a 2026.11.12 do `seedgrid-subdomain-tenancy`: com jar sem versão (build local ou SNAPSHOT) todo login respondia `503 tenant_migration_in_progress` para sempre. Corrigido na **2026.11.13** (pendente só falta migrar e a API responde normal; `503` só durante a migração).
+
 > [!warning] Versões até a 2026.11.09: o pool do tenant fecha por ociosidade e não volta (plano 158, corrigido na 2026.11.10)
 > Nessas versões o Hibernate guarda o `ConnectionProvider` do tenant para sempre e ele carregava o pool daquele instante; o relógio de ociosidade só era renovado na primeira resolução. Passado `idle-eviction` (padrão 30 min) desde o primeiro acesso, o evictor fechava o pool, e todo login ou uso do tenant dava `SQLException: This pool is closed and does not handle any more connections!` (500 `erro-de-sistema`, e depois `Tenant datasource circuit breaker is open`), **até reiniciar a aplicação**. O master não era afetado.
 > - **Corrigido:** atualize para `seedgrid-subdomain-tenancy` **2026.11.10** (publicada no Maven Central; sem propriedade nova e sem mudança de padrão). Conferido no código (commit `2fd8d56`, bump `6965b45`) e no teste `TenantConnectionResolverEvictionTest` (vermelho no código antigo com `This pool is closed`, verde depois).
