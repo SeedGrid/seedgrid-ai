@@ -4,6 +4,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Adicionado
+- Skill `sg-custo` (`scripts/custo.mjs`): custo de um plano em tokens (entrada, saída, cache lido e criado) e em valor, por tarefa, fase e plano, lido dos transcritos do Claude Code (só campos de uso, deduplicado por `message.id`); preço vem de `.ai/local/precos-de-modelo.json`, nunca fixo no código (P163.F3.T3).
+- Papéis `a11y-i18n`, `dados-migracao`, `documentador`, `frontend-flutter`, `frontend-tester`, `seguranca` e `ux-design` registrados (shared e native) e cobertos pelos testes (P163.F1.T8).
+
 ### Alterado
 - Pins do `sg-new-product` (catálogo, matriz e boilerplates) em 2026.11.x, `<repositories>` do Nexus nos boilerplates (ADR 64) e `check-catalogo-pins.mjs` passa a conferir também as propriedades dos boilerplates.
 

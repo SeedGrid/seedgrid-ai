@@ -22,7 +22,7 @@ Cada pasta de `.ai/` (`rules`, `agents`, `skills`, `templates`, `references`) te
 
 | Destino | Conteúdo |
 | --- | --- |
-| `.ai/agents/` | Papéis (`arquiteto`, `backend-java`, `backend-rust`, `frontend-react`, `qa`, `revisor`) e `index.md` gerado |
+| `.ai/agents/` | Papéis (13: `a11y-i18n`, `arquiteto`, `backend-java`, `backend-rust`, `dados-migracao`, `documentador`, `frontend-flutter`, `frontend-react`, `frontend-tester`, `qa`, `revisor`, `seguranca`, `ux-design`) e `index.md` gerado |
 | `.ai/rules/` | Coordenação, formato de entrega, personalização local e os **padrões SeedGrid obrigatórios** (`frontend-seedgrid`, `backend-seedgrid`, `backend-java-seedgrid`) |
 | `.ai/templates/` | Especificação de tarefa, decisão de arquitetura, relatório de validação |
 | `.ai/references/` | Modos shared/native e glossário |

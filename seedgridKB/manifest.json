@@ -226,6 +226,15 @@
       ]
     },
     {
+      "id": "skill:sg-custo",
+      "type": "skill",
+      "name": "sg-custo",
+      "files": [
+        "SKILL.md",
+        "scripts/custo.mjs"
+      ]
+    },
+    {
       "id": "skill:sg-diagnostico",
       "type": "skill",
       "name": "sg-diagnostico",

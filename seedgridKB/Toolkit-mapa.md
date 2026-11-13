@@ -40,6 +40,7 @@ São 20 skills, uma pasta para cada em `SeedGrid/Toolkit/skills/` (não existe `
 |---|---|
 | [[SeedGrid/Toolkit/skills/sg-new-product/SKILL\|sg-new-product]] | Cria um produto SeedGrid novo (entrevista fixa e script gerador); é a primeira ação, antes do `arquiteto`. |
 | [[SeedGrid/Toolkit/skills/sg-plan-goal/SKILL\|sg-plan-goal]] | Leva uma tarefa não trivial a um plano de tarefas no formato fixo do toolkit. |
+| [[SeedGrid/Toolkit/skills/sg-custo/SKILL\|sg-custo]] | Custo de um plano em tokens (entrada, saída, cache lido, cache criado) e em valor, por tarefa, fase e plano, lido dos transcritos do Claude Code; o preço vem de arquivo local. |
 | [[SeedGrid/Toolkit/skills/sg-diagnostico/SKILL\|sg-diagnostico]] | Diagnostica um plano ou briefing livre contra o formato da `sg-plan-goal`. |
 | [[SeedGrid/Toolkit/skills/sg-componente/SKILL\|sg-componente]] | Escolhe o componente React certo e confere as props contra o tipo real. |
 | [[SeedGrid/Toolkit/skills/sg-adr/SKILL\|sg-adr]] | Registra uma decisão de arquitetura ou de comportamento como ADR. |
