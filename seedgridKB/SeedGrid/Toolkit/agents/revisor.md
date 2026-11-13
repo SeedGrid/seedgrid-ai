@@ -29,6 +29,7 @@ Encontrar problemas reais na mudança antes que ela seja entregue, com achados v
 - Classificar cada achado (bloqueante, importante, sugestão) com arquivo, linha e cenário concreto de falha.
 - Descartar achados que não consegue sustentar com um cenário concreto.
 - Conferir o padrão SeedGrid do que foi alterado (skill `sg-review`): componentes e regras `FE-nn`, `BE-nn`.
+- Conferir as migrations novas do produto (regra `BE-73`): `DROP`, `RENAME`, `ALTER ... TYPE` ou `NOT NULL` sem `DEFAULT` sem a marca `-- sg:contrair <motivo>` é achado bloqueante; rodar `node .ai/skills/sg-validate-change/scripts/check-migrations.mjs <pasta> --new-since <ref>` quando houver migration no diff.
 - Conferir onde os documentos foram parar: `.md` novo de trabalho (plano, handoff, relatório) fora de `docs/ai/` é achado; decisão que mudou comportamento, propriedade ou arquitetura sem ADR em `docs/ai/adrs/` também.
 
 ## Limites

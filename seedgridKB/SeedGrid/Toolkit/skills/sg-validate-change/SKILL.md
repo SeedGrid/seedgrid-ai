@@ -15,6 +15,7 @@ Comprove com evidências executadas que a mudança funciona; não declare sucess
 2. **Comandos do projeto.** Descubra como compilar, testar e executar: consulte `.ai/local/` (se existir), README, scripts de build (`package.json`, `pom.xml`, `build.gradle`, `Makefile` etc.). Não invente comandos.
 3. **Mapeamento.** Associe cada critério a uma verificação concreta (teste automatizado, comando, inspeção do comportamento).
 4. **Execução.** Rode, nesta ordem quando aplicável: verificação de tipos/compilação, lint, testes afetados, suíte relevante, build. Exercite o comportamento alterado quando possível. Se o projeto tem `docs/ai/` e a mudança criou, renomeou ou mudou o status de algum documento lá, rode também o `--check` da skill `sg-docs-index` (índice geral `docs/ai/INDEX.md`): índice desatualizado reprova.
+   Se a mudança traz migration de banco nova, rode também `node scripts/check-migrations.mjs <pasta-das-migrations> --new-since <ref-git>` (regra `BE-73`): reprova `DROP`, `RENAME`, `ALTER ... TYPE` e `NOT NULL` sem `DEFAULT`, salvo a marca `-- sg:contrair <motivo>` no script. Registre o resultado no relatório.
 5. **Registro.** Preencha o modelo [assets/relatorio-validacao.md](assets/relatorio-validacao.md) com comandos, resultados e evidências resumidas.
 
 ## Regras

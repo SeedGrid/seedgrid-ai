@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: 20
       - run: node .ai/skills/sg-check-secrets/scripts/check-secrets.mjs --ignore '^\.ai/' --ignore '^\.agents/' --ignore '^\.claude/'
-  # Terceira barreira contra migration incompativel com a versao anterior (ADR 65): a migration do release N so
+  # Terceira barreira contra migration incompativel com a versao anterior (regra BE-73): a migration do release N so
   # acrescenta; DROP, RENAME, troca de tipo e NOT NULL sem DEFAULT vao em release posterior, ou o script leva a
   # marca `-- sg:contrair <motivo>`. Reprova antes de publicar uma imagem que o rollback nao desfaria.
   migrations:
