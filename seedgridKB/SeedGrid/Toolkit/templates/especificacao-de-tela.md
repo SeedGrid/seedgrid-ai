@@ -8,7 +8,7 @@ description: "Modelo de especificação de tela: objetivo, estados, componentes 
 - **AIDLC:** <contentVersion de `.ai/toolkit-lock.json`, ex.: 0.6.1>
 - **Status:** proposto | aprovado (data e quem aprovou)
 - **Plano e tarefa:** P<plano>.F<fase>.T<tarefa> (título)
-- **Desenho:** <link do conector de desenho, quando houver; senão "sem desenho, só esta especificação">
+- **Wireframe:** <arquivo `...-wireframe.html` na mesma pasta; opcional: link ou SVG exportado do Penpot>
 
 ## Objetivo
 Uma frase: quem usa a tela e o que consegue fazer nela. Permissão necessária e rota.
@@ -18,7 +18,7 @@ Uma frase: quem usa a tela e o que consegue fazer nela. Permissão necessária e
 - Erros previstos da API e como a tela os mostra.
 
 ## Estrutura da tela
-Descreva por regiões, de cima para baixo (cabeçalho, filtros, conteúdo, ações). Se houver desenho, aponte a região correspondente.
+Descreva por regiões, de cima para baixo (cabeçalho, filtros, conteúdo, ações). Aponte a região correspondente do wireframe.
 
 ## Componentes SeedGrid
 | Região | Componente | Observação |
@@ -58,17 +58,9 @@ Todo texto visível tem chave. Mensagens de erro e de sucesso entram aqui també
 
 Informe o que reorganiza (colunas viram pilha, tabela vira lista ou rola na horizontal), o que se esconde e onde ficam as ações.
 
-## Ferramenta de desenho: situação
-A ferramenta de desenho **ainda não foi escolhida** (spike da tarefa P163.F1.T4). Levantamento nas ferramentas vistas pela sessão que escreveu este modelo:
+## Wireframe
 
-| Item | Situação |
-| --- | --- |
-| Conector de Figma | a confirmar: nenhum visto nas ferramentas dessa sessão |
-| Skill de Figma | a confirmar: nenhuma vista |
-| Outra ferramenta de desenho | a confirmar |
-| Ferramentas existentes nas sessões do dono | a confirmar: o dono informa o que usa |
-
-Enquanto não houver confirmação, a especificação em Markdown é a entrega completa.
+Arquivo HTML único, ao lado desta especificação (`P<plano>.F<fase>.T<tarefa>-AAAA-MM-DD-assunto-wireframe.html`), sem biblioteca externa e sem imagem. Mostra a estrutura real da tela e os estados, e indica o componente SeedGrid de cada região. Decisão do dono (2026-11-13): sem ferramenta de desenho paga; o Penpot (código aberto) é editor visual opcional. A conferência em 360 px, 390 px e desktop é feita por quem tem navegador.
 
 ## Lacunas
 Componentes, textos ou decisões que faltam. Cada item diz quem resolve.

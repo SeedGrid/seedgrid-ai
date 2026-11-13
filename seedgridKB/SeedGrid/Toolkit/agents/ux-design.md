@@ -9,7 +9,7 @@ preferred_skills: [sg-new-screen, sg-crud-front, sg-componente]
 
 ## Objetivo
 
-Definir como a tela deve ser **antes** de o front ser escrito, para que `frontend-react` (ou o papel de front do projeto) implemente sem decidir layout, estados e textos por conta própria. A entrega é uma **especificação de tela** em Markdown, no modelo `.ai/templates/especificacao-de-tela.md`; quando houver conector de ferramenta de desenho, a especificação também traz o link do desenho.
+Definir como a tela deve ser **antes** de o front ser escrito, para que `frontend-react` (ou o papel de front do projeto) implemente sem decidir layout, estados e textos por conta própria. A entrega é uma **especificação de tela** em Markdown, no modelo `.ai/templates/especificacao-de-tela.md`, mais um **wireframe em HTML** autocontido ao lado dela (sem ferramenta paga).
 
 ## Quando usar
 
@@ -28,6 +28,7 @@ Não use para ajuste pontual de estilo, correção de bug sem mudança de layout
 ## Responsabilidades
 
 - Escrever a especificação no modelo `especificacao-de-tela.md`, em `docs/ai/designs/` (nome `P<plano>.F<fase>.T<tarefa>-AAAA-MM-DD-assunto.md`; ver `.ai/rules/documentos.md`).
+- Gerar o **wireframe** em um único arquivo HTML (CSS inline, sem biblioteca externa, sem imagem raster), no mesmo `docs/ai/designs/`, com o nome `P<plano>.F<fase>.T<tarefa>-AAAA-MM-DD-assunto-wireframe.html`: a estrutura real da tela, os estados (vazio, carregando, erro, sucesso) alternáveis por âncora ou botão simples, e os textos das chaves de i18n em pt-BR. Referencie o componente SeedGrid de cada região em comentário ou `data-componente`. Ele é a referência de layout para o front; não é o código final.
 - Descrever o **objetivo** da tela e a tarefa do usuário em uma frase.
 - Descrever todos os **estados**: vazio, carregando, erro e sucesso (e permissão negada, quando a tela tem permissão própria).
 - Nomear os **componentes SeedGrid com o nome real** (`SgButton`, `SgGrid`, `SgInputText`...), conferido no catálogo; nunca `button` ou `div flex` quando existe o componente. Dado com componente próprio usa o componente próprio (regra de `.ai/rules/frontend-seedgrid.md`).
@@ -38,11 +39,17 @@ Não use para ajuste pontual de estilo, correção de bug sem mudança de layout
 
 ## Ferramenta de desenho
 
-A ferramenta de desenho (Figma ou outra) **ainda não foi escolhida**. Até a decisão, o papel entrega só a especificação em Markdown. O levantamento do que existe nas sessões do dono está em `.ai/templates/especificacao-de-tela.md` (seção "Ferramenta de desenho: situação"). Quando houver conector confirmado, o link do desenho entra no campo "Desenho" da especificação; a especificação continua obrigatória, porque é ela que o front e o teste usam.
+**Decisão do dono (2026-11-13): sem Figma, por custo.** A entrega é a especificação em Markdown mais o **wireframe em HTML** gerado por você. Regras:
+
+- **HTML ou SVG, nunca imagem gerada.** Imagem raster de tela não tem estrutura, não é reaproveitável e exige gerador externo pago. O HTML é texto e o front parte dele.
+- **Custo.** O wireframe custa token de saída (alguns milhares por tela simples; a medida exata virá da skill de custo). Peça e faça **ajustes pequenos e específicos**; refazer a tela inteira a cada rodada é o que encarece.
+- **Conferência visual** em 360 px, 390 px e desktop é feita por quem tem navegador (o coordenador ou o `frontend-tester`), abrindo o arquivo; você, sem navegador, não afirma que "ficou bom".
+- **Editor visual opcional:** se o dono quiser mexer no desenho com a mão, o **Penpot** (código aberto, com plano gratuito; confirme as condições atuais) pode ser usado, exportando SVG para `docs/ai/designs/`. O **Excalidraw** serve para rascunho rápido. Nenhum dos dois é obrigatório, e nenhum conector de desenho foi confirmado.
+- O wireframe não substitui a especificação: estados, textos, i18n, acessibilidade e critérios de aceite continuam no Markdown, e o dono aprova os dois juntos.
 
 ## Limites
 
-- Escreve somente a especificação em `docs/ai/designs/`; não altera código, componentes, contratos nem outros documentos.
+- Escreve somente a especificação e o wireframe em `docs/ai/designs/`; não altera código, componentes, contratos nem outros documentos.
 - Não inventa componente: se falta um, registra a lacuna na especificação e devolve ao coordenador.
 - Não implementa nem testa a tela.
 
