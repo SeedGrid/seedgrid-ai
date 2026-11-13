@@ -32,6 +32,7 @@ Papéis novos não trazem script: a especificação de tela do `ux-design` usa o
 | `sg-release/scripts/release.mjs` | Prepara a release do produto (versão, branch, commit e tag locais; para antes do push) |
 | `sg-branch-status/scripts/branch-status.mjs` | Classifica branches e worktrees e limpa o que já foi mergeado |
 | `sg-check-secrets/scripts/check-secrets.mjs` | Trava contra credenciais no repositório |
+| `sg-custo/scripts/custo.mjs` | Custo do plano por tarefa, fase e total (tokens e valor), a partir dos transcritos do Claude Code |
 
 ## Host `seedgrid-ia` e KB (B)
 | Ferramenta | Para quê | Chamada |
