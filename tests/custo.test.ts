@@ -7,18 +7,23 @@ import { test } from 'node:test';
 
 const SCRIPT = resolve(process.cwd(), 'seedgridKB/SeedGrid/Toolkit/skills/sg-custo/scripts/custo.mjs');
 type Tokens = Record<'entrada' | 'saida' | 'cache_lido' | 'cache_criado_5m' | 'cache_criado_1h', number>;
-type Reg = { modelo: string; timestamp: string; tokens: Tokens; plano: number | null; fase: number | null; tarefa: string; papel: string };
-type Ag = { linhas: { tarefa: string; fase: number; tokens: Tokens; valor: number; parcial: boolean; requisicoes: number }[]; fases: { fase: number; valor: number; parcial: boolean; tokens: Tokens }[]; total: { valor: number; parcial: boolean; tokens: Tokens }; semTarefa: { principal: { requisicoes: number }; subagentes: { requisicoes: number } }; avisos: string[] };
+type Reg = { ferramenta: string; subagente: boolean; sessao: string; modelo: string; timestamp: string; tokens: Tokens; plano: number | null; fase: number | null; tarefa: string; papel: string };
+type Ag = { linhas: { tarefa: string; fase: number; tokens: Tokens; ferramenta: string; modelo: string; valores: Record<string, number>; parcial: boolean; requisicoes: number }[]; fases: { fase: number; valores: Record<string, number>; parcial: boolean; tokens: Tokens }[]; porFerramenta: { ferramenta: string; modelo: string; tokens: Tokens; valores: Record<string, number> }[]; total: { valores: Record<string, number>; parcial: boolean; tokens: Tokens }; semTarefa: { principal: { requisicoes: number }; subagentes: { requisicoes: number } }; avisos: string[] };
 const mod = (await import(pathToFileURL(SCRIPT).href)) as {
   tokensDoUso: (u: unknown) => Tokens | null;
   lerRequisicoes: (f: string) => { tokens: Tokens }[];
   coletar: (p: string) => Reg[];
   aplicarJanelas: (r: Reg[], j: unknown[]) => Reg[];
   lerJanela: (t: string) => unknown;
-  precificar: (r: unknown, t: unknown) => { valor: number | null; aviso: string | null };
+  precificar: (r: unknown, t: unknown) => { valor: number | null; moeda: string | null; aviso: string | null };
+  coletarCodex: (d: string, projetos: string[], avisos?: string[]) => Reg[];
+  coletarGenerico: (f: string, fmt?: string | null) => Reg[];
+  usoDoRollout: (t: string) => { meta: { id: string; cwd: string }; uso: { modelo: string; tokens: Tokens }[] };
+  lerCsv: (t: string) => Record<string, string>[];
+  fmtValor: (g: { valores: Record<string, number>; parcial: boolean }) => string;
   agregar: (r: Reg[], t: unknown, plano: number, fase?: number | null) => Ag;
   fmtTokens: (n: number) => string;
-  main: (a: string[], o: { cwd: string; saida: (s: string) => void; erro: (s: string) => void }) => number;
+  main: (a: string[], o: { cwd: string; home?: string; saida: (s: string) => void; erro: (s: string) => void }) => number;
 };
 
 const linha = (id: string, ts: string, u: Record<string, unknown>, model = 'modelo-x') =>
@@ -96,8 +101,8 @@ test('subagente sem marca aparece separado da sessão principal', () => {
     assert.equal(ag.semTarefa.subagentes.requisicoes, 1);
     assert.equal(ag.semTarefa.principal.requisicoes, 2);
     let out = '';
-    mod.main(['7', 'resumo', '--transcritos', transcritos], { cwd: raiz, saida: (s) => (out += s), erro: () => {} });
-    assert.match(out, /Sessão principal sem tarefa atribuída.*2 requisições/);
+    mod.main(['7', 'resumo', '--transcritos', transcritos], { cwd: raiz, home: raiz, saida: (s) => (out += s), erro: () => {} });
+    assert.match(out, /Uso sem tarefa atribuída.*2 requisições/);
     assert.match(out, /Subagentes sem marca.*1 requisições/);
   } finally { rmSync(raiz, { recursive: true, force: true }); }
 });
@@ -110,7 +115,7 @@ test('--sessao filtra por sessão (e pelos subagentes dela) antes da janela', ()
     const janela = 'P7.F1.T2=2026-11-13T09:00:00Z,2026-11-13T10:10:00Z';
     const rodar = (extra: string[]) => {
       let out = '';
-      mod.main(['7', 'resumo', '--json', '--transcritos', transcritos, '--janela', janela, ...extra], { cwd: raiz, saida: (s) => (out += s), erro: () => {} });
+      mod.main(['7', 'resumo', '--json', '--transcritos', transcritos, '--janela', janela, ...extra], { cwd: raiz, home: raiz, saida: (s) => (out += s), erro: () => {} });
       return JSON.parse(out) as Ag;
     };
     assert.equal(rodar([]).total.tokens.saida, 50 + 100 + 1000, 'sem --sessao a janela mistura as sessões');
@@ -157,16 +162,16 @@ test('main: resumo imprime tokens, valor e consultas ao fonte; --gravar escreve 
     mkdirSync(join(raiz, '.ai', 'local'), { recursive: true });
     writeFileSync(join(raiz, '.ai', 'local', 'precos-de-modelo.json'), JSON.stringify(PRECOS));
     let out = ''; let err = '';
-    const code = mod.main(['7', 'resumo', '--transcritos', transcritos, '--gravar'], { cwd: raiz, saida: (s) => (out += s), erro: (s) => (err += s) });
+    const code = mod.main(['7', 'resumo', '--transcritos', transcritos, '--gravar'], { cwd: raiz, home: raiz, saida: (s) => (out += s), erro: (s) => (err += s) });
     assert.equal(code, 0);
-    assert.match(out, /P7\.F1\.T1 \| backend-java \| modelo-x/);
+    assert.match(out, /P7\.F1\.T1 \| claude-code \| backend-java \| modelo-x/);
     assert.match(out, /\| F1 \|.*\| 1 \|/, 'consultas ao fonte da fase');
     assert.match(out, /BRL/);
     assert.ok(!out.includes('CONTEUDO-SECRETO'));
     const gravado = err.match(/gravado: (.+)\n/)![1]!;
     assert.ok(existsSync(gravado) && gravado.includes('custos'));
     assert.equal(readFileSync(gravado, 'utf8'), out);
-    assert.equal(mod.main(['x'], { cwd: raiz, saida: () => {}, erro: () => {} }), 2);
+    assert.equal(mod.main(['x'], { cwd: raiz, home: raiz, saida: () => {}, erro: () => {} }), 2);
   } finally { rmSync(raiz, { recursive: true, force: true }); }
 });
 
