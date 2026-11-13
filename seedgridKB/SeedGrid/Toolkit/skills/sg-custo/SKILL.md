@@ -20,13 +20,15 @@ node .ai/skills/sg-custo/scripts/custo.mjs <plano> fase <fase> --gravar
 |---|---|
 | `--transcritos <pasta>` | Pasta dos transcritos. Padrão: `~/.claude/projects/<pasta atual com tudo que não é letra ou número trocado por ->`. |
 | `--precos <arquivo>` | Tabela de preços. Padrão: `.ai/local/precos-de-modelo.json`. |
-| `--janela P<plano>.F<fase>.T<tarefa>=<início>,<fim>` | Atribui à tarefa o uso da **sessão principal** entre dois instantes ISO (repetível). Use os instantes dos marcos (commit, registro de status). |
+| `--sessao <id>` | Só o uso dessa sessão e dos subagentes dela (aceita o começo do id). Obrigatória na prática quando a pasta de transcritos tem várias sessões e você usa `--janela`. |
+| `--janela P<plano>.F<fase>.T<tarefa>=<início>,<fim>` | Atribui à tarefa o uso da **sessão principal** entre dois instantes ISO (repetível). Use os instantes dos marcos (commit, registro de status). **Filtra só por horário, não por sessão:** sem `--sessao`, entra o uso de todas as sessões da pasta que caíram no intervalo. |
 | `--gravar` | Grava o relatório em `docs/ai/custos/P<plano>[-F<fase>]-custo-AAAA-MM-DD.md`. |
 | `--json` | Saída em JSON. |
 
 ## Como o uso é ligado à tarefa
 - **Subagente:** o `description` do Agent começa com `P<plano>.F<fase>.T<tarefa>` (exemplo: `P163.F1.T4 ux-design: especificação da tela de pedidos`). O script lê esse texto no `meta.json` do subagente. **Sem a marca, o uso do subagente não entra em nenhuma tarefa.** O coordenador precisa escrevê-la ao acionar o papel.
-- **Sessão principal:** só com `--janela`. Sem janela, o uso aparece numa linha à parte ("sem tarefa atribuída") e fica fora das somas.
+- **Sessão principal:** só com `--janela` (e `--sessao`). Sem janela, o uso aparece numa linha à parte ("Sessão principal sem tarefa atribuída") e fica fora das somas.
+- **Subagente sem marca:** aparece em outra linha ("Subagentes sem marca"), também fora das somas. Essa linha é o sinal de que o coordenador esqueceu de pôr `P<plano>.F<fase>.T<tarefa>` no `description`.
 - O transcrito repete a linha de uma resposta uma vez por bloco de conteúdo; o script **deduplica por `message.id`** (sem isso, a soma vem inflada, mais que o dobro na amostra do spike).
 - O uso do subagente fica no transcrito dele; o transcrito do pai não o soma.
 
@@ -53,3 +55,4 @@ Uma linha por tarefa, papel e modelo (entrada, saída, cache lido, cache criado,
 - Só Claude Code. O Codex grava o uso em outro formato e não é lido.
 - O valor é estimativa pela tabela local, não a fatura.
 - Sessão que toca vários planos precisa de `--janela` por tarefa.
+- A mesma resposta pode aparecer em mais de um transcrito (sessão retomada); o script conta uma vez, e a cópia do subagente vence a do pai.

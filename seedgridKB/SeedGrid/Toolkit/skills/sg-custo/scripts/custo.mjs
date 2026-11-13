@@ -9,8 +9,10 @@
 // Opcoes:
 //   --transcritos <pasta>   pasta dos transcritos (padrao: ~/.claude/projects/<pasta atual com / e : trocados por ->)
 //   --precos <arquivo>      tabela de precos (padrao: .ai/local/precos-de-modelo.json na pasta atual)
+//   --sessao <id>           so o uso dessa sessao (e dos subagentes dela); aceita o comeco do id
 //   --janela P1.F1.T1=<inicio>,<fim>
-//                           atribui a uma tarefa o uso da SESSAO PRINCIPAL entre dois instantes ISO (repetivel)
+//                           atribui a uma tarefa o uso da SESSAO PRINCIPAL entre dois instantes ISO (repetivel). Filtra so por
+//                           horario: numa pasta com varias sessoes use junto com --sessao
 //   --gravar                grava o relatorio em docs/ai/custos/ (alem de imprimir)
 //   --json                  saida em JSON
 //
@@ -79,14 +81,14 @@ export function coletar(pasta) {
       try { meta = JSON.parse(readFileSync(join(sub, `${agente}.meta.json`), 'utf8')); } catch { /* subagente sem meta: fica sem tarefa */ }
       const m = MARCA.exec(String(meta.description || ''));
       for (const r of lerRequisicoes(join(sub, f), globais)) {
-        regs.push({ ...r, plano: m ? Number(m[1]) : null, fase: m ? Number(m[2]) : null, tarefa: m ? `P${m[1]}.F${m[2]}.T${m[3]}` : '', papel: String(meta.agentType || 'subagente'), origem: agente });
+        regs.push({ ...r, plano: m ? Number(m[1]) : null, fase: m ? Number(m[2]) : null, tarefa: m ? `P${m[1]}.F${m[2]}.T${m[3]}` : '', papel: String(meta.agentType || 'subagente'), origem: agente, sessao: nome });
       }
     }
   }
   for (const nome of nomes) {
     if (!nome.endsWith('.jsonl')) continue;
     const sessao = basename(nome, '.jsonl');
-    for (const r of lerRequisicoes(join(pasta, nome), globais)) regs.push({ ...r, plano: null, fase: null, tarefa: '', papel: 'sessao-principal', origem: sessao });
+    for (const r of lerRequisicoes(join(pasta, nome), globais)) regs.push({ ...r, plano: null, fase: null, tarefa: '', papel: 'sessao-principal', origem: sessao, sessao });
   }
   return regs;
 }
@@ -131,16 +133,18 @@ export function lerTabelaDePrecos(arquivo) {
 export function agregar(regs, tabela, plano, fase = null) {
   const avisos = new Set();
   const porTarefa = new Map();
-  const semTarefa = { tokens: zero(), valor: 0, parcial: false, requisicoes: 0 };
+  const novoGrupo = () => ({ tokens: zero(), valor: 0, parcial: false, requisicoes: 0 });
+  const semTarefa = { principal: novoGrupo(), subagentes: novoGrupo() };
   for (const r of regs) {
     const doPlano = r.plano === plano && (fase === null || r.fase === fase);
     const { valor, aviso, faixa } = precificar(r, tabela);
     if (aviso && doPlano) avisos.add(aviso);
     if (!doPlano) {
       if (r.plano === null && fase === null) {
-        for (const t of TIPOS) semTarefa.tokens[t] += r.tokens[t];
-        semTarefa.requisicoes++;
-        if (valor === null) semTarefa.parcial = true; else semTarefa.valor += valor;
+        const g = r.papel === 'sessao-principal' ? semTarefa.principal : semTarefa.subagentes;
+        for (const t of TIPOS) g.tokens[t] += r.tokens[t];
+        g.requisicoes++;
+        if (valor === null) g.parcial = true; else g.valor += valor;
       }
       continue;
     }
@@ -186,7 +190,9 @@ export function relatorio(ag, { plano, fase, moeda = 'USD', raiz = '.', data = '
     L.push(`| F${f.fase} | ${fmtTokens(f.tokens.entrada)} | ${fmtTokens(f.tokens.saida)} | ${fmtTokens(f.tokens.cache_lido)} | ${fmtTokens(f.tokens.cache_criado_5m + f.tokens.cache_criado_1h)} | ${fmtValor(f, moeda)} | ${consultasAoFonte(raiz, plano, f.fase)} |`);
   }
   L.push('', `**Total do plano:** entrada ${fmtTokens(ag.total.tokens.entrada)} · saída ${fmtTokens(ag.total.tokens.saida)} · cache lido ${fmtTokens(ag.total.tokens.cache_lido)} · cache criado ${fmtTokens(ag.total.tokens.cache_criado_5m + ag.total.tokens.cache_criado_1h)} · valor ${fmtValor(ag.total, moeda)}${ag.total.parcial ? ' — total PARCIAL: faltou preço' : ''}`);
-  if (ag.semTarefa.requisicoes > 0) L.push('', `Sessão principal sem tarefa atribuída (fora das somas acima; use --janela): ${ag.semTarefa.requisicoes} requisições, saída ${fmtTokens(ag.semTarefa.tokens.saida)}, cache lido ${fmtTokens(ag.semTarefa.tokens.cache_lido)}.`);
+  const resto = (g) => `${g.requisicoes} requisições, saída ${fmtTokens(g.tokens.saida)}, cache lido ${fmtTokens(g.tokens.cache_lido)}`;
+  if (ag.semTarefa.principal.requisicoes > 0) L.push('', `Sessão principal sem tarefa atribuída (fora das somas acima; use --janela e --sessao): ${resto(ag.semTarefa.principal)}.`);
+  if (ag.semTarefa.subagentes.requisicoes > 0) L.push('', `Subagentes sem marca P<plano>.F<fase>.T<tarefa> no description (fora das somas acima): ${resto(ag.semTarefa.subagentes)}.`);
   for (const a of ag.avisos) L.push('', `Aviso: ${a}.`);
   return L.join('\n') + '\n';
 }
@@ -201,7 +207,7 @@ export function main(argv, { cwd = process.cwd(), saida = (s) => process.stdout.
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--json' || a === '--gravar') opt[a.slice(2)] = true;
-    else if (['--transcritos', '--precos'].includes(a)) opt[a.slice(2)] = argv[++i];
+    else if (['--transcritos', '--precos', '--sessao'].includes(a)) opt[a.slice(2)] = argv[++i];
     else if (a === '--janela') opt.janela.push(argv[++i]);
     else pos.push(a);
   }
@@ -209,12 +215,14 @@ export function main(argv, { cwd = process.cwd(), saida = (s) => process.stdout.
   const modo = pos[1];
   const fase = modo === 'fase' && pos[2] ? Number(String(pos[2]).replace(/^F/i, '')) : null;
   if (plano === null || !['resumo', 'fase'].includes(modo) || (modo === 'fase' && !Number.isInteger(fase))) {
-    erro('uso: custo.mjs <plano> resumo | <plano> fase <fase> [--transcritos pasta] [--precos arquivo] [--janela P1.F1.T1=ini,fim] [--gravar] [--json]\n');
+    erro('uso: custo.mjs <plano> resumo | <plano> fase <fase> [--transcritos pasta] [--precos arquivo] [--sessao id] [--janela P1.F1.T1=ini,fim] [--gravar] [--json]\n');
     return 2;
   }
   let regs;
   try {
-    regs = aplicarJanelas(coletar(opt.transcritos || pastaDeTranscritos(cwd)), opt.janela.map(lerJanela));
+    regs = coletar(opt.transcritos || pastaDeTranscritos(cwd));
+    if (opt.sessao) regs = regs.filter((r) => r.sessao.startsWith(opt.sessao));
+    regs = aplicarJanelas(regs, opt.janela.map(lerJanela));
   } catch (e) { erro(`${e.message}\n`); return 2; }
   const arqPrecos = opt.precos || join(cwd, '.ai', 'local', 'precos-de-modelo.json');
   const tabela = lerTabelaDePrecos(arqPrecos);
