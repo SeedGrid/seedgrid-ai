@@ -47,6 +47,7 @@ Calendario mensal em formato de gadget com suporte a locale, multi-mes, regras d
 | `isDateDisabled` | `bool Function(DateTime date)?` | — | não | React | Tipo no React: `((date: Date) => boolean)`. |
 | `showTodayShortcut` | `bool` | `true` | não | React | — |
 | `cardTitle` | `Widget?` | — | não | React | — |
+| `draggable` | `bool?` | — | não | React | Arrasto do card: nulo = automático (>= 640 px), `true` sempre, `false` nunca; vence `cardProps.draggable`. |
 | `cardProps` | `SgCalendarCardProps?` | — | não | React | Tipo no React: `Omit<SgCardProps, "title" \| "children">`. |
 | `today` | `DateTime?` | — | não | Flutter | Extra do Flutter: fixa o "hoje" (no React e `new Date()` no primeiro render). |
 | `enabled` | `bool?` | `true` † | não | React | Quando false, os dias, os botoes de mes anterior/proximo e o atalho hoje ficam desabilitados (nao focaveis); a data e o mes atuais continuam legiveis. |
@@ -105,6 +106,7 @@ Relogio analogico ou digital com multiplos estilos visuais, timezone, formato 12
 | `theme` | `SgClockTheme?` | — | não | React | Tema avulso (tem precedencia sobre `themeId`). Tipo no React: `SgClockTheme`. |
 | `centerOverlay` | `Widget?` | — | não | React | — |
 | `cardTitle` | `Widget?` | — | não | React | — |
+| `draggable` | `bool?` | — | não | React | Arrasto do card: nulo = automático (>= 640 px), `true` sempre, `false` nunca; vence `cardProps.draggable`. |
 | `cardProps` | `SgClockCardProps?` | — | não | React | Tipo no React: `Omit<SgCardProps, "title" \| "children">`. |
 
 † padrão declarado no contrato do React; o construtor Dart não o repete (o widget o aplica ao montar; **não confirmado** caso a caso).

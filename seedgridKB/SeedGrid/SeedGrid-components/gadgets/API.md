@@ -48,6 +48,7 @@ import { SgCalendar, type SgCalendarProps, type SgCalendarWeekdayFormat } from "
 | `isDateDisabled` | `(date: Date) => boolean` | — | Não | Regra adicional para desabilitar datas especificas. |
 | `showTodayShortcut` | `boolean` | `true` | Não | Mostra/oculta o botao de atalho para voltar para hoje. |
 | `cardTitle` | `React.ReactNode` | `?? t(i18n, "components.gadgets.calendar.title")` ᶠ | Não | Configura titulo e props do SgCard do gadget. |
+| `draggable` | `boolean` | automático | Não | Arrasto do card: automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` sempre, `false` nunca; vence `cardProps.draggable`. |
 | `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Props repassadas ao `SgCard` que envolve o calendário (o componente já define `collapsible`, `defaultOpen`, `cardStyle="outlined"` etc., sobrescrevíveis aqui). `cardProps.draggable`: não informada = automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` = arrasta sempre, `false` = nunca arrasta. |
 | `enabled` | `boolean` | — | Não | Habilita o calendario (padrao `true`). Com `false` os dias, os botoes de mes anterior/proximo e o atalho "hoje" ficam desabilitados (nao focaveis, sem clique); a data e o mes atuais seguem legiveis. |
 
@@ -107,6 +108,7 @@ import { SgClock, type SgClockProps, type SgClockDigitalStyle, type SgClockDigit
 | `style` | `React.CSSProperties` | — | Não | Inline style extra no container do relogio. |
 | `centerOverlay` | `React.ReactNode` | — | Não | Conteudo opcional sobreposto ao centro do relogio analogico (ignorado no digital). |
 | `cardTitle` | `React.ReactNode` | `?? t(i18n, "components.gadgets.clock.title")` ᶠ | Não | Titulo do SgCard usado pelo gadget. |
+| `draggable` | `boolean` | automático | Não | Arrasto do card: automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` sempre, `false` nunca; vence `cardProps.draggable`. |
 | `cardProps` | `Omit<SgCardProps, "children" \| "title">` | — | Não | Sobrescreve configuracoes padrao do SgCard do gadget. `dragPersistKey` padrão: `cardProps.dragPersistKey` → `sg-clock:<cardProps.id>` → `"sg-clock"`. `cardProps.draggable`: não informada = automático (arrasta em largura >= 640 px; abaixo disso desligado e a posição salva é ignorada), `true` = arrasta sempre, `false` = nunca arrasta. |
 
 Mapeamento `digitalStyle` → componente (Confirmado): `flip`→`SgFlipDigit`, `roller3d`→`SgRoller3DDigit`, `fade`→`SgFadeDigit`, `discard`→`SgDiscardDigit`, `matrix`→`SgMatrixDigit`, `neon`→`SgNeonDigit`, `sevenSegment`→`SgSevenSegmentDigit`, `segment`→`SgSegmentDigit`, `default`→texto simples.
