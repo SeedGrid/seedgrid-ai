@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Alterado
+- Regra `branches.md` (HO-02): a mensagem do squash começa pelo id da tarefa, `P<plano>.F<fase>.T<tarefa>: <tipo>(<escopo>): <resumo>` (ou `sem-plano: ...` para tarefa sem plano numerado), para a listagem de commits e o `git bisect` apontarem a tarefa que introduziu um defeito; o histórico antigo não é reescrito. Pronta e ainda sem versão: sai no 0.8.1, quando o dono mandar.
+
 ## [0.8.0] — 2026-11-16
 
 ### Adicionado
