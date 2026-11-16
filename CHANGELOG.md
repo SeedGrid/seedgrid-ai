@@ -8,8 +8,10 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 - Skill `sg-custo` (`scripts/custo.mjs`): custo de um plano em tokens (entrada, saída, cache lido e criado) e em valor, por tarefa, fase e plano, lido dos transcritos do Claude Code (só campos de uso, deduplicado por `message.id`); preço vem de `.ai/local/precos-de-modelo.json`, nunca fixo no código (P163.F3.T3).
 - `sg-custo` multi-LLM (`scripts/leitores.mjs`): leitores `claude-code`, `codex` (sessões `.jsonl.zst` ou `.jsonl`, diferença entre totais acumulados, filtradas pelo `cwd` do projeto, marca da tarefa no título da sessão) e genérico por JSON ou CSV; soma as ferramentas no mesmo plano, fase e tarefa, com ferramenta e modelo no relatório, moeda por linha de preço, `--fonte`, `--sessao`, `--projeto` e `--codex` (P163.F3.T6).
 - Papéis `a11y-i18n`, `dados-migracao`, `documentador`, `frontend-flutter`, `frontend-tester`, `seguranca` e `ux-design` registrados (shared e native) e cobertos pelos testes (P163.F1.T8).
+- KB de host: página `Extensions/commons/Filtros-paginacao-e-patch` (assinaturas de `PageFilter`, `QueryFilter`, `QueryConditions`, `PageReq`, `PageResult` e `PatchApplier`, conferidas no jar `seedgrid-commons` 2026.11.2); fecha a lacuna achada pelo piloto "cadastro de clientes" (P163.F4.T3).
 
 ### Alterado
+- `coordenacao.md`, passo 8 "Consolidar": o coordenador roda `sg-custo` ao fechar cada fase e na consolidação, anexa o resumo, registra o relatório em `docs/ai/custos/` e leva custo anormal ao usuário como pendência com fase, número e causa provável (P163.F3.T5). Validado no piloto: o `sg-custo` mediu as 7 fases do plano P1 pela marca `P<plano>.F<fase>.T<tarefa>` no `description` do subagente (P163.F5.T1).
 - Pins do `sg-new-product` (catálogo, matriz e boilerplates) em 2026.11.x, `<repositories>` do Nexus nos boilerplates (ADR 64) e `check-catalogo-pins.mjs` passa a conferir também as propriedades dos boilerplates.
 
 ## [0.7.11] — 2026-11-09
