@@ -4,6 +4,8 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.8.0] — 2026-11-16
+
 ### Adicionado
 - Skill `sg-custo` (`scripts/custo.mjs`): custo de um plano em tokens (entrada, saída, cache lido e criado) e em valor, por tarefa, fase e plano, lido dos transcritos do Claude Code (só campos de uso, deduplicado por `message.id`); preço vem de `.ai/local/precos-de-modelo.json`, nunca fixo no código (P163.F3.T3).
 - `sg-custo` multi-LLM (`scripts/leitores.mjs`): leitores `claude-code`, `codex` (sessões `.jsonl.zst` ou `.jsonl`, diferença entre totais acumulados, filtradas pelo `cwd` do projeto, marca da tarefa no título da sessão) e genérico por JSON ou CSV; soma as ferramentas no mesmo plano, fase e tarefa, com ferramenta e modelo no relatório, moeda por linha de preço, `--fonte`, `--sessao`, `--projeto` e `--codex` (P163.F3.T6).
