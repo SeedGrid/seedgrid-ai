@@ -949,8 +949,6 @@ Fonte: `src/inputs/SgInputNumber.tsx`. Implementação própria, não deriva do 
 | `onClear` | `(() => void)` | — | Não | Chamado ao limpar. |
 | `withBorder` | `boolean` | `true` | Não | Exibe borda. |
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
-| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. No padrão (`emptyValueIsNull` falso) o valor `0` conta como vazio e mostra `requiredMessage`. |
-| `requiredMessage` | `string` | i18n `components.inputs.required` | Não | Mensagem para campo obrigatório vazio. |
 | `iconButtons` | `ReactNode[]` | — | Não | Nós extras à direita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura (ignora teclas/cola). |
 | `validation` | `((value: number \| null) => string \| null)` | — | Não | Validador final; recebe o **mesmo número** do `onChange`. Roda também com o campo vazio: recebe `0` (padrão) ou `null` (com `emptyValueIsNull`). `minValue`/`maxValue` rodam antes. **Mudança que quebra:** antes recebia `string`. |
@@ -961,7 +959,7 @@ Fonte: `src/inputs/SgInputNumber.tsx`. Implementação própria, não deriva do 
 - **Valor atribuído (`defaultValues`, `setValue`, `reset`, `inputProps.value`/`defaultValue`):** aceita número ou texto (`37.5`, `"37.5"`, `"37,5"`). O campo lê o valor (`normalizeState`, `SgInputNumber.tsx:97`, aplicado em `202-221`) e **corta** as casas além de `decimals` (não arredonda). O formulário guarda o que foi atribuído, sem converter; só a edição do usuário grava número. **Inferência** pelo código (nenhum ponto normaliza ao atribuir); o teste `tests/inputs-value-contract-dom.test.mjs` prova o que o campo exibe, não o tipo guardado no formulário.
 - **Precisão:** o número é um `double`. Com muitas casas (ex.: 20 dígitos) o valor **emitido** perde precisão, embora o campo mantenha os dígitos digitados (CHANGELOG). Uma prop explícita para texto fica para uma versão futura.
 - **Valor vazio:** o botão limpar e Backspace/Delete até apagar tudo levam a `0` (padrão) ou a `null` (`emptyValueIsNull`; `SgInputNumber.tsx:333-361` e `423-433`). `onClear` não mudou.
-- **Validação com o campo vazio:** `validation` é chamada com `0` ou `null` (`SgInputNumber.tsx:268`), então serve de "obrigatório" (`value === null ? "Informe" : null`). Com `required`, o `requiredMessage` vem antes e a `validation` não é chamada. `minValue`/`maxValue` não se aplicam ao campo vazio nem, no padrão, ao `0`.
+- **Validação com o campo vazio:** `validation` é chamada com `0` ou `null` (`SgInputNumber.tsx:268`), então serve de "obrigatório" (`value === null ? "Informe" : null`). O zero conta como valor: `minValue` e `maxValue` valem também para o `0`; só o vazio de verdade (`null`, com `emptyValueIsNull`) fica sem erro de limite. As props `required` e `requiredMessage` não existem mais neste campo (P168.F1.T6); use `minValue`.
 - **`externalValue`:** é a entrada interna que o `<Controller>` usa (`string | number | null`); **não** é prop pública (o tipo de base não é exportado). Para dar valor por código use `defaultValues`/`setValue`/`reset` do formulário ou `inputProps.value`.
 - **Teclas:**
   - `-` ou `_` alternam o sinal.
@@ -1021,8 +1019,6 @@ Fonte: `src/inputs/SgInputCurrency.tsx`. Mesma mecânica do `SgInputNumber`. O s
 | `onClear` | `(() => void)` | — | Não | Chamado ao limpar. |
 | `withBorder` | `boolean` | `true` | Não | Exibe borda. |
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
-| `required` | `boolean` | `false` | Não | Valida vazio e injeta `required` nas rules RHF. No padrão (`emptyValueIsNull` falso) o valor `0` conta como vazio e mostra `requiredMessage`. |
-| `requiredMessage` | `string` | i18n `components.inputs.required` | Não | Mensagem para campo obrigatório vazio. |
 | `iconButtons` | `ReactNode[]` | — | Não | Nós extras à direita. |
 | `readOnly` | `boolean` | `false` | Não | Somente leitura (ignora teclas/cola). |
 | `validation` | `((value: number \| null) => string \| null)` | — | Não | Validador final; recebe o **mesmo número** do `onChange`. Roda também com o campo vazio: recebe `0` (padrão) ou `null` (com `emptyValueIsNull`). `minValue`/`maxValue` rodam antes. **Mudança que quebra:** antes recebia `string`. |

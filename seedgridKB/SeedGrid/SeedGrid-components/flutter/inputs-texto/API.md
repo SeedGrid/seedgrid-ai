@@ -1221,8 +1221,6 @@ Campo numerico com suporte a valores inteiros e decimais, validacao de limites e
 | `prefixIcon` | `Widget?` | — | não | React | — |
 | `prefixText` | `String?` | — | não | React | — |
 | `readOnly` | `bool?` | `false` † | não | React | Impede edicao mantendo leitura e foco. |
-| `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
-| `requiredMessage` | `String?` | — | não | React | — |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputNumberTextInputType?` | — | não | React | Padrao `decimal` (teclado numerico com virgula). Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
 | `type` | `Object?` | — | não | React | `type` do `<input>`; sem efeito no Flutter. Tipo no React: `React.HTMLInputTypeAttribute`. |
@@ -1243,14 +1241,14 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 - **Diferença de plataforma:** sem `Intl` no Dart. Separadores vêm de uma tabela gerada a partir do Node (30 locales latinos); fora da tabela cai no idioma e depois em `en-US`. O React trata cada tecla e o Flutter recebe a diferença de texto (um formatador a converte).
 - **Não portado:** `inputProps` (aceito e ignorado), `className`/`style`/`register` (3 props omitidas de propósito). `type` não tem efeito. Não há `focusNode` nem `autofocus` neste widget.
 - O valor (em `onChange` e no formulário, quando o usuário digita) é um **número** (`double`), como no React (`numeric_field.dart:322-335`, `_commit`); `null` somente com `emptyValueIsNull`. O campo mostra o número formatado pelo idioma do `SgComponentsI18nProvider`. O que o host **atribui** (`defaultValues`, `reset`, `setValue`, `initialValue`) fica no formulário como foi atribuído (número ou texto) até a primeira edição.
-- Os validadores do componente (`required`, `minValue`, `maxValue`, `validation`) rodam também em `handleSubmit` e `trigger` (decisão do dono).
+- Os validadores do componente (`minValue`, `maxValue`, `validation`) rodam também em `handleSubmit` e `trigger` (decisão do dono).
 - Limitações de teste registradas: golden com a fonte de teste do Flutter e sem teste em IME nem em dispositivo.
 
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (`inputs/number/sg_input_number.dart`, motor em `inputs/number/numeric_field.dart`)
 - `onChange: ValueChanged<num?>`: o número (`1234.5`) a cada edição do usuário; também dentro de formulário. `onClear` (o botão limpar volta a `0`, ou a vazio/`null` com `emptyValueIsNull`), `onEnter` (foco), `onExit`, `onValidation: ValueChanged<String?>`.
-- Validação (`_messageFor`, `numeric_field.dart:279-305`): vazio (ou zero, quando `emptyValueIsNull` é `false`) devolve `requiredMessage` se `required`; senão chama `validation` com `0` (padrão) ou `null` (`emptyValueIsNull`), então a `validation` serve de "obrigatório"; para valor preenchido, `minValue` e `maxValue` devolvem `minValueMessage`/`maxValueMessage` (padrão `components.inputs.number.min/max`) e por fim vem `validation(numero)`. Roda na saída (`validateOnBlur ?? true` ou após interação) e a cada edição se `validateOnBlur == false`.
+- Validação (`_messageFor`, `numeric_field.dart:279-305`): o vazio de verdade (`null`, com `emptyValueIsNull`) chama `validation` com `null`, então a `validation` serve de "obrigatório"; o zero conta como valor (P168.F1.T6): `minValue` e `maxValue` devolvem `minValueMessage`/`maxValueMessage` (padrão `components.inputs.number.min/max`) e por fim vem `validation(numero)`. Roda na saída (`validateOnBlur ?? true` ou após interação) e a cada edição se `validateOnBlur == false`.
 - Padrões: `decimals` 2, `allowNegative` `true`, `emptyValueIsNull` `false` (vazio vale `0` e o campo mostra 0,00; com `true` começa vazio e vale `null`), `elevation` `sm`, `textInputType` `decimal`.
 
 **Controller, formulário e estado**
@@ -1308,8 +1306,6 @@ Campo monetario com formatacao de moeda, simbolo e validacao para precos, valore
 | `prefixIcon` | `Widget?` | — | não | React | — |
 | `prefixText` | `String?` | — | não | React | — |
 | `readOnly` | `bool?` | — | não | React | — |
-| `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
-| `requiredMessage` | `String?` | — | não | React | — |
 | `showCurrencySymbol` | `bool?` | — | não | React | Padrao `true`. |
 | `suffixText` | `String?` | — | não | React | — |
 | `textInputType` | `SgInputCurrencyTextInputType?` | — | não | React | Valores: `none`, `email`, `search`, `tel`, `text`, `url`, `numeric`, `decimal`. |
@@ -1338,7 +1334,7 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 ### Eventos, controllers e acessibilidade
 
 **Eventos e callbacks** (`inputs/number/sg_input_currency.dart`, motor em `inputs/number/numeric_field.dart`)
-- Mesmos callbacks do `SgInputNumber` (`onChange: ValueChanged<num?>` com o número `1234.56`, `onClear`, `onEnter`, `onExit`, `onValidation`) e a mesma validação (`required`, `minValue`, `maxValue`, `validation(num?)`, também chamada com o campo vazio: `0` ou `null` com `emptyValueIsNull`).
+- Mesmos callbacks do `SgInputNumber` (`onChange: ValueChanged<num?>` com o número `1234.56`, `onClear`, `onEnter`, `onExit`, `onValidation`) e a mesma validação (`minValue`, `maxValue`, `validation(num?)`, também chamada com o campo vazio: `0` ou `null` com `emptyValueIsNull`).
 - Moeda: `currency` (ISO 4217, padrão `BRL`), `locale` (padrão: o do `SgComponentsI18nProvider`), `currencyDisplay` (padrão `symbol`), `currencySymbolOverride`, `currencySymbolPlacement` (padrão `auto`), `showCurrencySymbol` (padrão `true`), `useGrouping` (padrão `true`). O símbolo vira prefixo ou sufixo, combinado com `prefixText`/`suffixText` (`combineAffix`). `decimals` omitido usa as casas da moeda (`meta.minorUnit`).
 
 **Controller, formulário e estado**

@@ -425,7 +425,7 @@ Variante do multi-select onde os itens selecionados viram chips removiveis no tr
 - Arquivo: `packages/seedgrid_components/lib/src/inputs/multi/sg_multi_select_chips.dart` (linha 17) · classe `class SgMultiSelectChips extends StatefulWidget`
 - Contrato gerado das props (nomes, tipos e padrões do React): `packages/seedgrid_components/lib/src/generated/sg_multi_select_chips.g.dart`
 - Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
-- Construtor: `const SgMultiSelectChips({...})` com 22 parâmetro(s) nomeado(s), 22 do contrato React e 0 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 3.
+- Construtor: `const SgMultiSelectChips({...})` com 23 parâmetro(s) nomeado(s), 22 do contrato React e 1 extra(s) do Flutter; props do React omitidas de propósito (`className`, `style`, atributos HTML; ADR 50): 3.
 
 ### Props de SgMultiSelectChips
 
@@ -447,7 +447,8 @@ Variante do multi-select onde os itens selecionados viram chips removiveis no tr
 | `labelText` | `String?` | — | não | React | — |
 | `width` | `Object?` | — | não | React | Numero (px) ou texto `'N%'`/`'Npx'`; padrao: largura toda. Tipo no React: `string \| number`. |
 | `borderRadius` | `Object?` | — | não | React | Numero (px) ou texto `'Npx'`. Tipo no React: `string \| number`. |
-| `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio. |
+| `required` | `bool?` | `false` † | não | React | Marca o campo como obrigatorio; fora de formulário mostra a mensagem ao sair sem seleção. |
+| `requiredMessage` | `String?` | — | não | Flutter | Mensagem do campo obrigatório vazio; sem ela usa o texto padrão do idioma. |
 | `control` | `SgFormController?` | — | não | React | Tipo no React: `any`. |
 | `name` | `String?` | — | não | React | — |
 | `error` | `String?` | — | não | React | — |
