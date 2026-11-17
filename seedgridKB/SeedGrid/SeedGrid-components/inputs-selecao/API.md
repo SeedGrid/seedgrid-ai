@@ -411,7 +411,8 @@ Fonte: `src/inputs/SgMultiSelectChips.tsx`. Mesma lógica e dropdown do `SgMulti
 | `width` | `string \| number` | — | Não | Largura. |
 | `borderRadius` | `string \| number` | — | Não | Raio da borda. |
 | `enabled` | `boolean` | `true` (efetivo) | Não | `false` desabilita. |
-| `required` | `boolean` | — | Não | Exibe `*` (não injeta regra RHF). |
+| `required` | `boolean` | — | Não | Exibe `*` e, fora de formulário, mostra a mensagem de obrigatório ao sair sem seleção (a limpa com seleção); no RHF, a regra vem de `rules`. |
+| `requiredMessage` | `string` | i18n `components.inputs.required` | Não | Mensagem do campo obrigatório vazio; sem ela, usa o texto padrão do idioma ("Campo obrigatório.", "Required field."). |
 | `options` | `SgMultiSelectOption[]` | — | Sim | `{label, value, chipLabel?, enabled?}`; o chip mostra `chipLabel ?? label`. |
 | `value` | `SgMultiSelectOptionValue[]` | — | Não | Valores selecionados (controlado). |
 | `onChange` | `((value: SgMultiSelectOptionValue[]) => void)` | — | Não | Recebe o array de valores. |
