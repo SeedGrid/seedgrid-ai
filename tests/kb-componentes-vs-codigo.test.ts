@@ -92,7 +92,7 @@ const TABELA_TIPOS = (tipoEnabled: string, padraoAutofocus: string, tipoId: stri
 async function montaTipos(tabela: string, plataforma: 'flutter' | 'react', tsx = '') {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'kbvc-tipos-'));
   const kb = path.join(dir, 'kb');
-  const grupoDir = plataforma === 'flutter' ? path.join(kb, 'flutter', 'grupo') : path.join(kb, 'grupo');
+  const grupoDir = plataforma === 'flutter' ? path.join(kb, 'flutter', 'grupo') : path.join(kb, 'react', 'grupo');
   await mkdir(grupoDir, { recursive: true });
   await writeFile(path.join(grupoDir, 'API.md'), tabela);
   const lib = path.join(dir, 'front', 'packages', 'seedgrid_components', 'lib', 'src');
