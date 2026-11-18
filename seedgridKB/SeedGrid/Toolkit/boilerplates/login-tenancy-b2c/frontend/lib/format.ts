@@ -68,3 +68,8 @@ export function parseDecimalInput(value: string) {
 export function numberToText(value: number | null): string {
   return value === null ? "" : String(value);
 }
+
+/** Ultimos 5 caracteres do publicId, com reticencias antes (FE-36): `…385e8`. */
+export function shortPublicId(publicId: string): string {
+  return publicId.length > 5 ? `…${publicId.slice(-5)}` : publicId;
+}

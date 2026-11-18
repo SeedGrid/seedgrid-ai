@@ -18,6 +18,7 @@ import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../../components/PublicIdCell";
 import { Shell } from "../../../components/Shell";
 import { useSavedToast } from "../../../components/useSavedToast";
 import { ListLoadError } from "@/components/ui/list-load-error";
@@ -177,11 +178,12 @@ function UserListPageContent() {
   const columns: SgDatatableColumn<UserEntry>[] = useMemo(() => [
     {
       columnId: "user-id",
-      field: "id",
+      field: "publicId",
       header: "ID",
       sortable: true,
       reorderable: true,
       hideable: true,
+      body: (row) => <PublicIdCell publicId={row.publicId} />,
     },
     {
       columnId: "user-name",
@@ -362,7 +364,7 @@ function UserListPageContent() {
           ) : (
             <SgDatatable
               columns={columns}
-              dataKey="id"
+              dataKey="publicId"
               emptyMessage="Nenhum usuario encontrado."
               first={queryState.page * queryState.rows}
               id="users-table"
