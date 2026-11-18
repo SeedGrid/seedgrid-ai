@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Corrigido
+- Skill `sg-docs-index`: o `--check` agora reprova um `docs/ai/INDEX.md` com a codificação quebrada (acentos como `DecisÃµes` e `â€”`, de UTF-8 lido como Windows-1252 ou UTF-16 do PowerShell) e diz como consertar; o `SKILL.md` e o cabeçalho do script avisam para nunca redirecionar a saída (`--stdout > INDEX.md`, `Out-File`, `Set-Content`) nem escrever o índice à mão. Teste novo em `tests/docs-index.test.ts`.
+
 ## [0.8.1] — 2026-11-18
 
 ### Alterado

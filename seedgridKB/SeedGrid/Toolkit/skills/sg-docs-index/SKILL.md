@@ -44,6 +44,8 @@ node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --check    # só co
 node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs --stdout   # mostra sem gravar
 ```
 
+**Nunca grave o índice redirecionando a saída** (`--stdout > INDEX.md`, `| Out-File`, `| Set-Content`, ou escrevendo o arquivo à mão): no Windows (PowerShell 5.1) isso troca a codificação e os acentos viram `DecisÃµes` e `â€”`. Rode o script **sem** `--stdout`: ele grava o arquivo sozinho, em UTF-8. O `--check` reprova um índice com a codificação quebrada e diz o que fazer (apagar o `INDEX.md` e rodar o script sem redirecionar).
+
 `<pasta-das-skills>` é onde o seu adaptador instalou as skills (por exemplo `.agents/skills` ou `.ai/skills`). Outro caminho para o índice: `--dir <pasta>`.
 
 ## O que o script entende

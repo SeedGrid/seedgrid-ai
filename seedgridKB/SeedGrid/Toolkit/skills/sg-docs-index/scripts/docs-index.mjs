@@ -3,7 +3,7 @@
 // handoffs, relatórios, especificações e o que mais houver em docs/ai/<pasta>/). Só lê os cabeçalhos e os nomes.
 // Uso: node <pasta-das-skills>/sg-docs-index/scripts/docs-index.mjs [--dir docs/ai] [--check] [--stdout]
 //   --check    não escreve: falha se o INDEX.md estiver desatualizado ou se houver erro (veja abaixo)
-//   --stdout   imprime o índice em vez de gravar (para conferir)
+//   --stdout   imprime o índice em vez de gravar (só para conferir; NÃO redirecione para o INDEX.md: no Windows/PowerShell 5.1 isso quebra os acentos)
 // Erros (saem 1): INDEX.md desatualizado (só com --check); id repetido entre planos, entre demandas ou entre ADRs;
 //   plano `proposto` com tarefa em andamento ou feita (`- [~]`, `- [x]`): o status acompanha a execução (rules/documentos.md).
 // Avisos (saem 0): demanda citada num plano sem arquivo; demanda cujo plano não existe; documento sem "aidlc:".
@@ -208,11 +208,19 @@ ${secoes.join('\n\n')}
 const alvo = path.join(raiz, 'INDEX.md');
 let atual = '';
 try { atual = readFileSync(alvo, 'utf8').replace(/\r\n/g, '\n'); } catch { /* sem índice ainda */ }
+// Texto UTF-8 lido como Windows-1252 e regravado (ex.: `--stdout` redirecionado no PowerShell 5.1) vira "DecisÃµes" e "â€”"; UTF-16 (`>` do PowerShell) traz NUL ou U+FFFD.
+const CODIFICACAO_QUEBRADA = /Ã[-¿]|â€| |�/;
+const indiceQuebrado = CODIFICACAO_QUEBRADA.test(atual);
 if (avisos.length) console.error(`Aviso:\n  ${avisos.join('\n  ')}`);
 if (erros.length) { console.error(erros.join('\n')); process.exit(1); }
 if (stdout) { process.stdout.write(corpo); process.exit(0); }
 if (check) {
-  if (atual !== corpo) { console.error('docs/ai/INDEX.md desatualizado: rode o script sem --check'); process.exit(1); }
+  if (atual !== corpo) {
+    console.error(indiceQuebrado
+      ? 'docs/ai/INDEX.md com a codificação quebrada (acentos como "Ã§" ou "â€"): foi gravado por redirecionamento ou à mão. Apague-o e rode o script sem --check e sem redirecionar a saída; ele grava em UTF-8 sozinho'
+      : 'docs/ai/INDEX.md desatualizado: rode o script sem --check');
+    process.exit(1);
+  }
   console.log(`docs/ai/INDEX.md em dia (${docs.length} documentos)`);
 } else {
   writeFileSync(alvo, corpo, 'utf8');

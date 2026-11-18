@@ -221,3 +221,18 @@ test('planos divididos por estado e em ordem numérica crescente do id (P2 antes
   assert.ok(planos.indexOf('| P1 |') < planos.indexOf('| P12 |'));
   assert.ok(planos.includes('### Abandonados ou superados (0)\n\n_Nenhum._'));
 });
+
+test('--check reprova índice com a codificação quebrada e a regravação sem --check conserta', () => {
+  const ai = docsAi();
+  doc(ai, 'adrs/ADR1-2026-11-01-tenancy.md', { numero: '1', status: 'aceita', data: '2026-11-01', aidlc: '0.7.3' }, 'Decisão de tenancy');
+  assert.equal(rodar(ai).status, 0);
+  const bom = readFileSync(join(ai, 'INDEX.md'), 'utf8');
+  // simula UTF-8 lido como Windows-1252 e regravado: "Decisões" vira "DecisÃµes"
+  writeFileSync(join(ai, 'INDEX.md'), Buffer.from(bom, 'utf8').toString('latin1'), 'utf8');
+  const ruim = rodar(ai, '--check');
+  assert.equal(ruim.status, 1);
+  assert.match(ruim.err, /codificação quebrada/);
+  assert.equal(rodar(ai).status, 0);
+  assert.equal(rodar(ai, '--check').status, 0);
+  assert.equal(readFileSync(join(ai, 'INDEX.md'), 'utf8'), bom);
+});
