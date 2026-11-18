@@ -1,7 +1,7 @@
 ---
-description: "Como o host login-tenancy (B2B e B2C) escopa as próprias tabelas por conta/empresa (bean, tipo do id, padrão de filtro) e o que existe, e o que NÃO existe, para exclusão de conta e exportação de dados do domínio em banco compartilhado (LGPD)."
+description: "Como o host login-tenancy (B2B e B2C) escopa as próprias tabelas por conta/empresa (bean, tipo do id, padrão de filtro), o que existe e o que NÃO existe para exclusão de conta, e como o export do backup (RAW e DOMAIN) filtra pela empresa do pedido em banco compartilhado (LGPD)."
 tags: [seedgrid, extension, login-tenancy, host, escopo, company, lgpd, exclusao-de-conta, export, backup, perguntas-e-respostas]
-analisado-em: 2026-11-01
+analisado-em: 2026-11-18
 ---
 
 # Escopo do domínio do host, exclusão de conta e export (login-tenancy)
@@ -50,15 +50,22 @@ Atenção para o host: o filtro do `apikeys` aceita `companyId` nulo (chave glob
 - O boilerplate `login-tenancy-b2c` **não tem** tela de LGPD: nas páginas do front (`perfil`, `security`, `assinatura`, `auth`, etc.) não há exportar nem excluir meus dados. A frase "termos e LGPD (exportar e excluir meus dados)" que a KB trazia estava errada e foi corrigida. O que existe é o **aceite de termos** (`TermsService`).
 - Consequência para o host: a exclusão de dados do domínio e da pessoa é **trabalho do host** hoje. Peça à plataforma o fluxo se o produto precisar (demanda à plataforma, HO-08); até lá não prometa "exclusão pronta".
 
-## Export `DOMAIN`: não filtra por conta
+## Export `RAW` e `DOMAIN`: filtram pela empresa do pedido
 
-- `POST /exports` (permissão `BACKUP_CREATE`; leitura `BACKUP_READ`; download `BACKUP_DOWNLOAD`). O dono do **job** é isolado por `createUserPublicId` (cada usuário só vê os próprios jobs), mas o **conteúdo** não.
-- O `ExtractDataService` lê com `SELECT * FROM <schema>.<tabela>` para cada entidade JPA da aplicação (escopo `DOMAIN`) ou cada tabela do schema (`RAW`). **Não há filtro por empresa ou por pessoa.** Em banco compartilhado (login-tenancy), quem tiver `BACKUP_CREATE` exporta **as linhas de todas as contas** em todas as entidades que não estejam excluídas.
-- A única válvula é `seedgrid.backup.excluded-domain-entity-packages` (prefixos de pacote Java): entidades nesses pacotes saem do `DOMAIN`.
+> Conferido pelos testes do P169 em 2026-11-18 (`ExportCompanyIsolationIT`, Postgres real, duas empresas). Vale a partir de backup 2026.11.6 e login-tenancy 2026.11.9, **ainda não publicados**. Antes disso o comportamento era o oposto, descrito abaixo em "Versões anteriores".
+
+- `POST /exports` exige `BACKUP_CREATE` (leitura `BACKUP_READ`; download `BACKUP_DOWNLOAD`). As permissões `BACKUP_*` têm `audience=platform`: o `ADMIN` de uma empresa-cliente (token `client`) recebe **403** no `POST /exports`; só o administrador da plataforma exporta.
+- A empresa do pedido vem do SPI `ExportCompanyScopeProvider`, que o `login-tenancy` implementa (`LoginTenancyExportCompanyScopeProvider`) a partir do `CompanyRequestContext`. Ela é gravada no job e levada ao worker assíncrono.
+- **Com uma empresa no contexto**, `RAW` e `DOMAIN` filtram `WHERE <coluna> = <empresa>` e **não trazem nada de outra empresa**. A coluna é reconhecida por `seedgrid.backup.company-column-names` (padrão `company_public_id,company_id`).
+- **Falha fechada:** tabela ou entidade sem coluna de empresa não sai. Ficam de fora `sg_users`, `sg_companies`, `sg_permissions` e `sg_export_jobs`.
+- **Super-leitura** (`allCompanies`, administrador da plataforma) exporta tudo, sem filtro. **Sem empresa resolvida**, o provider devolve um escopo que não casa com nada: nunca exporta sem filtro.
+- `seedgrid.backup.excluded-domain-entity-packages` agora vale também no `RAW`.
 
 **Regras para o host (B2B e B2C em banco compartilhado):**
-1. Não conceda `BACKUP_CREATE` a usuário de cliente; deixe só ao administrador da plataforma.
-2. Ponha os pacotes de entidades do host em `seedgrid.backup.excluded-domain-entity-packages` (ou não use o export `DOMAIN` com dados por-conta) até existir export filtrado por conta.
-3. Para "exportar meus dados" (LGPD) o host precisa de endpoint próprio, filtrado pelo escopo acima. Não use `/exports` para isso.
+1. As tabelas de domínio do host precisam de uma coluna de empresa reconhecida (`company_public_id`, como na seção "Qual identificador gravar"); sem ela a tabela **não sai** no export, nem para a própria empresa.
+2. Não conceda `BACKUP_CREATE` a usuário de cliente; o padrão agora é só a plataforma.
+3. Para "exportar meus dados" (LGPD) o host continua precisando de endpoint próprio, filtrado pelo escopo acima; `/exports` é um backup administrativo, não um fluxo de titular.
 
-Pedido à plataforma, se o produto precisar: export `DOMAIN` com filtro por empresa corrente e fluxo de exclusão de conta com evento/SPI. **Não verificado:** se o `RAW` ou o `DOMAIN` respeitam algum filtro de tenant em modo subdomain-tenancy (lá cada tenant tem banco próprio, então o problema não se coloca da mesma forma).
+**Não verificado:** o HTTP fim a fim com o `ADMIN` real em login-tenancy (o teste chama o serviço de extração com o contexto da empresa; o 403 do `POST` foi testado só aqui); nenhum host de produto foi regerado com os jars novos.
+
+**Versões anteriores (antes de backup 2026.11.6):** o `ExtractDataService` lia `SELECT * FROM <schema>.<tabela>` sem filtro. O `RAW` ignorava a exclusão e entregava ao `ADMIN` de uma empresa-cliente as linhas de **todas** as empresas (incluindo `sg_users`); o `DOMAIN` respeitava só a exclusão por pacote. Quem usa essa versão: não conceda `BACKUP_CREATE` a usuário de cliente e exclua os pacotes do host.
