@@ -52,7 +52,7 @@ Atenção para o host: o filtro do `apikeys` aceita `companyId` nulo (chave glob
 
 ## Export `RAW` e `DOMAIN`: filtram pela empresa do pedido
 
-> Conferido pelos testes do P169 em 2026-11-18 (`ExportCompanyIsolationIT`, Postgres real, duas empresas). Vale a partir de backup 2026.11.6 e login-tenancy 2026.11.9, **ainda não publicados**. Antes disso o comportamento era o oposto, descrito abaixo em "Versões anteriores".
+> Conferido pelos testes do P169 em 2026-11-18 (`ExportCompanyIsolationIT`, Postgres real, duas empresas). Vale a partir de backup 2026.11.7 e login-tenancy 2026.11.10 (subdomain-tenancy 2026.11.14), publicados em 2026-11-18. A `backup` 2026.11.6 e o `login-tenancy` 2026.11.9 do Nexus são os **com vazamento**. Antes disso o comportamento era o oposto, descrito abaixo em "Versões anteriores".
 
 - `POST /exports` exige `BACKUP_CREATE` (leitura `BACKUP_READ`; download `BACKUP_DOWNLOAD`). As permissões `BACKUP_*` têm `audience=platform`: o `ADMIN` de uma empresa-cliente (token `client`) recebe **403** no `POST /exports`; só o administrador da plataforma exporta.
 - A empresa do pedido vem do SPI `ExportCompanyScopeProvider`, que o `login-tenancy` implementa (`LoginTenancyExportCompanyScopeProvider`) a partir do `CompanyRequestContext`. Ela é gravada no job e levada ao worker assíncrono.
@@ -68,4 +68,4 @@ Atenção para o host: o filtro do `apikeys` aceita `companyId` nulo (chave glob
 
 **Não verificado:** o HTTP fim a fim com o `ADMIN` real em login-tenancy (o teste chama o serviço de extração com o contexto da empresa; o 403 do `POST` foi testado só aqui); nenhum host de produto foi regerado com os jars novos.
 
-**Versões anteriores (antes de backup 2026.11.6):** o `ExtractDataService` lia `SELECT * FROM <schema>.<tabela>` sem filtro. O `RAW` ignorava a exclusão e entregava ao `ADMIN` de uma empresa-cliente as linhas de **todas** as empresas (incluindo `sg_users`); o `DOMAIN` respeitava só a exclusão por pacote. Quem usa essa versão: não conceda `BACKUP_CREATE` a usuário de cliente e exclua os pacotes do host.
+**Versões anteriores (backup 2026.11.6 ou anterior):** o `ExtractDataService` lia `SELECT * FROM <schema>.<tabela>` sem filtro. O `RAW` ignorava a exclusão e entregava ao `ADMIN` de uma empresa-cliente as linhas de **todas** as empresas (incluindo `sg_users`); o `DOMAIN` respeitava só a exclusão por pacote. Quem usa essa versão: não conceda `BACKUP_CREATE` a usuário de cliente e exclua os pacotes do host.
