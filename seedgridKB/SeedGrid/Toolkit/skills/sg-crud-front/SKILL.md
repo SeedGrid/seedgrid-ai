@@ -261,6 +261,10 @@ const columns: SgDatatableColumn<Entry>[] = [
 
 The lists of the boilerplates (users, roles, models, currencies, exchange, billing, subscriptions, audit, self-enter, home) still use `dataKey="id"` and numeric ids (`row.id` in routes such as `.../retry`); when you reuse any of them as a model, convert to `publicId` (rule BE-30) instead of copying the numeric id. Delete always opens the confirmation dialog. Do not replace the pencil and the trash can with other icons or text buttons. Source: the users list of the report admin (`seedgrid-report`, commit `8cd5f02c`).
 
+> **Version of `@seedgrid/fe-components`.** The examples above use `enabled` on `SgButton` and on `confirmButton`/`cancelButton`, as in the current components. The boilerplates pin `2026.10.0`, which only accepts `disabled` (`tsc` fails with `enabled`). Check the version in `package.json` before typing these props: either update the package or use `disabled`.
+>
+> `ListLoadError`, `PublicIdCell` and `DatatableSkeleton` are helpers of the projects, not components of the package. If the project does not have them, create them in `app/components/` (a `PublicIdCell` renders the last 5 characters of the `publicId` with the copy button above) instead of inventing another pattern.
+
 ## Permission Standard
 
 - Hide menu entries if the user lacks view permission.
