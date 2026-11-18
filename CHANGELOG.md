@@ -4,6 +4,13 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.8.2] — 2026-11-18
+
+### Alterado
+- **KB de componentes: os grupos React mudam de pasta (P164).** `SeedGrid/SeedGrid-components/<grupo>/` passa a ser `SeedGrid/SeedGrid-components/react/<grupo>/` (`buttons`, `datatable`, `digits`, `editor`, `feedback-e-exibicao`, `fundamentos`, `gadgets`, `inputs-midia`, `inputs-selecao`, `inputs-texto`, `layout`, `navegacao-e-overlay`, `providers`), lado a lado com `flutter/`. Na raiz ficam as páginas comuns (`Catalogo`, `Indice`, `Plataformas`, `Preciso-de`, `Nao-existe-no-catalogo`, `showcase`) e `modulos/` e `pacotes/`. Só mudou o lugar e os links (89 arquivos, 500 ocorrências); nenhum texto de componente foi reescrito.
+  - **Migração:** `seedgrid-ai update` (ou `sgr update`) troca as pastas sozinho: as antigas saem, as novas entram e o `.ai/backups/` guarda o que foi trocado. Quem tem notas ou instruções próprias citando `SeedGrid-components/<grupo>/` deve passar a citar `SeedGrid-components/react/<grupo>/`; o MCP de componentes não muda.
+  - `scripts/kb-catalogs.mjs`, `scripts/kb-componentes-vs-codigo.mjs` e o teste leem os grupos em `react/`; o catálogo e o índice regerados saem idênticos aos reescritos.
+
 ### Corrigido
 - Skill `sg-docs-index`: o `--check` agora reprova um `docs/ai/INDEX.md` com a codificação quebrada (acentos como `DecisÃµes` e `â€”`, de UTF-8 lido como Windows-1252 ou UTF-16 do PowerShell) e diz como consertar; o `SKILL.md` e o cabeçalho do script avisam para nunca redirecionar a saída (`--stdout > INDEX.md`, `Out-File`, `Set-Content`) nem escrever o índice à mão. Teste novo em `tests/docs-index.test.ts`.
 
