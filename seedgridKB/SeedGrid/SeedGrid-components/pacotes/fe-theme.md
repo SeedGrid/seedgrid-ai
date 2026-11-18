@@ -10,7 +10,7 @@ analisado-em: 2026-10-14
 
 Sistema de temas: gera paletas 50–900 a partir de uma cor *seed*, modos `light`/`dark`/`auto`, tokens CSS `--sg-*` (base + componentes), persistência da preferência e provider React. Inclui o provider/hook **legado** (`ThemeProvider`/`useTheme`) e um `AppShell` simples.
 
-Relacionados: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]] · [[SeedGrid/SeedGrid-components/pacotes/fe-core|@seedgrid/fe-core]] (persistência) · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos do fe-components]] (o CSS compilado embute o tema padrão).
+Relacionados: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]] · [[SeedGrid/SeedGrid-components/pacotes/fe-core|@seedgrid/fe-core]] (persistência) · [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos do fe-components]] (o CSS compilado embute o tema padrão).
 
 ## Pacote
 

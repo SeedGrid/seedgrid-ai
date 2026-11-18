@@ -10,7 +10,7 @@ analisado-em: 2026-11-11
 
 Exporta o componente `SgPlayground`: bloco de código somente leitura **ou** editor + preview interativo baseado em **Sandpack** (`@codesandbox/sandpack-react`), com runtime do `@seedgrid/fe-components`, shims para dependências pesadas e herança do tema da página hospedeira. É o `SgPlayground` exigido em toda página do [[SeedGrid/SeedGrid-components/showcase|Showcase]].
 
-Relacionados: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]] · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos do fe-components]] (`dist/sandbox.cjs`).
+Relacionados: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]] · [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos do fe-components]] (`dist/sandbox.cjs`).
 
 ## Pacote
 

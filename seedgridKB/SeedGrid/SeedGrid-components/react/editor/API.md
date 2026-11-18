@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/editor/API|API — Editor de texto rico (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Import: `import { SgTextEditor, type SgTextEditorProps, type SgTextEditorSaveMeta } from "@seedgrid/fe-components";` (pacote v`2026.7.1`). Contexto: [[SeedGrid/SeedGrid-components/editor/Visao-geral|Visão geral do SgTextEditor]]. Exemplos: [[SeedGrid/SeedGrid-components/editor/Exemplos|Exemplos do SgTextEditor]]. A metodologia da tabela está em [[SeedGrid/SeedGrid-components/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]]. As props RHF seguem o [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|contrato RhfFieldProps]], com o desvio indicado na própria tabela.
+Import: `import { SgTextEditor, type SgTextEditorProps, type SgTextEditorSaveMeta } from "@seedgrid/fe-components";` (pacote v`2026.7.1`). Contexto: [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|Visão geral do SgTextEditor]]. Exemplos: [[SeedGrid/SeedGrid-components/react/editor/Exemplos|Exemplos do SgTextEditor]]. A metodologia da tabela está em [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]]. As props RHF seguem o [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|contrato RhfFieldProps]], com o desvio indicado na própria tabela.
 
 ## Props (21)
 

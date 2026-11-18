@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/layout/API|API — Layout e containers (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral do grupo: [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/layout/Exemplos|Layout — exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+Visão geral do grupo: [[SeedGrid/SeedGrid-components/react/layout/Visao-geral|Layout — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/react/layout/Exemplos|Layout — exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 > **Como ler as tabelas.** Geradas a partir do tipo TypeScript real do 1º parâmetro de cada componente (TS checker, commit `ad30fc11de`) — lista completa das props próprias. **Padrão**: valor sem marca = inicializador na desestruturação do componente (Confirmado); `ᶠ` = fallback interno `??` no corpo do componente (Confirmado, expressão pode estar abreviada); `ᵇ` = padrão aplicado pelo componente base para o qual a prop é repassada; `ᵐ` = declarado só no `*.meta.ts`; `ˢ` = declarado só na tabela de props do showcase (`ᵐ`/`ˢ` = Não confirmado no código); `—` = sem padrão. **Descrição**: JSDoc > `*.meta.ts` > tabela do showcase (textos originais, sem acento quando assim na fonte); *(Inferência)* = escrita a partir da leitura do código. **Obrigatória** = prop não opcional no tipo.
 
@@ -879,7 +879,7 @@ Renderiza `<div className style>{children}</div>` dentro do contexto. Os filhos 
 
 ### Contexto, providers e hooks
 - Fornece um contexto interno (`DockContext`), lido por `useSgDockLayout()` — **hook não exportado pelo barrel** (uso interno de `SgDockZone`, `SgToolBar`, `SgMenu`).
-- Persistência: `useSgPersistentState({ baseKey: "dock-layout:<id>", defaultValue: defaultState ?? { version: 1, toolbars: {} } })` — ver [[SeedGrid/SeedGrid-components/providers/API|providers › useSgPersistentState]] (Confirmado). Toolbars novas só são registradas após hidratação.
+- Persistência: `useSgPersistentState({ baseKey: "dock-layout:<id>", defaultValue: defaultState ?? { version: 1, toolbars: {} } })` — ver [[SeedGrid/SeedGrid-components/react/providers/API|providers › useSgPersistentState]] (Confirmado). Toolbars novas só são registradas após hidratação.
 
 ### Acessibilidade
 Sem ARIA próprio.
@@ -1042,7 +1042,7 @@ Funções puras exportadas pelo barrel (usadas internamente pelos componentes e 
 |---|---|---|
 | `parseStoredPanelDragPosition` | `(raw: unknown) => { x: number; y: number } \| null` | Aceita objeto ou string JSON; retorna `{x,y}` se ambos forem números finitos. |
 | `buildToolbarStorageKey` | `(id: string) => string` | `sg-toolbar-pos:<id>`. |
-| `buildDockMenuStorageKey` | `(dragId?: string \| null, isAbsolutePosition?: boolean) => string \| null` | `sg-dockmenu-pos:<dragId>:parent\|viewport`; `null` sem `dragId` (usado pelo SgDockMenu — ver [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API\|navegação e overlay]]). |
+| `buildDockMenuStorageKey` | `(dragId?: string \| null, isAbsolutePosition?: boolean) => string \| null` | `sg-dockmenu-pos:<dragId>:parent\|viewport`; `null` sem `dragId` (usado pelo SgDockMenu — ver [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API\|navegação e overlay]]). |
 
 ### `src/layout/toolbar-logic.ts`
 | Função | Assinatura completa |

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Visao-geral|Visão geral — Inputs de seleção e valores (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-São 15 componentes públicos de escolha (de lista, booleana, numérica ou de período) do pacote `@seedgrid/fe-components` (v`2026.7.1`), mais 2 peças internas (`SgMultiSelectDropdown`, `useSgMultiSelect`). Props completas, eventos e refs: [[SeedGrid/SeedGrid-components/inputs-selecao/API|API dos inputs de seleção]]. Código: [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]]. Base compartilhada: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|inputs de texto]].
+São 15 componentes públicos de escolha (de lista, booleana, numérica ou de período) do pacote `@seedgrid/fe-components` (v`2026.7.1`), mais 2 peças internas (`SgMultiSelectDropdown`, `useSgMultiSelect`). Props completas, eventos e refs: [[SeedGrid/SeedGrid-components/react/inputs-selecao/API|API dos inputs de seleção]]. Código: [[SeedGrid/SeedGrid-components/react/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]]. Base compartilhada: [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral|inputs de texto]].
 
 ## Quando usar cada um
 
@@ -70,7 +70,7 @@ graph TD
 
 ## Tema e estilos
 
-- O CSS é injetado automaticamente na importação do pacote; também existe `@seedgrid/fe-components/style.css`. Ver [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral#Tema e estilos|Tema e estilos]].
+- O CSS é injetado automaticamente na importação do pacote; também existe `@seedgrid/fe-components/style.css`. Ver [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral#Tema e estilos|Tema e estilos]].
 - **Variáveis do tema:**
   - Listas e grupos usam variáveis RGB: `--sg-surface`, `--sg-bg`, `--sg-text`, `--sg-fg`, `--sg-border`, `--sg-primary-500`, `--sg-ring`, `--sg-muted`.
   - Inputs usam as HSL do tema (`--primary`, `--destructive`, `--muted-foreground`).

@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Gadgets (relógio, calendário, gauges, QR) — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets (relógio, calendário, gauges, QR) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/gadgets/Visao-geral|Gadgets (relógio, calendário, gauges, QR) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/gadgets/Exemplos|Exemplos — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]
@@ -52,7 +52,7 @@ Os dez componentes estão **portados** ([[SeedGrid/SeedGrid-components/flutter/P
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Hooks e funções auxiliares do grupo React ([[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets (React)]]) e o que existe no Flutter (nomes conferidos nos arquivos exportados pelo barril; a tabela de símbolos mais abaixo respeita os `show` do barril):
+Hooks e funções auxiliares do grupo React ([[SeedGrid/SeedGrid-components/react/gadgets/Visao-geral|Gadgets (React)]]) e o que existe no Flutter (nomes conferidos nos arquivos exportados pelo barril; a tabela de símbolos mais abaixo respeita os `show` do barril):
 
 | Família no React | Equivalente no Flutter |
 |---|---|

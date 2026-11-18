@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Data e hora, imagem e câmera — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d` na `main`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Data e hora, imagem e câmera — React]] (commits locais, **ainda não publicados** no npm; o `SgFileUpload` e a nova API do `SgImageUpload` já estão no React, commit `bb0ad1f`).
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d` na `main`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/inputs-midia/Visao-geral|Data e hora, imagem e câmera — React]] (commits locais, **ainda não publicados** no npm; o `SgFileUpload` e a nova API do `SgImageUpload` já estão no React, commit `bb0ad1f`).
 
 - API completa (construtor, parâmetros, callbacks, erros): [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API — Data e hora, imagem e câmera (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (Flutter)]]
@@ -32,7 +32,7 @@ analisado-em: 2026-11-07
 
 ## Quando usar
 
-Mesmas recomendações do React (ver [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral#Quando usar|Quando usar]]): `SgInputDateTime` para timestamps, `SgImageUpload` para escolher uma imagem, `SgCameraCapture` para tirar a foto na hora. O envio ao servidor é sempre do host.
+Mesmas recomendações do React (ver [[SeedGrid/SeedGrid-components/react/inputs-midia/Visao-geral#Quando usar|Quando usar]]): `SgInputDateTime` para timestamps, `SgImageUpload` para escolher uma imagem, `SgCameraCapture` para tirar a foto na hora. O envio ao servidor é sempre do host.
 
 ## O que muda em relação ao React
 

@@ -10,7 +10,7 @@ analisado-em: 2026-11-11
 
 # API por grupo (Flutter)
 
-> **Plataforma: Flutter.** Esta nota virou o **índice**: a API completa de cada widget (construtor, cada parâmetro com tipo Dart e padrão, origem React ou extra do Flutter, diferenças do React, callbacks, controllers, formulário e acessibilidade) fica na nota `API` do grupo, nas pastas `flutter/<grupo>/`. A versão anterior (commit `314cb5a`) era um mapa de 72 linhas sem as props; foi substituída. A API React equivalente de cada grupo está em `SeedGrid/SeedGrid-components/<grupo>/API`. Visão geral: [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral (Flutter)]] · estado de cada um: [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]] · regras React → Dart: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
+> **Plataforma: Flutter.** Esta nota virou o **índice**: a API completa de cada widget (construtor, cada parâmetro com tipo Dart e padrão, origem React ou extra do Flutter, diferenças do React, callbacks, controllers, formulário e acessibilidade) fica na nota `API` do grupo, nas pastas `flutter/<grupo>/`. A versão anterior (commit `314cb5a`) era um mapa de 72 linhas sem as props; foi substituída. A API React equivalente de cada grupo está em `SeedGrid/SeedGrid-components/react/<grupo>/API`. Visão geral: [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Visão geral (Flutter)]] · estado de cada um: [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]] · regras React → Dart: [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução]].
 
 ## Onde fica cada grupo?
 

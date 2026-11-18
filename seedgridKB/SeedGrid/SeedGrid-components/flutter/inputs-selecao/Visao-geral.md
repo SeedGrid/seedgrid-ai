@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Inputs de seleção e valores — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|Inputs de seleção e valores — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|Inputs de seleção e valores — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API|API — Inputs de seleção e valores (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/Exemplos|Exemplos — Inputs de seleção e valores (Flutter)]]
@@ -61,7 +61,7 @@ Todos aceitam `name` + `control` para ligar ao `SgForm`; veja o "Comportamento c
 
 ## O que muda em relação ao React
 
-Os nomes de widget, de props e de valores são os do React ([[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|Inputs de seleção e valores (React)]]); as diferenças estão resumidas aqui e detalhadas, por componente, na seção "Diferenças do React" da API.
+Os nomes de widget, de props e de valores são os do React ([[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|Inputs de seleção e valores (React)]]); as diferenças estão resumidas aqui e detalhadas, por componente, na seção "Diferenças do React" da API.
 
 - **Formulário:** o `SgForm`/`SgFormController` substitui o `react-hook-form`. O `onChange` do usuário **sempre** é chamado, também dentro de formulário (no React, `SgMultiSelect` e `SgMultiSelectChips` o engoliam); só `SgToggleSwitch` registra validador próprio que roda também no `handleSubmit`. Detalhe em [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]].
 - **Nulo = não controlado:** o Dart não distingue `null` de indefinido; `value: null` significa "sem valor controlado" e, se antes havia valor, limpa o campo (`SgCombobox`, `SgAutocomplete`, `SgPeriodSelector`, `SgToggleSwitch`).

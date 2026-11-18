@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Botões — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/buttons/Visao-geral|Botões — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/buttons/API|API — Botões (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/buttons/Exemplos|Exemplos — Botões (Flutter)]]
@@ -44,7 +44,7 @@ analisado-em: 2026-11-09
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — React]] (seção "Funções e tipos exportados").
+Fonte: [[SeedGrid/SeedGrid-components/react/buttons/Visao-geral|Botões — React]] (seção "Funções e tipos exportados").
 
 | Símbolo React | Equivalente Flutter |
 |---|---|

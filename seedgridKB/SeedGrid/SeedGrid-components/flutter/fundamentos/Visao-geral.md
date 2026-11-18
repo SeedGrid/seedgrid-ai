@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Fundamentos — Flutter (`seedgrid_components`, `seedgrid_theme`, `seedgrid_commons`)
 
-> **Plataforma: Flutter.** Esta nota cobre o que **não é widget `Sg*` de tela** no porte Dart: contrato de formulário, i18n, tema, máscaras, validadores e clientes HTTP. O equivalente em **React** está em [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos — React]] (utilitários do `@seedgrid/fe-components`) e em [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes — React]] (`@seedgrid/fe-theme`, `@seedgrid/fe-commons`). Escolha de plataforma e placar: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]]. Repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev.
+> **Plataforma: Flutter.** Esta nota cobre o que **não é widget `Sg*` de tela** no porte Dart: contrato de formulário, i18n, tema, máscaras, validadores e clientes HTTP. O equivalente em **React** está em [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos — React]] (utilitários do `@seedgrid/fe-components`) e em [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes — React]] (`@seedgrid/fe-theme`, `@seedgrid/fe-commons`). Escolha de plataforma e placar: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]]. Repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev.
 
 - API completa (assinaturas, parâmetros, retornos): [[SeedGrid/SeedGrid-components/flutter/fundamentos/API|API — Fundamentos (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos — Fundamentos (Flutter)]]

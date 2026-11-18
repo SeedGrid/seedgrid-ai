@@ -14,9 +14,9 @@ plataforma: react
 
 Componentes de exibição (avatar, badge, skeleton) e de feedback (toasts e whistles) do `@seedgrid/fe-components`. A pasta de origem é `src/commons`; aqui recebe o nome `feedback-e-exibicao`.
 
-- API completa: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API de feedback e exibição]]
-- Exemplos: [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Exemplos|Exemplos de feedback e exibição]]
-- Fundamentos (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa: [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/API|API de feedback e exibição]]
+- Exemplos: [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/Exemplos|Exemplos de feedback e exibição]]
+- Fundamentos (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 ## Componentes
 
@@ -35,7 +35,7 @@ Componentes de exibição (avatar, badge, skeleton) e de feedback (toasts e whis
 | `SgToasterHostContext` | não (interno) | Contexto booleano que faz o `SgToaster` interno do host pular a checagem de host | — |
 | `SgWhistlerHostContext` | não (interno) | Idem para whistles | — |
 
-O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica neste grupo por ser aviso ao usuário. Ele depende da extension `user-notifications` no backend ([[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral da user-notifications]]) e, para tempo real, do Pulse (serviço que será cobrado, decisão do dono registrada na ADR 62: precisa de chave de projeto, que fica no backend; o showcase funciona sem chave). Detalhes na seção `SgNotificationBell` da [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API|API]].
+O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica neste grupo por ser aviso ao usuário. Ele depende da extension `user-notifications` no backend ([[SeedGrid/Extensions/user-notifications/Visao-geral|Visão geral da user-notifications]]) e, para tempo real, do Pulse (serviço que será cobrado, decisão do dono registrada na ADR 62: precisa de chave de projeto, que fica no backend; o showcase funciona sem chave). Detalhes na seção `SgNotificationBell` da [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/API|API]].
 
 ## Funções e tipos exportados relacionados
 
@@ -43,7 +43,7 @@ O `SgNotificationBell` vem de `src/notifications` (não de `src/commons`) e fica
 - Whistles (`src/commons/SgWhistle.ts`): `sgWhistle` (com `.show/.success/.info/.warning/.error/.loading/.dismiss/.update/.custom/.promise`), `dismissSgWhistle`, `subscribeSgWhistles`; tipos `SgWhistleId`, `SgWhistleSeverity`, `SgWhistleBorderStyle`, `SgWhistleAction`, `SgWhistleOptions`, `SgWhistleCustomOptions`, `SgWhistleRecord`, `SgWhistlePromiseStates`.
 - Registro de hosts de toast (`src/commons/sgToastHostRegistry.ts`, exportado): `registerHost`, `unregisterHost`, `getActiveHostId`, `hasAnyHost`, `subscribeHostRegistry`, `nextHostId`. O registro equivalente de whistles (`sgWhistleHostRegistry.ts`) **não** é exportado.
 - Tipos de props: `SgAvatarProps`, `SgAvatarGroupProps`, `SgAvatarSeverity`, `SgAvatarShape`, `SgAvatarSize`, `SgAvatarCustomColors`, `SgAvatarGroupOverlap`, `SgBadgeProps`, `SgBadgeSeverity`, `SgBadgeVariant`, `SgBadgeSize`, `SgBadgeCustomColors`, `SgBadgePartsClassName`, `SgBadgeOverlayProps`, `SgBadgeOverlayPlacement`, `SgSkeletonProps`, `SgSkeletonAnimation`, `SgSkeletonShape`, `SgToasterProps`, `SgToasterPosition`, `SgToasterTypeColors`, `SgToasterCustomColors`, `SgToastHostProps`, `SgWhistlerProps`, `SgWhistleHostProps`.
-- Não relacionado a UI, mas na mesma pasta: `src/commons/common-passwords.ts` (lista usada pelos validadores — ver [[SeedGrid/SeedGrid-components/fundamentos/API|Fundamentos › validadores]]).
+- Não relacionado a UI, mas na mesma pasta: `src/commons/common-passwords.ts` (lista usada pelos validadores — ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|Fundamentos › validadores]]).
 
 ## Como se compõem
 

@@ -14,11 +14,11 @@ plataforma: react
 
 Widgets visuais autocontidos: calendário, relógio (digital/analógico com temas), medidores linear e radial, QR Code e animador de strings, além do provider de tempo sincronizado com o servidor e do sistema de temas do relógio. `SgCalendar` e `SgClock` já vêm embrulhados num `SgCard` recolhível e arrastável.
 
-- API completa: [[SeedGrid/SeedGrid-components/gadgets/API|API dos gadgets]]
-- Exemplos TSX: [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Exemplos dos gadgets]]
-- Dígitos usados por `SgClock`/`SgStringAnimator`: [[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos animados]]
-- `SgCard` (contêiner de calendário e relógio): [[SeedGrid/SeedGrid-components/layout/API|API de layout]]
-- i18n (rótulos `components.gadgets.*`) e CSS: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa: [[SeedGrid/SeedGrid-components/react/gadgets/API|API dos gadgets]]
+- Exemplos TSX: [[SeedGrid/SeedGrid-components/react/gadgets/Exemplos|Exemplos dos gadgets]]
+- Dígitos usados por `SgClock`/`SgStringAnimator`: [[SeedGrid/SeedGrid-components/react/digits/Visao-geral|Dígitos animados]]
+- `SgCard` (contêiner de calendário e relógio): [[SeedGrid/SeedGrid-components/react/layout/API|API de layout]]
+- i18n (rótulos `components.gadgets.*`) e CSS: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 ## Componentes e símbolos
 
@@ -60,7 +60,7 @@ Pontos importantes (Confirmado):
 - `SgTimeProvider` e `SgClockThemeProvider` são opcionais para `SgClock`, mas **`SgClockThemePicker` exige `SgClockThemeProvider`** (sem ele a lista é vazia).
 - **Os temas embutidos (`sgClockThemesBuiltIn`) não são registrados automaticamente**; chame `registerThemes(sgClockThemesBuiltIn)` uma vez (o showcase faz isso em `apps/showcase/src/app/components/gadgets/sg-clock/sg-clock-showcase-client.tsx`) ou passe `theme`/`value.themes`.
 - Com `SgTimeProvider` presente, `SgClock.initialServerTime` é ignorado em favor do contexto.
-- `SgClock` aceita ainda `digitalStyle="custom"` (além dos 9 estilos prontos): a prop `digitBuilder` recebe as partes do relógio (`SgClockDigitalParts`) e devolve o desenho completo; sem `digitBuilder`, cai no estilo `default`. `registerSgClockDigitalStyle` existe só no Flutter. Detalhes na [[SeedGrid/SeedGrid-components/gadgets/API|API]] e no exemplo «Desenho do dígito próprio (digitBuilder)» em [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Exemplos]].
+- `SgClock` aceita ainda `digitalStyle="custom"` (além dos 9 estilos prontos): a prop `digitBuilder` recebe as partes do relógio (`SgClockDigitalParts`) e devolve o desenho completo; sem `digitBuilder`, cai no estilo `default`. `registerSgClockDigitalStyle` existe só no Flutter. Detalhes na [[SeedGrid/SeedGrid-components/react/gadgets/API|API]] e no exemplo «Desenho do dígito próprio (digitBuilder)» em [[SeedGrid/SeedGrid-components/react/gadgets/Exemplos|Exemplos]].
 
 ## Dependências
 

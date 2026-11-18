@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Exemplos — Data e hora, imagem e câmera (Flutter)
 
-> **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
+> **Plataforma: Flutter.** Os exemplos React do mesmo grupo estão em [[SeedGrid/SeedGrid-components/react/inputs-midia/Exemplos|Exemplos — Data e hora, imagem e câmera (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/API|API (Flutter)]].
 
 Os trechos são cópia 1:1 dos `*.snippets.g.dart` do showcase em seedgrid-fe-flutter 3e7ea56 (os de `SgInputDateTime` foram regerados em 2026-11-12 do working tree, HEAD local `19f7830`, sem push: o exemplo Fusos mudou com `valueMode` e entraram quatro novos, Valor local, Valor em UTC, Valor com deslocamento e Outro fuso) (`sg_input_date_time_page`, `sg_file_upload_page`, `sg_image_upload_page`, `sg_camera_capture_page`, `sg_color_picker_page`), na ordem e com os títulos do showcase; `context.tx(...)`/`context.txf(...)` (i18n do showcase) viraram o literal e a interpolação. O showcase não usa `setState` de página: campos de formulário usam `name` + `control: SgFormController` e o estado de exibição é local (`ValueNotifier` com `ValueListenableBuilder`/`ListenableBuilder`); a linha **Ajuste** abaixo de cada bloco mostra a declaração dos campos da página que o trecho usa. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';`.
 

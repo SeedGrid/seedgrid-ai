@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/fundamentos/API|API — Fundamentos (utilitários, i18n, tema) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral e instalação: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos — visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos]].
+Visão geral e instalação: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos — visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/react/fundamentos/Exemplos|Exemplos]].
 
 Todas as assinaturas abaixo foram lidas no código (**Confirmado**), salvo indicação. Caminhos relativos a `front/seedgrid-fe-components/packages/seedgrid-fe-components/`.
 
@@ -98,7 +98,7 @@ Tipos: `SgComponentsLocale` (`"pt-BR" | "pt-PT" | "en-US" | "en" | "es" | "fr" |
 
 `messages` aceita forma plana **ou** por namespace: se o objeto tiver a chave `components`, só ela é usada (`resolveMessages`).
 
-Metadados de IA: `src/i18n/SgComponentsI18nProvider.meta.ts` e `useComponentsI18n.meta.ts` entram no manifesto (`build-ai-manifest.mjs`). Os dois declaram o Playground da página do showcase (`hasPlayground: true`) e listam os exemplos `uso-basico`, `troca-dinamica-de-locale`, `api-imperativa-setcomponentsi18n` e `sobrescrita-de-mensagens` (provider) e `uso-basico` e `componentes-conscientes-do-locale` (hook); todos estão em [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos]] (seções 9 e 10).
+Metadados de IA: `src/i18n/SgComponentsI18nProvider.meta.ts` e `useComponentsI18n.meta.ts` entram no manifesto (`build-ai-manifest.mjs`). Os dois declaram o Playground da página do showcase (`hasPlayground: true`) e listam os exemplos `uso-basico`, `troca-dinamica-de-locale`, `api-imperativa-setcomponentsi18n` e `sobrescrita-de-mensagens` (provider) e `uso-basico` e `componentes-conscientes-do-locale` (hook); todos estão em [[SeedGrid/SeedGrid-components/react/fundamentos/Exemplos|Exemplos]] (seções 9 e 10).
 
 ## Estilos — `src/injectStyles.ts` e `src/generated/compiledStyles.ts`
 

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos — Fundamentos (utilitários, i18n, tema) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Referência: [[SeedGrid/SeedGrid-components/fundamentos/API|API dos utilitários]] · [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Visão geral]].
+Referência: [[SeedGrid/SeedGrid-components/react/fundamentos/API|API dos utilitários]] · [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Visão geral]].
 
 Cada exemplo indica a fonte. Os exemplos 2, 3, 4 e 5 são cópia 1:1 do `.sample` do showcase (o 2 vem da página de tema, os 3, 4 e 5 da página inicial, em `apps/showcase/src/app/samples/`), regenerados por script em 2026-11-09 a partir do código `0f304bb`. Os exemplos 9 e 10 reúnem **todos** os exemplos das páginas `SgComponentsI18nProvider` e `useComponentsI18n` do showcase, cada bloco copiado 1:1 do `.sample`. Os exemplos 6 e 7 foram compilados com `tsc --strict` contra o código-fonte do pacote (2026-11-07); o 1 vem do README e do `package.json` do pacote; o 8 descreve a rota real do showcase. Nenhum bloco foi compilado nesta rodada.
 

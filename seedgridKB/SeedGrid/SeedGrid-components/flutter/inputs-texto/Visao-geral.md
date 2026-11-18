@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Inputs de texto e documentos — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Inputs de texto e documentos — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `e9989b8`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral|Inputs de texto e documentos — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API — Inputs de texto e documentos (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos — Inputs de texto e documentos (Flutter)]]

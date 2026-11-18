@@ -14,7 +14,7 @@ Monorepo pnpm (`packageManager: pnpm@9.12.0`) + Turborepo. Workspaces (`pnpm-wor
 
 | Pacote | Versão | Papel | Nota |
 |---|---|---|---|
-| `@seedgrid/fe-components` | 2026.7.1 | Biblioteca de componentes `Sg*` + utilitários (máscaras, validadores, i18n) | [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral\|Fundamentos]] |
+| `@seedgrid/fe-components` | 2026.7.1 | Biblioteca de componentes `Sg*` + utilitários (máscaras, validadores, i18n) | [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral\|Fundamentos]] |
 | `@seedgrid/fe-theme` | 0.3.0 | Tema por cor *seed*, tokens `--sg-*`, `SeedThemeProvider` | [[SeedGrid/SeedGrid-components/pacotes/fe-theme\|fe-theme]] |
 | `@seedgrid/fe-core` | 2026.7.1 | Manifesto de módulo da CLI, registry, persistência, `createApiClient`, erros | [[SeedGrid/SeedGrid-components/pacotes/fe-core\|fe-core]] |
 | `@seedgrid/fe-commons` | 0.2.0 | `createHttpClient`, `buscarCep`, `buscarCnpj` | [[SeedGrid/SeedGrid-components/pacotes/fe-commons\|fe-commons]] |

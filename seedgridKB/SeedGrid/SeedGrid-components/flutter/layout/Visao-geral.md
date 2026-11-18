@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Layout e containers — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout e containers — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/layout/Visao-geral|Layout e containers — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/layout/API|API — Layout e containers (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos|Exemplos — Layout e containers (Flutter)]]
@@ -79,7 +79,7 @@ Detalhe por componente em [[SeedGrid/SeedGrid-components/flutter/layout/API|API]
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte do lado React: [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout e containers (React)]] e [[SeedGrid/SeedGrid-components/layout/API|API]]. Todos os 19 componentes `Sg*` do grupo React têm widget Flutter com o mesmo nome. Os helpers e hooks:
+Fonte do lado React: [[SeedGrid/SeedGrid-components/react/layout/Visao-geral|Layout e containers (React)]] e [[SeedGrid/SeedGrid-components/react/layout/API|API]]. Todos os 19 componentes `Sg*` do grupo React têm widget Flutter com o mesmo nome. Os helpers e hooks:
 
 | Família React | Equivalente Flutter | Situação |
 |---|---|---|

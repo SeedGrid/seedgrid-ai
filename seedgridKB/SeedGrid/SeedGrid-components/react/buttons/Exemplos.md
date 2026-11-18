@@ -14,7 +14,7 @@ plataforma: react
 
 Todos os exemplos do showcase de cada componente, na ordem e com os títulos da página, cada bloco copiado 1:1 do `samples/*.tsx.sample` correspondente (seedgrid-fe-components `0f304bb`, conferência de 2026-11-09). A linha `Fonte:` de cada bloco aponta o arquivo. Os blocos foram gerados por script a partir dos `.sample` e comparados com eles texto a texto; **não foram compilados nesta rodada**. Classes utilitárias (`flex`, `gap-3` etc.) são Tailwind do app de exemplo. O Playground de cada página é interativo e não tem `.sample`, por isso não aparece aqui.
 
-API: [[SeedGrid/SeedGrid-components/buttons/API|API dos botões]] · Visão geral: [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões]]. Ícones vêm de `lucide-react` (peer dependency do pacote).
+API: [[SeedGrid/SeedGrid-components/react/buttons/API|API dos botões]] · Visão geral: [[SeedGrid/SeedGrid-components/react/buttons/Visao-geral|Botões]]. Ícones vêm de `lucide-react` (peer dependency do pacote).
 
 ## SgButton
 

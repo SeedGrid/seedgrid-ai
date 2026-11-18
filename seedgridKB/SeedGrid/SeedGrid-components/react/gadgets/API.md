@@ -12,11 +12,11 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/gadgets/API|API — Gadgets (relógio, calendário, gauges, QR) (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral: [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/gadgets/Exemplos|Gadgets — exemplos]] · Dígitos usados pelo relógio: [[SeedGrid/SeedGrid-components/digits/API|API dos dígitos]]
+Visão geral: [[SeedGrid/SeedGrid-components/react/gadgets/Visao-geral|Gadgets — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/react/gadgets/Exemplos|Gadgets — exemplos]] · Dígitos usados pelo relógio: [[SeedGrid/SeedGrid-components/react/digits/API|API dos dígitos]]
 
 > **Como ler as tabelas.** Geradas a partir do tipo TypeScript real do 1º parâmetro de cada componente (TS checker, commit `ad30fc11de`) — lista completa das props próprias. **Padrão**: valor sem marca = inicializador na desestruturação do componente (Confirmado); `ᶠ` = fallback interno `??` no corpo do componente (Confirmado, expressão pode estar abreviada); `ᵇ` = padrão aplicado pelo componente base para o qual a prop é repassada; `ᵐ` = declarado só no `*.meta.ts`; `ˢ` = declarado só na tabela de props do showcase (`ᵐ`/`ˢ` = Não confirmado no código); `—` = sem padrão. **Descrição**: JSDoc > `*.meta.ts` > tabela do showcase (textos originais, sem acento quando assim na fonte); *(Inferência)* = escrita a partir da leitura do código. **Obrigatória** = prop não opcional no tipo.
 
-Textos padrão (títulos, `aria-label`, placeholders) vêm do i18n do pacote (`useComponentsI18n` + chaves `components.gadgets.*`) — ver [[SeedGrid/SeedGrid-components/fundamentos/API|API › i18n]].
+Textos padrão (títulos, `aria-label`, placeholders) vêm do i18n do pacote (`useComponentsI18n` + chaves `components.gadgets.*`) — ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|API › i18n]].
 
 ## SgCalendar
 
@@ -69,7 +69,7 @@ Modos: `value`/`viewDate` definidos ⇒ controlado; caso contrário estado inter
 Não aceita ref (componente de função sem `forwardRef`).
 
 ### Children, slots e composição
-Sem `children` (omitido do tipo). Composição: renderiza `SgCard` (ver [[SeedGrid/SeedGrid-components/layout/API|API de layout › SgCard]]) com `title={cardTitle}` e as props de `cardProps`.
+Sem `children` (omitido do tipo). Composição: renderiza `SgCard` (ver [[SeedGrid/SeedGrid-components/react/layout/API|API de layout › SgCard]]) com `title={cardTitle}` e as props de `cardProps`.
 
 ### Contexto, providers e hooks
 Consome `useComponentsI18n()` (rótulos). Nenhum provider obrigatório.
@@ -82,7 +82,7 @@ Botões de navegação com `aria-label` traduzidos (mês anterior/próximo, ir p
 
 ## SgClock
 
-Relógio digital (9 estilos prontos mais o `custom`, reaproveitando os [[SeedGrid/SeedGrid-components/digits/Visao-geral|dígitos animados]]) ou analógico com temas SVG, dentro de um `SgCard`. Fonte: `src/gadgets/clock/SgClock.tsx` → `SgClock`.
+Relógio digital (9 estilos prontos mais o `custom`, reaproveitando os [[SeedGrid/SeedGrid-components/react/digits/Visao-geral|dígitos animados]]) ou analógico com temas SVG, dentro de um `SgCard`. Fonte: `src/gadgets/clock/SgClock.tsx` → `SgClock`.
 
 ### Import
 ```tsx

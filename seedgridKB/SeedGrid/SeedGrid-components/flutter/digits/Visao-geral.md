@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Dígitos animados — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos animados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/digits/Visao-geral|Dígitos animados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/digits/API|API — Dígitos animados (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/digits/Exemplos|Exemplos — Dígitos animados (Flutter)]]
@@ -49,7 +49,7 @@ Os oito dígitos estão **portados** ([[SeedGrid/SeedGrid-components/flutter/Par
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-O grupo React ([[SeedGrid/SeedGrid-components/digits/Visao-geral|Dígitos (React)]]) não tem hooks nem funções além dos oito componentes; os tipos exportados também têm equivalente: `SgDiscardDigitHandle` -> `SgDiscardDigitController` e `SgSevenSegmentDigitPalette` -> o enum de mesmo nome (`SgSevenSegmentDigitPalette.red` etc.). Nenhum símbolo do grupo ficou sem equivalente. Extras só do Flutter: o motor `SgFlipEngine`, os helpers de lógica (`seven_segment_logic.dart`, `matrix_logic.dart`, `neon_logic.dart`, `segment_logic.dart`) e `parseDigitColor`/`resolveDigitColor`.
+O grupo React ([[SeedGrid/SeedGrid-components/react/digits/Visao-geral|Dígitos (React)]]) não tem hooks nem funções além dos oito componentes; os tipos exportados também têm equivalente: `SgDiscardDigitHandle` -> `SgDiscardDigitController` e `SgSevenSegmentDigitPalette` -> o enum de mesmo nome (`SgSevenSegmentDigitPalette.red` etc.). Nenhum símbolo do grupo ficou sem equivalente. Extras só do Flutter: o motor `SgFlipEngine`, os helpers de lógica (`seven_segment_logic.dart`, `matrix_logic.dart`, `neon_logic.dart`, `segment_logic.dart`) e `parseDigitColor`/`resolveDigitColor`.
 
 ## Símbolos públicos do grupo (além dos widgets)
 

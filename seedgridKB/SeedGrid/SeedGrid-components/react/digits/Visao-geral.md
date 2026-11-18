@@ -12,12 +12,12 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/digits/Visao-geral|Visão geral — Dígitos animados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Oito componentes que exibem **um caractere (ou um texto curto)** com um efeito visual próprio — placar flip, painel LED, display de 7 segmentos, neon, folha de papel descartada etc. São blocos de construção: o relógio [[SeedGrid/SeedGrid-components/gadgets/API|SgClock]] (`digitalStyle`) e o [[SeedGrid/SeedGrid-components/gadgets/API|SgStringAnimator]] compõem vários deles. Não têm eventos nem estado controlado além de `value`.
+Oito componentes que exibem **um caractere (ou um texto curto)** com um efeito visual próprio — placar flip, painel LED, display de 7 segmentos, neon, folha de papel descartada etc. São blocos de construção: o relógio [[SeedGrid/SeedGrid-components/react/gadgets/API|SgClock]] (`digitalStyle`) e o [[SeedGrid/SeedGrid-components/react/gadgets/API|SgStringAnimator]] compõem vários deles. Não têm eventos nem estado controlado além de `value`.
 
-- API completa (props, ref, acessibilidade): [[SeedGrid/SeedGrid-components/digits/API|API dos dígitos]]
-- Exemplos TSX: [[SeedGrid/SeedGrid-components/digits/Exemplos|Exemplos dos dígitos]]
-- Gadgets que os usam: [[SeedGrid/SeedGrid-components/gadgets/Visao-geral|Gadgets]]
-- Instalação, CSS e i18n do pacote: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa (props, ref, acessibilidade): [[SeedGrid/SeedGrid-components/react/digits/API|API dos dígitos]]
+- Exemplos TSX: [[SeedGrid/SeedGrid-components/react/digits/Exemplos|Exemplos dos dígitos]]
+- Gadgets que os usam: [[SeedGrid/SeedGrid-components/react/gadgets/Visao-geral|Gadgets]]
+- Instalação, CSS e i18n do pacote: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 ## Componentes
 

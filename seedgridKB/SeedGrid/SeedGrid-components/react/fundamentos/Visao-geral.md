@@ -14,8 +14,8 @@ plataforma: react
 
 Esta nota cobre **o que não é componente `Sg*`** dentro do pacote `@seedgrid/fe-components`: instalação, montagem (peers, CSS, tema), `exports` do `package.json`, build, e os utilitários transversais (`masks`, `validators`, `rhf`, `i18n`, `injectStyles`, `blocked-email-domains`, `ai-meta`, `generated`).
 
-- API detalhada: [[SeedGrid/SeedGrid-components/fundamentos/API|API dos utilitários]]
-- Exemplos: [[SeedGrid/SeedGrid-components/fundamentos/Exemplos|Exemplos dos utilitários]]
+- API detalhada: [[SeedGrid/SeedGrid-components/react/fundamentos/API|API dos utilitários]]
+- Exemplos: [[SeedGrid/SeedGrid-components/react/fundamentos/Exemplos|Exemplos dos utilitários]]
 - Pacotes irmãos: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes do monorepo front]] · tema em [[SeedGrid/SeedGrid-components/pacotes/fe-theme|@seedgrid/fe-theme]]
 - App de demonstração: [[SeedGrid/SeedGrid-components/showcase|Showcase]]
 
@@ -58,7 +58,7 @@ Fonte: `packages/seedgrid-fe-components/README.md` (seções "Instalacao" e "Uso
    - **Injeção automática**: `src/index.ts` chama `ensureSeedgridStylesInjected()` no topo do barrel. A função cria `<style id="seedgrid-fe-components-styles">` em `document.head` com `SEEDGRID_COMPILED_CSS` (string gerada). É protegida contra SSR (`typeof document === "undefined"`) e contra dupla injeção (verifica o `id`). O comentário explica que é uma **chamada real** (não `import "./x"`) para não ser eliminada por bundlers.
    - **CSS estático**: `import "@seedgrid/fe-components/style.css"` — mesmo CSS, útil para evitar *flash* antes da hidratação (README).
    - **Tema em runtime (opcional)**: `SeedThemeProvider` de `@seedgrid/fe-theme` regrava as variáveis `--sg-*`. O CSS compilado já contém um bloco `:root{...}` com as variáveis do `defaultSeedTheme` (modo light), então os componentes ficam estilizados **sem provider** (Confirmado em `scripts/build-style.mjs` e no início de `src/generated/compiledStyles.ts`).
-3. **i18n**: por padrão as mensagens dos componentes estão em `en-US` (`DEFAULT_I18N`). Para trocar: `SgComponentsI18nProvider` (contexto React) ou `setComponentsI18n` (global em `globalThis.__seedgridComponentsI18n`). Ver [[SeedGrid/SeedGrid-components/fundamentos/API|API › i18n]].
+3. **i18n**: por padrão as mensagens dos componentes estão em `en-US` (`DEFAULT_I18N`). Para trocar: `SgComponentsI18nProvider` (contexto React) ou `setComponentsI18n` (global em `globalThis.__seedgridComponentsI18n`). Ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|API › i18n]].
 4. **React Hook Form**: inputs aceitam `register`/`control`/`rules`/`error` (tipo interno `RhfFieldProps`, em `src/rhf.ts`).
 5. Next.js: o showcase usa `transpilePackages: ["@seedgrid/fe-components", "@seedgrid/fe-theme"]` em `apps/showcase/next.config.ts` (Confirmado). **Inferência**: não é obrigatório para consumidores do pacote publicado (o `dist` já é JS compilado), mas é o padrão usado no monorepo.
 

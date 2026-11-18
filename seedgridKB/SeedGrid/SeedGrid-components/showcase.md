@@ -13,7 +13,7 @@ analisado-em: 2026-10-14
 
 App Next.js que demonstra todos os componentes do `@seedgrid/fe-components` (páginas com exemplos numerados, `SgPlayground` e "Referência de Props"), além de hooks, providers, tema e créditos.
 
-Relacionados: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos do fe-components]] · [[SeedGrid/SeedGrid-components/pacotes/fe-playground|@seedgrid/fe-playground]] · [[SeedGrid/SeedGrid-components/pacotes/fe-theme|@seedgrid/fe-theme]] · [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]].
+Relacionados: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos do fe-components]] · [[SeedGrid/SeedGrid-components/pacotes/fe-playground|@seedgrid/fe-playground]] · [[SeedGrid/SeedGrid-components/pacotes/fe-theme|@seedgrid/fe-theme]] · [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]].
 
 ## Stack (Confirmado em `apps/showcase/package.json`)
 - `name: "showcase"`, privado, ESM.

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos|Exemplos — Editor de texto rico (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos do showcase do `SgTextEditor` (`/components/sg-text-editor`), na ordem e com os títulos da página, cada bloco copiado 1:1 do `samples/*.tsx.sample` (seedgrid-fe-components `0f304bb`, conferência de 2026-11-09). A linha `Fonte:` aponta o arquivo. Os blocos foram gerados por script a partir dos `.sample` e comparados com eles; **não foram compilados nem executados nesta rodada**. Prop a prop: [[SeedGrid/SeedGrid-components/editor/API|API do SgTextEditor]]. O Playground da página é interativo e não tem `.sample`.
+Todos os exemplos do showcase do `SgTextEditor` (`/components/sg-text-editor`), na ordem e com os títulos da página, cada bloco copiado 1:1 do `samples/*.tsx.sample` (seedgrid-fe-components `0f304bb`, conferência de 2026-11-09). A linha `Fonte:` aponta o arquivo. Os blocos foram gerados por script a partir dos `.sample` e comparados com eles; **não foram compilados nem executados nesta rodada**. Prop a prop: [[SeedGrid/SeedGrid-components/react/editor/API|API do SgTextEditor]]. O Playground da página é interativo e não tem `.sample`.
 
 ## Instalação dos peers
 

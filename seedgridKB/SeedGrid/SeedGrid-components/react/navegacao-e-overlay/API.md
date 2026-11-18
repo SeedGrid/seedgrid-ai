@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API|API — Navegação, overlay e wizard (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · Exemplos: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos|Exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/fundamentos/API|Fundamentos › API]]
+Visão geral: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · Exemplos: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Exemplos|Exemplos]] · i18n/estilos: [[SeedGrid/SeedGrid-components/react/fundamentos/API|Fundamentos › API]]
 
 > **Como ler as tabelas.** Geradas a partir do tipo TypeScript real do 1º parâmetro de cada componente (TS checker, commit `ad30fc11de`) — lista completa das props próprias. **Padrão**: valor sem marca = inicializador na desestruturação do componente (Confirmado); `ᶠ` = fallback interno `??` no corpo do componente (Confirmado, expressão pode estar abreviada); `ᵇ` = padrão aplicado pelo componente base para o qual a prop é repassada; `ᵐ` = declarado só no `*.meta.ts`; `ˢ` = declarado só na tabela de props do showcase (`ᵐ`/`ˢ` = Não confirmado no código); `—` = sem padrão. **Descrição**: JSDoc > `*.meta.ts` > tabela do showcase (textos originais, sem acento quando assim na fonte); *(Inferência)* = escrita a partir da leitura do código. **Obrigatória** = prop não opcional no tipo.
 
@@ -70,7 +70,7 @@ Não recebe `children`; o conteúdo vem de `items`. Ícones são `ReactNode` liv
 ### Contexto, providers e hooks
 
 - Consome `useComponentsI18n()` (textos do diálogo de reset).
-- Consome `useSgPersistence()` e o hook interno `useHasSgEnvironmentProvider()`: dentro de `SgEnvironmentProvider` a posição é salva via estratégia de persistência do ambiente; fora dele, em `localStorage`. Valor salvo inválido é descartado e apagado (`parseStoredPanelDragPosition`). Ver [[SeedGrid/SeedGrid-components/providers/API|Providers]].
+- Consome `useSgPersistence()` e o hook interno `useHasSgEnvironmentProvider()`: dentro de `SgEnvironmentProvider` a posição é salva via estratégia de persistência do ambiente; fora dele, em `localStorage`. Valor salvo inválido é descartado e apagado (`parseStoredPanelDragPosition`). Ver [[SeedGrid/SeedGrid-components/react/providers/API|Providers]].
 
 ### Acessibilidade
 
@@ -296,7 +296,7 @@ import { SgConfirmationDialog, type SgConfirmationDialogProps, type SgConfirmati
 
 ### Props
 
-O tipo é `Omit<SgDialogProps, "title" | "children" | "footer" | "severity" | "shadow" | "showTopAccent"> & { ... }`. As props herdadas de [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API#SgDialog|SgDialogProps]] não desestruturadas pelo componente são repassadas sem alteração (`{...dialogProps}`) ao `SgDialog` interno — daí os padrões `ᵇ`, válidos (Confirmado). O componente **sobrepõe** os padrões de `closeable` (`false`) e `size` (`"sm"`), e controla `open`, `onOpenChange`, `severity`, `showTopAccent` (= `showSeverityAccent`), `title`, `footer` e `children`.
+O tipo é `Omit<SgDialogProps, "title" | "children" | "footer" | "severity" | "shadow" | "showTopAccent"> & { ... }`. As props herdadas de [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API#SgDialog|SgDialogProps]] não desestruturadas pelo componente são repassadas sem alteração (`{...dialogProps}`) ao `SgDialog` interno — daí os padrões `ᵇ`, válidos (Confirmado). O componente **sobrepõe** os padrões de `closeable` (`false`) e `size` (`"sm"`), e controla `open`, `onOpenChange`, `severity`, `showTopAccent` (= `showSeverityAccent`), `title`, `footer` e `children`.
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
@@ -391,7 +391,7 @@ Herda de `SgDialog` (`role="dialog"`, `aria-modal`, `Esc`, *focus trap*, foco in
 | `className` | `string` | Não | Classe extra |
 | `onClick` | `() => void` | Não | Chamado antes de `onCancel`/`onConfirm` |
 
-Ver `SgButton` em [[SeedGrid/SeedGrid-components/buttons/API|API dos botões]].
+Ver `SgButton` em [[SeedGrid/SeedGrid-components/react/buttons/API|API dos botões]].
 
 ---
 

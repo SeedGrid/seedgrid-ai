@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # API — Data e hora, arquivo, imagem, câmera e cor (Flutter)
 
-> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-midia/API|API — Data e hora, imagem e câmera (React)]] (o `SgColorPicker` só existe no Flutter). Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos]].
+> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/react/inputs-midia/API|API — Data e hora, imagem e câmera (React)]] (o `SgColorPicker` só existe no Flutter). Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-midia/Exemplos|Exemplos]].
 
 > **Como ler as tabelas.** Montadas a partir do manifesto do Flutter e dos construtores Dart: o **tipo** é o do campo `final` do widget; o **padrão** é o do construtor (`this.x = valor`) e, quando o construtor não declara, o do contrato gerado do React (marcado com †); **Origem** = `React` (prop do contrato, nome igual ao do React) ou `Flutter` (extra do Dart, como `picker`, `backend`). O contrato gerado fica em `lib/src/generated/sg_input_date_time.g.dart`, `sg_file_upload.g.dart`, `sg_image_upload.g.dart` e `sg_camera_capture.g.dart`; o `SgColorPicker` não tem contrato gerado (props escritas à mão em `sg_color_picker_props.dart`). Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
 

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/API|API — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Pacote `@seedgrid/fe-components` versão `2026.7.1` (`packages/seedgrid-fe-components/package.json`). Visão geral: [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Visão geral dos inputs de texto]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]].
+Pacote `@seedgrid/fe-components` versão `2026.7.1` (`packages/seedgrid-fe-components/package.json`). Visão geral: [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral|Visão geral dos inputs de texto]]. Exemplos: [[SeedGrid/SeedGrid-components/react/inputs-texto/Exemplos|Exemplos dos inputs de texto]].
 
 > **Atualização de 2026-11-12.** As seções `SgInputNumber` e `SgInputCurrency` foram reescritas e conferidas contra o código atual do `fe-components` (commits locais ainda sem push: `8642e19`, `5c497c3`, `019a253`; árvore em `4b150cc`), com arquivo e linha citados em cada ponto. **Mudanças que quebram** (também no `CHANGELOG.md` do pacote, seção "Nao publicado"): `onChange` e o valor do formulário passam a ser **número** (antes, texto como `"37.00"`); a prop `emptyValue` foi **removida, sem alias**, e entra `emptyValueIsNull`; `validation` recebe `number | null` (antes, `string`). As demais seções seguem conferidas em `0f304bb`; o contrato de valor das máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) está na seção [[#Campos com máscara: contrato de valor]].
 
@@ -52,7 +52,7 @@ Utilitários puros relacionados, também exportados: `onlyDigits`, `maskCpf`, `m
 
 ## Contrato RhfFieldProps (react-hook-form)
 
-Origem: `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/rhf.ts`, tipo `RhfFieldProps`. Ele é misturado (`&` ou `extends`) nos props de quase todos os inputs, inclusive nos dos grupos [[SeedGrid/SeedGrid-components/inputs-selecao/API|inputs de seleção]] e [[SeedGrid/SeedGrid-components/editor/API|editor]].
+Origem: `front/seedgrid-fe-components/packages/seedgrid-fe-components/src/rhf.ts`, tipo `RhfFieldProps`. Ele é misturado (`&` ou `extends`) nos props de quase todos os inputs, inclusive nos dos grupos [[SeedGrid/SeedGrid-components/react/inputs-selecao/API|inputs de seleção]] e [[SeedGrid/SeedGrid-components/react/editor/API|editor]].
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
@@ -967,7 +967,7 @@ Fonte: `src/inputs/SgInputNumber.tsx`. Implementação própria, não deriva do 
   - Backspace/Delete apagam da direita para a esquerda.
   - Ctrl/Meta/Alt e as teclas de navegação passam direto.
 - **Colar:** o texto colado é normalizado.
-- **RHF:** com `register`, o número é enviado como evento sintético `{target: {name, value}}`; com `control`, por `field.onChange(numero)`. Leitura: `getValues("campo")` devolve `number` depois da edição. Exemplo completo (carregar da API, editar, salvar): [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD com valores da API]].
+- **RHF:** com `register`, o número é enviado como evento sintético `{target: {name, value}}`; com `control`, por `field.onChange(numero)`. Leitura: `getValues("campo")` devolve `number` depois da edição. Exemplo completo (carregar da API, editar, salvar): [[SeedGrid/SeedGrid-components/react/inputs-texto/Exemplos#CRUD com valores da API (número, moeda e data/hora)|CRUD com valores da API]].
 
 **Confirmado**.
 

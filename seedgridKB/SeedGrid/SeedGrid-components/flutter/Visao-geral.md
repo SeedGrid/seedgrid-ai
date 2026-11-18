@@ -10,7 +10,7 @@ analisado-em: 2026-11-11
 
 # Componentes SeedGrid em Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota e as da pasta `flutter/` descrevem o repositório `front/seedgrid-fe-flutter`. Os componentes **React** (`@seedgrid/fe-components`) estão nos grupos `SeedGrid/SeedGrid-components/<grupo>/` fora desta pasta. Como escolher entre as duas e o placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota e as da pasta `flutter/` descrevem o repositório `front/seedgrid-fe-flutter`. Os componentes **React** (`@seedgrid/fe-components`) estão nos grupos `SeedGrid/SeedGrid-components/react/<grupo>/` fora desta pasta. Como escolher entre as duas e o placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 >
 > **Status: NÃO PUBLICADO no pub.dev** (`publish_to: none` em todos os `pubspec.yaml`; o repositório não tem tag). A instalação é **direto do Git**: o `README.md` do repositório mostra a dependência `git: url: https://github.com/SeedGrid/seedgrid-fe-flutter.git` com `path: packages/seedgrid_components` e recomenda fixar `ref` (commit, tag ou branch). Publicar no pub.dev só com autorização do dono. Na data da análise (`analisado-em`) a árvore de trabalho estava limpa na branch `main`, commit `e9989b8` (2026-10-29); tudo abaixo vale para esse commit.
 

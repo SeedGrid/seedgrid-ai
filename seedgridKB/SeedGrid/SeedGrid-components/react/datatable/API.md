@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/API|API — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Import: `import { SgDatatable, type SgDatatableColumn } from "@seedgrid/fe-components";` (pacote v`2026.7.1`). Contexto: [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Visão geral do SgDatatable]]. Exemplos: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]]. A metodologia das tabelas está em [[SeedGrid/SeedGrid-components/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]].
+Import: `import { SgDatatable, type SgDatatableColumn } from "@seedgrid/fe-components";` (pacote v`2026.7.1`). Contexto: [[SeedGrid/SeedGrid-components/react/datatable/Visao-geral|Visão geral do SgDatatable]]. Exemplos: [[SeedGrid/SeedGrid-components/react/datatable/Exemplos|Exemplos do SgDatatable]]. A metodologia das tabelas está em [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]].
 
 O componente é genérico: `SgDatatable<T extends SgDatatableRow = SgDatatableRow>`, com `SgDatatableRow = Record<string, unknown>`. É declarado com `React.forwardRef` e recebe `ref?: React.Ref<SgDatatableRef<T>>`. **Não** usa `RhfFieldProps`, então não há integração com react-hook-form. **Confirmado**.
 

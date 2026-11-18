@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/editor/Visao-geral|Visão geral — Editor de texto rico (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-O `SgTextEditor` é o editor de texto rico (HTML) do pacote `@seedgrid/fe-components` (v`2026.7.1`), construído sobre o **TipTap 2**. Referência: [[SeedGrid/SeedGrid-components/editor/API|API do SgTextEditor]]. Código: [[SeedGrid/SeedGrid-components/editor/Exemplos|Exemplos do SgTextEditor]].
+O `SgTextEditor` é o editor de texto rico (HTML) do pacote `@seedgrid/fe-components` (v`2026.7.1`), construído sobre o **TipTap 2**. Referência: [[SeedGrid/SeedGrid-components/react/editor/API|API do SgTextEditor]]. Código: [[SeedGrid/SeedGrid-components/react/editor/Exemplos|Exemplos do SgTextEditor]].
 
 ## Objetivo
 
@@ -21,7 +21,7 @@ O editor produz e edita **documentos HTML com CSS embutido**. As funções princ
 - editor opcional de CSS;
 - botões para **salvar** o documento como `File` `.html` e **carregar** um `.html` do disco.
 
-Usos indicados: modelos de e-mail, termos e contratos, conteúdo de páginas e notas ricas. Para texto simples, use [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|SgInputTextArea]]. Essa recomendação está em `aiHints.avoidUseCases` de `SgTextEditor.meta.ts`. **Confirmado**.
+Usos indicados: modelos de e-mail, termos e contratos, conteúdo de páginas e notas ricas. Para texto simples, use [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral|SgInputTextArea]]. Essa recomendação está em `aiHints.avoidUseCases` de `SgTextEditor.meta.ts`. **Confirmado**.
 
 ## Dependências (peers TipTap)
 
@@ -75,7 +75,7 @@ graph LR
 
 ## Internacionalização
 
-Todos os rótulos da toolbar, os prompts e o placeholder vêm de `components.textEditor.*`. Ver [[SeedGrid/SeedGrid-components/editor/API#Internacionalização|API]].
+Todos os rótulos da toolbar, os prompts e o placeholder vêm de `components.textEditor.*`. Ver [[SeedGrid/SeedGrid-components/react/editor/API#Internacionalização|API]].
 
 ## Testes
 

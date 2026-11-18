@@ -20,11 +20,11 @@ Grupo de componentes do pacote `@seedgrid/fe-components` que reúne **três past
 | `src/overlay/` | `SgPopup` (overlay ancorado, não modal), `SgDialog` (modal), `SgConfirmationDialog` (modal de confirmação construído sobre `SgDialog`) |
 | `src/wizard/` | `SgWizard` + `SgWizardPage` (fluxo multi-etapas) e os helpers puros de `logic.ts` |
 
-> O menu de navegação lateral/horizontal (`SgMenu`), breadcrumb, toolbar e page control ficam em `src/layout/` — ver [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout]].
+> O menu de navegação lateral/horizontal (`SgMenu`), breadcrumb, toolbar e page control ficam em `src/layout/` — ver [[SeedGrid/SeedGrid-components/react/layout/Visao-geral|Layout]].
 
-- API completa: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|API de navegação e overlay]]
-- Exemplos: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos|Exemplos de navegação e overlay]]
-- Fundamentos do pacote (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API|API de navegação e overlay]]
+- Exemplos: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Exemplos|Exemplos de navegação e overlay]]
+- Fundamentos do pacote (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 ## Componentes
 
@@ -52,14 +52,14 @@ Exportação confirmada em `src/index.ts` (barrel; o `package.json` expõe apena
 | Tipos `SgConfirmationDialogProps`, `SgConfirmationDialogButtonConfig` | `SgConfirmationDialog.tsx` | sim |
 | Tipos `SgWizardProps`, `SgWizardPageProps`, `SgWizardLabels`, `SgWizardStepper`, `WizardStepNavigation`, `WizardGuardRunner` | `SgWizard.tsx`, `logic.ts` | sim |
 
-Os helpers do dock e do wizard são funções puras usadas internamente pelos componentes e cobertas por testes; o export público permite reuso/teste, mas o uso normal é só via componente. Detalhes em [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|API]].
+Os helpers do dock e do wizard são funções puras usadas internamente pelos componentes e cobertas por testes; o export público permite reuso/teste, mas o uso normal é só via componente. Detalhes em [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API|API]].
 
 ## Como se compõem
 
-- Nenhum componente do grupo exige provider. Todos chamam `useComponentsI18n()` para textos padrão (ex.: `components.dialog.close`, `components.wizard.next`) — opcionalmente envolva a app em `SgComponentsI18nProvider` (ver [[SeedGrid/SeedGrid-components/fundamentos/API|API › i18n]]). **Confirmado**.
-- `SgDockMenu` persiste a posição arrastada: com `SgEnvironmentProvider` presente usa `useSgPersistence()` (estratégia/namespace do ambiente); sem ele usa `localStorage` direto, chave `sg-dockmenu-pos:<dragId>:<viewport|parent>`. Ver [[SeedGrid/SeedGrid-components/providers/API|Providers]]. **Confirmado** (`SgDockMenu.tsx` → `loadStoredPosition`/`saveStoredPosition`).
+- Nenhum componente do grupo exige provider. Todos chamam `useComponentsI18n()` para textos padrão (ex.: `components.dialog.close`, `components.wizard.next`) — opcionalmente envolva a app em `SgComponentsI18nProvider` (ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|API › i18n]]). **Confirmado**.
+- `SgDockMenu` persiste a posição arrastada: com `SgEnvironmentProvider` presente usa `useSgPersistence()` (estratégia/namespace do ambiente); sem ele usa `localStorage` direto, chave `sg-dockmenu-pos:<dragId>:<viewport|parent>`. Ver [[SeedGrid/SeedGrid-components/react/providers/API|Providers]]. **Confirmado** (`SgDockMenu.tsx` → `loadStoredPosition`/`saveStoredPosition`).
 - `SgPopup` e `SgDialog` renderizam via `createPortal(..., document.body)`. `SgConfirmationDialog` compõe `SgDialog` + `SgButton` (rodapé).
-- `SgWizard` só considera filhos diretos cujo `type === SgWizardPage`; outros filhos são descartados. A validação automática procura elementos com atributo `data-sg-error` dentro da etapa — atributo emitido pelos inputs SeedGrid (ex.: `SgInputText`, `SgInputNumber`), ver [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral|Inputs de texto]]. **Confirmado** (`SgWizard.tsx` → `validateCurrentPage`).
+- `SgWizard` só considera filhos diretos cujo `type === SgWizardPage`; outros filhos são descartados. A validação automática procura elementos com atributo `data-sg-error` dentro da etapa — atributo emitido pelos inputs SeedGrid (ex.: `SgInputText`, `SgInputNumber`), ver [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral|Inputs de texto]]. **Confirmado** (`SgWizard.tsx` → `validateCurrentPage`).
 
 ## Dependências
 

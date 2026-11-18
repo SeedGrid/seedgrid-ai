@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (`package.json` em `2026.7.1`; o modo cartões vale a partir da publicação 2026.11.1 no npm). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos do SgDatatable]].
+O `SgDatatable` é a tabela de dados do pacote `@seedgrid/fe-components` (`package.json` em `2026.7.1`; o modo cartões vale a partir da publicação 2026.11.1 no npm). O arquivo fica em `src/inputs/` e é exportado pela raiz do pacote. Referência completa: [[SeedGrid/SeedGrid-components/react/datatable/API|API do SgDatatable]]. Código: [[SeedGrid/SeedGrid-components/react/datatable/Exemplos|Exemplos do SgDatatable]].
 
 ## Objetivo e funcionalidades
 
@@ -26,7 +26,7 @@ Mostra coleções tabulares com as funções abaixo, todas **Confirmado** em `Sg
   - Com `SgEnvironmentProvider` e `id`, persiste a ordem e a visibilidade.
 - **Modo `lazy`** para paginação, ordenação e filtro no servidor.
 - **Estados** `loading` e vazio.
-- **Modo cartões no celular** (`mobileMode`; P127 + P137, desde a 2026.11.1): omitido = automático: abaixo de 600 px de **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`) cada linha vira um cartão "rótulo: valor" com **rolagem infinita** (`infiniteScroll`, padrão ligado nos cartões; exige `paginator`); acima, tabela. `mobileMode="cards"` força cartões em qualquer largura e `mobileMode="scroll"` força a tabela. Detalhes em [[SeedGrid/SeedGrid-components/datatable/API#Modo cartões no celular (`mobileMode`)|API]] e [[SeedGrid/SeedGrid-components/datatable/API#Rolagem infinita (`infiniteScroll`)|rolagem infinita]].
+- **Modo cartões no celular** (`mobileMode`; P127 + P137, desde a 2026.11.1): omitido = automático: abaixo de 600 px de **contêiner** (`SG_DATATABLE_MOBILE_BREAKPOINT`) cada linha vira um cartão "rótulo: valor" com **rolagem infinita** (`infiniteScroll`, padrão ligado nos cartões; exige `paginator`); acima, tabela. `mobileMode="cards"` força cartões em qualquer largura e `mobileMode="scroll"` força a tabela. Detalhes em [[SeedGrid/SeedGrid-components/react/datatable/API#Modo cartões no celular (`mobileMode`)|API]] e [[SeedGrid/SeedGrid-components/react/datatable/API#Rolagem infinita (`infiniteScroll`)|rolagem infinita]].
 - **Ref imperativo:** `getProcessedRows`, `getPagedRows`, `clearFilters`, `clearSelection`, `resetSort`, `resetPage` e `goToPage`.
 
 ## Quando usar
@@ -35,7 +35,7 @@ Mostra coleções tabulares com as funções abaixo, todas **Confirmado** em `Sg
 - **Não use para:**
   - edição inline: não há edição de célula no componente;
   - árvores: veja `SgTreeView` (outro grupo);
-  - escolher itens para um formulário: prefira [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|inputs de seleção]] como `SgPickList`/`SgMultiSelect`.
+  - escolher itens para um formulário: prefira [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|inputs de seleção]] como `SgPickList`/`SgMultiSelect`.
 
   Essas recomendações são **Inferência**, a partir das props existentes.
 - **Formulário:** não há integração com react-hook-form. A seleção é controlada por `selection`/`onSelectionChange`. **Confirmado**.
@@ -59,13 +59,13 @@ Mostra coleções tabulares com as funções abaixo, todas **Confirmado** em `Sg
   - zebra: `--sg-primary-50`;
   - texto secundário: `--sg-muted`.
 - **Customização:** `className`, `style`, `tableClassName`, `rowClassName` (string ou função), além de `className`/`headerClassName`/`bodyClassName` por coluna. Flags visuais: `stripedRows`, `showGridlines`, `hoverableRows`.
-- O CSS é injetado na importação do pacote (ver [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral#Tema e estilos|Tema e estilos]]).
+- O CSS é injetado na importação do pacote (ver [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral#Tema e estilos|Tema e estilos]]).
 
 **Confirmado**.
 
 ## Internacionalização
 
-Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-components/datatable/API#Internacionalização|API]]), resolvidas pelo `SgComponentsI18nProvider`. Sem provider, o locale padrão é `en-US`. **Confirmado**.
+Os textos usam as chaves `components.datatable.*` (ver [[SeedGrid/SeedGrid-components/react/datatable/API#Internacionalização|API]]), resolvidas pelo `SgComponentsI18nProvider`. Sem provider, o locale padrão é `en-US`. **Confirmado**.
 
 ## Testes (lidos, **não executados**)
 

@@ -13,13 +13,13 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 
 > **Duas plataformas, os mesmos nomes de componente.** **React** = `@seedgrid/fe-components` (`front/seedgrid-fe-components`); **Flutter** = `seedgrid_components` (`front/seedgrid-fe-flutter`, não publicado). `SgButton` existe nas duas, com API quase igual. Antes de escolher ou copiar código, leia [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]] (onde está cada uma, como escolher, placar de paridade). Cada seção abaixo diz a plataforma no título.
 
-**React.** Monorepo `front/seedgrid-fe-components` (pnpm + Turborepo, React 19). Pacote principal `@seedgrid/fe-components` 2026.7.1; importação pública pelo barrel `src/index.ts` (`import { SgButton } from "@seedgrid/fe-components"`) e CSS em `@seedgrid/fe-components/style.css` — detalhes em [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]].
+**React.** Monorepo `front/seedgrid-fe-components` (pnpm + Turborepo, React 19). Pacote principal `@seedgrid/fe-components` 2026.7.1; importação pública pelo barrel `src/index.ts` (`import { SgButton } from "@seedgrid/fe-components"`) e CSS em `@seedgrid/fe-components/style.css` — detalhes em [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]].
 
 **Flutter.** Monorepo `front/seedgrid-fe-flutter` (pub workspaces); pacote `seedgrid_components` (importação `package:seedgrid_components/seedgrid_components.dart`), com `seedgrid_theme` e `seedgrid_commons`; notas em [[SeedGrid/SeedGrid-components/flutter/Visao-geral|Flutter: visão geral]], [[SeedGrid/SeedGrid-components/flutter/Paridade|Paridade]], [[SeedGrid/SeedGrid-components/flutter/Divergencias|Divergências]] e [[SeedGrid/SeedGrid-components/flutter/Traducao-React-para-Dart|Tradução React → Dart]].
 
 - **Exportado = sim**: disponível no barrel público. **não**: interno (documentado só para referência).
 - Cada grupo tem `Visao-geral` (quando usar), `API` (props completas, eventos, a11y) e `Exemplos` (React: TSX validado contra a API; Flutter: Dart copiado das regiões do showcase), nas duas plataformas.
-- Contratos comuns: react-hook-form e base `SgInputText` em [[SeedGrid/SeedGrid-components/inputs-texto/API|inputs-texto/API]].
+- Contratos comuns: react-hook-form e base `SgInputText` em [[SeedGrid/SeedGrid-components/react/inputs-texto/API|inputs-texto/API]].
 - App de vitrine: [[SeedGrid/SeedGrid-components/showcase|Showcase]]. Pacotes de tema/core/playground: [[SeedGrid/SeedGrid-components/pacotes/Visao-geral|Pacotes]]. Módulos de tela ligados às extensions: [[SeedGrid/SeedGrid-components/modulos/Visao-geral|Módulos]].
 - Esta nota é **gerada** (`node scripts/kb-catalogs.mjs --only components --write`) a partir das notas de cada grupo; os resumos são a 1ª frase da coluna "Para que serve"/"Use para" da Visao-geral (≤100 caracteres) — corrija a nota de origem e regenere.
 
@@ -27,19 +27,19 @@ gerado-por: scripts/kb-catalogs.mjs --only components
 
 | Grupo | Componentes `Sg*` | Outros símbolos (hooks, funções, pacotes) | Notas (React) |
 |---|---|---|---|
-| Inputs de texto e documentos | 15 | 0 | [[SeedGrid/SeedGrid-components/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos\|Exemplos]] |
-| Inputs de seleção e valores | 14 | 0 | [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos\|Exemplos]] |
-| Data e hora, imagem e câmera | 4 | 0 | [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos\|Exemplos]] |
-| Tabela de dados | 1 | 0 | [[SeedGrid/SeedGrid-components/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/datatable/Exemplos\|Exemplos]] |
-| Editor de texto rico | 1 | 0 | [[SeedGrid/SeedGrid-components/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/editor/API\|API]] · [[SeedGrid/SeedGrid-components/editor/Exemplos\|Exemplos]] |
-| Botões | 3 | 2 | [[SeedGrid/SeedGrid-components/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/buttons/Exemplos\|Exemplos]] |
-| Feedback e exibição | 12 | 12 | [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/feedback-e-exibicao/Exemplos\|Exemplos]] |
-| Layout e containers | 19 | 34 | [[SeedGrid/SeedGrid-components/layout/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/layout/API\|API]] · [[SeedGrid/SeedGrid-components/layout/Exemplos\|Exemplos]] |
-| Navegação, overlay e wizard | 6 | 11 | [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Exemplos\|Exemplos]] |
-| Gadgets (relógio, calendário, gauges, QR) | 10 | 22 | [[SeedGrid/SeedGrid-components/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/gadgets/Exemplos\|Exemplos]] |
-| Dígitos animados | 8 | 0 | [[SeedGrid/SeedGrid-components/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/digits/API\|API]] · [[SeedGrid/SeedGrid-components/digits/Exemplos\|Exemplos]] |
-| Providers (ambiente/persistência e realtime) | 2 | 17 | [[SeedGrid/SeedGrid-components/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/providers/API\|API]] · [[SeedGrid/SeedGrid-components/providers/Exemplos\|Exemplos]] |
-| Fundamentos do @seedgrid/fe-components | 0 | 8 | [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/fundamentos/Exemplos\|Exemplos]] |
+| Inputs de texto e documentos | 15 | 0 | [[SeedGrid/SeedGrid-components/react/inputs-texto/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/inputs-texto/API\|API]] · [[SeedGrid/SeedGrid-components/react/inputs-texto/Exemplos\|Exemplos]] |
+| Inputs de seleção e valores | 14 | 0 | [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/inputs-selecao/API\|API]] · [[SeedGrid/SeedGrid-components/react/inputs-selecao/Exemplos\|Exemplos]] |
+| Data e hora, imagem e câmera | 4 | 0 | [[SeedGrid/SeedGrid-components/react/inputs-midia/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/inputs-midia/API\|API]] · [[SeedGrid/SeedGrid-components/react/inputs-midia/Exemplos\|Exemplos]] |
+| Tabela de dados | 1 | 0 | [[SeedGrid/SeedGrid-components/react/datatable/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/datatable/API\|API]] · [[SeedGrid/SeedGrid-components/react/datatable/Exemplos\|Exemplos]] |
+| Editor de texto rico | 1 | 0 | [[SeedGrid/SeedGrid-components/react/editor/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/editor/API\|API]] · [[SeedGrid/SeedGrid-components/react/editor/Exemplos\|Exemplos]] |
+| Botões | 3 | 2 | [[SeedGrid/SeedGrid-components/react/buttons/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/buttons/API\|API]] · [[SeedGrid/SeedGrid-components/react/buttons/Exemplos\|Exemplos]] |
+| Feedback e exibição | 12 | 12 | [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/API\|API]] · [[SeedGrid/SeedGrid-components/react/feedback-e-exibicao/Exemplos\|Exemplos]] |
+| Layout e containers | 19 | 34 | [[SeedGrid/SeedGrid-components/react/layout/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/layout/API\|API]] · [[SeedGrid/SeedGrid-components/react/layout/Exemplos\|Exemplos]] |
+| Navegação, overlay e wizard | 6 | 11 | [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API\|API]] · [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Exemplos\|Exemplos]] |
+| Gadgets (relógio, calendário, gauges, QR) | 10 | 22 | [[SeedGrid/SeedGrid-components/react/gadgets/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/gadgets/API\|API]] · [[SeedGrid/SeedGrid-components/react/gadgets/Exemplos\|Exemplos]] |
+| Dígitos animados | 8 | 0 | [[SeedGrid/SeedGrid-components/react/digits/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/digits/API\|API]] · [[SeedGrid/SeedGrid-components/react/digits/Exemplos\|Exemplos]] |
+| Providers (ambiente/persistência e realtime) | 2 | 17 | [[SeedGrid/SeedGrid-components/react/providers/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/providers/API\|API]] · [[SeedGrid/SeedGrid-components/react/providers/Exemplos\|Exemplos]] |
+| Fundamentos do @seedgrid/fe-components | 0 | 8 | [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral\|Visão geral]] · [[SeedGrid/SeedGrid-components/react/fundamentos/API\|API]] · [[SeedGrid/SeedGrid-components/react/fundamentos/Exemplos\|Exemplos]] |
 | Pacotes de apoio | 0 | 4 | [[SeedGrid/SeedGrid-components/pacotes/Visao-geral\|Visão geral]] |
 | Módulos de tela @seedgrid/fe-* | 0 | 10 | [[SeedGrid/SeedGrid-components/modulos/Visao-geral\|Visão geral]] |
 | Showcase | 0 | 1 | [[SeedGrid/SeedGrid-components/showcase\|Showcase]] |

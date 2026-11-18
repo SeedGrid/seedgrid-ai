@@ -16,13 +16,13 @@ plataforma: react
 
 > **Atualização de 2026-11-12 (P155.F3.T9), `SgInputDateTime`.** Nova prop `valueMode` (`"local"`, `"utc"` ou `"offset"`) escolhe o formato do valor que sai (`onChange` e formulário) e que `value`/`defaultValue`/`defaultValues`/`setValue` aceitam. **Mudança que quebra:** o padrão agora é `local` (`2026-01-15T10:30`); antes o `onChange` entregava sempre o instante UTC com milissegundos (`2026-11-03T17:30:00.000Z`). Para manter o instante UTC use `valueMode="utc"` (agora sem milissegundos). Conferido no código local do `fe-components` (commits `e1284d8` e `fa2684c`, ainda sem push; `src/inputs/SgInputDateTime.tsx`, `src/inputs/dateTimeLogic.ts`, `CHANGELOG.md`).
 
-> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`, a partir do commit `9552636`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
+> **Publicado no npm em 2026.11.2** (`@seedgrid/fe-components`, a partir do commit `9552636`, 2026-11-04; ver o aviso na [[SeedGrid/SeedGrid-components/react/inputs-midia/Visao-geral|Visão geral]]). A API abaixo é a do código commitado.
 
-Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos]].
+Import: `import { SgInputDateTime, SgFileUpload, SgImageUpload, SgCameraCapture } from "@seedgrid/fe-components";`. Contexto: [[SeedGrid/SeedGrid-components/react/inputs-midia/Visao-geral|Visão geral]]. Exemplos: [[SeedGrid/SeedGrid-components/react/inputs-midia/Exemplos|Exemplos]].
 
 ## `SgInputDateTime`
 
-Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange"> & { … }`. Além das props abaixo, **herda** as de [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato base SgInputText|SgInputText]] (rótulo, `labelPosition`, `labelWidth`, `labelAlign`, `clearButton`, `elevation`, `borderRadius`, `placeholder`, `enabled`, `readOnly`, `required`, `name`/`control`/`register`/`rules` do react-hook-form, etc.). **Confirmado** em `SgInputDateTime.tsx`.
+Tipo de props: `SgInputDateTimeProps = Omit<SgInputTextProps, "type" | "onChange"> & { … }`. Além das props abaixo, **herda** as de [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato base SgInputText|SgInputText]] (rótulo, `labelPosition`, `labelWidth`, `labelAlign`, `clearButton`, `elevation`, `borderRadius`, `placeholder`, `enabled`, `readOnly`, `required`, `name`/`control`/`register`/`rules` do react-hook-form, etc.). **Confirmado** em `SgInputDateTime.tsx`.
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|
@@ -66,7 +66,7 @@ Fonte: `src/inputs/SgInputDateTime.tsx` (linhas 44-47, 66-100, 181-183) e `src/i
 
 ## `SgFileUpload`
 
-Tipo de props: `SgFileUploadProps = RhfFieldProps & { … }` (`name`/`control` do react-hook-form; ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|Contrato RhfFieldProps]]). É o componente **base** de arquivos: o `SgImageUpload` é uma **composição** dele (não herança de classe). **Sem retrocompatibilidade** (decisão do dono, P141): o valor é **sempre uma lista**.
+Tipo de props: `SgFileUploadProps = RhfFieldProps & { … }` (`name`/`control` do react-hook-form; ver [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|Contrato RhfFieldProps]]). É o componente **base** de arquivos: o `SgImageUpload` é uma **composição** dele (não herança de classe). **Sem retrocompatibilidade** (decisão do dono, P141): o valor é **sempre uma lista**.
 
 | Prop | Tipo | Padrão | Obrigatória | Descrição |
 |---|---|---|---|---|

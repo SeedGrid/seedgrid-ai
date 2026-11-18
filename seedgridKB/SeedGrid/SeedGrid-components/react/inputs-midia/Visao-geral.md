@@ -16,7 +16,7 @@ plataforma: react
 
 > **Estado de publicação (2026-11-04): React publicado no npm em 2026.11.2.** `@seedgrid/fe-core`, `fe-commons`, `fe-components`, `fe-theme` e `fe-playground` saíram na versão `2026.11.2` (job "Publish FE Packages", a partir do commit `9552636` do `fe-components`, que inclui `839e245` e `bb0ad1f`: data e hora, imagem e câmera, `SgFileUpload` e `SgImageUpload` refeito). Versões até `2026.11.1` não têm `SgFileUpload`: exija `>=2026.11.2`. O MCP de componentes foi implantado com os manifestos novos (`d3f5f64`). O Flutter está na `main` do `fe-flutter` (commit `80aa5cb`); o **pacote Flutter não está publicado no pub.dev** (o dono não liberou). Planos P132, P133, P134 e P141.
 
-Referência completa: [[SeedGrid/SeedGrid-components/inputs-midia/API|API de data e hora, imagem e câmera]]. Código: [[SeedGrid/SeedGrid-components/inputs-midia/Exemplos|Exemplos de data e hora, imagem e câmera]].
+Referência completa: [[SeedGrid/SeedGrid-components/react/inputs-midia/API|API de data e hora, imagem e câmera]]. Código: [[SeedGrid/SeedGrid-components/react/inputs-midia/Exemplos|Exemplos de data e hora, imagem e câmera]].
 
 ## Para que serve
 
@@ -45,7 +45,7 @@ Essas recomendações vêm dos `aiHints` dos `*.meta.ts` (**Confirmado**) e das 
 - **Erros chegam por callback com código estável**, não só por texto: `onError(code, message)`. O `message` já vem traduzido; use o `code` para a lógica.
   - `SgFileUpload` e `SgImageUpload`: `type`, `size`, `total`, `count` e, só na imagem, `dimension` e `aspect`; `onError(code, message, fileName)` vem **por arquivo** e os demais seguem válidos;
   - `SgCameraCapture`: `permission`, `noCamera`, `failed`.
-- **Textos traduzidos** em cinco idiomas pelas chaves `components.inputs.fileupload.*`, `components.inputs.imageupload.*` e equivalentes (ver [[SeedGrid/SeedGrid-components/inputs-midia/API#Internacionalização|API]]).
+- **Textos traduzidos** em cinco idiomas pelas chaves `components.inputs.fileupload.*`, `components.inputs.imageupload.*` e equivalentes (ver [[SeedGrid/SeedGrid-components/react/inputs-midia/API#Internacionalização|API]]).
 - **Lógica pura compartilhada com o Flutter**: `dateTimeLogic.ts`, `fileUploadLogic.ts`, `imageUploadLogic.ts` e `cameraLogic.ts` geram vetores de teste que o Dart também confere, então as regras (fuso, validação de arquivo, guia, classificação de erro) são as mesmas nas duas plataformas.
 
 ## Composição e dependências
@@ -62,7 +62,7 @@ Essas recomendações vêm dos `aiHints` dos `*.meta.ts` (**Confirmado**) e das 
 
 - **Câmera exige contexto seguro** (HTTPS ou `localhost`) e a permissão do usuário. Sem isso o componente mostra o estado `permission`, `noCamera` ou `failed`. **Inferência** a partir de `getUserMedia`.
 - **Não testado em dispositivo real**: a câmera só foi validada com mock. Teste em celular antes de depender dela em produção.
-- `SgInputDateTime`: o **padrão agora é `valueMode="local"`** (`2026-01-15T10:30`, sem fuso; mudança que quebra, antes o `onChange` dava UTC com milissegundos). Um `Instant` do Java não lê esse texto: para instantes use `valueMode="utc"` (`2026-01-15T13:30:00Z`) ou `"offset"` (`2026-01-15T10:30:00-03:00`, `OffsetDateTime`). `timeZone` define em que fuso o campo mostra a hora; o padrão é o fuso do navegador. Com `register`, `utc`/`offset` convertem só o que é digitado: para atribuir por código use `control`. Detalhes: [[SeedGrid/SeedGrid-components/inputs-midia/API#Formato do valor (`valueMode`)|API]].
+- `SgInputDateTime`: o **padrão agora é `valueMode="local"`** (`2026-01-15T10:30`, sem fuso; mudança que quebra, antes o `onChange` dava UTC com milissegundos). Um `Instant` do Java não lê esse texto: para instantes use `valueMode="utc"` (`2026-01-15T13:30:00Z`) ou `"offset"` (`2026-01-15T10:30:00-03:00`, `OffsetDateTime`). `timeZone` define em que fuso o campo mostra a hora; o padrão é o fuso do navegador. Com `register`, `utc`/`offset` convertem só o que é digitado: para atribuir por código use `control`. Detalhes: [[SeedGrid/SeedGrid-components/react/inputs-midia/API#Formato do valor (`valueMode`)|API]].
 - `SgFileUpload` e `SgImageUpload`: nada é enviado e nada é recortado ou comprimido. A leitura de dimensões do `SgImageUpload` só roda quando há `minWidth`, `minHeight` ou `aspect`. A paridade com o Flutter é **parcial**: o React aceita arrastar e soltar e entrega `File` do navegador; o Flutter abre o seletor do sistema e entrega `SgFile`.
 - `SgCameraCapture` não tem `onFrame`: a análise de qualidade fica fora da versão 1.
 - Nenhum dos quatro está publicado ainda (ver o aviso no topo).

@@ -12,11 +12,11 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/buttons/API|API — Botões (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral: [[SeedGrid/SeedGrid-components/buttons/Visao-geral|Botões — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos de botões]]
+Visão geral: [[SeedGrid/SeedGrid-components/react/buttons/Visao-geral|Botões — visão geral]] · Exemplos: [[SeedGrid/SeedGrid-components/react/buttons/Exemplos|Exemplos de botões]]
 
 > **Como ler as tabelas.** Geradas a partir do tipo TypeScript real do 1º parâmetro de cada componente (TS checker, commit `ad30fc11de`) — lista completa das props próprias. **Padrão**: valor sem marca = inicializador na desestruturação do componente (Confirmado); `ᶠ` = fallback interno `??` no corpo do componente (Confirmado, expressão pode estar abreviada); `ᵇ` = padrão aplicado pelo componente base para o qual a prop é repassada; `ᵐ` = declarado só no `*.meta.ts`; `ˢ` = declarado só na tabela de props do showcase (`ᵐ`/`ˢ` = Não confirmado no código); `—` = sem padrão. **Descrição**: JSDoc > `*.meta.ts` > tabela do showcase (textos originais, sem acento quando assim na fonte); *(Inferência)* = escrita a partir da leitura do código. **Obrigatória** = prop não opcional no tipo.
 
-Todos os arquivos são `"use client"`. Textos padrão (aria-labels, "abrir/fechar") vêm do i18n do pacote via `useComponentsI18n()` — ver [[SeedGrid/SeedGrid-components/fundamentos/API|API › i18n]].
+Todos os arquivos são `"use client"`. Textos padrão (aria-labels, "abrir/fechar") vêm do i18n do pacote via `useComponentsI18n()` — ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|API › i18n]].
 
 ## SgButton
 
@@ -66,7 +66,7 @@ import { SgButton, type SgButtonProps, type SgButtonCustomColors } from "@seedgr
 5. **`async` só para ação que pode demorar ou falhar** (salvar, enviar, pagar); ação instantânea fica síncrona.
 6. **`loading` manual vence:** o loading efetivo é `loading` ou operação pendente.
 
-Confirmado em `SgButton.tsx` (`handleClick`, `pendingRef`, `aria-busy`). Exemplos: «Loading automático com Future», «onClick síncrono x assíncrono» e «Tratando erro no onClick assíncrono» em [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos de botões]].
+Confirmado em `SgButton.tsx` (`handleClick`, `pendingRef`, `aria-busy`). Exemplos: «Loading automático com Future», «onClick síncrono x assíncrono» e «Tratando erro no onClick assíncrono» em [[SeedGrid/SeedGrid-components/react/buttons/Exemplos|Exemplos de botões]].
 
 ### Ref
 
@@ -242,7 +242,7 @@ Sem `children`. Slots: `icon`, `activeIcon` (exibido quando aberto; sem ele, o �
 
 ### Contexto, providers e hooks
 
-- **Persistência da posição arrastada** (`enableDragDrop` + `dragId`): chave `sg-fab-pos:<dragId>` (`buildFabStorageKey`). Se houver `SgEnvironmentProvider` acima, usa `useSgPersistence()` (load/save/clear da estratégia configurada); senão, `localStorage` direto (Confirmado). Ver [[SeedGrid/SeedGrid-components/providers/API|Providers › SgEnvironmentProvider]].
+- **Persistência da posição arrastada** (`enableDragDrop` + `dragId`): chave `sg-fab-pos:<dragId>` (`buildFabStorageKey`). Se houver `SgEnvironmentProvider` acima, usa `useSgPersistence()` (load/save/clear da estratégia configurada); senão, `localStorage` direto (Confirmado). Ver [[SeedGrid/SeedGrid-components/react/providers/API|Providers › SgEnvironmentProvider]].
 - Posição restaurada é limitada à viewport (ou ao `offsetParent` quando `absolute`).
 
 ### Acessibilidade

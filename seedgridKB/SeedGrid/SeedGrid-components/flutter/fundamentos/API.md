@@ -10,13 +10,13 @@ analisado-em: 2026-11-09
 
 # API — Fundamentos (Flutter)
 
-> **Plataforma: Flutter.** API Dart de formulário, i18n, props, enums, tema e commons. A API **React** equivalente está em [[SeedGrid/SeedGrid-components/fundamentos/API|API — Fundamentos (React)]], [[SeedGrid/SeedGrid-components/pacotes/fe-theme|@seedgrid/fe-theme]] e [[SeedGrid/SeedGrid-components/pacotes/fe-commons|@seedgrid/fe-commons]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos (Flutter)]].
+> **Plataforma: Flutter.** API Dart de formulário, i18n, props, enums, tema e commons. A API **React** equivalente está em [[SeedGrid/SeedGrid-components/react/fundamentos/API|API — Fundamentos (React)]], [[SeedGrid/SeedGrid-components/pacotes/fe-theme|@seedgrid/fe-theme]] e [[SeedGrid/SeedGrid-components/pacotes/fe-commons|@seedgrid/fe-commons]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/fundamentos/Exemplos|Exemplos (Flutter)]].
 
 > **Como ler.** Tudo foi lido no código (commit `e9989b8`); caminhos relativos a `packages/`. **Confirmado** = lido na fonte citada; **Inferência** = deduzido; **Não confirmado** = não verifiquei. Onde há texto de erro ou mensagem, vem do código. Este grupo não tem widget visual próprio (exceto `SgForm`, `SgComponentsI18nProvider`, `SeedThemeProvider` e `SgValidationScope`, que não desenham nada): **acessibilidade** (`Semantics`) não se aplica (busca por `Semantics` em `form/`, `i18n/`, `props/`, `seedgrid_theme/lib` e `seedgrid_commons/lib` não encontrou ocorrência).
 
 ## Mapa React → Flutter
 
-Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/fundamentos/API|fundamentos]] e dos pacotes [[SeedGrid/SeedGrid-components/pacotes/fe-theme|fe-theme]] e [[SeedGrid/SeedGrid-components/pacotes/fe-commons|fe-commons]] e o que há no Dart.
+Cada símbolo dos grupos React [[SeedGrid/SeedGrid-components/react/fundamentos/API|fundamentos]] e dos pacotes [[SeedGrid/SeedGrid-components/pacotes/fe-theme|fe-theme]] e [[SeedGrid/SeedGrid-components/pacotes/fe-commons|fe-commons]] e o que há no Dart.
 
 | Símbolo React | Equivalente Flutter | Estado |
 |---|---|---|

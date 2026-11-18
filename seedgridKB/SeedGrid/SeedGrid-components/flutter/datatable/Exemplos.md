@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Exemplos — Tabela de dados (Flutter)
 
-> **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/datatable/Exemplos|Exemplos — Tabela de dados (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/datatable/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral (Flutter)]].
+> **Plataforma: Flutter.** Exemplos em Dart; os de React estão em [[SeedGrid/SeedGrid-components/react/datatable/Exemplos|Exemplos — Tabela de dados (React)]]. API: [[SeedGrid/SeedGrid-components/flutter/datatable/API|API (Flutter)]] · visão geral: [[SeedGrid/SeedGrid-components/flutter/datatable/Visao-geral|Visão geral (Flutter)]].
 
 > **Origem e validação.** Cada trecho é o conteúdo da região `// #region`…`// #endregion` da página do showcase (constantes `*PageSnippets`, geradas por `tools/showcase_snippets/extract.mjs`), ou seja, o código que o showcase renderiza; quem garante que compila é o `flutter test` do repositório (`test/all_pages_test.dart`), **que não executei para esta nota**. Única alteração: `context.tx('texto')` (i18n do showcase, não faz parte da biblioteca) virou o literal `'texto'`. Todos supõem `import 'package:flutter/material.dart';` e `import 'package:seedgrid_components/seedgrid_components.dart';` e vão dentro de um `build`/`Scaffold`; trechos que dependem de campos do estado local da página (por exemplo `ValueNotifier`) trazem um "Ajuste" logo abaixo; nenhum usa `setState` de página (ADR 63). Em geral 3 exemplos por componente (mais os exemplos novos de cada componente, quando a seção os traz); o conjunto completo está no showcase (`apps/seedgrid_showcase`).
 

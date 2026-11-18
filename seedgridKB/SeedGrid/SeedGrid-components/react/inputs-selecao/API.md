@@ -12,14 +12,14 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-selecao/API|API — Inputs de seleção e valores (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Pacote `@seedgrid/fe-components` v`2026.7.1`. Contexto: [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|Visão geral dos inputs de seleção]]. Exemplos: [[SeedGrid/SeedGrid-components/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]].
+Pacote `@seedgrid/fe-components` v`2026.7.1`. Contexto: [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|Visão geral dos inputs de seleção]]. Exemplos: [[SeedGrid/SeedGrid-components/react/inputs-selecao/Exemplos|Exemplos dos inputs de seleção]].
 
-As tabelas seguem a metodologia descrita em [[SeedGrid/SeedGrid-components/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]]:
+As tabelas seguem a metodologia descrita em [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Como as tabelas foram montadas|Como as tabelas foram montadas]]:
 - tipos e obrigatoriedade vêm do type checker;
 - padrões e descrições foram lidos no código;
 - elas são completas.
 
-Props `name`/`control`/`register`/`rules`/`error` seguem o [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|contrato RhfFieldProps]]. Desvios desse contrato estão anotados na descrição de cada prop. `SgAutocomplete`, `SgCombobox` e `SgMultiSelect` herdam do [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato base SgInputText|contrato base SgInputText]].
+Props `name`/`control`/`register`/`rules`/`error` seguem o [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato RhfFieldProps (react-hook-form)|contrato RhfFieldProps]]. Desvios desse contrato estão anotados na descrição de cada prop. `SgAutocomplete`, `SgCombobox` e `SgMultiSelect` herdam do [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato base SgInputText|contrato base SgInputText]].
 
 ## Importação e exportação pública
 

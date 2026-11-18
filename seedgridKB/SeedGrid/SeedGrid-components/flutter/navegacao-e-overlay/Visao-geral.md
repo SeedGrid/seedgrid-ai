@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Navegação, overlay e wizard — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação, overlay e wizard — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Visao-geral|Navegação, overlay e wizard — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/API|API — Navegação, overlay e wizard (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos|Exemplos — Navegação, overlay e wizard (Flutter)]]

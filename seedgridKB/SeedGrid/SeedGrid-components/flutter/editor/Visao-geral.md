@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Editor de texto rico — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|Editor de texto rico — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/editor/API|API — Editor de texto rico (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/editor/Exemplos|Exemplos — Editor de texto rico (Flutter)]]
@@ -39,7 +39,7 @@ analisado-em: 2026-11-07
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/editor/Visao-geral|Editor de texto rico — React]]. O grupo React só exporta `SgTextEditor` e seus tipos; no Dart: `SgTextEditorFile`, `SgTextEditorSaveMeta`, `SgTextEditorHtmlFilePicker` e `SgTextEditorHtml` (exportados pelo barril; tabela abaixo; `SgTextEditorCommands` e as funções `sg*` existem em arquivos internos, fora do barril). Nenhum símbolo ficou sem equivalente confirmado.
+Fonte: [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|Editor de texto rico — React]]. O grupo React só exporta `SgTextEditor` e seus tipos; no Dart: `SgTextEditorFile`, `SgTextEditorSaveMeta`, `SgTextEditorHtmlFilePicker` e `SgTextEditorHtml` (exportados pelo barril; tabela abaixo; `SgTextEditorCommands` e as funções `sg*` existem em arquivos internos, fora do barril). Nenhum símbolo ficou sem equivalente confirmado.
 
 ## Não verificado
 

@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral — Inputs de texto e documentos (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Este grupo reúne os 15 campos de digitação do pacote `@seedgrid/fe-components` (v`2026.7.1`). Todos estão em `src/inputs/` e todos são exportados pela raiz do pacote. Detalhe de props, eventos e ref: [[SeedGrid/SeedGrid-components/inputs-texto/API|API dos inputs de texto]]. Código: [[SeedGrid/SeedGrid-components/inputs-texto/Exemplos|Exemplos dos inputs de texto]]. Grupos vizinhos: [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|inputs de seleção]], [[SeedGrid/SeedGrid-components/datatable/Visao-geral|SgDatatable]], [[SeedGrid/SeedGrid-components/editor/Visao-geral|SgTextEditor]].
+Este grupo reúne os 15 campos de digitação do pacote `@seedgrid/fe-components` (v`2026.7.1`). Todos estão em `src/inputs/` e todos são exportados pela raiz do pacote. Detalhe de props, eventos e ref: [[SeedGrid/SeedGrid-components/react/inputs-texto/API|API dos inputs de texto]]. Código: [[SeedGrid/SeedGrid-components/react/inputs-texto/Exemplos|Exemplos dos inputs de texto]]. Grupos vizinhos: [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|inputs de seleção]], [[SeedGrid/SeedGrid-components/react/datatable/Visao-geral|SgDatatable]], [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|SgTextEditor]].
 
 ## Objetivo
 
@@ -44,7 +44,7 @@ O padrão de nomes de eventos vem da casa: `onEnter` no foco, `onExit` no blur, 
 | `SgInputCurrency` | Valor monetário com símbolo via `Intl` (padrão BRL); entrega número (`null` só com `emptyValueIsNull`). | própria (derivada do código do `SgInputNumber`) |
 | `SgInputOTP` | Código de uso único segmentado, com máscara (`999999`, `###-###`). | própria |
 
-Para escolhas fechadas, como combos e listas, use o grupo [[SeedGrid/SeedGrid-components/inputs-selecao/Visao-geral|inputs de seleção]]. Para texto rico, use o [[SeedGrid/SeedGrid-components/editor/Visao-geral|SgTextEditor]]. Esses mesmos encaminhamentos aparecem nos `aiHints.avoidUseCases` de `SgInputText.meta.ts`. **Confirmado**.
+Para escolhas fechadas, como combos e listas, use o grupo [[SeedGrid/SeedGrid-components/react/inputs-selecao/Visao-geral|inputs de seleção]]. Para texto rico, use o [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|SgTextEditor]]. Esses mesmos encaminhamentos aparecem nos `aiHints.avoidUseCases` de `SgInputText.meta.ts`. **Confirmado**.
 
 ## Composição
 
@@ -74,7 +74,7 @@ graph TD
   - `lucide-react` `^0.468.0 || ^1.0.0` (ícone `X` do botão limpar).
 
   **Confirmado** em `package.json` e nos imports.
-- **Peers TipTap:** não são usados por este grupo, mas são carregados pela raiz do pacote. Ver [[SeedGrid/SeedGrid-components/editor/Visao-geral|SgTextEditor]].
+- **Peers TipTap:** não são usados por este grupo, mas são carregados pela raiz do pacote. Ver [[SeedGrid/SeedGrid-components/react/editor/Visao-geral|SgTextEditor]].
 - **Rede:** `SgInputCNPJ` (`validateWithPublicaCnpj`) e `SgInputPostalCode` (`validateWithViaCep`) chamam `fetch` para `publica.cnpj.ws` e `viacep.com.br` por padrão. Ambos aceitam uma função de consulta própria (`publicaCnpjFetch`, `viaCepFetch`).
 - **APIs do navegador:** `SgInputPassword` usa `crypto.getRandomValues` para gerar senha.
 - **"use client":** todos os arquivos começam com `"use client"`, o que serve ao Next.js App Router.
@@ -123,5 +123,5 @@ O script `test` do pacote roda `pnpm run build` antes.
 
   `SgInputPhone`, `SgInputEmail` e `SgInputPassword` repassam. **Confirmado** (`required={required}` só aparece nesses três).
 - O erro não é anunciado a leitores de tela no `SgInputText` (sem `aria-invalid`/`aria-describedby`). O `SgToggleSwitch` e o `SgInputOTP` fazem isso. **Confirmado**.
-- Para reagir ao foco, use `onEnter`: o `inputProps.onFocus` não é chamado pelo `SgInputText`. **Confirmado**; ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Contrato base SgInputText|contrato base]].
+- Para reagir ao foco, use `onEnter`: o `inputProps.onFocus` não é chamado pelo `SgInputText`. **Confirmado**; ver [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Contrato base SgInputText|contrato base]].
 - Os tipos de props de `SgInputEmail`, `SgInputPassword`, `SgInputDate` e `SgInputBirthDate` não são reexportados. **Confirmado**.

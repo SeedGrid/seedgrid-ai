@@ -10,7 +10,7 @@ analisado-em: 2026-11-09
 
 # Providers (ambiente/persistência e realtime) — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/providers/Visao-geral|Providers (ambiente/persistência e realtime) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/providers/Visao-geral|Providers (ambiente/persistência e realtime) — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/providers/API|API — Providers (ambiente/persistência e realtime) (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/providers/Exemplos|Exemplos — Providers (ambiente/persistência e realtime) (Flutter)]]
@@ -41,7 +41,7 @@ analisado-em: 2026-11-09
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/providers/Visao-geral|Providers — React]]. Todos têm equivalente confirmado no código; nada ficou "não portado":
+Fonte: [[SeedGrid/SeedGrid-components/react/providers/Visao-geral|Providers — React]]. Todos têm equivalente confirmado no código; nada ficou "não portado":
 
 | Símbolo React | Equivalente Flutter |
 |---|---|

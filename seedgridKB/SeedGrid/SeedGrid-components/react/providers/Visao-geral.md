@@ -17,12 +17,12 @@ Este grupo reúne os dois providers "de aplicação" do `@seedgrid/fe-components
 - **`SgEnvironmentProvider`** (`src/environment/`) — define *namespace* (ex.: usuário/tenant), *escopo* e a *estratégia de persistência* que os componentes SeedGrid usam para lembrar estado (posição de FAB/toolbar/dock-menu, layout do dock, cards recolhidos, menu etc.). Acompanha hooks (`useSgEnvironment`, `useSgPersistence`, `useSgPersistentState`…) e fábricas de estratégia (localStorage, API REST e composta).
 - **`SgRealtimeProvider`** (`src/realtime/`) — conecta a tela ao SeedGrid Pulse para receber avisos em tempo real do usuário logado, com hooks `useSgRealtimeEvent` e `useSgRealtimeStatus` e degradação para *polling*.
 
-- API completa: [[SeedGrid/SeedGrid-components/providers/API|API dos providers]]
-- Exemplos: [[SeedGrid/SeedGrid-components/providers/Exemplos|Exemplos dos providers]]
-- Fundamentos do pacote (instalação, i18n, `SgComponentsI18nProvider`, estilos): [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa: [[SeedGrid/SeedGrid-components/react/providers/API|API dos providers]]
+- Exemplos: [[SeedGrid/SeedGrid-components/react/providers/Exemplos|Exemplos dos providers]]
+- Fundamentos do pacote (instalação, i18n, `SgComponentsI18nProvider`, estilos): [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 - Lado servidor do realtime: [[SeedGrid/Extensions/realtime/Visao-geral|extension realtime]]
 
-Outros providers do pacote ficam nos grupos de origem: `SgTimeProvider` e `SgClockThemeProvider` em [[SeedGrid/SeedGrid-components/gadgets/API|gadgets]]; `SgComponentsI18nProvider` em [[SeedGrid/SeedGrid-components/fundamentos/API|fundamentos]].
+Outros providers do pacote ficam nos grupos de origem: `SgTimeProvider` e `SgClockThemeProvider` em [[SeedGrid/SeedGrid-components/react/gadgets/API|gadgets]]; `SgComponentsI18nProvider` em [[SeedGrid/SeedGrid-components/react/fundamentos/API|fundamentos]].
 
 ## Componentes, hooks e funções
 
@@ -94,7 +94,7 @@ sequenceDiagram
 ## Dependências
 
 - `react` (peer), `@seedgrid/pulse-subscriber-react` (dependência, só realtime).
-- Persistência REST: o backend precisa expor `GET/POST/DELETE {baseUrl}/sg/persistence` com o contrato de `SgPersistenceRecordDTO` (ver [[SeedGrid/SeedGrid-components/providers/API|API]]). **Não confirmado** qual extension Java/Rust implementa essa rota — não foi verificado neste grupo.
+- Persistência REST: o backend precisa expor `GET/POST/DELETE {baseUrl}/sg/persistence` com o contrato de `SgPersistenceRecordDTO` (ver [[SeedGrid/SeedGrid-components/react/providers/API|API]]). **Não confirmado** qual extension Java/Rust implementa essa rota — não foi verificado neste grupo.
 - Realtime: rota de token (BFF) que repassa ao `POST /realtime/connect` da extension realtime (comentário do sample `layout-com-bff` e JSDoc de `SgRealtimeConnectResponse`).
 
 ## Testes existentes (não executados)

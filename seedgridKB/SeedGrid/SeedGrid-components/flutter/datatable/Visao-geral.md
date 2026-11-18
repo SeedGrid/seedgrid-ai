@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # Tabela de dados — Flutter (`seedgrid_components`)
 
-> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
+> **Plataforma: Flutter.** Esta nota descreve os widgets Dart do pacote `seedgrid_components` (repositório `front/seedgrid-fe-flutter`, commit `8a43f9d`, **não publicado** no pub.dev). O mesmo grupo em **React** está em [[SeedGrid/SeedGrid-components/react/datatable/Visao-geral|Tabela de dados — React]]. Como escolher entre as duas plataformas e o placar geral: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
 - API completa (construtor, parâmetros, callbacks, controllers, acessibilidade): [[SeedGrid/SeedGrid-components/flutter/datatable/API|API — Tabela de dados (Flutter)]]
 - Exemplos Dart: [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos|Exemplos — Tabela de dados (Flutter)]]
@@ -41,7 +41,7 @@ analisado-em: 2026-11-07
 
 ## Símbolos do React do mesmo grupo sem componente equivalente
 
-Fonte: [[SeedGrid/SeedGrid-components/datatable/Visao-geral|Tabela de dados — React]]. O grupo React exporta `SgDatatable`, `SG_DATATABLE_MOBILE_BREAKPOINT` e tipos (no Dart: `kDatatableMobileBreakpoint`, e `SgDatatableMobileMode`/`SgDatatableSelectionMode` em `generated/enums.g.dart`); no Dart os tipos viraram `SgDatatableColumn`, `SgDatatableCellMeta`, `SgDatatablePageEvent`, `SgDatatableSortEvent`, `SgDatatableFilterEvent`, `SgDatatableController` e os enums `SgDatatableFilterMatchMode` e `SgDatatableColumnAlign` (ver tabela abaixo). Nenhum símbolo ficou sem equivalente confirmado.
+Fonte: [[SeedGrid/SeedGrid-components/react/datatable/Visao-geral|Tabela de dados — React]]. O grupo React exporta `SgDatatable`, `SG_DATATABLE_MOBILE_BREAKPOINT` e tipos (no Dart: `kDatatableMobileBreakpoint`, e `SgDatatableMobileMode`/`SgDatatableSelectionMode` em `generated/enums.g.dart`); no Dart os tipos viraram `SgDatatableColumn`, `SgDatatableCellMeta`, `SgDatatablePageEvent`, `SgDatatableSortEvent`, `SgDatatableFilterEvent`, `SgDatatableController` e os enums `SgDatatableFilterMatchMode` e `SgDatatableColumnAlign` (ver tabela abaixo). Nenhum símbolo ficou sem equivalente confirmado.
 
 ## Não verificado
 

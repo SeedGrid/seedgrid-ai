@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/navegacao-e-overlay/Exemplos|Exemplos — Navegação, overlay e wizard (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Visão geral: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · API: [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|API]]
+Visão geral: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/Visao-geral|Navegação e overlay]] · API: [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API|API]]
 
 Todos os exemplos do showcase de cada componente, na ordem e com os títulos do showcase (título em pt-BR, como vem do dicionário de i18n). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` correspondente, em `apps/showcase/src/app/components/<componente>/samples/` do seedgrid-fe-components `0f304bb`, comparada texto a texto por script em 2026-11-09 (idêntico). Quando o `.sample` é um trecho sem `import`/`export` (como os do `SgDockMenu`), a linha "Fonte" avisa e o bloco é o trecho do showcase, sem completar. Os blocos não foram compilados nesta conferência. O último exemplo do `SgWizard` (helpers puros) é próprio, não vem do showcase.
 
@@ -574,7 +574,7 @@ Fechamento apenas pelos botões do footer.
 
 Fonte: `apps/showcase/src/app/components/sg-dialog/samples/strict.tsx.sample`.
 
-Nota: Sem X, sem fechar por overlay/Esc. Atenção: com `closeOnEsc={false}` o *focus trap* de `Tab` também fica desligado (ver [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API#SgDialog|API › SgDialog]]).
+Nota: Sem X, sem fechar por overlay/Esc. Atenção: com `closeOnEsc={false}` o *focus trap* de `Tab` também fica desligado (ver [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API#SgDialog|API › SgDialog]]).
 
 ```tsx
 import React from "react";

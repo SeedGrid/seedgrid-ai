@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/layout/Exemplos|Exemplos — Layout e containers (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-API: [[SeedGrid/SeedGrid-components/layout/API|Layout — API]] · Visão geral: [[SeedGrid/SeedGrid-components/layout/Visao-geral|Layout — visão geral]]
+API: [[SeedGrid/SeedGrid-components/react/layout/API|Layout — API]] · Visão geral: [[SeedGrid/SeedGrid-components/react/layout/Visao-geral|Layout — visão geral]]
 
 Todos os exemplos do showcase de cada componente, na ordem e com os títulos do showcase (título em pt-BR, como vem do dicionário de i18n). Cada bloco é cópia 1:1 do arquivo `samples/*.tsx.sample` correspondente, em `apps/showcase/src/app/components/<componente>/samples/` do seedgrid-fe-components `0f304bb`, comparada texto a texto por script em 2026-11-09 (idêntico). Quando o `.sample` é um trecho sem `import`/`export` (como os do `SgCarousel`), a linha "Fonte" avisa e o bloco é o trecho do showcase, sem completar. Os blocos não foram compilados nesta conferência; classes Tailwind e ícones `lucide-react` vêm do showcase (`lucide-react` é peer dependency do pacote).
 

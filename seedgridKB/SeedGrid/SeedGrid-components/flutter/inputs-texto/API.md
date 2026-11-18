@@ -10,7 +10,7 @@ analisado-em: 2026-11-07
 
 # API — Inputs de texto e documentos (Flutter)
 
-> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/inputs-texto/API|API — Inputs de texto e documentos (React)]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos (Flutter)]].
+> **Plataforma: Flutter.** API Dart do grupo; a API React equivalente está em [[SeedGrid/SeedGrid-components/react/inputs-texto/API|API — Inputs de texto e documentos (React)]]. Visão geral: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Visao-geral|Visão geral (Flutter)]] · exemplos: [[SeedGrid/SeedGrid-components/flutter/inputs-texto/Exemplos|Exemplos (Flutter)]].
 
 > **Atualização de 2026-11-12, `SgInputNumber` e `SgInputCurrency`.** Seções reescritas e conferidas contra o código Dart local do `fe-flutter` (commits locais ainda sem push: `c262a0f`, `d577401`, `2abdb89`; árvore em `19f7830`), com arquivo e linha. **Mudanças que quebram:** `onChange` e o valor do formulário passam a ser **número** (`double`; antes, texto como `"1234.50"`); a prop `emptyValue` (enum `SgInputNumberEmptyValue`/`SgInputCurrencyEmptyValue`) foi **removida** e entra `emptyValueIsNull` (`bool`); `validation` passa a ser `String? Function(num?)` (antes, `String`). O contrato de valor das máscaras (CPF, CNPJ, CPFCNPJ, Telefone, CEP) está na seção [[#Campos com máscara: contrato de valor]].
 
@@ -495,7 +495,7 @@ Fonte: `docs/PARIDADE.md` e `docs/DIVERGENCIAS_DO_REACT.md` do repositório Flut
 
 ## Campos com máscara: contrato de valor
 
-Vale para `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone` e `SgInputPostalCode`; é o mesmo contrato do React (ver [[SeedGrid/SeedGrid-components/inputs-texto/API#Campos com máscara: contrato de valor|API React]]). **Confirmado** em `inputs/masked/masked_core.dart` (`SgMaskFormatter`, `sgPhoneStripDdi`) e em `inputs/sg_input_text.dart` (`_display`, `_writeBackMasked`).
+Vale para `SgInputCPF`, `SgInputCNPJ`, `SgInputCPFCNPJ`, `SgInputPhone` e `SgInputPostalCode`; é o mesmo contrato do React (ver [[SeedGrid/SeedGrid-components/react/inputs-texto/API#Campos com máscara: contrato de valor|API React]]). **Confirmado** em `inputs/masked/masked_core.dart` (`SgMaskFormatter`, `sgPhoneStripDdi`) e em `inputs/sg_input_text.dart` (`_display`, `_writeBackMasked`).
 
 1. **O valor do formulário é SEMPRE o mascarado**: em uso avulso (`onChange`), com `name` + `control` e com `name` dentro de um `SgForm` (o equivalente do `register` do React, que não existe no Flutter). Se o formulário guarda outra forma do mesmo valor, o campo regrava o mascarado sem marcá-lo como alterado.
 2. **A entrada pode ser crua (só dígitos) ou mascarada**: `'52998224725'` e `'529.982.247-25'` resultam em `529.982.247-25`.

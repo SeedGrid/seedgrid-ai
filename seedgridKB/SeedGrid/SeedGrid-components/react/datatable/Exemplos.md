@@ -12,7 +12,7 @@ plataforma: react
 
 > **Plataforma: React** (`@seedgrid/fe-components`). Equivalente em **Flutter**: [[SeedGrid/SeedGrid-components/flutter/datatable/Exemplos|Exemplos — Tabela de dados (Flutter)]]. Escolha entre as duas plataformas e placar de paridade: [[SeedGrid/SeedGrid-components/Plataformas|Plataformas: React × Flutter]].
 
-Todos os exemplos do showcase do `SgDatatable` (`/components/sg-datatable`), na ordem e com os títulos da página, cada bloco copiado 1:1 do `samples/*.tsx.sample` (seedgrid-fe-components `0f304bb`, conferência de 2026-11-09). A linha `Fonte:` aponta o arquivo. Os blocos foram gerados por script a partir dos `.sample` e comparados com eles; **não foram compilados nesta rodada**. Prop a prop: [[SeedGrid/SeedGrid-components/datatable/API|API do SgDatatable]]. O Playground da página é interativo e não tem `.sample`.
+Todos os exemplos do showcase do `SgDatatable` (`/components/sg-datatable`), na ordem e com os títulos da página, cada bloco copiado 1:1 do `samples/*.tsx.sample` (seedgrid-fe-components `0f304bb`, conferência de 2026-11-09). A linha `Fonte:` aponta o arquivo. Os blocos foram gerados por script a partir dos `.sample` e comparados com eles; **não foram compilados nesta rodada**. Prop a prop: [[SeedGrid/SeedGrid-components/react/datatable/API|API do SgDatatable]]. O Playground da página é interativo e não tem `.sample`.
 
 Observação (**Inferência** pelas regras do TypeScript, não verificada nesta rodada): alguns samples (`basico`, `templates`) declaram as colunas **sem tipo** (`const BASE_COLUMNS = [{ …, align: "right" }]`). Sem anotação, `"right"` é alargado para `string`, que não é atribuível a `SgDatatableColumnAlign`. Em código próprio, anote as colunas com `SgDatatableColumn<Row>[]`.
 

@@ -14,9 +14,9 @@ plataforma: react
 
 Componentes de ação do `@seedgrid/fe-components`: botão padrão, botão dividido (ação + menu) e botão de ação flutuante (FAB).
 
-- API completa: [[SeedGrid/SeedGrid-components/buttons/API|API dos botões]]
-- Exemplos: [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos de botões]]
-- Fundamentos (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
+- API completa: [[SeedGrid/SeedGrid-components/react/buttons/API|API dos botões]]
+- Exemplos: [[SeedGrid/SeedGrid-components/react/buttons/Exemplos|Exemplos de botões]]
+- Fundamentos (instalação, CSS, i18n): [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
 
 ## Componentes
 
@@ -36,8 +36,8 @@ Todos estão no barrel `src/index.ts` (Confirmado). Rotas do showcase em `front/
 
 ## Composição e dependências
 
-- `SgSplitButton` renderiza dois `SgButton`. `SgFloatActionButton` usa `SgPopup` (grupo [[SeedGrid/SeedGrid-components/navegacao-e-overlay/API|navegação e overlay]]) para o menu "redefinir posição".
-- O FAB persiste a posição arrastada via `useSgPersistence()` quando há um `SgEnvironmentProvider` na árvore; sem provider, usa `localStorage` diretamente (chave `sg-fab-pos:<dragId>`). Ver [[SeedGrid/SeedGrid-components/providers/Visao-geral|Providers]].
+- `SgSplitButton` renderiza dois `SgButton`. `SgFloatActionButton` usa `SgPopup` (grupo [[SeedGrid/SeedGrid-components/react/navegacao-e-overlay/API|navegação e overlay]]) para o menu "redefinir posição".
+- O FAB persiste a posição arrastada via `useSgPersistence()` quando há um `SgEnvironmentProvider` na árvore; sem provider, usa `localStorage` diretamente (chave `sg-fab-pos:<dragId>`). Ver [[SeedGrid/SeedGrid-components/react/providers/Visao-geral|Providers]].
 - Textos padrão (aria-labels, tooltip do FAB, menu de reset) vêm do i18n interno (`useComponentsI18n`).
 - Estilo: classes Tailwind + variáveis CSS (`--sg-btn-*`) com fallback para os tokens HSL do tema (`--primary`, `--secondary`…). Nenhuma dependência externa além de `react` (Confirmado: só imports internos).
 
@@ -58,7 +58,7 @@ O `onClick` do `SgButton` é tipado `(event) => unknown` e pode ou não ser ass�
 - O erro não é engolido: o botão sai do loading e relança como rejeição não tratada. Trate com `try/catch` dentro do `onClick` e avise o usuário com `sgWhistle.error`.
 - Use `async` só para ação que pode demorar ou falhar; `loading` manual vence (loading efetivo = `loading` ou operação pendente).
 
-Detalhes na [[SeedGrid/SeedGrid-components/buttons/API|API]] (seção «`onClick` assíncrono») e nos três últimos exemplos de `SgButton` em [[SeedGrid/SeedGrid-components/buttons/Exemplos|Exemplos]]. No Flutter os botões nativos usam `VoidCallback` e não têm loading automático; o `SgButton` Flutter aceita `FutureOr<void> Function()` e vai um passo além (veja a [[SeedGrid/SeedGrid-components/flutter/buttons/API|API Flutter]]).
+Detalhes na [[SeedGrid/SeedGrid-components/react/buttons/API|API]] (seção «`onClick` assíncrono») e nos três últimos exemplos de `SgButton` em [[SeedGrid/SeedGrid-components/react/buttons/Exemplos|Exemplos]]. No Flutter os botões nativos usam `VoidCallback` e não têm loading automático; o `SgButton` Flutter aceita `FutureOr<void> Function()` e vai um passo além (veja a [[SeedGrid/SeedGrid-components/flutter/buttons/API|API Flutter]]).
 
 ## Limitações e pontos de atenção
 

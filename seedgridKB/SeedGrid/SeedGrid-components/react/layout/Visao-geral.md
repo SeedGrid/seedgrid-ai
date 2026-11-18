@@ -14,10 +14,10 @@ plataforma: react
 
 Componentes de estrutura de tela do `@seedgrid/fe-components` (pasta `src/layout`): primitivas de composição (pilha, grade, painel com docking, tela), containers (card, accordion, abas, painel expansível, carrossel), navegação (breadcrumb, menu, árvore) e o sistema de **docking** de toolbars (`SgDockLayout`/`SgDockZone`/`SgDockScreen`/`SgToolBar`).
 
-- API completa (props, eventos, ref, a11y, funções): [[SeedGrid/SeedGrid-components/layout/API|Layout — API]]
-- Exemplos verificados: [[SeedGrid/SeedGrid-components/layout/Exemplos|Layout — exemplos]]
-- Instalação, CSS, i18n e utilitários: [[SeedGrid/SeedGrid-components/fundamentos/Visao-geral|Fundamentos]]
-- Persistência (`SgEnvironmentProvider`, `useSgPersistence`, `useSgPersistentState`): [[SeedGrid/SeedGrid-components/providers/Visao-geral|Providers]]
+- API completa (props, eventos, ref, a11y, funções): [[SeedGrid/SeedGrid-components/react/layout/API|Layout — API]]
+- Exemplos verificados: [[SeedGrid/SeedGrid-components/react/layout/Exemplos|Layout — exemplos]]
+- Instalação, CSS, i18n e utilitários: [[SeedGrid/SeedGrid-components/react/fundamentos/Visao-geral|Fundamentos]]
+- Persistência (`SgEnvironmentProvider`, `useSgPersistence`, `useSgPersistentState`): [[SeedGrid/SeedGrid-components/react/providers/Visao-geral|Providers]]
 
 ## Componentes
 
@@ -53,7 +53,7 @@ Componentes de estrutura de tela do `@seedgrid/fe-components` (pasta `src/layout
 - Lógica pura de menu (`src/layout/menu-logic.ts`): `buildMenuMaps`, `collectMenuSearchEntries`, `collectParentChain`, `computeActiveSets`, `filterMenuNodes`, `flattenVisibleNodes`, `mergeExpandedIdsForActivePath`, `resolveEffectiveActiveId`, `resolveExpandedIdsToggle`, `resolveHorizontalDockAlign`, `resolveMegaMenuActiveNode`, `resolveMegaMenuHoverActiveId`, `resolveMegaMenuInteraction`, `resolveMenuAutocompleteItems`, `resolveMenuHintPosition`, `resolveMenuKeyboardAction`, `resolveMenuLayoutState`, `resolveMenuNodeActionIntent`, `resolveMenuSearchSelectionState`, `resolveTieredActiveState`, `resolveTieredClickState`, `resolveTieredHoverIntent`, `resolveTieredHoverPath`, `resolveTieredNodeClickIntent` (24 funções) + tipos `MenuKeyboardAction`, `MenuVisibleNode`, `MenuLogicNode`.
 - Toolbar (`toolbar-logic.ts`): `buildToolbarLayoutState`, `resolveToolbarDockOrientationDirection`, `resolveToolbarOrientationDirection`.
 - Posição de arraste (`drag-position.ts`): `parseStoredPanelDragPosition`, `buildToolbarStorageKey`, `buildDockMenuStorageKey`.
-- Assinaturas completas: [[SeedGrid/SeedGrid-components/layout/API|API › Funções utilitárias exportadas]].
+- Assinaturas completas: [[SeedGrid/SeedGrid-components/react/layout/API|API › Funções utilitárias exportadas]].
 
 ## Como se compõem
 
@@ -71,7 +71,7 @@ flowchart TD
 
 - **Docking de painéis** (`SgPanel`/`SgScreen`): sem contexto; o pai inspeciona filhos `SgPanel` com `align` e monta as faixas. **Docking de toolbars** (`SgDockLayout`): contexto React + portal das toolbars/menus na zona atribuída — são mecanismos independentes (Confirmado).
 - **Persistência** (Confirmado): `SgDockLayout` usa `useSgPersistentState` (chave base `dock-layout:<id>`); `SgCard` (`sg-card-pos:<id>` ou `dragPersistKey`), `SgToolBar` com `freeDrag` (`sg-toolbar-pos:<id>`) e `SgMenu` (`sg-menu:<id>:collapsed`) usam `useSgPersistence` quando há `SgEnvironmentProvider` e `localStorage` direto quando não há.
-- **i18n**: textos padrão (rótulos ARIA, "vazio", placeholder de busca) vêm de `useComponentsI18n` — ver [[SeedGrid/SeedGrid-components/fundamentos/API|Fundamentos › i18n]].
+- **i18n**: textos padrão (rótulos ARIA, "vazio", placeholder de busca) vêm de `useComponentsI18n` — ver [[SeedGrid/SeedGrid-components/react/fundamentos/API|Fundamentos › i18n]].
 - `SgMenu` reutiliza `SgExpandablePanel` (drawer/hybrid), `SgAutocomplete` (busca), `SgAvatar` e `SgCard` (bloco do usuário).
 
 ## Dependências externas
