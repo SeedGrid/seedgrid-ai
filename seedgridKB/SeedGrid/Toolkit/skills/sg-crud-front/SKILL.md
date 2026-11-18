@@ -24,6 +24,7 @@ To register the menu item, icon and permission of a new screen, use the `sg-new-
    - `<entity>_edit/page.tsx`: create/update in a dedicated page
    - `page.tsx`: `redirect("/<module>/<entity>/<entity>_list")`
 3. Prefer `publicId` in URLs and route params. Keep the numeric `id` internal only.
+   In the list table, show an **ID column** with the last 5 characters of the `publicId` (ellipsis before, e.g. `…385e8`) and a copy icon that copies the full `publicId` (rule FE-36). Row actions use the **standard icons: pencil to edit and trash to delete** (rule FE-37): `SgButton` with `appearance="ghost"`, `iconOnly`, `Edit3` (`severity="secondary"`) and `Trash2` (`severity="danger"`) from `lucide-react`, with `aria-label` and `title`. Never invent other icons or text labels. Reference: the users list of the admin (`security/users/user_list`).
 4. Use Next API routes in `app/api/<module>/<entity>/` as server-side proxies to the backend.
 5. Use SeedGrid components for the whole UI structure.
 6. Write user-facing labels and descriptions. Do not expose technical implementation details in the UI.

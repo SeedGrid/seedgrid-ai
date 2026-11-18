@@ -21,7 +21,8 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 
 - Barra: `SgStack` em linha, com `SgInputTextSearch` crescendo (`SgStack(grow: true)`) e `SgButton` "Novo" compacto. A busca com mínimo de 3 caracteres já vem do `SgInputTextSearch` (`minChars`, `debounceMs`).
 - `SgDatatable`: `dataKey: 'publicId'`, `paginator`, `rows`, colunas `sortable`. Estado vazio com `emptyMessage`; carga com `loading: true`.
-- Ações por linha: coluna **sem `field`**, com `body: (row, meta)` e `SgButton(iconOnly: true, leftIcon: Icon(...))`. Situação com `SgBadge` (verde/vermelho).
+- Ações por linha: coluna **sem `field`**, com `body: (row, meta)` e `SgButton(iconOnly: true, leftIcon: Icon(...))`. Os ícones são o **padrão: lápis para editar (`Icons.edit_outlined`) e lixeira para excluir (`Icons.delete_outline`)** (FE-37), sem inventar outros nem rótulo de texto; esconda a ação sem permissão.
+- Coluna **ID**: mostre os 5 últimos caracteres do `publicId` com reticências antes (`…385e8`) e um ícone de copiar que copia o `publicId` inteiro (FE-36). Situação com `SgBadge` (verde/vermelho).
 - Linhas são `Map<String, Object?>` (`SgDatatableRow`); o `SgDatatable` não é genérico e não aceita classes.
 - Lista para celular: `cardTitle: true` na coluna principal (`cardHidden: true` nas que não cabem no cartão). Depois da próxima publicação do `seedgrid_components` (P127 + P137, ainda não publicada), omitir `mobileMode` é o automático: abaixo de 600 px de largura do contêiner cada linha vira cartão com rolagem infinita (exige `paginator`; o paginador some nessa largura, `infiniteScroll: false` o mantém); acima, a tabela. `SgDatatableMobileMode.cards` força cartões e `.scroll` força a tabela. Até lá use `mobileMode: SgDatatableMobileMode.cards` explícito. Não crie tabela responsiva local.
 
@@ -51,6 +52,7 @@ Antes de escrever, leia as notas de Flutter da KB: `SeedGrid-components/flutter/
 - [ ] Busca (`SgInputTextSearch`), ordenação, paginação, estado vazio e de carga.
 - [ ] Lista usável em celular (cartões automáticos ou `mobileMode: cards`, com `cardTitle`).
 - [ ] Confirmação antes de excluir; aviso ao salvar.
+- [ ] Coluna ID com `publicId` curto e copiar (FE-36); ações de linha com lápis e lixeira (FE-37).
 - [ ] Validação dos obrigatórios; input certo por tipo.
 - [ ] Textos pelo i18n.
 - [ ] Teste de fluxo: carregar, buscar, editar, criar com validação, excluir com confirmação.

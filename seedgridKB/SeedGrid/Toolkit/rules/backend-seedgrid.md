@@ -15,7 +15,7 @@ Para as extensions (propriedades, enums, exemplos), consulte a KB: comece por `.
 
 ## API
 
-- **BE-30.** **Nunca** exponha `id`; exponha sempre `publicId`.
+- **BE-30.** **Nunca** exponha `id`; exponha sempre `publicId`. Vale para **todos** os DTOs de resposta e de requisição, paths de rota, parâmetros de consulta e filtros (inclusive de auditoria por faixa de id), identificadores de requisição ou de arquivo devolvidos e mensagens de erro. Relacionamento sai e entra como `<relacao>PublicId`. Produto novo já nasce assim; o id numérico fica só dentro do banco e do serviço.
 - **BE-32.** Filtros de busca textual usam `LIKE` por prefixo (`term + "%"`), nunca `"%" + term + "%"`.
 
 ## Erros
@@ -34,7 +34,8 @@ Para as extensions (propriedades, enums, exemplos), consulte a KB: comece por `.
 ## Extensions/crates SeedGrid, LGPD e auditoria
 
 - **BE-60.** Use as extensions (Java) ou os crates (Rust) SeedGrid antes de escrever código próprio de autenticação/permissões (`security`), auditoria (`audit`), notificação, billing, cache, storage, rate limit etc. Consulte `.ai/brain/SeedGrid/Extensions/Indice.md` e configure pelas propriedades documentadas. Código próprio só quando nenhum cobre, com a justificativa na entrega.
-- **BE-61.** Dado pessoal (CPF, CNPJ, inscrição estadual, e-mail, telefone, WhatsApp, logradouro; nome quando identifica a pessoa e data de nascimento também) usa o `privacy` do SeedGrid, **pelo que o campo representa**: cifrado em repouso e com hash de busca em todo campo cifrado. Anotações e colunas na rule da linguagem.
+- **BE-61.** Dado pessoal (CPF, CNPJ, inscrição estadual, e-mail, telefone, WhatsApp, logradouro e data de nascimento) usa o `privacy` do SeedGrid, **pelo que o campo representa**: cifrado em repouso e com hash de busca em todo campo cifrado. Anotações e colunas na rule da linguagem.
+  - **O nome (de cliente, fornecedor, pessoa ou empresa) não se cifra nem se mascara por padrão**: sozinho ele não identifica ninguém; o que identifica é CPF, CNPJ, endereço, telefone, WhatsApp e e-mail. Só cifre o nome se o dono do produto pedir **explicitamente**. Não pergunte isso ao dono: assuma nome em claro.
   - **O que NÃO é dado pessoal por si:** valor monetário, quantia, descrição ou observação livre de lançamento. Não se cifra nem se mascara por LGPD; o que protege é o escopo da conta (BE-72). Só entra na regra se o campo identificar a pessoa (a lista acima).
 - **BE-62.** A cifra de campo é opt-in: o projeto liga a cifra e fornece as chaves por segredo/variável de ambiente, nunca em arquivo versionado.
 - **BE-63.** Dado pessoal **não** vai em claro para auditoria, log, exportação ou resposta de erro: use o mascaramento do `privacy` (e remoção total para senha e segredos).

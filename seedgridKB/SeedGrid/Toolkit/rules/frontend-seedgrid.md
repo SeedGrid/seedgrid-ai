@@ -7,7 +7,7 @@ Regras **obrigatórias** para telas que usam os componentes SeedGrid. Cada regra
 
 Como ler:
 
-- **Regras comuns** (FE-01 a FE-35 e a seção "CRUDs") valem para React e para Flutter, com o mesmo nome de componente `Sg...`. O papel de React é o `frontend-react`; o de Flutter é o `frontend-flutter`.
+- **Regras comuns** (FE-01 a FE-37 e a seção "CRUDs") valem para React e para Flutter, com o mesmo nome de componente `Sg...`. O papel de React é o `frontend-react`; o de Flutter é o `frontend-flutter`.
 - **Regras só de Flutter** (FE-50 em diante, seção "Só Flutter") ficam no fim.
 - Os dois lados mantêm **paridade de comportamento**: o contrato de valores é o mesmo e a diferença deliberada está registrada em `SeedGrid-components/flutter/Paridade.md` e `SeedGrid-components/flutter/Divergencias.md`. Quem encontrar uma diferença nova a reporta ao coordenador (sessão principal); não a "corrige" no outro lado.
 - Nas regras comuns, os exemplos de código e a coluna "O que o `onChange` entrega" descrevem o **React**. No Flutter confira o tipo na nota `API` do grupo em `SeedGrid-components/flutter/` antes de afirmar (FE-03).
@@ -63,6 +63,10 @@ Nunca use `SgInputText` (nem `<input>` com máscara própria) para um dado que t
 ### CRUDs
 
 Telas de cadastro seguem a skill do lado: `sg-crud-front` (React/Next: páginas `*_list` e `*_edit`, `publicId` nas URLs, proxy em `app/api/...`) ou `sg-crud-front-flutter` (Flutter: telas separadas de lista e de formulário). Nunca exponha o `id` numérico quando houver `publicId`.
+
+- **FE-36.** Tabela de cadastro (`SgDataTable` nas listas dos cruds) traz o `publicId` em uma coluna ID, **mostrando só os 5 últimos caracteres, com reticências antes (`…385e8`), e um ícone de copiar ao lado** que copia o `publicId` inteiro que copia o `publicId` inteiro (como na lista de usuários do admin do report). Nenhuma coluna, link, filtro ou tela mostra o `id` numérico; o `publicId` inteiro aparece na URL e no formulário de edição.
+
+- **FE-37.** Ações de linha nas tabelas de cadastro usam os ícones **padrão: lápis para editar e lixeira para excluir**. Não invente outros ícones nem rótulos de texto. No React: `SgButton` com `appearance="ghost"`, `iconOnly`, `Edit3` do `lucide-react` (`severity="secondary"`) e `Trash2` (`severity="danger"`), com `aria-label` e `title` ("Editar <nome>", "Excluir <nome>") como na lista de usuários do admin; no Flutter, os equivalentes Material (`Icons.edit_outlined` e `Icons.delete_outline`). Esconda a ação sem a permissão correspondente e a lixeira de registro protegido. Excluir sempre pede confirmação. Design novo de CRUD não troca esses ícones.
 
 ## Só Flutter (`frontend-flutter`)
 
