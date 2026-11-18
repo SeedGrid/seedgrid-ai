@@ -303,9 +303,9 @@ function ExportListPageContent() {
         confirmButton={{
           label: deleting ? "Processando..." : toDelete && isActive(toDelete.status) ? "Cancelar export" : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
-        cancelButton={{ label: "Voltar", disabled: deleting }}
+        cancelButton={{ label: "Voltar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setToDelete(null)}

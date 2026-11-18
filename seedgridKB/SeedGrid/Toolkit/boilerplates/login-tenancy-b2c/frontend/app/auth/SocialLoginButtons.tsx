@@ -74,7 +74,7 @@ export function SocialLoginButtons({ config, intent = "login" }: SocialLoginButt
           appearance="outline"
           severity="secondary"
           type="button"
-          disabled={!enabled}
+          enabled={enabled}
           className="w-full"
           onClick={() => start(provider)}
         >

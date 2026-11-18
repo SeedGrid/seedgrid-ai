@@ -681,7 +681,7 @@ export function SignupForm({
           severity="primary"
           appearance="solid"
           loading={busy}
-          disabled={confirmToken.length !== 6}
+          enabled={!(confirmToken.length !== 6)}
           onClick={() => void handleConfirm()}
           className="mt-3 w-full"
         >

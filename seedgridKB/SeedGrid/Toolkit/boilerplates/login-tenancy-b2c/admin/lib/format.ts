@@ -60,3 +60,11 @@ export function parseDecimalInput(value: string) {
 
   return parsed;
 }
+
+/**
+ * Os campos numericos do SeedGrid (`SgInputNumber`, `SgInputCurrency`) devolvem `number | null` no
+ * `onChange`; as telas deste admin guardam o texto digitado. Converte sem perder o "vazio".
+ */
+export function numberToText(value: number | null): string {
+  return value === null ? "" : String(value);
+}

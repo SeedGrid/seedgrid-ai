@@ -185,7 +185,7 @@ export function DowngradeUserSelectionDialog({
               appearance="solid"
               severity="primary"
               loading={saving}
-              disabled={!countMatches}
+              enabled={countMatches}
               onClick={() => void handleSave()}
             >
               Salvar selecao

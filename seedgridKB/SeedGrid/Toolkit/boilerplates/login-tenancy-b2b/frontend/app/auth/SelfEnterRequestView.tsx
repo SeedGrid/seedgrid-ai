@@ -197,13 +197,13 @@ export function SelfEnterRequestView() {
               />
               <SgButton
                 label={submitting ? "Confirmando..." : "Confirmar"}
-                disabled={submitting || code.replace(/\D/g, "").length !== 6}
+                enabled={!(submitting || code.replace(/\D/g, "").length !== 6)}
                 onClick={() => void confirmCode()}
               />
               <SgButton
                 appearance="ghost"
                 label="Reenviar codigo"
-                disabled={submitting}
+                enabled={!submitting}
                 onClick={() => void resendCode()}
               />
             </>
@@ -264,7 +264,7 @@ export function SelfEnterRequestView() {
               />
               <SgButton
                 label={submitting ? "Enviando..." : "Solicitar cadastro"}
-                disabled={submitting}
+                enabled={!submitting}
                 onClick={() => void submitRequest()}
               />
               <SgButton

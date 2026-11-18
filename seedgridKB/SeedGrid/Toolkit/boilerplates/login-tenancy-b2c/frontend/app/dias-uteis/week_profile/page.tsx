@@ -159,7 +159,7 @@ export default function WeekProfilePage() {
                 <SgStack direction="row" gap={12} wrap>
                   <SgButton
                     appearance="outline"
-                    disabled={saving}
+                    enabled={!saving}
                     label={saving ? "Salvando..." : "Salvar"}
                     leftIcon={<Save size={16} />}
                     onClick={() => void save()}
@@ -186,8 +186,8 @@ export default function WeekProfilePage() {
         severity="warning"
         title="Restaurar semana padrao"
         message="A sua semana sera descartada e voltara a valer o padrao da instalacao (ou segunda a sexta). Deseja continuar?"
-        confirmButton={{ label: resetting ? "Restaurando..." : "Restaurar", disabled: resetting }}
-        cancelButton={{ label: "Cancelar", disabled: resetting }}
+        confirmButton={{ label: resetting ? "Restaurando..." : "Restaurar", enabled: !resetting}}
+        cancelButton={{ label: "Cancelar", enabled: !resetting}}
         closeOnConfirm={false}
         onConfirm={() => void reset()}
         onCancel={() => setConfirmReset(false)}

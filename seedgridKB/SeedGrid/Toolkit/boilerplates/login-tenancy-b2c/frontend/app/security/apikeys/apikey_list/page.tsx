@@ -255,9 +255,9 @@ function ApiKeyListPageContent() {
         confirmButton={{
           label: revoking ? "Revogando..." : "Revogar",
           severity: "danger",
-          disabled: revoking,
+          enabled: !revoking,
         }}
-        cancelButton={{ label: "Cancelar", disabled: revoking }}
+        cancelButton={{ label: "Cancelar", enabled: !revoking}}
         closeOnConfirm={false}
         onConfirm={() => void confirmRevoke()}
         onCancel={() => setToRevoke(null)}

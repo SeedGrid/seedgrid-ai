@@ -290,7 +290,7 @@ export default function CurrenciesPage() {
             <SgButton appearance="outline" label="Cancelar" onClick={() => setDialogOpen(false)} severity="secondary" />
             <SgButton
               label={saving ? "Salvando..." : "Salvar"}
-              disabled={saving}
+              enabled={!saving}
               onClick={() => void save()}
               severity="primary"
             />
@@ -307,8 +307,8 @@ export default function CurrenciesPage() {
             ? `Tem certeza que deseja excluir "${toDelete.code}"? So' e' possivel se ela nunca teve cotacao registrada.`
             : ""
         }
-        confirmButton={{ label: deleting ? "Excluindo..." : "Excluir", severity: "danger", disabled: deleting }}
-        cancelButton={{ label: "Cancelar", disabled: deleting }}
+        confirmButton={{ label: deleting ? "Excluindo..." : "Excluir", severity: "danger", enabled: !deleting}}
+        cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setToDelete(null)}

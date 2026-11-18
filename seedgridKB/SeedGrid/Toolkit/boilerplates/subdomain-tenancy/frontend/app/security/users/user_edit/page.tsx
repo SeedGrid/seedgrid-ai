@@ -503,7 +503,7 @@ function UserEditPageContent() {
               <SgCheckboxGroup
                 id="user-roles"
                 title="Perfis (valem em todas as empresas do usuario)"
-                disabled={protectedAdmin}
+                enabled={!protectedAdmin}
                 source={roleChecklist}
                 value={editor.rolePublicIds}
                 onChange={(value) =>
@@ -519,7 +519,7 @@ function UserEditPageContent() {
                   <SgCheckboxGroup
                     id="user-companies"
                     title="Empresas"
-                    disabled={protectedAdmin}
+                    enabled={!protectedAdmin}
                     source={companyChecklist}
                     value={editor.memberships.map((m) => m.companyPublicId)}
                     onChange={(value) =>
@@ -558,7 +558,7 @@ function UserEditPageContent() {
                         key={membership.companyPublicId}
                         id={`user-company-roles-${membership.companyPublicId}`}
                         title={`Perfis em ${company.name}`}
-                        disabled={protectedAdmin}
+                        enabled={!protectedAdmin}
                         source={roleChecklist}
                         value={membership.rolePublicIds}
                         onChange={(value) =>

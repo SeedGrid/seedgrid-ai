@@ -24,6 +24,7 @@ import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { formatHolidayDate, type HolidayEntry } from "@/lib/business-days";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import { numberToText } from "@/lib/format";
 
 const PAGE_SIZE = 12;
 
@@ -226,7 +227,7 @@ function HolidayListPageContent() {
                 minValue={1900}
                 hintText="Mostra os feriados de todo ano e os especificos desse ano"
                 inputProps={{ value: yearText }}
-                onChange={handleYearChange}
+                onChange={(value) => handleYearChange(numberToText(value))}
               />
             </div>
 
@@ -278,9 +279,9 @@ function HolidayListPageContent() {
         confirmButton={{
           label: deleting ? "Excluindo..." : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
-        cancelButton={{ label: "Cancelar", disabled: deleting }}
+        cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setHolidayToDelete(null)}

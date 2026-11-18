@@ -528,7 +528,7 @@ export default function SelfEnterPage() {
             appearance="outline"
             label={actingId !== null ? "Aprovando..." : "Aprovar"}
             leftIcon={<CheckCircle2 size={16} />}
-            disabled={actingId !== null || approveRoles.length === 0}
+            enabled={!(actingId !== null || approveRoles.length === 0)}
             onClick={confirmApprove}
             severity="primary"
           />
@@ -543,9 +543,9 @@ export default function SelfEnterPage() {
         confirmButton={{
           label: actingId !== null ? "Reprovando..." : "Reprovar",
           severity: "danger",
-          disabled: actingId !== null,
+          enabled: !(actingId !== null),
         }}
-        cancelButton={{ label: "Cancelar", disabled: actingId !== null }}
+        cancelButton={{ label: "Cancelar", enabled: !(actingId !== null)}}
         closeOnConfirm={false}
         onConfirm={() => void confirmReject()}
         onCancel={() => setToReject(null)}

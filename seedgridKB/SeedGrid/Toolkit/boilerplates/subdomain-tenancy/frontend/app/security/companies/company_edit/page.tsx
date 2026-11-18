@@ -345,7 +345,7 @@ function CompanyEditPageContent() {
                 leftIcon={<Save size={16} />}
                 onClick={() => void submitCompany()}
                 severity="secondary"
-                disabled={submitting}
+                enabled={!submitting}
               />
             </SgStack>
           )}

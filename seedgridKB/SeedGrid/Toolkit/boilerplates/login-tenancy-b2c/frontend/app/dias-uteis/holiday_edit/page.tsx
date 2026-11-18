@@ -22,6 +22,7 @@ import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { MONTH_LABELS, type HolidayEntry } from "@/lib/business-days";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import { numberToText } from "@/lib/format";
 
 type HolidayForm = {
   name: string;
@@ -214,7 +215,7 @@ function HolidayEditPageContent() {
                 minValue={1}
                 maxValue={31}
                 inputProps={{ value: form.day }}
-                onChange={(day) => setForm((current) => ({ ...current, day }))}
+                onChange={(day) => setForm((current) => ({ ...current, day: numberToText(day) }))}
               />
               <SgInputNumber
                 id="holiday-year"
@@ -222,7 +223,7 @@ function HolidayEditPageContent() {
                 decimals={0}
                 minValue={1900}
                 inputProps={{ value: form.year }}
-                onChange={(year) => setForm((current) => ({ ...current, year }))}
+                onChange={(year) => setForm((current) => ({ ...current, year: numberToText(year) }))}
               />
               <SgToggleSwitch
                 id="holiday-active"
@@ -232,7 +233,7 @@ function HolidayEditPageContent() {
               />
               <SgButton
                 appearance="outline"
-                disabled={submitting}
+                enabled={!submitting}
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
                 onClick={() => void submitHoliday()}

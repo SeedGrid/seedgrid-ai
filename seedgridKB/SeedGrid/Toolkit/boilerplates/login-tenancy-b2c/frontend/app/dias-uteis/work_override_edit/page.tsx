@@ -219,7 +219,7 @@ function WorkOverrideEditPageContent() {
               />
               <SgButton
                 appearance="outline"
-                disabled={submitting}
+                enabled={!submitting}
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
                 onClick={() => void submitOverride()}

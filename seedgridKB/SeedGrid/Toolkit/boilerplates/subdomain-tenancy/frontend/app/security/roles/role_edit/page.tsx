@@ -453,7 +453,7 @@ function RoleEditPageContent() {
                   }
                   onClick={() => setExpandedIds(allExpanded ? [] : branchIds(fullTree))}
                   severity="secondary"
-                  disabled={searching}
+                  enabled={!searching}
                 />
               </SgStack>
 

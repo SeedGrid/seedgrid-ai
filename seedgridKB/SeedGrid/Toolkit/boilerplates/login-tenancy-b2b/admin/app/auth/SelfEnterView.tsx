@@ -203,7 +203,7 @@ export function SelfEnterView() {
               />
               <SgButton
                 label={submitting ? "Enviando..." : "Concluir cadastro"}
-                disabled={submitting}
+                enabled={!submitting}
                 onClick={() => void submit()}
               />
             </>

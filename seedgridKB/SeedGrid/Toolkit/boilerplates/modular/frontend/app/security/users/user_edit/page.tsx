@@ -439,7 +439,7 @@ function UserEditPageContent() {
               <SgCheckboxGroup
                 id="user-roles"
                 title="Perfis"
-                disabled={protectedAdmin}
+                enabled={!protectedAdmin}
                 source={roleChecklist}
                 value={editor.rolePublicIds}
                 onChange={(value) =>

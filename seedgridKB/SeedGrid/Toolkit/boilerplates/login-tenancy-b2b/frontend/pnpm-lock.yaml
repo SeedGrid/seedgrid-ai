@@ -39,8 +39,8 @@ importers:
         specifier: ^1.43.0
         version: 1.43.0
       '@seedgrid/fe-components':
-        specifier: 2026.10.0
-        version: 2026.10.0(0ea5f70fc5180a32fd5be7026cdd10e1)
+        specifier: 2026.11.15
+        version: 2026.11.15(0ea5f70fc5180a32fd5be7026cdd10e1)
       '@seedgrid/fe-core':
         specifier: 2026.6.7
         version: 2026.6.7(react@19.1.0)
@@ -654,6 +654,7 @@ packages:
   '@opentelemetry/propagator-jaeger@2.10.0':
     resolution: {integrity: sha512-yw/IX8DL470dSMZJoE82ScfYGp7JWZ/G8kFJo35ZILUVTB2jFPTOaioN+8s09pH0RHsWNhweVZb+ZnjJJpCChg==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Package no longer supported. See https://github.com/open-telemetry/opentelemetry-js/pull/7077
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
@@ -690,12 +691,14 @@ packages:
   '@opentelemetry/sdk-trace-base@2.10.0':
     resolution: {integrity: sha512-GuYQQT7QD2EeO8lcZLRQzcbOyhqAzL+6WWTKTU9mSUBYBazkEDl+VrQcXQhbB08OWM9anD1aHleVadzulpOaUQ==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
   '@opentelemetry/sdk-trace-node@2.10.0':
     resolution: {integrity: sha512-GZK/G6oZyBLGlH1pUgeDch7D91KoHd2uotUGIkWCPi9GI5T9X0p4L7nNAMDR1BQjkRYoDqo+ddfVx9t5Uhys+Q==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
@@ -883,8 +886,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@seedgrid/fe-components@2026.10.0':
-    resolution: {integrity: sha512-8ytk5gCydSzhKv1d9MqD053d3gqnh65O044Wjh0ZP1wpDaQMQ+s9lS1lAeo06Xa9AqASr5Rp7Gf+nkaaUGRGxQ==}
+  '@seedgrid/fe-components@2026.11.15':
+    resolution: {integrity: sha512-5tWFBI7zgct/PoIFfiGWJoUaMPxlsw7NQrsEfZVa8HN0FgcjYHMuvKrkXoRL/MQAtboqwwcu5TdLThzT6zh3Ww==}
     peerDependencies:
       '@tiptap/core': ^2.9.1
       '@tiptap/extension-color': ^2.9.1
@@ -2577,7 +2580,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.63.1':
     optional: true
 
-  '@seedgrid/fe-components@2026.10.0(0ea5f70fc5180a32fd5be7026cdd10e1)':
+  '@seedgrid/fe-components@2026.11.15(0ea5f70fc5180a32fd5be7026cdd10e1)':
     dependencies:
       '@pqina/flip': 1.8.4
       '@seedgrid/pulse-subscriber-react': 3.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)

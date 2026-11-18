@@ -19,6 +19,7 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import type { PlanEntry } from "@/lib/seedgrid-app-api";
+import { numberToText } from "@/lib/format";
 
 type PlanEditorState = {
   publicId: string | null;
@@ -284,7 +285,7 @@ function PlanForm({ editor, isEditing, submitting, onChange, onSubmit }: PlanFor
         maxValue={100}
         inputProps={{ value: editor.upgradePromptThresholdPercent }}
         onChange={(upgradePromptThresholdPercent) =>
-          onChange((current) => ({ ...current, upgradePromptThresholdPercent }))
+          onChange((current) => ({ ...current, upgradePromptThresholdPercent: numberToText(upgradePromptThresholdPercent) }))
         }
       />
       <SgInputNumber
@@ -296,7 +297,7 @@ function PlanForm({ editor, isEditing, submitting, onChange, onSubmit }: PlanFor
         maxValue={100}
         inputProps={{ value: editor.quotaWarningRemainingPercent }}
         onChange={(quotaWarningRemainingPercent) =>
-          onChange((current) => ({ ...current, quotaWarningRemainingPercent }))
+          onChange((current) => ({ ...current, quotaWarningRemainingPercent: numberToText(quotaWarningRemainingPercent) }))
         }
       />
       <SgInputNumber
@@ -308,7 +309,7 @@ function PlanForm({ editor, isEditing, submitting, onChange, onSubmit }: PlanFor
         maxValue={100}
         inputProps={{ value: editor.quotaCriticalRemainingPercent }}
         onChange={(quotaCriticalRemainingPercent) =>
-          onChange((current) => ({ ...current, quotaCriticalRemainingPercent }))
+          onChange((current) => ({ ...current, quotaCriticalRemainingPercent: numberToText(quotaCriticalRemainingPercent) }))
         }
       />
       <SgToggleSwitch

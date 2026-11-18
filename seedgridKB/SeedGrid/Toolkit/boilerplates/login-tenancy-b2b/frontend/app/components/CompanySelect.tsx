@@ -183,7 +183,7 @@ export function CompanySelect({ onSelected, onCancel, onSessionLost }: Props) {
         </div>
       ) : null}
 
-      <SgButton label={busy ? "Entrando..." : "Entrar"} disabled={!canConfirm} onClick={() => void confirm()} />
+      <SgButton label={busy ? "Entrando..." : "Entrar"} enabled={canConfirm} onClick={() => void confirm()} />
       {!loading && companies.length === 0 && error ? (
         <SgButton
           appearance="ghost"
@@ -198,7 +198,7 @@ export function CompanySelect({ onSelected, onCancel, onSessionLost }: Props) {
         label="Voltar para o login"
         severity="secondary"
         type="button"
-        disabled={busy}
+        enabled={!busy}
         onClick={onCancel}
       />
     </div>

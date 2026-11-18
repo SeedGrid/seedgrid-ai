@@ -262,7 +262,7 @@ export default function ProfilePage() {
                       label="Enviar foto"
                       leftIcon={<Upload size={14} />}
                       size="sm"
-                      disabled={avatarBusy}
+                      enabled={!avatarBusy}
                       onClick={() => fileInputRef.current?.click()}
                       severity="secondary"
                     />
@@ -272,7 +272,7 @@ export default function ProfilePage() {
                         label="Remover"
                         leftIcon={<Trash2 size={14} />}
                         size="sm"
-                        disabled={avatarBusy}
+                        enabled={!avatarBusy}
                         onClick={() => void removeAvatar()}
                         severity="danger"
                       />

@@ -20,7 +20,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Shell } from "../components/Shell";
 import { StatusBadge } from "../components/StatusBadge";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, numberToText } from "@/lib/format";
 import type { AdminAccount } from "@/lib/seedgrid-app-api";
 import { formatCycleMeters } from "@/lib/usage-meters";
 
@@ -337,7 +337,7 @@ export default function AccountsPage() {
               decimals={0}
               minValue={1}
               inputProps={{ value: grantUnits }}
-              onChange={setGrantUnits}
+              onChange={(value) => setGrantUnits(numberToText(value))}
             />
 
             <SgInputNumber
@@ -352,7 +352,7 @@ export default function AccountsPage() {
                   : "Esta assinatura nao expira por data, entao nao ha prazo a estender."
               }
               inputProps={{ value: grantTrialDays }}
-              onChange={setGrantTrialDays}
+              onChange={(value) => setGrantTrialDays(numberToText(value))}
             />
 
             <SgInputText

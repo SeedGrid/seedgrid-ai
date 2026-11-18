@@ -10,5 +10,5 @@ allowBuilds:
   sharp: true
   protobufjs: true
 minimumReleaseAgeExclude:
-  - '@seedgrid/fe-components@2026.10.0'
+  - '@seedgrid/fe-components@2026.10.0 || 2026.11.15'
   - '@seedgrid/pulse-subscriber-react@3.0.0'

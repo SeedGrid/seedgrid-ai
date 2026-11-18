@@ -220,7 +220,7 @@ export function DowngradeCompanySelectionDialog({
           <SgButton
             appearance="outline"
             severity="secondary"
-            disabled={saving}
+            enabled={!saving}
             onClick={() => onOpenChange(false)}
           >
             Fechar
@@ -229,7 +229,7 @@ export function DowngradeCompanySelectionDialog({
             <SgButton
               appearance="solid"
               severity="primary"
-              disabled={!matches || saving}
+              enabled={!(!matches || saving)}
               loading={saving}
               onClick={() => void handleConfirm()}
             >

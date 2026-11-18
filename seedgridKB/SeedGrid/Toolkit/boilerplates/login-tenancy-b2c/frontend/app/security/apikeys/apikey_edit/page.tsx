@@ -20,6 +20,7 @@ import { useAdminAccess } from "../../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 import type { ApiKeyCreateResponse, ApiKeyRoleOption } from "@/lib/seedgrid-app-api";
+import { numberToText } from "@/lib/format";
 
 // Pontos do quadro "Como usar a chave". No modelo pooled a chave do cliente fala com os endpoints
 // DA CONTA (`/me/security/...`): os de plataforma (`/users`, `/roles`) respondem 403 para cliente.
@@ -246,7 +247,7 @@ export default function ApiKeyEditPage() {
                 decimals={0}
                 minValue={1}
                 inputProps={{ value: expiresDays }}
-                onChange={setExpiresDays}
+                onChange={(value) => setExpiresDays(numberToText(value))}
               />
               <SgCombobox
                 id="apikey-role"
@@ -274,7 +275,7 @@ export default function ApiKeyEditPage() {
                   appearance="solid"
                   label={submitting ? "Criando..." : "Criar chave"}
                   leftIcon={<KeyRound size={16} />}
-                  disabled={submitting}
+                  enabled={!submitting}
                   onClick={() => void handleCreate()}
                   severity="primary"
                 />

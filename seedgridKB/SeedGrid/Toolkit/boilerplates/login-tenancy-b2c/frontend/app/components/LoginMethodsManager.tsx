@@ -87,7 +87,7 @@ export function LoginMethodsManager() {
             aria-label={`Desvincular ${providerLabel(identity.provider)}`}
             title={`Desvincular ${providerLabel(identity.provider)}`}
             leftIcon={<Trash2 size={16} />}
-            disabled={removing === identity.publicId}
+            enabled={!(removing === identity.publicId)}
             onClick={() => void remove(identity)}
           />
         </div>

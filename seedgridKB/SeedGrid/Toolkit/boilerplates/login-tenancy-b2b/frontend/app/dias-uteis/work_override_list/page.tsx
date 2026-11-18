@@ -29,6 +29,7 @@ import {
   type WorkOverride,
 } from "@/lib/business-days";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import { numberToText } from "@/lib/format";
 
 const PAGE_SIZE = 12;
 
@@ -224,7 +225,7 @@ function WorkOverrideListPageContent() {
                 decimals={0}
                 minValue={1900}
                 inputProps={{ value: yearText }}
-                onChange={handleYearChange}
+                onChange={(value) => handleYearChange(numberToText(value))}
               />
             </div>
 
@@ -276,9 +277,9 @@ function WorkOverrideListPageContent() {
         confirmButton={{
           label: deleting ? "Excluindo..." : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
-        cancelButton={{ label: "Cancelar", disabled: deleting }}
+        cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setOverrideToDelete(null)}

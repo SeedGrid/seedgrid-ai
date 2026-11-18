@@ -57,7 +57,7 @@ export function UserSelectionChecklist({
       (user): SgCheckboxGroupOption => ({
         label: `${user.name} (${user.email}) · ${lockedHint}`,
         value: user.publicId,
-        disabled: true,
+        enabled: false,
       }),
     ),
     ...users.map(

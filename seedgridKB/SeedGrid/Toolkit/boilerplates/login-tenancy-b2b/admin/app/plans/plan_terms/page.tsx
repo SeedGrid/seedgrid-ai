@@ -43,7 +43,7 @@ const SELLABLE_PERMISSION_NAMES = new Set(
     group.screens.flatMap((screen) => screen.actions.map((action) => action.permission)),
   ),
 );
-import { formatCurrency, formatDateTime, parseDecimalInput } from "@/lib/format";
+import { formatCurrency, formatDateTime, parseDecimalInput, numberToText } from "@/lib/format";
 import {
   COMPANY_LIMIT_HELP,
   EMPTY_COMMERCIAL_FIELDS,
@@ -811,7 +811,7 @@ function PlanTermsPageContent() {
             minValue={0}
             inputProps={{ value: form.monthlyPrice }}
             onChange={(monthlyPrice) =>
-              setForm((current) => ({ ...current, monthlyPrice }))
+              setForm((current) => ({ ...current, monthlyPrice: numberToText(monthlyPrice) }))
             }
           />
           <div>
@@ -821,7 +821,7 @@ function PlanTermsPageContent() {
               decimals={0}
               minValue={0}
               inputProps={{ value: form.maxUsers }}
-              onChange={(maxUsers) => setForm((current) => ({ ...current, maxUsers }))}
+              onChange={(maxUsers) => setForm((current) => ({ ...current, maxUsers: numberToText(maxUsers) }))}
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * zero nao limita o numero de usuarios
@@ -834,7 +834,7 @@ function PlanTermsPageContent() {
               decimals={0}
               minValue={0}
               inputProps={{ value: form.maxCompanies }}
-              onChange={(maxCompanies) => setForm((current) => ({ ...current, maxCompanies }))}
+              onChange={(maxCompanies) => setForm((current) => ({ ...current, maxCompanies: numberToText(maxCompanies) }))}
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * {COMPANY_LIMIT_HELP} Quantas empresas da conta operam normalmente.
@@ -847,7 +847,7 @@ function PlanTermsPageContent() {
               decimals={0}
               minValue={0}
               inputProps={{ value: form.maxReadOnlyCompanies }}
-              onChange={(maxReadOnlyCompanies) => setForm((current) => ({ ...current, maxReadOnlyCompanies }))}
+              onChange={(maxReadOnlyCompanies) => setForm((current) => ({ ...current, maxReadOnlyCompanies: numberToText(maxReadOnlyCompanies) }))}
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * {COMPANY_LIMIT_HELP} Quantas empresas podem só consultar, sem gravar.
@@ -860,7 +860,7 @@ function PlanTermsPageContent() {
               decimals={0}
               minValue={0}
               inputProps={{ value: form.pastDueReadOnlyAfterDays }}
-              onChange={(pastDueReadOnlyAfterDays) => setForm((current) => ({ ...current, pastDueReadOnlyAfterDays }))}
+              onChange={(pastDueReadOnlyAfterDays) => setForm((current) => ({ ...current, pastDueReadOnlyAfterDays: numberToText(pastDueReadOnlyAfterDays) }))}
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * {PAST_DUE_HELP} Dias após o vencimento em que as empresas passam a só consultar.
@@ -873,7 +873,7 @@ function PlanTermsPageContent() {
               decimals={0}
               minValue={0}
               inputProps={{ value: form.pastDueDisableAfterDays }}
-              onChange={(pastDueDisableAfterDays) => setForm((current) => ({ ...current, pastDueDisableAfterDays }))}
+              onChange={(pastDueDisableAfterDays) => setForm((current) => ({ ...current, pastDueDisableAfterDays: numberToText(pastDueDisableAfterDays) }))}
             />
             <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
               * {PAST_DUE_HELP} Dias após o vencimento em que as empresas são desativadas.
@@ -938,7 +938,7 @@ function PlanTermsPageContent() {
                   setExpandedIds(allPermissionsExpanded ? [] : branchIds(fullPermissionTree))
                 }
                 severity="secondary"
-                disabled={searchingPermissions}
+                enabled={!searchingPermissions}
               />
             </SgStack>
             <SgTreeView
@@ -981,9 +981,9 @@ function PlanTermsPageContent() {
         confirmButton={{
           label: deleting ? "Excluindo..." : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
-        cancelButton={{ label: "Cancelar", disabled: deleting }}
+        cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setTermToDelete(null)}
@@ -997,9 +997,9 @@ function PlanTermsPageContent() {
         confirmButton={{
           label: actingTermId !== null ? "Aposentando..." : "Aposentar",
           severity: "danger",
-          disabled: actingTermId !== null,
+          enabled: !(actingTermId !== null),
         }}
-        cancelButton={{ label: "Cancelar", disabled: actingTermId !== null }}
+        cancelButton={{ label: "Cancelar", enabled: !(actingTermId !== null)}}
         closeOnConfirm={false}
         onConfirm={() => void confirmArchive()}
         onCancel={() => setTermToArchive(null)}

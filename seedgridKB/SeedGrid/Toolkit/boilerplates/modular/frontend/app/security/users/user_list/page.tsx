@@ -398,9 +398,9 @@ function UserListPageContent() {
         confirmButton={{
           label: deleting ? "Excluindo..." : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
-        cancelButton={{ label: "Cancelar", disabled: deleting }}
+        cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
         onConfirm={() => void confirmDeleteUser()}
         onCancel={() => setUserToDelete(null)}

@@ -105,7 +105,7 @@ export default function ExportEditPage() {
               appearance="solid"
               label={submitting ? "Solicitando..." : "Solicitar export"}
               leftIcon={<DatabaseBackup size={16} />}
-              disabled={submitting}
+              enabled={!submitting}
               onClick={() => void handleCreate()}
               severity="primary"
             />

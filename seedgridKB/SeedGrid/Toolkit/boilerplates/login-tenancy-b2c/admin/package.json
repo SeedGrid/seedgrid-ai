@@ -21,7 +21,7 @@
     "@opentelemetry/sdk-logs": "^0.221.0",
     "@opentelemetry/sdk-node": "^0.221.0",
     "@opentelemetry/semantic-conventions": "^1.43.0",
-    "@seedgrid/fe-components": "2026.10.0",
+    "@seedgrid/fe-components": "2026.11.15",
     "@seedgrid/fe-core": "2026.6.7",
     "@seedgrid/fe-theme": "2026.6.3",
     "@tiptap/core": "^2.27.2",

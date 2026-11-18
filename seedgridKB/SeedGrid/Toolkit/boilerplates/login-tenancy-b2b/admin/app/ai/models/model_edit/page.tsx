@@ -21,7 +21,7 @@ import { Suspense, type Dispatch, type SetStateAction, useCallback, useEffect, u
 
 import { Shell } from "../../../components/Shell";
 import { StatusBadge } from "../../../components/StatusBadge";
-import { formatDateTime, parseDecimalInput } from "@/lib/format";
+import { formatDateTime, parseDecimalInput, numberToText } from "@/lib/format";
 import type { AiModelEntry, AiModelPrice } from "@/lib/seedgrid-app-api";
 
 type ModelEditorState = {
@@ -334,7 +334,7 @@ function ModelPrices({
             decimals={4}
             minValue={0}
             inputProps={{ value: form.input }}
-            onChange={(input) => setForm((c) => ({ ...c, input }))}
+            onChange={(input) => setForm((c) => ({ ...c, input: numberToText(input) }))}
           />
           <SgInputCurrency
             id="price-cached-new"
@@ -343,7 +343,7 @@ function ModelPrices({
             decimals={4}
             minValue={0}
             inputProps={{ value: form.cached }}
-            onChange={(cached) => setForm((c) => ({ ...c, cached }))}
+            onChange={(cached) => setForm((c) => ({ ...c, cached: numberToText(cached) }))}
           />
           <SgInputCurrency
             id="price-output-new"
@@ -352,7 +352,7 @@ function ModelPrices({
             decimals={4}
             minValue={0}
             inputProps={{ value: form.output }}
-            onChange={(output) => setForm((c) => ({ ...c, output }))}
+            onChange={(output) => setForm((c) => ({ ...c, output: numberToText(output) }))}
           />
           <SgInputText
             id="price-source-new"

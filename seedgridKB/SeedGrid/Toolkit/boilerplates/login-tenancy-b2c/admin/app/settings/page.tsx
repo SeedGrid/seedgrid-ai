@@ -17,6 +17,7 @@ import { Shell } from "../components/Shell";
 import { StatusBadge } from "../components/StatusBadge";
 import { useAdminAccess } from "../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
+import { numberToText } from "@/lib/format";
 
 type PricingConfig = { enabled: boolean; sourceUrl: string };
 
@@ -139,7 +140,7 @@ export default function SettingsPage() {
                   minValue={0}
                   maxValue={23}
                   inputProps={{ value: hour }}
-                  onChange={setHour}
+                  onChange={(value) => setHour(numberToText(value))}
                 />
               </div>
               <div style={{ width: 140 }}>
@@ -150,7 +151,7 @@ export default function SettingsPage() {
                   minValue={0}
                   maxValue={59}
                   inputProps={{ value: minute }}
-                  onChange={setMinute}
+                  onChange={(value) => setMinute(numberToText(value))}
                 />
               </div>
             </SgStack>

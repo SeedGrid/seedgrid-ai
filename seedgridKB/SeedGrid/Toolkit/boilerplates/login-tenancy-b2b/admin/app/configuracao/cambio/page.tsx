@@ -337,7 +337,7 @@ export default function CurrencyRatesPage() {
             <SgButton appearance="outline" label="Cancelar" onClick={() => setEditTarget(null)} severity="secondary" />
             <SgButton
               label={saving ? "Salvando..." : "Salvar"}
-              disabled={saving}
+              enabled={!saving}
               onClick={() => void saveManualRate()}
               severity="primary"
             />

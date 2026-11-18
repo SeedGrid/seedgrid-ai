@@ -20,6 +20,7 @@ import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 import type { ApiKeyCreateResponse, ApiKeyRoleOption } from "@/lib/seedgrid-app-api";
+import { numberToText } from "@/lib/format";
 
 export default function ApiKeyEditPage() {
   const router = useRouter();
@@ -206,7 +207,7 @@ export default function ApiKeyEditPage() {
               decimals={0}
               minValue={1}
               inputProps={{ value: expiresDays }}
-              onChange={setExpiresDays}
+              onChange={(value) => setExpiresDays(numberToText(value))}
             />
             <SgCombobox
               id="apikey-role"
@@ -244,7 +245,7 @@ export default function ApiKeyEditPage() {
                 appearance="solid"
                 label={submitting ? "Criando..." : "Criar chave"}
                 leftIcon={<KeyRound size={16} />}
-                disabled={submitting}
+                enabled={!submitting}
                 onClick={() => void handleCreate()}
                 severity="primary"
               />

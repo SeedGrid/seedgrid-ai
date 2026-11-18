@@ -716,7 +716,7 @@ export function SubscriptionManageView({
               severity="secondary"
               appearance="outline"
               onClick={() => setCancelOpen(false)}
-              disabled={cancelBusy}
+              enabled={!cancelBusy}
             >
               Voltar
             </SgButton>

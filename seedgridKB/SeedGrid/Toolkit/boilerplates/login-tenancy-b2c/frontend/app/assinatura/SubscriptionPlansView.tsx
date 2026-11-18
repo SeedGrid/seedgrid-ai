@@ -655,7 +655,7 @@ export function SubscriptionPlans({
                   appearance="solid"
                   style={{ width: "100%" }}
                   loading={busy || isPending}
-                  disabled={plan.current || busy || isPending}
+                  enabled={!(plan.current || busy || isPending)}
                   onClick={() => void handleSubscribe(plan)}
                 >
                   {plan.current
@@ -767,7 +767,7 @@ export function SubscriptionPlans({
                   <SgButton
                     appearance="outline"
                     severity="secondary"
-                    disabled={confirmBusy}
+                    enabled={!confirmBusy}
                     onClick={() => setCompanyDialogOpen(true)}
                   >
                     {companySelection ? "Rever escolha de empresas" : "Escolher empresas"}
@@ -783,7 +783,7 @@ export function SubscriptionPlans({
               <SgButton
                 appearance="outline"
                 severity="secondary"
-                disabled={confirmBusy}
+                enabled={!confirmBusy}
                 onClick={() => setChangeConfirm(null)}
               >
                 Cancelar
@@ -791,7 +791,7 @@ export function SubscriptionPlans({
               <SgButton
                 appearance="solid"
                 severity="primary"
-                disabled={!canConfirmChange}
+                enabled={canConfirmChange}
                 loading={confirmBusy}
                 onClick={() => void confirmChange()}
               >
@@ -872,7 +872,7 @@ export function SubscriptionPlans({
                   <SgButton
                     appearance="outline"
                     severity="secondary"
-                    disabled={checkoutConfirmBusy}
+                    enabled={!checkoutConfirmBusy}
                     onClick={() => setCheckoutCompanyDialogOpen(true)}
                   >
                     {companySelection ? "Rever escolha de empresas" : "Escolher empresas"}
@@ -888,7 +888,7 @@ export function SubscriptionPlans({
               <SgButton
                 appearance="outline"
                 severity="secondary"
-                disabled={checkoutConfirmBusy}
+                enabled={!checkoutConfirmBusy}
                 onClick={() => setCheckoutConfirm(null)}
               >
                 Cancelar
@@ -896,7 +896,7 @@ export function SubscriptionPlans({
               <SgButton
                 appearance="solid"
                 severity="primary"
-                disabled={!canConfirmCheckout}
+                enabled={canConfirmCheckout}
                 loading={checkoutConfirmBusy}
                 onClick={() => void confirmCheckoutWithSelection()}
               >

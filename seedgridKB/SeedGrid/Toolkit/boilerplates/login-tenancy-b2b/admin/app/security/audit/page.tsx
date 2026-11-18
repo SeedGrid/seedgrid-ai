@@ -20,7 +20,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DatatableSkeleton } from "../../components/DatatableSkeleton";
 import { Shell } from "../../components/Shell";
 import { StatusBadge } from "../../components/StatusBadge";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, numberToText } from "@/lib/format";
 import {
   AUDIT_LOG_OPERATIONS,
   type AuditLogEntry,
@@ -260,7 +260,7 @@ export default function SecurityAuditPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: draft.idFrom }}
-                onChange={(value) => updateDraft("idFrom", value)}
+                onChange={(value) => updateDraft("idFrom", numberToText(value))}
               />
             </div>
             <div style={{ flex: 1, minWidth: 200 }}>
@@ -270,7 +270,7 @@ export default function SecurityAuditPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: draft.idTo }}
-                onChange={(value) => updateDraft("idTo", value)}
+                onChange={(value) => updateDraft("idTo", numberToText(value))}
               />
             </div>
           </SgStack>

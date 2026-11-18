@@ -27,6 +27,7 @@ import {
   type CommercialFields,
 } from "@/lib/plan-commercial";
 import { toMeterPayload, toMeterRows, type MeterQuotaRow } from "@/lib/usage-meters";
+import { numberToText } from "@/lib/format";
 
 export default function PlanTrialPage() {
   const { hasPermission, loading: accessLoading } = useAdminAccess();
@@ -161,7 +162,7 @@ export default function PlanTrialPage() {
               decimals={0}
               minValue={0}
               inputProps={{ value: trialDays }}
-              onChange={setTrialDays}
+              onChange={(value) => setTrialDays(numberToText(value))}
             />
 
             <div>
@@ -172,7 +173,7 @@ export default function PlanTrialPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: commercial.maxCompanies }}
-                onChange={(maxCompanies) => setCommercial((current) => ({ ...current, maxCompanies }))}
+                onChange={(maxCompanies) => setCommercial((current) => ({ ...current, maxCompanies: numberToText(maxCompanies) }))}
               />
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{COMPANY_LIMIT_HELP} Quantas empresas da conta operam normalmente durante o trial.</p>
             </div>
@@ -185,7 +186,7 @@ export default function PlanTrialPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: commercial.maxReadOnlyCompanies }}
-                onChange={(maxReadOnlyCompanies) => setCommercial((current) => ({ ...current, maxReadOnlyCompanies }))}
+                onChange={(maxReadOnlyCompanies) => setCommercial((current) => ({ ...current, maxReadOnlyCompanies: numberToText(maxReadOnlyCompanies) }))}
               />
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{COMPANY_LIMIT_HELP} Quantas empresas podem só consultar.</p>
             </div>
@@ -198,7 +199,7 @@ export default function PlanTrialPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: commercial.pastDueReadOnlyAfterDays }}
-                onChange={(pastDueReadOnlyAfterDays) => setCommercial((current) => ({ ...current, pastDueReadOnlyAfterDays }))}
+                onChange={(pastDueReadOnlyAfterDays) => setCommercial((current) => ({ ...current, pastDueReadOnlyAfterDays: numberToText(pastDueReadOnlyAfterDays) }))}
               />
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{PAST_DUE_HELP}</p>
             </div>
@@ -211,7 +212,7 @@ export default function PlanTrialPage() {
                 decimals={0}
                 minValue={0}
                 inputProps={{ value: commercial.pastDueDisableAfterDays }}
-                onChange={(pastDueDisableAfterDays) => setCommercial((current) => ({ ...current, pastDueDisableAfterDays }))}
+                onChange={(pastDueDisableAfterDays) => setCommercial((current) => ({ ...current, pastDueDisableAfterDays: numberToText(pastDueDisableAfterDays) }))}
               />
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.75 }}>{PAST_DUE_HELP}</p>
             </div>

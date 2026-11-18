@@ -438,9 +438,9 @@ function CompanyListPageContent() {
         confirmButton={{
           label: toggling ? "Processando..." : toggleToInactive ? "Inativar" : "Reativar",
           severity: toggleToInactive ? "danger" : "secondary",
-          disabled: toggling,
+          enabled: !toggling,
         }}
-        cancelButton={{ label: "Cancelar", disabled: toggling }}
+        cancelButton={{ label: "Cancelar", enabled: !toggling}}
         closeOnConfirm={false}
         onConfirm={() => void confirmToggleActive()}
         onCancel={() => setCompanyToToggle(null)}

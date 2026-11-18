@@ -404,11 +404,11 @@ function PlanListPageContent() {
         confirmButton={{
           label: deleting ? "Excluindo..." : "Excluir",
           severity: "danger",
-          disabled: deleting,
+          enabled: !deleting,
         }}
         cancelButton={{
           label: "Cancelar",
-          disabled: deleting,
+          enabled: !deleting,
         }}
         closeOnConfirm={false}
         onConfirm={() => void confirmDeletePlan()}

@@ -4,6 +4,7 @@ import { SgInputCurrency, SgInputNumber, SgStack, SgToggleSwitch } from "@seedgr
 import { useEffect, useState } from "react";
 
 import type { MeterQuotaRow, UsageMeter } from "@/lib/usage-meters";
+import { numberToText } from "@/lib/format";
 
 /** Contadores declarados pelo produto (GET /api/admin/billing/meters), carregados uma vez por tela. */
 export function useUsageMeters(enabled = true) {
@@ -90,7 +91,7 @@ export function MeterQuotaEditor({ idPrefix, rows, onChange, allowOverage, enabl
                   decimals={0}
                   minValue={0}
                   inputProps={{ value: row.includedUnits }}
-                  onChange={(includedUnits) => update(row.meter, { includedUnits })}
+                  onChange={(includedUnits) => update(row.meter, { includedUnits: numberToText(includedUnits) })}
                 />
                 {allowOverage ? (
                   <div>
@@ -102,7 +103,7 @@ export function MeterQuotaEditor({ idPrefix, rows, onChange, allowOverage, enabl
                       minValue={0}
                       enabled={enabled}
                       inputProps={{ value: row.overagePrice }}
-                      onChange={(overagePrice) => update(row.meter, { overagePrice })}
+                      onChange={(overagePrice) => update(row.meter, { overagePrice: numberToText(overagePrice) })}
                     />
                     <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#dc2626" }}>
                       * zero nao cobra excedente - esgotou a franquia, bloqueia

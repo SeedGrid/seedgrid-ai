@@ -34,6 +34,7 @@ import {
   type ReferenceHoliday,
 } from "@/lib/business-days";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import { numberToText } from "@/lib/format";
 
 const PAGE_SIZE = 24;
 // `dataKey` precisa ser unico: o mesmo codigo/data pode repetir em UFs diferentes.
@@ -188,7 +189,7 @@ export default function HolidayReferencePage() {
               {canUpdate && movable && canInheritMovable(movable) ? (
                 <SgButton
                   appearance="ghost"
-                  disabled={busy}
+                  enabled={!busy}
                   label="Voltar a herdar"
                   leftIcon={<RotateCcw size={14} />}
                   onClick={() => void saveMovable(code, null)}
@@ -233,7 +234,7 @@ export default function HolidayReferencePage() {
               decimals={0}
               minValue={1900}
               inputProps={{ value: yearText }}
-              onChange={handleYearChange}
+              onChange={(value) => handleYearChange(numberToText(value))}
             />
           </div>
 
