@@ -105,17 +105,19 @@ Base `/business-days`, permissões `BUSINESS_DAY_READ`, `BUSINESS_DAY_CREATE`, `
 
 ## E o front? (boilerplates `login-tenancy-b2b` e `subdomain-tenancy`)
 
-Telas em `app/dias-uteis/*`, chamando o BFF `/api/business-days/*` (catch-all `app/api/business-days/[...path]`, sem rota nova):
+**Uma única tela** `app/dias-uteis/page.tsx` (regra FE-38, no padrão da tela do `seedgrid-report-client`; as telas `holiday_list`, `holiday_edit`, `holiday_reference`, `week_profile`, `work_override_list`, `work_override_edit` e `calendar` deixaram de existir), chamando o BFF `/api/business-days/*` (catch-all `app/api/business-days/[...path]`, sem rota nova):
 
-| Tela | Rota do app | Chamadas |
-|---|---|---|
-| Feriados | `holiday_list`, `holiday_edit` | `holidays[/{id}]` |
-| Semana de trabalho | `week_profile` | `week-profile` |
-| Lista de referência (nova) | `holiday_reference` | `holidays/reference?year=`, `movable-holidays` (GET e PUT) |
-| Vai trabalhar (nova) | `work_override_list`, `work_override_edit` | `work-overrides` |
-| Calendário (ajustada) | `calendar` | `calendar?year=&month=` |
+| Parte da tela | Chamadas |
+|---|---|
+| A semana da empresa (cartões Dia todo, Meio período, Fechado; Salvar) | `week-profile` (GET, PUT com os 7 dias, DELETE para restaurar o padrão) |
+| Grade dos 12 meses e dias úteis do ano | `calendar?year=&month=` (12 chamadas) e `count?from=&to=` |
+| Clique no dia: feriado (cadastrar, editar, excluir) | `holidays[/{id}]` |
+| Clique no dia: abrir a empresa ou fechar só naquele dia | `work-overrides[/{id}]` |
+| Feriados móveis (seção recolhível, ligar, desligar, voltar a herdar) | `holidays/reference?year=`, `movable-holidays` (GET e PUT) |
 
-- Lista de referência: carrega o ano (corrente) e os móveis em paralelo; linhas `MOVABLE` trazem o interruptor "Considerar como feriado", a origem (Empresa, Conta (tenant), Padrão) e "Voltar a herdar" (só com origem COMPANY ou TENANT); ativos só com `BUSINESS_DAY_UPDATE`; depois do `PUT` recarrega. Linha com `enabled=false` fica esmaecida ("Considerado dia útil").
+- O seletor de empresa só aparece com mais de uma empresa na conta; as permissões `BUSINESS_DAY_*` valem para a empresa escolhida (token novo na troca) e a tela esconde ou bloqueia o que falta.
+- O Salvar envia só a semana; feriados e exceções gravam no ato, pelo diálogo do dia.
+- Feriados móveis: carrega o ano (corrente) e os móveis em paralelo; linhas `MOVABLE` trazem o interruptor "Considerar como feriado", a origem (Empresa, Conta (tenant), Padrão) e "Voltar a herdar" (só com origem COMPANY ou TENANT); ativos só com `BUSINESS_DAY_UPDATE`; depois do `PUT` recarrega. Linha com `enabled=false` fica esmaecida ("Considerado dia útil").
 - Calendário: cada feriado mostra nome, selo da origem (Empresa, Conta, Estadual, Nacional, Móvel) e base legal; `worksOnHoliday=true` vira "Feriado trabalhado".
 - Exceção "vai trabalhar" definida no tenant e vista por quem tem empresa não mostra editar nem excluir (`editable=false`): a permissão `BUSINESS_DAY_UPDATE` sozinha não basta.
 - Armadilhas: `JSON.stringify({ enabled: undefined })` **omite** a chave, então para voltar a herdar tem de ir `enabled: null` explícito; não use `new Date("yyyy-MM-dd")` para exibir datas (o fuso desloca um dia); a chave da tabela de referência é `code|date|uf` (repete por UF); backend antigo não traz `holidaySource`, `worksOnHoliday` e `legalBasis` (o front assume `null`/`false`/`null`). A lógica pura está em `lib/business-days.ts`.

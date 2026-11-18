@@ -272,6 +272,10 @@ The lists of the boilerplates (users, roles, models, currencies, exchange, billi
 - **Row-actions wrapper:** use `SgStack` (the classes `row-actions` and `plan-actions-cell` have no CSS in the admin).
 - **Type-check** in **every** app of the project (`admin/`, `frontend/`, etc.), not only `frontend/`. If `next build` fails on a BOM in a `fe-theme` JSON after `pnpm install --ignore-scripts`, run `node scripts/strip-bom-seedgrid.mjs`.
 
+## Business days is one screen (FE-38)
+
+O calendário da empresa (feriados, semana de trabalho, exceções) **não é CRUD**: não gere `holiday_list`, `holiday_edit`, `week_profile` e afins. Os boilerplates já trazem a tela única `app/dias-uteis/page.tsx` (regra FE-38); mantenha-a e só adapte textos. Produto novo que precisa de dias úteis usa essa tela e a extension `business-days`.
+
 ## Permission Standard
 
 - Hide menu entries if the user lacks view permission.

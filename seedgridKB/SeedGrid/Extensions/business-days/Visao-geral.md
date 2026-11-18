@@ -76,4 +76,4 @@ Faixa V1100–V1199, location `db/migration/business-days`, histórico `sg_flywa
 
 ## Front nos boilerplates
 
-Menu **Dias úteis** (`/dias-uteis/*`): feriados (lista e edição), semana de trabalho e calendário; proxy em `app/api/business-days/[...path]`.
+Menu **Calendário da empresa** (`/dias-uteis`): **uma única tela** com a semana da empresa, a grade dos 12 meses, os feriados e as exceções (regra FE-38); proxy em `app/api/business-days/[...path]`.
