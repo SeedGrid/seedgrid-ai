@@ -18,7 +18,7 @@ seedgridKB/
 ├── AGENTS.md, CLAUDE.md     ← instruções para quem MANTÉM o vault; não são distribuídos
 ├── Bem-vindo.md, .obsidian/ ← não distribuídos
 └── SeedGrid/
-    ├── Visao-geral.md, Extensions/, SeedGrid-components/, ...   ← base de conhecimento (KB)
+    ├── Visao-geral.md, Extensions/, SeedGrid-components/ (react/ e flutter/), ...   ← base de conhecimento (KB)
     └── Toolkit/             ← agents/, rules/, templates/, references/, skills/
 ```
 

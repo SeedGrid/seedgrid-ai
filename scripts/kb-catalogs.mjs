@@ -16,7 +16,7 @@
 //   enums       Java: Extensions/<ext>/Enums.md (cada `## Nome`/`### Nome` com tabela `Valor`; "Usado em" vem da tabela
 //               Índice da própria nota). Rust: seção `## Enums` de Rust.md / Visao-geral.md (tabela de índice + a
 //               seção `### Nome`, ou a coluna de variantes do índice).
-//   components  SeedGrid-components/<grupo>/Visao-geral.md (tabelas de componentes/símbolos), <grupo>/API.md
+//   components  SeedGrid-components/react/<grupo>/Visao-geral.md (tabelas de componentes/símbolos), <grupo>/API.md
 //               (`## Sg...`, tabelas de funções), fundamentos/Visao-geral.md ("Mapa dos utilitários"),
 //               pacotes/Visao-geral.md, modulos/fe-*.md e showcase.md. Esses grupos são os de **React**.
 //               O **Flutter** entra pelas notas SeedGrid-components/flutter/<grupo>/Visao-geral.md (mesmos nomes de
@@ -46,6 +46,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const vault = path.join(root, 'seedgridKB');
 const extDir = path.join(vault, 'SeedGrid', 'Extensions');
 const compDir = path.join(vault, 'SeedGrid', 'SeedGrid-components');
+// P164: os grupos React moram em SeedGrid-components/react/<grupo>/; pacotes, modulos e showcase só existem no React e ficam na raiz.
+const reactDir = path.join(compDir, 'react');
+const RAIZ_COMUM = new Set(['pacotes', 'modulos', 'showcase']);
+const groupDir = (g) => path.join(RAIZ_COMUM.has(g) ? compDir : reactDir, g);
+const groupNote = (g) => (RAIZ_COMUM.has(g) ? g : `react/${g}`);
 const GENERATOR = 'scripts/kb-catalogs.mjs';
 
 const args = process.argv.slice(2);
@@ -519,7 +524,7 @@ function nameTokens(c) {
 }
 
 function groupSymbols(g) {
-  const dirp = path.join(compDir, g);
+  const dirp = groupDir(g);
   const vg = path.join(dirp, 'Visao-geral.md');
   const api = path.join(dirp, 'API.md');
   const syms = new Map(); // name -> {exp, summary}
@@ -615,7 +620,7 @@ function firstParagraph(text) {
 }
 
 function buildComponents(detail = false) {
-  const fundVG = path.join(compDir, 'fundamentos', 'Visao-geral.md');
+  const fundVG = path.join(reactDir, 'fundamentos', 'Visao-geral.md');
   const fm = frontmatter(read(fundVG));
   const fundText = read(fundVG);
   const verRow = tables(fundText).flatMap((t) => t.rows).find((r) => /^vers/i.test(norm(stripMd(r[0] || ''))));
@@ -624,7 +629,7 @@ function buildComponents(detail = false) {
   const sources = [fundVG];
   for (const [g, title] of GROUPS) {
     const rows = [];
-    const dirp = path.join(compDir, g);
+    const dirp = groupDir(g);
     const noteLinks = [];
     if (g === 'showcase') {
       const p = path.join(compDir, 'showcase.md');
@@ -639,7 +644,7 @@ function buildComponents(detail = false) {
         for (const r of t.rows) {
           const n = stripMd(r[0] || '').replace(/^src\//, '');
           const expRaw = norm(stripMd(r[iExp] || ''));
-          rows.push({ name: n, exp: expRaw.startsWith('nao') ? 'não' : 'sim', sum: summ(r[iRole]), note: link('SeedGrid/SeedGrid-components/fundamentos/API', 'API') });
+          rows.push({ name: n, exp: expRaw.startsWith('nao') ? 'não' : 'sim', sum: summ(r[iRole]), note: link('SeedGrid/SeedGrid-components/react/fundamentos/API', 'API') });
         }
       }
       for (const f of ['Visao-geral', 'API', 'Exemplos']) if (exists(path.join(dirp, f + '.md'))) sources.push(path.join(dirp, f + '.md'));
@@ -678,7 +683,7 @@ function buildComponents(detail = false) {
     } else {
       for (const f of ['Visao-geral', 'API', 'Exemplos']) if (exists(path.join(dirp, f + '.md'))) sources.push(path.join(dirp, f + '.md'));
       const syms = groupSymbols(g);
-      for (const [n, v] of syms) rows.push({ name: n, exp: v.exp, sum: v.summary, note: link(`SeedGrid/SeedGrid-components/${g}/API`, 'API') });
+      for (const [n, v] of syms) rows.push({ name: n, exp: v.exp, sum: v.summary, note: link(`SeedGrid/SeedGrid-components/${groupNote(g)}/API`, 'API') });
       noteLinks.push(...noteSet(g));
     }
     const sg = rows.filter((r) => /^Sg[A-Z0-9]/.test(r.name)).length;
@@ -708,7 +713,7 @@ function buildComponents(detail = false) {
   const flutterFm = exists(path.join(flutterDir, 'Visao-geral.md')) ? frontmatter(read(path.join(flutterDir, 'Visao-geral.md'))) : {};
   const fSg = flutterOut.reduce((n, x) => n + x.sg, 0);
   const fOther = flutterOut.reduce((n, x) => n + x.other, 0);
-  const known = new Set([...GROUPS.map((x) => x[0]), 'flutter']);
+  const known = new Set([...GROUPS.map((x) => x[0]), 'flutter', 'react']);
   const unknown = dirs(compDir).filter((d) => !known.has(d));
   const totalSg = groupsOut.reduce((n, x) => n + x.sg, 0);
   const totalOther = groupsOut.reduce((n, x) => n + x.other, 0);
@@ -719,11 +724,11 @@ function buildComponents(detail = false) {
   if (flutterFm.commit) L.splice(L.indexOf(`analisado-em: ${maxDate(sources)}`), 0, `fonte-flutter: ${flutterFm.fonte || ''}`, `commit-flutter: ${flutterFm.commit}`);
   L.push(detail ? '# Catálogo dos componentes SeedGrid (resumo de cada símbolo, React e Flutter)' : '# Índice dos componentes SeedGrid (React e Flutter)', '');
   L.push(`> **Duas plataformas, os mesmos nomes de componente.** **React** = \`@seedgrid/fe-components\` (\`front/seedgrid-fe-components\`); **Flutter** = \`seedgrid_components\` (\`front/seedgrid-fe-flutter\`, não publicado). \`SgButton\` existe nas duas, com API quase igual. Antes de escolher ou copiar código, leia ${SG}Plataformas|Plataformas: React × Flutter]] (onde está cada uma, como escolher, placar de paridade). Cada seção abaixo diz a plataforma no título.`, '');
-  L.push(`**React.** Monorepo \`front/seedgrid-fe-components\` (pnpm + Turborepo, React 19). Pacote principal \`@seedgrid/fe-components\` ${version}; importação pública pelo barrel \`src/index.ts\` (\`import { SgButton } from "@seedgrid/fe-components"\`) e CSS em \`@seedgrid/fe-components/style.css\` — detalhes em ${SG}fundamentos/Visao-geral|Fundamentos]].`, '');
+  L.push(`**React.** Monorepo \`front/seedgrid-fe-components\` (pnpm + Turborepo, React 19). Pacote principal \`@seedgrid/fe-components\` ${version}; importação pública pelo barrel \`src/index.ts\` (\`import { SgButton } from "@seedgrid/fe-components"\`) e CSS em \`@seedgrid/fe-components/style.css\` — detalhes em ${SG}react/fundamentos/Visao-geral|Fundamentos]].`, '');
   L.push(`**Flutter.** Monorepo \`front/seedgrid-fe-flutter\` (pub workspaces); pacote \`seedgrid_components\` (importação \`package:seedgrid_components/seedgrid_components.dart\`), com \`seedgrid_theme\` e \`seedgrid_commons\`; notas em ${SG}flutter/Visao-geral|Flutter: visão geral]], ${SG}flutter/Paridade|Paridade]], ${SG}flutter/Divergencias|Divergências]] e ${SG}flutter/Traducao-React-para-Dart|Tradução React → Dart]].`, '');
   L.push('- **Exportado = sim**: disponível no barrel público. **não**: interno (documentado só para referência).');
   L.push('- Cada grupo tem `Visao-geral` (quando usar), `API` (props completas, eventos, a11y) e `Exemplos` (React: TSX validado contra a API; Flutter: Dart copiado das regiões do showcase), nas duas plataformas.');
-  L.push(`- Contratos comuns: react-hook-form e base \`SgInputText\` em ${SG}inputs-texto/API|inputs-texto/API]].`);
+  L.push(`- Contratos comuns: react-hook-form e base \`SgInputText\` em ${SG}react/inputs-texto/API|inputs-texto/API]].`);
   L.push(`- App de vitrine: ${SG}showcase|Showcase]]. Pacotes de tema/core/playground: ${SG}pacotes/Visao-geral|Pacotes]]. Módulos de tela ligados às extensions: ${SG}modulos/Visao-geral|Módulos]].`);
   L.push(`- Esta nota é **gerada** (\`node scripts/kb-catalogs.mjs --only components --write\`) a partir das notas de cada grupo; os resumos são a 1ª frase da coluna "Para que serve"/"Use para" da Visao-geral (≤100 caracteres) — corrija a nota de origem e regenere.`, '');
   L.push('## Resumo — React', '', '| Grupo | Componentes `Sg*` | Outros símbolos (hooks, funções, pacotes) | Notas (React) |', '|---|---|---|---|');
@@ -761,10 +766,10 @@ function buildComponents(detail = false) {
 }
 
 function noteSet(g) {
-  const dirp = path.join(compDir, g);
+  const dirp = groupDir(g);
   const out = [];
   const names = { 'Visao-geral': 'Visão geral', API: 'API', Exemplos: 'Exemplos' };
-  for (const f of ['Visao-geral', 'API', 'Exemplos']) if (exists(path.join(dirp, f + '.md'))) out.push(link(`SeedGrid/SeedGrid-components/${g}/${f}`, names[f]));
+  for (const f of ['Visao-geral', 'API', 'Exemplos']) if (exists(path.join(dirp, f + '.md'))) out.push(link(`SeedGrid/SeedGrid-components/${groupNote(g)}/${f}`, names[f]));
   return out;
 }
 

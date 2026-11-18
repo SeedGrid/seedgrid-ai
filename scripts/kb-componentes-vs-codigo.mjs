@@ -358,7 +358,7 @@ if (doReact) {
   const gen = lerJson(fGenProps);
   const manRProps = new Map(lerJson(fReactManifest).components.map((c) => [c.exportName, c.sgMeta?.props ?? []]));
   const manR = new Set(manRProps.keys());
-  for (const { grupo, arquivo } of paginasApi(kb, false)) {
+  for (const { grupo, arquivo } of paginasApi(path.join(kb, 'react'), false)) {
     for (const s of lerSecoes(arquivo, false)) {
       if (only && s.nome !== only) continue;
       naKb.react.add(s.nome);

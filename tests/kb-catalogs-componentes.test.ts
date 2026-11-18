@@ -34,7 +34,7 @@ test('cada grupo Flutter tem Visao-geral, API e Exemplos, e as notas dizem a pla
       const texto = await readFile(path.join(comp, 'flutter', g, `${f}.md`), 'utf8');
       assert.match(texto, /^plataforma: flutter$/m, `${g}/${f}: falta plataforma: flutter no frontmatter`);
       assert.match(texto, /Flutter/, `${g}/${f}: não diz Flutter`);
-      const react = await readFile(path.join(comp, g, `${f}.md`), 'utf8');
+      const react = await readFile(path.join(comp, 'react', g, `${f}.md`), 'utf8');
       assert.match(react, /^plataforma: react$/m, `${g}/${f} (React): falta plataforma: react no frontmatter`);
       assert.match(react, /^# .*React/m, `${g}/${f} (React): o título não diz React`);
     }
