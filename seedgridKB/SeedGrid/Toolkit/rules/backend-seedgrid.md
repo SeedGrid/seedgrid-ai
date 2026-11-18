@@ -15,7 +15,7 @@ Para as extensions (propriedades, enums, exemplos), consulte a KB: comece por `.
 
 ## API
 
-- **BE-30.** **Nunca** exponha `id`; exponha sempre `publicId`. Vale para **todos** os DTOs de resposta e de requisição, paths de rota, parâmetros de consulta e filtros (inclusive de auditoria por faixa de id), identificadores de requisição ou de arquivo devolvidos e mensagens de erro. Relacionamento sai e entra como `<relacao>PublicId`. Produto novo já nasce assim; o id numérico fica só dentro do banco e do serviço.
+- **BE-30.** **Nunca** exponha `id`; exponha sempre `publicId`. Vale para **todos** os DTOs de resposta e de requisição, paths de rota, parâmetros de consulta e filtros (inclusive de auditoria por faixa de id), identificadores de requisição ou de arquivo devolvidos e mensagens de erro. Relacionamento sai e entra como `<relacao>PublicId`. Produto novo já nasce assim; o id numérico fica só dentro do banco e do serviço. **Exceção decidida pelo dono (2026-11-18):** o log de auditoria (`AuditLogEntry.id` e os filtros por faixa de id da tela de auditoria) e o `id` do arquivo de export (`ExportArtifactInfo.id`) das extensions `audit` e `backup` ficam como estão; é a única exceção, e vale por serem da plataforma.
 - **BE-32.** Filtros de busca textual usam `LIKE` por prefixo (`term + "%"`), nunca `"%" + term + "%"`.
 
 ## Erros
