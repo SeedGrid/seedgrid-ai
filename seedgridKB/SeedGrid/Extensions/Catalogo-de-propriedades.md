@@ -23,7 +23,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | ai-pricing | 5 |
 | Quarkus | apikeys | 2 |
 | Quarkus | audit | 6 |
-| Quarkus | backup | 46 |
+| Quarkus | backup | 47 |
 | Quarkus | billing | 33 |
 | Quarkus | business-days | 5 |
 | Quarkus | cache | 21 |
@@ -65,7 +65,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-security | 44 |
 | Front | fe-self-enter | 3 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **881** |
+| **Total** | | **882** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -106,7 +106,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.backup.max-concurrent-exports` | Execução, fila e retenção | int | `1` (BC e MP) | Runtime | Teto global (somando todos os tenants) de jobs RUNNING para o scheduler iniciar novos jobs QUEUED; slots divididos… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.queue-poll-interval` | Execução, fila e retenção | String (duração do Quarkus Scheduler) | `30s` (BC e MP) | Runtime (startup do scheduler) | Intervalo do @Scheduled(every = "{seedgrid.backup.queue-poll-interval}") | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.retention-days` | Execução, fila e retenção | int | `7` (BC e MP) | Runtime | Ao concluir (DONE), expiresAt = agora + N dias | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
-| `seedgrid.backup.excluded-domain-entity-packages` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | — (vazio) | Runtime | Entidades JPA cujo pacote começa com algum prefixo são puladas no escopo DOMAIN (evita consultar entidades de outra… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.excluded-domain-entity-packages` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | — (vazio) | Runtime | Entidades JPA cujo pacote começa com algum prefixo são puladas nos escopos DOMAIN e RAW (a partir de backup 2026.11.6… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.company-column-names` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `company_public_id,company_id` (a partir de backup 2026.11.6) | Runtime | Colunas que identificam a empresa dona da linha | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.enabled` | Notificação | boolean | `true` (BC e MP) | Runtime | Liga o scheduler de notificação e entra em EmailExportNotificationService#isEnabled() | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.poll-interval` | Notificação | String (duração do Quarkus Scheduler) | `5m` (BC e MP) | Runtime | Intervalo do @Scheduled(every = "{seedgrid.backup.notification.poll-interval}") | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.max-retries` | Notificação | int | `3` (BC e MP) | Runtime | Jobs DONE com notificationAttempts < max-retries são (re)notificados; sucesso → DONE_NOTIFIED | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
