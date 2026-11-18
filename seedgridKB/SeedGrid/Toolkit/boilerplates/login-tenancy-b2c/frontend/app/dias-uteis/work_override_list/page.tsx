@@ -15,6 +15,7 @@ import { Edit3, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../components/PublicIdCell";
 import { Shell } from "../../components/Shell";
 import { useSavedToast } from "../../components/useSavedToast";
 import { ListLoadError } from "@/components/ui/list-load-error";
@@ -113,6 +114,14 @@ function WorkOverrideListPageContent() {
 
   const columns: SgDatatableColumn<WorkOverride>[] = useMemo(
     () => [
+      {
+        columnId: "work-override-id",
+        header: "ID",
+        sortable: false,
+        reorderable: true,
+        hideable: true,
+        body: (row) => <PublicIdCell publicId={row.id} />,
+      },
       {
         columnId: "override-date",
         field: "date",

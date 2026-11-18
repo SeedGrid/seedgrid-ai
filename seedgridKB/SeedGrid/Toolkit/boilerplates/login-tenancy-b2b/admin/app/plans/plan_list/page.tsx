@@ -17,6 +17,7 @@ import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../components/PublicIdCell";
 import { Shell } from "../../components/Shell";
 import { useSavedToast } from "../../components/useSavedToast";
 import { DatatableSkeleton } from "../../components/DatatableSkeleton";
@@ -173,6 +174,15 @@ function PlanListPageContent() {
   }
 
   const columns: SgDatatableColumn<PlanEntry>[] = useMemo(() => [
+    {
+      columnId: "plan-id",
+      field: "publicId",
+      header: "ID",
+      sortable: false,
+      reorderable: true,
+      hideable: true,
+      body: (row) => <PublicIdCell publicId={row.publicId} />,
+    },
     {
       columnId: "plan-code",
       field: "code",

@@ -13,6 +13,7 @@ import { Edit3, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../../components/PublicIdCell";
 import { Shell } from "../../../components/Shell";
 import { useSavedToast } from "../../../components/useSavedToast";
 import { DatatableSkeleton } from "../../../components/DatatableSkeleton";
@@ -91,6 +92,14 @@ function AiModelListPageContent() {
   }
 
   const columns: SgDatatableColumn<AiModelEntry>[] = useMemo(() => [
+    {
+      columnId: "model-ref-id",
+      header: "ID",
+      sortable: false,
+      reorderable: true,
+      hideable: true,
+      body: (row) => <PublicIdCell publicId={row.id} />,
+    },
     {
       columnId: "model-provider",
       field: "provider",

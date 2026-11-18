@@ -14,6 +14,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../../components/PublicIdCell";
 import { Shell } from "../../../components/Shell";
 import { useSavedToast } from "../../../components/useSavedToast";
 import { DatatableSkeleton } from "../../../components/DatatableSkeleton";
@@ -118,6 +119,15 @@ function ApiKeyListPageContent() {
   }
 
   const columns: SgDatatableColumn<ApiKeyListItem>[] = useMemo(() => [
+    {
+      columnId: "apikey-id",
+      field: "publicId",
+      header: "ID",
+      sortable: false,
+      reorderable: true,
+      hideable: true,
+      body: (row) => <PublicIdCell publicId={row.publicId} />,
+    },
     { columnId: "apikey-name", field: "name", header: "Nome" },
     {
       columnId: "apikey-masked",

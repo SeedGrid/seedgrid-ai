@@ -15,6 +15,7 @@ import {
 import { Edit3, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { PublicIdCell } from "../../components/PublicIdCell";
 import { Shell } from "../../components/Shell";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
@@ -136,6 +137,14 @@ export default function CurrenciesPage() {
   }
 
   const columns: SgDatatableColumn<CurrencyDetail>[] = [
+    {
+      columnId: "moeda-id",
+      header: "ID",
+      sortable: false,
+      reorderable: true,
+      hideable: true,
+      body: (row) => <PublicIdCell publicId={row.id} />,
+    },
     { field: "code", header: "Codigo", sortable: true },
     { field: "name", header: "Nome", sortable: true },
     { field: "sourceUrl", header: "URL de origem" },

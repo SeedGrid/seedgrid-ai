@@ -19,6 +19,7 @@ import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+import { PublicIdCell } from "../../../components/PublicIdCell";
 import { Shell } from "../../../components/Shell";
 import { useSavedToast } from "../../../components/useSavedToast";
 import { DatatableSkeleton } from "../../../components/DatatableSkeleton";
@@ -164,6 +165,15 @@ function RoleListPageContent() {
   }
 
   const columns: SgDatatableColumn<RoleEntry>[] = useMemo(() => [
+    {
+      columnId: "role-id",
+      field: "publicId",
+      header: "ID",
+      sortable: false,
+      reorderable: true,
+      hideable: true,
+      body: (row) => <PublicIdCell publicId={row.publicId} />,
+    },
     {
       columnId: "role-name",
       field: "name",
@@ -337,7 +347,7 @@ function RoleListPageContent() {
           ) : (
             <SgDatatable
               columns={columns}
-              dataKey="id"
+              dataKey="publicId"
               emptyMessage="Nenhum perfil encontrado."
               first={queryState.page * queryState.rows}
               id="roles-table"
