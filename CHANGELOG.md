@@ -4,6 +4,9 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+### Adicionado
+- `scripts/check-boilerplate-versions.mjs` (P175): AVISA (sai 0) quando um boilerplate fixa uma extension (pom.xml, inclusive o que vem do BOM do modelo) ou um `@seedgrid/*` (package.json) atrás da última publicada (Nexus e npm). `--fixture` roda offline, `--json` devolve a tabela, `--strict` reprova. Passo não-bloqueante no CI; o Nexus pede `SEEDGRID_NEXUS_USER`/`SEEDGRID_NEXUS_PASSWORD` (sem elas avisa que não conferiu). Teste: `tests/check-boilerplate-versions.test.ts`.
+
 ## [0.8.2] — 2026-11-18
 
 ### Alterado

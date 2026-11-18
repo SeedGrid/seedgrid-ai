@@ -30,3 +30,11 @@ jobs:
         run: node dist/cli.js validate
       - name: Confere o conteúdo do pacote npm
         run: node scripts/check-pack.mjs
+      # P175: AVISO (nao reprova) quando um boilerplate fica atras da ultima versao publicada. O Nexus pede credencial
+      # (SEEDGRID_NEXUS_USER/SEEDGRID_NEXUS_PASSWORD); sem ela o script avisa que nao conferiu e sai 0.
+      - name: Avisa boilerplate atras da ultima publicada
+        continue-on-error: true
+        env:
+          SEEDGRID_NEXUS_USER: ${{ secrets.SEEDGRID_NEXUS_USER }}
+          SEEDGRID_NEXUS_PASSWORD: ${{ secrets.SEEDGRID_NEXUS_PASSWORD }}
+        run: node scripts/check-boilerplate-versions.mjs

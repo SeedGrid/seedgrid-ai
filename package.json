@@ -31,6 +31,7 @@
     "build": "tsc -p tsconfig.json",
     "build:test": "tsc -p tsconfig.test.json",
     "check-catalogo-pins": "node scripts/check-catalogo-pins.mjs",
+    "check-boilerplate-versions": "node scripts/check-boilerplate-versions.mjs",
     "check-secrets": "node scripts/check-secrets.mjs --dir seedgridKB/SeedGrid/Toolkit/boilerplates --kb-dir seedgridKB",
     "test": "npm run check-secrets && npm run check-catalogo-pins && npm run build:test && node --test \"build-test/tests/**/*.test.js\"",
     "validate-content": "npm run build && node dist/cli.js validate",
