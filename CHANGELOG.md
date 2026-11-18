@@ -4,7 +4,12 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.8.1] — 2026-11-18
+
 ### Alterado
+- KB de componentes, tema: `pacotes/fe-theme` ganha a seção "Contraste do vermelho de erro, do `info` e da cor de destaque": texto BRANCO com razão >= 4,5:1 sobre o vermelho de erro (claro `#E7200D`, escuro `#E62514`) e sobre o `info` e o botão `danger`, por `darkenForWhiteText` (`MAX_WHITE_TEXT_STEPS` 45), contraste garantido da cor de destaque, mesmo valor no React e no Flutter; `flutter/fundamentos/API` aponta para ela.
+- KB de componentes, formulários: `required` e `requiredMessage` saem de `SgInputNumber` e `SgInputCurrency` (React e Flutter; use `minValue` e `minValueMessage`), o zero conta como valor em `minValue`/`maxValue`; `SgMultiSelect` e `SgMultiSelectChips` ganham `requiredMessage` e o comportamento de obrigatório fora de formulário.
+- `Catalogo-de-propriedades` regenerado (`subdomain-tenancy` com 64 propriedades; total 881).
 - Regra `branches.md` (HO-02): a mensagem do squash começa pelo id da tarefa, `P<plano>.F<fase>.T<tarefa>: <tipo>(<escopo>): <resumo>` (ou `sem-plano: ...` para tarefa sem plano numerado), para a listagem de commits e o `git bisect` apontarem a tarefa que introduziu um defeito; o histórico antigo não é reescrito. Pronta e ainda sem versão: sai no 0.8.1, quando o dono mandar.
 
 ## [0.8.0] — 2026-11-16

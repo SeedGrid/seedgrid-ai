@@ -1,7 +1,7 @@
 ---
 tags: [seedgrid, versoes, gerado]
 gerado-por: scripts/kb-versions.mjs
-gerado-em: 2026-11-16
+gerado-em: 2026-11-18
 ---
 
 # Versões documentadas × atuais
@@ -56,10 +56,10 @@ gerado-em: 2026-11-16
 | `@seedgrid/fe-self-enter` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-subdomain-tenancy` | `2026.7.0` | `2026.7.0` | em dia |
 | `@seedgrid/fe-commons` | `0.2.0` | `0.2.0` | em dia |
-| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 172 arquivo(s) de código mudaram em 88 commit(s); alterações locais não commitadas |
+| `@seedgrid/fe-components` | `2026.7.1` | `2026.7.1` | **defasada**: 171 arquivo(s) de código mudaram em 107 commit(s) |
 | `@seedgrid/fe-core` | `2026.7.1` | `2026.7.1` | em dia |
-| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 88 commit(s) |
-| `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | **defasada**: 3 arquivo(s) de código mudaram em 88 commit(s); alterações locais não commitadas |
+| `@seedgrid/fe-playground` | `0.1.0` | `0.1.0` | **defasada**: 1 arquivo(s) de código mudaram em 107 commit(s) |
+| `@seedgrid/fe-theme` | `0.3.0` | `0.3.0` | **defasada**: 3 arquivo(s) de código mudaram em 107 commit(s) |
 
 ## Rust
 
