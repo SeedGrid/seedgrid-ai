@@ -259,7 +259,7 @@ const columns: SgDatatableColumn<Entry>[] = [
 // <SgDatatable dataKey="publicId" ... />   (never dataKey="id")
 ```
 
-Delete always opens the confirmation dialog. Do not replace the pencil and the trash can with other icons or text buttons. Source: the users list of the report admin (`seedgrid-report`, commit `8cd5f02c`).
+The lists of the boilerplates (users, roles, models, currencies, exchange, billing, subscriptions, audit, self-enter, home) still use `dataKey="id"` and numeric ids (`row.id` in routes such as `.../retry`); when you reuse any of them as a model, convert to `publicId` (rule BE-30) instead of copying the numeric id. Delete always opens the confirmation dialog. Do not replace the pencil and the trash can with other icons or text buttons. Source: the users list of the report admin (`seedgrid-report`, commit `8cd5f02c`).
 
 ## Permission Standard
 
