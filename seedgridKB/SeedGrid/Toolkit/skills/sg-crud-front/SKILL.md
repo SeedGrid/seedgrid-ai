@@ -203,6 +203,64 @@ native `window.confirm`. The native dialog is the wrong, inconsistent popup.
 />
 ```
 
+## ID column and row actions (standard, FE-36 and FE-37)
+
+Copy this shape for every list table. The `publicId` is a UUID v7, so its first characters are a timestamp and barely change between rows created together: show the **last 5** and keep the full value in the tooltip and in the copy button. Never show or sort by the numeric `id`.
+
+```tsx
+import { Copy, Edit3, Trash2 } from "lucide-react";
+
+async function copyPublicId(publicId: string) {
+  try {
+    await navigator.clipboard.writeText(publicId);
+    toast.success("ID copiado.");
+  } catch {
+    toast.error("Nao foi possivel copiar o ID.");
+  }
+}
+
+const columns: SgDatatableColumn<Entry>[] = [
+  {
+    columnId: "entity-id",
+    field: "publicId",          // search and sort use the full publicId
+    header: "ID",
+    sortable: true,
+    body: (row) => (
+      <SgStack align="center" direction="row" gap={4}>
+        <span tabIndex={0} title={row.publicId} aria-label={`ID ${row.publicId}`}>
+          {`…${row.publicId.slice(-5)}`}
+        </span>
+        <SgButton appearance="ghost" iconOnly aria-label="Copiar ID" title="Copiar ID completo"
+          leftIcon={<Copy size={14} />} onClick={() => void copyPublicId(row.publicId)} />
+      </SgStack>
+    ),
+  },
+  // ...business columns...
+  {
+    columnId: "entity-actions",
+    header: "Acoes",
+    body: (row) => (
+      <div className="row-actions">
+        {canEdit ? (
+          <SgButton appearance="ghost" severity="secondary" iconOnly
+            aria-label={`Editar ${row.name}`} title={`Editar ${row.name}`}
+            leftIcon={<Edit3 size={16} />}
+            onClick={() => router.push(`/<module>/<entity>/<entity>_edit?publicId=${row.publicId}`)} />
+        ) : null}
+        {canDelete && !isProtected(row) ? (
+          <SgButton appearance="ghost" severity="danger" iconOnly
+            aria-label={`Excluir ${row.name}`} title={`Excluir ${row.name}`}
+            leftIcon={<Trash2 size={16} />} onClick={() => setToDelete(row)} />
+        ) : null}
+      </div>
+    ),
+  },
+];
+// <SgDatatable dataKey="publicId" ... />   (never dataKey="id")
+```
+
+Delete always opens the confirmation dialog. Do not replace the pencil and the trash can with other icons or text buttons. Source: the users list of the report admin (`seedgrid-report`, commit `8cd5f02c`).
+
 ## Permission Standard
 
 - Hide menu entries if the user lacks view permission.
