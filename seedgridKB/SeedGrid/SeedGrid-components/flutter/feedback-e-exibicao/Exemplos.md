@@ -1041,14 +1041,13 @@ Ajuste: o trecho usa membros que não vêm nele, do estado local da página do s
 
 ### Uso real (não executa na demo)
 
-Exemplo próprio, não vem do showcase: as props (`apiUrl`, `tokenEndpoint`, `requestInit`, `types`, `onNotification`, `connectionFactory`) existem no construtor de `SgNotificationBell`. `PulseAdapter`, `token` e `baixarRelatorio` são do app, não da biblioteca: `connectionFactory` espera uma função que devolve `SgPulseConnection`.
+Exemplo próprio, não vem do showcase: as props (`apiUrl`, `tokenEndpoint`, `requestInit`, `types`, `onNotification`) existem no construtor de `SgNotificationBell`. `token` e `baixarRelatorio` são do app, não da biblioteca. Sem `connectionFactory`, o sino conecta pelo SDK do Pulse sozinho (cliente padrão `SgPulseSdkConnection`), como o React.
 
 ```dart
 SgNotificationBell(
   apiUrl: 'https://api.meuapp.com/user-notifications',
   tokenEndpoint: 'https://api.meuapp.com/realtime/connect',
   requestInit: SgTokenRequestInit(headers: {'Authorization': 'Bearer $token'}),
-  connectionFactory: () => PulseAdapter(), // cliente do Pulse (ver PULSE_ADAPTER.md)
   types: {
     'report.ready': SgNotificationTypeConfig(
       icon: Icon(Icons.description_outlined),

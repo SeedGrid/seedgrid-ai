@@ -85,7 +85,7 @@ Avisos em tempo real para o usuario logado pelo SeedGrid Pulse: pede o token de 
 | `fetchToken` | `Future<SgRealtimeConnectResponse> Function()?` | — | não | React | Substitui o pedido de token inteiro (apps sem BFF, testes). Tipo no React: `(() => Promise<SgRealtimeConnectResponse>)`. |
 | `pulseUrl` | `String?` | — | não | React | Endereço do Pulse, usado quando o token não traz `connectUrl` (Pulse sem endereço público). |
 | `connectOptions` | `Object?` | — | não | React | Opções avançadas do cliente do Pulse (reconexão, `webSocketImpl` em testes...). Tipo no React: `Omit<ConnectInput, "getToken" \| "accountKey" \| "baseUrl">`. |
-| `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | Cria o cliente do Pulse (ver [SgPulseConnection]). Chamado a cada (re)conexao do provider. |
+| `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | **Extra opcional**: troca o cliente do Pulse (testes, simulação, outro cliente; ver [SgPulseConnection]). Sem ele o provider cria o `SgPulseSdkConnection`, sobre o SDK `seedgrid_pulse_subscriber`. Chamado a cada (re)conexão do provider. |
 | `tokenFetcher` | `SgFetcher?` | — | não | Flutter | `fetch` injetavel do pedido de token padrao (testes). |
 | `enabled` | `bool?` | `true` † | não | React | Liga/desliga (ex.: false enquanto nao ha usuario logado). |
 
@@ -93,8 +93,8 @@ Avisos em tempo real para o usuario logado pelo SeedGrid Pulse: pede o token de 
 
 ### Diferenças do React (docs/PARIDADE.md)
 
-- O cliente do Pulse entra por `connectionFactory` (`SgPulseConnection` injetável). **Sem ele o status fica `unavailable`**: o provider não tem cliente embutido.
-- O adaptador para o SDK `seedgrid_pulse_subscriber` está documentado em `lib/src/providers/PULSE_ADAPTER.md`, mas **não ligado por dependência**. Decisão do dono pendente: ligar o SDK por dependência só depois de `seedgrid_pulse_subscriber` ir ao pub.dev.
+- **Cliente padrão** (desde 2026-11-18, P173.F1.T1): sem `connectionFactory` o provider cria o `SgPulseSdkConnection` (`lib/src/providers/sg_pulse_sdk_connection.dart`, SDK `seedgrid_pulse_subscriber` 2.0.0, `autoAck: true`), como o React usa o `@seedgrid/pulse-subscriber-react`. `connectionFactory` só troca o cliente em testes e simulação (`SgSimulatedPulseConnection`). Teste: `sg_pulse_sdk_default_test.dart` (provider sem factory conecta em um servidor WebSocket local, recebe a mensagem e envia o ack).
+- O SDK entra por dependência `git:` do `seedgrid_components` (`url` pública do `seedgrid-pulse-sdk`, `path` da subpasta e `ref: flutter-subscriber-v2.0.0`), sem ação da aplicação; o adaptador (`PULSE_ADAPTER.md`) agora vem no pacote. O pub.dev fica para depois dos testes (P173.F3, adiada pelo dono).
 - Com o adaptador, o provider foi executado ao vivo contra o Pulse real em 2026-10-27: conectou, recebeu a mensagem do próprio usuário e não recebeu a de outro; a reconexão com mensagem pendente também foi verificada. O modo `processed`, que exige confirmação (ack), **não foi exercitado**.
 - `tokenEndpoint` precisa de URL absoluta (no Flutter não existe "mesma origem").
 - `children` virou `child`. O `enabled` do React continua `enabled` (`bool?`, nulo = ligado), como nos demais componentes depois da troca de `disabled` por `enabled`. <!-- legado-ok: `disabled` aqui é o valor do status -->
@@ -106,9 +106,9 @@ Avisos em tempo real para o usuario logado pelo SeedGrid Pulse: pede o token de 
 
 **Fluxo** (`providers/sg_realtime_provider.dart`, `_connect`)
 1. Com `enabled: false` o status vira `disabled`; com `channels` vazio, `idle`. Nos dois casos não há conexão. <!-- legado-ok: `disabled` aqui é o valor do status -->
-2. Cria o cliente por `connectionFactory()` e ouve `states` e `messages`.
+2. Cria o cliente por `(connectionFactory ?? SgPulseSdkConnection.new)()` e ouve `states` e `messages`.
 3. Pede o token: `fetchToken()` se informado; senão `POST` em `tokenEndpoint` com `tokenRequestInit` (`SgTokenRequestInit`: `headers`, `body`) usando `tokenFetcher` ou `sgDefaultFetcher`. Falha (HTTP não 2xx, rede) vira `unavailable`.
-4. Resposta `{enabled:false}` ou sem token vira `disabled`. Sem `connectionFactory`, vira `unavailable`. <!-- legado-ok: `disabled` aqui é o valor do status -->
+4. Resposta `{enabled:false}` ou sem token vira `disabled`. Sem `connectionFactory` usa o cliente do SDK; `unavailable` só vem de falha no pedido do token ou na conexão. <!-- legado-ok: `disabled` aqui é o valor do status -->
 5. `connection.connect(getToken:, baseUrl: pulseUrl, options: connectOptions)` e depois `subscribe(channels)`. O primeiro token já pedido é reaproveitado; reconexões pedem um novo (o token vale só para entrar). O token fica só em memória.
 6. Mudar `enabled`, `channels` ou `pulseUrl` encerra e reinicia a conexão (`didUpdateWidget`).
 

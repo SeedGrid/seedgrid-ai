@@ -424,9 +424,9 @@ Fonte: `docs/PARIDADE.md` (texto reescrito) e, quando indicado, o código.
 
 ## SgNotificationBell
 
-> **Flutter** · estado de paridade: **parcial** (o Pulse entra por `connectionFactory`; `apiUrl` e `tokenEndpoint` precisam ser absolutos; docs/PARIDADE.md, commit d8425b8) · equivalente React: `SgNotificationBell` (mesmo nome). Conferido contra seedgrid-fe-flutter 74c3189.
+> **Flutter** · estado de paridade: **portado** (exceções de plataforma: `apiUrl` e `tokenEndpoint` absolutos, painel em folha de baixo no celular e sem `className`/`style`; docs/PARIDADE.md) · equivalente React: `SgNotificationBell` (mesmo nome). Conferido contra seedgrid-fe-flutter 74c3189; o trecho do cliente do Pulse (`connectionFactory`, SDK) foi reconferido contra 799c33e.
 
-Sino de notificações do usuário logado, com os mesmos nomes de prop do React e **um extra**: `connectionFactory`. Autônomo: sem `SgRealtimeProvider` acima que assine `user-notifications`, abre o próprio.
+Sino de notificações do usuário logado, com os mesmos nomes de prop do React e **um extra opcional**: `connectionFactory`. Autônomo: sem `SgRealtimeProvider` acima que assine `user-notifications`, abre o próprio, com o cliente do SDK do Pulse (`SgPulseSdkConnection`), como o React.
 
 - Arquivo: `packages/seedgrid_components/lib/src/feedback/sg_notification_bell.dart` · lógica em `sg_notification_bell_logic.dart`; contrato gerado em `lib/src/generated/sg_notification_bell.g.dart`.
 - Importação: `import 'package:seedgrid_components/seedgrid_components.dart';`
@@ -451,12 +451,12 @@ Sino de notificações do usuário logado, com os mesmos nomes de prop do React 
 | `onNotificationDelete` | `void Function(SgNotification)?` | — | não | React | O usuário excluiu uma notificação. |
 | `onOpen` | `void Function(SgNotification)?` | — | não | React | O usuário abriu uma notificação (depois do `onOpen` do tipo). |
 | `onPollingTick` | `void Function(SgPollingStats)?` | — | não | React | O polling consultou a API: contador, instante e motivo. |
-| `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | **Extra do Flutter**: cria o cliente do Pulse quando o sino abre a própria conexão. |
+| `connectionFactory` | `SgPulseConnection Function()?` | — | não | Flutter | **Extra opcional do Flutter**: troca o cliente do Pulse (testes, simulação). Sem ele o sino cria o `SgPulseSdkConnection`, sobre o SDK `seedgrid_pulse_subscriber`, como o React. |
 
 ### Diferenças do React
 
-- **`connectionFactory`** (extra): o pacote não depende do SDK do Pulse; a aplicação entrega uma função que devolve uma `SgPulseConnection` (adaptador sobre o SDK real; guia `PULSE_ADAPTER.md`). Sem ela o status do Pulse fica `unavailable` e o sino usa o **polling de reserva**, então continua funcionando, só sem tempo real. Decisão: ADR 62 (`SeedGrid/Dev/ADR/2026-11-06-sgnotificationbell-flutter-usa-o-sdk-publico-do-pulse-pelo-git`).
-- **SDK do Pulse pelo git (provisório)**: o SDK de assinatura Flutter mora no repositório público `github.com/SeedGrid/seedgrid-pulse-sdk` (`components/subscribers/seedgrid-pulse-subscriber-flutter`); o projeto que quiser tempo real declara a dependência `git:` com `url`, `path` e `ref: main`. O pub.dev vem depois (plano P138). **O Pulse é serviço pago**: precisa de chave de projeto, que fica no backend.
+- **`connectionFactory`** (extra opcional, desde 2026-11-18, P173.F1.T1): o `seedgrid_components` depende do SDK `seedgrid_pulse_subscriber`, então o sino abre o próprio cliente (`SgPulseSdkConnection`, `lib/src/providers/sg_pulse_sdk_connection.dart`, com `autoAck: true`) sem a aplicação entregar nada. `connectionFactory` só serve para trocar o cliente em testes e simulação (`SgSimulatedPulseConnection`). Com o Pulse desligado ou fora do ar, o sino usa o **polling de reserva**, como no React. Decisão: ADR 62 (`SeedGrid/Dev/ADR/2026-11-06-sgnotificationbell-flutter-usa-o-sdk-publico-do-pulse-pelo-git`).
+- **SDK do Pulse pelo git (provisório)**: o SDK de assinatura Flutter mora no repositório público `github.com/SeedGrid/seedgrid-pulse-sdk` (`components/subscribers/seedgrid-pulse-subscriber-flutter`, pacote `seedgrid_pulse_subscriber` 2.0.0). O `pubspec.yaml` do `seedgrid_components` o declara por `git:` com `url`, `path` e `ref: flutter-subscriber-v2.0.0` (tag criada em 2026-11-18; o lock resolve `3894782`), então a aplicação **não declara nada**. Verificado em clone limpo, sem cache e sem credencial: `flutter pub get` resolve e o showcase compila. Como o `seedgrid_components` é `publish_to: none`, a dependência por git é aceita; o pub.dev recusa pacote com dependência por git. A publicação do SDK no pub.dev fica para depois dos testes (P173.F3, adiada pelo dono). **O Pulse é serviço pago**: precisa de chave de projeto, que fica no backend.
 - **URLs absolutas**: `apiUrl` e `tokenEndpoint` não podem ser relativos.
 - **Painel**: abre como popover (tela larga) ou como folha que sobe de baixo (celular).
 - **`requestInit`** é `SgTokenRequestInit` (cabeçalhos e corpo), não o `RequestInit` da web.
