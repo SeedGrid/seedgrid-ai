@@ -265,6 +265,14 @@ The lists of the boilerplates (users, roles, models, currencies, exchange, billi
 >
 > `ListLoadError`, `PublicIdCell` and `DatatableSkeleton` are helpers of the projects, not components of the package. If the project does not have them, create them in `app/components/` (a `PublicIdCell` renders the last 5 characters of the `publicId` with the copy button above) instead of inventing another pattern.
 
+## Masked fields, back end and checks (learned in the pilot)
+
+- **Fields with a mask** (CPF, CNPJ, phone, WhatsApp, postal code, e-mail) use the specific component (`SgInputCPF`, `SgInputCNPJ`, `SgInputPhone`, `SgInputPostalCode`, `SgInputEmail`) and the request sends **only the digits** (strip the mask in the proxy or before the call). The platform also normalizes digits on save, but the client must not rely on it.
+- **No back end yet:** do not invent the contract silently. Say so, assume the standard one (`/<entity>` with `{ items, total, page, size }` and only `publicId`), keep it behind the same proxy routes, and ask for `sg-crud-back`. The permissions (`<ENTITY>_READ/CREATE/UPDATE/DELETE`) are created by the back-end migration; the front only gates the screen and the menu.
+- **Load failure never looks like an empty list.** If the project has no `ListLoadError`, create it; do not show the table with "Nenhum registro" when the request failed.
+- **Row-actions wrapper:** use `SgStack` (the classes `row-actions` and `plan-actions-cell` have no CSS in the admin).
+- **Type-check** in the app folder of the model (`admin/` or `frontend/`), not always `frontend/`. If `next build` fails on a BOM in a `fe-theme` JSON after `pnpm install --ignore-scripts`, run `node scripts/strip-bom-seedgrid.mjs`.
+
 ## Permission Standard
 
 - Hide menu entries if the user lacks view permission.
