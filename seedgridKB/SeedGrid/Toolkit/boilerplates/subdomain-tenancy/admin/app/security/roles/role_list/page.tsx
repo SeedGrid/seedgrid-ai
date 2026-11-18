@@ -13,7 +13,7 @@ import {
   type SgDatatablePageEvent,
   type SgDatatableSortEvent,
 } from "@seedgrid/fe-components";
-import { Edit3, Eye, Plus, Trash2 } from "lucide-react";
+import { Edit3, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
@@ -181,6 +181,17 @@ function RoleListPageContent() {
       sortable: true,
       reorderable: true,
       hideable: true,
+      // Ver as permissoes nao e acao de linha (FE-37 so admite lapis e lixeira): abre pelo nome.
+      body: (row) => (
+        <SgButton
+          appearance="ghost"
+          aria-label={`Ver permissoes de ${row.name}`}
+          title="Ver permissoes"
+          label={row.name}
+          onClick={() => setRoleToView(row)}
+          severity="secondary"
+        />
+      ),
     },
     {
       columnId: "role-description",
@@ -233,16 +244,7 @@ function RoleListPageContent() {
       reorderable: true,
       hideable: false,
       body: (row) => (
-        <div className="plan-actions-cell">
-          <SgButton
-            appearance="ghost"
-            aria-label={`Ver permissoes de ${row.name}`}
-            title="Ver permissoes"
-            iconOnly
-            leftIcon={<Eye size={16} />}
-            onClick={() => setRoleToView(row)}
-            severity="secondary"
-          />
+        <SgStack align="center" direction="row" gap={4}>
           {canEditRoles && !isProtectedAdminRole(row) ? (
             <SgButton
               appearance="ghost"
@@ -267,7 +269,7 @@ function RoleListPageContent() {
               severity="danger"
             />
           ) : null}
-        </div>
+        </SgStack>
       ),
     },
   ], [canDeleteRoles, canEditRoles, router]);

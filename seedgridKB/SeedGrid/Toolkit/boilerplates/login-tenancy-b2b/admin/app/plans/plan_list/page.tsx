@@ -264,7 +264,7 @@ function PlanListPageContent() {
       reorderable: true,
       hideable: false,
       body: (row) => (
-        <div className="plan-actions-cell">
+        <SgStack align="center" direction="row" gap={4}>
           {canViewPlanTerms ? (
             <SgButton
               appearance="ghost"
@@ -300,7 +300,7 @@ function PlanListPageContent() {
               severity="danger"
             />
           ) : null}
-        </div>
+        </SgStack>
       ),
     },
   ], [canDeletePlans, canEditPlans, canViewPlanTerms, router]);

@@ -284,7 +284,7 @@ function CompanyListPageContent() {
         hideable: false,
         body: (row) =>
           canEditCompanies ? (
-            <div className="plan-actions-cell">
+            <SgStack align="center" direction="row" gap={4}>
               <SgButton
                 appearance="ghost"
                 aria-label={`Editar ${row.corporateName}`}
@@ -303,7 +303,7 @@ function CompanyListPageContent() {
                 onClick={() => setCompanyToToggle(row)}
                 severity={row.active ? "danger" : "secondary"}
               />
-            </div>
+            </SgStack>
           ) : null,
       },
     ],

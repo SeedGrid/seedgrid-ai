@@ -175,7 +175,7 @@ function HolidayListPageContent() {
         reorderable: true,
         hideable: false,
         body: (row) => (
-          <div className="plan-actions-cell">
+          <SgStack align="center" direction="row" gap={4}>
             {canEdit && row.editable ? (
               <SgButton
                 appearance="ghost"
@@ -198,7 +198,7 @@ function HolidayListPageContent() {
                 severity="danger"
               />
             ) : null}
-          </div>
+          </SgStack>
         ),
       },
     ],

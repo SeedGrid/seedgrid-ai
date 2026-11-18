@@ -260,7 +260,7 @@ function UserListPageContent() {
       reorderable: true,
       hideable: false,
       body: (row) => (
-        <div className="plan-actions-cell">
+        <SgStack align="center" direction="row" gap={4}>
           {canEditUsers ? (
             <SgButton
               appearance="ghost"
@@ -285,7 +285,7 @@ function UserListPageContent() {
               severity="danger"
             />
           ) : null}
-        </div>
+        </SgStack>
       ),
     },
   ], [canDeleteUsers, canEditUsers, router]);

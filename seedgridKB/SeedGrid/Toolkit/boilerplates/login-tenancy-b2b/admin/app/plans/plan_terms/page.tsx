@@ -19,7 +19,7 @@ import {
   type SgDatatablePageEvent,
   type SgTreeNode,
 } from "@seedgrid/fe-components";
-import { Archive, ArrowLeft, ChevronsDownUp, ChevronsUpDown, Pencil, Plus, Save, Trash2, Upload } from "lucide-react";
+import { Archive, ArrowLeft, ChevronsDownUp, ChevronsUpDown, Edit3, Plus, Save, Trash2, Upload } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -645,7 +645,7 @@ function PlanTermsPageContent() {
                   aria-label="Editar condicao"
                   title="Editar condicao"
                   iconOnly
-                  leftIcon={<Pencil size={16} />}
+                  leftIcon={<Edit3 size={16} />}
                   onClick={() => openEdit(row)}
                   severity="secondary"
                 />
