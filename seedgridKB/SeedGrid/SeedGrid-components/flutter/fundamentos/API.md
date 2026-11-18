@@ -423,6 +423,8 @@ Tabela completa (inclusive os compartilhados acima):
 
 > Porte de `@seedgrid/fe-theme` (caminho `SeedThemeProvider`). Barril `seedgrid_theme/lib/seedgrid_theme.dart`; reexportado por `seedgrid_components` (com `hide relativeLuminance`, para não colidir). **Confirmado.**
 
+> **Contraste do vermelho de erro, do `info` e da cor de destaque (2026-11-17 e 2026-11-18).** O `seedgrid_theme` garante texto **branco** com razão >= 4,5:1 sobre o vermelho de erro e sobre o `info`, nos dois modos, com a mesma fórmula do React: `darkenForWhiteText` escurece a cor em passos de 1% de luminosidade até `minContrastRatio` (`maxWhiteTextSteps` vale 45), aplicado ao degrau 500 de `error` (`onError` é sempre `#FFFFFF`: claro `#E7200D`, escuro `#E62514`) e ao preenchimento do botão `danger` e do `info` (`onInfo` é branco). O `SgBadge` e o `SgAvatar` `danger` leem `--destructive`/`--destructive-foreground` (`commons_colors.dart`), igual ao React. A cor de destaque tem contraste mínimo de 4,5:1 garantido para texto sobre fundo, texto do contorno e anel de foco, e o fundo cheio de botão usa a cor pura da semente. Valores, testes e limites: [[SeedGrid/SeedGrid-components/pacotes/fe-theme#Contraste do vermelho de erro, do `info` e da cor de destaque (2026-11-17 e 2026-11-18)|fe-theme]]. **Confirmado** em `seedgrid_theme/lib/src/color_utils.dart` (`darkenForWhiteText`, `maxWhiteTextSteps`).
+
 ### SeedThemeProvider e useSgTheme
 
 `class SeedThemeProvider extends StatefulWidget`: `const SeedThemeProvider({Key? key, SeedThemeInput? initialTheme, required Widget child})`.
