@@ -410,6 +410,9 @@
           "efeito_ausente": {
             "extensions_remover": [
               "business-days"
+            ],
+            "modulos_front_remover": [
+              "business-days@frontend"
             ]
           }
         }

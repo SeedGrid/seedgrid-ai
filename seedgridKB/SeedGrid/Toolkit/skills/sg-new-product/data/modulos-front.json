@@ -156,6 +156,41 @@
           ]
         }
       }
+    },
+    "business-days": {
+      "descricao": "Calendario da empresa (dias uteis, feriados, semana de trabalho e excecoes) numa unica tela, no front do cliente. So vem no produto que marcou a extension opcional business-days (P180: o Display recebeu as telas sem ninguem pedir).",
+      "escopos": {
+        "frontend": {
+          "apagar": [
+            "app/dias-uteis",
+            "app/api/business-days",
+            "lib/business-days.ts",
+            "lib/business-days.test.ts",
+            "lib/company-calendar.ts",
+            "lib/company-calendar.test.ts"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/dias-uteis\""
+            },
+            {
+              "arquivo": "app/components/Shell.tsx",
+              "contem": "CalendarDays"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "businessDays"
+            }
+          ],
+          "blocos": [
+            {
+              "arquivo": "lib/client-permission-tree.ts",
+              "contem": "id: \"dias-uteis\""
+            }
+          ]
+        }
+      }
     }
   }
 }
