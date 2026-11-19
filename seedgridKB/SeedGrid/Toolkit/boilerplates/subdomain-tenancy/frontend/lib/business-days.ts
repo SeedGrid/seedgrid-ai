@@ -19,6 +19,15 @@ export type HolidayEntry = {
   updatedAt: string | null;
 };
 
+/** Corpo do `POST/PUT /holidays`. `year` nulo = recorrente. */
+export type HolidayPayload = {
+  name: string;
+  month: number;
+  day: number;
+  year: number | null;
+  active: boolean;
+};
+
 export type WeekDayEntry = {
   /** 1 = segunda ... 7 = domingo. */
   dayOfWeek: number;
@@ -223,11 +232,6 @@ export function canEditMovable(hasUpdatePermission: boolean): boolean {
   return hasUpdatePermission;
 }
 
-/** Excecao "vai trabalhar": o backend decide pelo escopo (`editable`); a permissao e' adicional. */
-export function canEditWorkOverride(override: Pick<WorkOverride, "editable">, hasPermission: boolean): boolean {
-  return hasPermission && override.editable === true;
-}
-
 /** Corpo do `PUT /movable-holidays`: `enabled: null` = voltar a herdar (a chave NUNCA e' omitida). */
 export function buildMovablePayload(
   code: MovableHolidayCode,
@@ -255,69 +259,10 @@ export function mapDayResponse(day: DayResponse): CalendarDay {
   };
 }
 
-export type DayKind = "worked-holiday" | "holiday" | "closed" | "half" | "business";
-
-/** "Feriado trabalhado" tem precedencia: e' feriado, mas ha expediente. */
-export function dayKind(day: CalendarDay): DayKind {
-  if (day.worksOnHoliday) return "worked-holiday";
-  if (day.holiday) return "holiday";
-  if (!day.businessDay) return "closed";
-  return day.weight < 1 ? "half" : "business";
-}
-
-export function dayLabel(day: CalendarDay): string {
-  switch (dayKind(day)) {
-    case "worked-holiday":
-      return "Feriado trabalhado";
-    case "holiday":
-      return day.holidayName ?? "Feriado";
-    case "closed":
-      return "Fechado";
-    case "half":
-      return "Meio periodo";
-    default:
-      return "Dia util";
-  }
-}
-
-/** Texto do tooltip: data, rotulo, nome do feriado, origem e base legal. */
-export function dayTooltip(day: CalendarDay): string {
-  const parts = [`${formatIsoDate(day.date)} - ${dayLabel(day)}`];
-  if (day.holiday && day.worksOnHoliday && day.holidayName) parts.push(day.holidayName);
-  const source = day.holiday ? holidaySourceLabel(day.holidaySource) : null;
-  if (source) parts.push(`Origem: ${source}`);
-  if (day.holiday && day.legalBasis) parts.push(`Base legal: ${day.legalBasis}`);
-  return parts.join("\n");
-}
-
-/** Ordena por data e depois por nome (estavel para datas iguais). */
-export function sortReferenceHolidays(list: readonly ReferenceHoliday[]): ReferenceHoliday[] {
-  return [...list].sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name, "pt-BR"));
-}
-
-export type ReferenceMonthGroup = { month: number; label: string; items: ReferenceHoliday[] };
-
-/** Agrupa por mes (itens ordenados); meses sem feriado nao aparecem. */
-export function groupReferenceByMonth(list: readonly ReferenceHoliday[]): ReferenceMonthGroup[] {
-  const groups = new Map<number, ReferenceHoliday[]>();
-  for (const item of sortReferenceHolidays(list)) {
-    const month = Number(item.date.slice(5, 7));
-    groups.set(month, [...(groups.get(month) ?? []), item]);
-  }
-  return [...groups.entries()]
-    .sort(([a], [b]) => a - b)
-    .map(([month, items]) => ({ month, label: MONTH_LABELS[month - 1] ?? String(month), items }));
-}
-
 /** "yyyy-MM-dd" -> "dd/MM/yyyy" (sem passar por Date: evita deslocamento de fuso). */
 export function formatIsoDate(iso: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   return match ? `${match[3]}/${match[2]}/${match[1]}` : iso;
-}
-
-/** Linha desmarcada (movel com `enabled=false`): fica esmaecida e vira "Considerado dia util". */
-export function isReferenceRowDimmed(row: Pick<ReferenceHoliday, "enabled">): boolean {
-  return row.enabled === false;
 }
 
 export const WORK_OVERRIDE_DEFAULT_WEIGHT = "default";
@@ -328,10 +273,6 @@ export const WORK_OVERRIDE_WEIGHT_OPTIONS = [
   { id: "1", label: "Dia inteiro" },
   { id: "0.5", label: "Meio periodo" },
 ] as const;
-
-export function workOverrideWeightLabel(weight: number | null): string {
-  return weight == null ? "Peso do dia da semana" : weightLabel(weight);
-}
 
 /** Valida e monta o corpo do POST/PUT de `/work-overrides`. Devolve `error` em pt-BR se invalido. */
 export function buildWorkOverridePayload(form: {

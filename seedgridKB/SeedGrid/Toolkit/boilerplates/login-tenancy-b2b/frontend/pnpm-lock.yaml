@@ -42,11 +42,11 @@ importers:
         specifier: 2026.11.15
         version: 2026.11.15(0ea5f70fc5180a32fd5be7026cdd10e1)
       '@seedgrid/fe-core':
-        specifier: 2026.6.7
-        version: 2026.6.7(react@19.1.0)
+        specifier: 2026.11.15
+        version: 2026.11.15(react@19.1.0)
       '@seedgrid/fe-theme':
-        specifier: 2026.6.3
-        version: 2026.6.3(react@19.1.0)
+        specifier: 2026.11.15
+        version: 2026.11.15(react@19.1.0)
       lucide-react:
         specifier: ^1.18.0
         version: 1.43.0(react@19.1.0)
@@ -907,18 +907,13 @@ packages:
       react: ^18.2.0 || ^19.0.0
       react-hook-form: ^7.0.0
 
-  '@seedgrid/fe-core@2026.6.3':
-    resolution: {integrity: sha512-DgiwD32s18qS79uAhqPD4kcVvVtaItcwlscNiI9iuTnRhl7jkxSI9SSe55oQGyzA3wM5EPyQc2MoO3pE/cMvaA==}
+  '@seedgrid/fe-core@2026.11.15':
+    resolution: {integrity: sha512-jvFrQfoJyTt0Ub+XxJdv9gWODDpY44m8wwzza4e37l7FnuYWiTAqbZ1OzhYktcys/ZDgoCi3zXm9c/aiYzCJbg==}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
 
-  '@seedgrid/fe-core@2026.6.7':
-    resolution: {integrity: sha512-v+iP8let1/my5MdKL0QVqO9Xj9CMsJE4zYOb3Gger+pIJ2usd2dPYzVgE16Y5XUEFzuaRvKB5jl3srs+P2skLw==}
-    peerDependencies:
-      react: ^18.2.0 || ^19.0.0
-
-  '@seedgrid/fe-theme@2026.6.3':
-    resolution: {integrity: sha512-1+PkjRsFQIy6a+qQsTXOEBQA37AHGWA3ZkSXO2rYYT04DGZ/3LzxpShOIKDUUUAREH7H9ie7AFl9+GeH04DiDA==}
+  '@seedgrid/fe-theme@2026.11.15':
+    resolution: {integrity: sha512-m6kdSxxWVVgp+rWMF7tp59pswpceHWWxXAEkmvhvGbuwaUFGzEGCDy6FpmwSia76S86j37AxTVpCAkuNpRBHUQ==}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
 
@@ -2605,17 +2600,13 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@seedgrid/fe-core@2026.6.3(react@19.1.0)':
+  '@seedgrid/fe-core@2026.11.15(react@19.1.0)':
     dependencies:
       react: 19.1.0
 
-  '@seedgrid/fe-core@2026.6.7(react@19.1.0)':
+  '@seedgrid/fe-theme@2026.11.15(react@19.1.0)':
     dependencies:
-      react: 19.1.0
-
-  '@seedgrid/fe-theme@2026.6.3(react@19.1.0)':
-    dependencies:
-      '@seedgrid/fe-core': 2026.6.3(react@19.1.0)
+      '@seedgrid/fe-core': 2026.11.15(react@19.1.0)
       react: 19.1.0
 
   '@seedgrid/pulse-subscriber-react@3.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':

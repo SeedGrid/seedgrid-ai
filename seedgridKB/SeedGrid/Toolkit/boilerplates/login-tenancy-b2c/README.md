@@ -608,8 +608,7 @@ Veja [instalacao e validacao](backend/README.md#exchange-pela-extensao).
 Feriados da empresa, semana de trabalho e calendario vem da extension
 [`seedgrid-business-days:2026.10.15`](../../seedgrid-platform/java/seedgrid-quarkus-ext-business-days/README.md),
 com tabelas proprias (`business_day_*`). A tenancy migra sozinha (toggle `seedgrid.login-tenancy.modules.business-days.enabled`, default `true`);
-o escopo e a empresa corrente do token. No front: menu **Dias uteis** (`/dias-uteis/*`: feriados, semana de
-trabalho, calendario), proxy em `app/api/business-days/[...path]` e permissoes `BUSINESS_DAY_*`.
+o escopo e a empresa corrente do token. No front: menu **Dias uteis** (`/dias-uteis`: uma tela so, o calendario da empresa, com a semana, os feriados e as excecoes do ano), proxy em `app/api/business-days/[...path]` e permissoes `BUSINESS_DAY_*`.
 
 
 ## Tela nova: menu e permissões

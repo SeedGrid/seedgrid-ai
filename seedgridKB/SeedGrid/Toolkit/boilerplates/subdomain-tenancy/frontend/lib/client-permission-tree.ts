@@ -100,31 +100,13 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
     label: "Dias uteis",
     screens: [
       {
-        id: "dias-uteis/feriados",
-        label: "Feriados",
+        id: "dias-uteis/calendario",
+        label: "Calendario da empresa",
         actions: [
-          { permission: "BUSINESS_DAY_READ", label: `${OPEN_SCREEN}, ver a semana de trabalho e o calendario` },
-          { permission: "BUSINESS_DAY_CREATE", label: "Criar feriado" },
-          { permission: "BUSINESS_DAY_UPDATE", label: "Editar feriado e a semana de trabalho" },
-          { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado" },
-        ],
-      },
-      {
-        id: "dias-uteis/lista-referencia",
-        label: "Lista de referencia",
-        actions: [
-          { permission: "BUSINESS_DAY_READ", label: OPEN_SCREEN },
-          { permission: "BUSINESS_DAY_UPDATE", label: "Marcar ou desmarcar feriado movel e voltar a herdar" },
-        ],
-      },
-      {
-        id: "dias-uteis/vai-trabalhar",
-        label: "Vai trabalhar",
-        actions: [
-          { permission: "BUSINESS_DAY_READ", label: OPEN_SCREEN },
-          { permission: "BUSINESS_DAY_CREATE", label: "Criar data de trabalho" },
-          { permission: "BUSINESS_DAY_UPDATE", label: "Editar data de trabalho" },
-          { permission: "BUSINESS_DAY_DELETE", label: "Excluir data de trabalho" },
+          { permission: "BUSINESS_DAY_READ", label: `${OPEN_SCREEN} e ver o calendario do ano` },
+          { permission: "BUSINESS_DAY_CREATE", label: "Cadastrar feriado e abrir um dia fechado" },
+          { permission: "BUSINESS_DAY_UPDATE", label: "Editar a semana da empresa, feriados e feriados moveis" },
+          { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado e remover excecao de um dia" },
         ],
       },
     ],

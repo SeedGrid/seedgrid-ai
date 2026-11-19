@@ -27,19 +27,9 @@ export const navItems: NavItem[] = [
   { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
   { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
   { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
-  // Calendario de dias uteis (extension seedgrid-business-days: /business-days/*). O grupo desce ate o
-  // primeiro filho visivel; as telas de leitura pedem a mesma permissao.
-  {
-    href: "/dias-uteis",
-    label: "Dias uteis",
-    children: [
-      { href: "/dias-uteis/holiday_list", label: "Feriados", permission: "BUSINESS_DAY_READ" },
-      { href: "/dias-uteis/week_profile", label: "Semana de trabalho", permission: "BUSINESS_DAY_READ" },
-      { href: "/dias-uteis/holiday_reference", label: "Lista de referencia", permission: "BUSINESS_DAY_READ" },
-      { href: "/dias-uteis/work_override_list", label: "Vai trabalhar", permission: "BUSINESS_DAY_READ" },
-      { href: "/dias-uteis/calendar", label: "Calendario", permission: "BUSINESS_DAY_READ" },
-    ],
-  },
+  // Calendario da empresa (extension seedgrid-business-days: /business-days/*): a semana, os feriados e as
+  // excecoes do ano numa tela so.
+  { href: "/dias-uteis", label: "Calendario da empresa", permission: "BUSINESS_DAY_READ" },
   // Demonstracao dos contadores de uso (backend: demo/UsageDemoResource.java). Remova junto com o dominio
   // de exemplo (e a permissao USAGE_DEMO_READ, migration V3002) ao comecar o seu produto.
   { href: "/exemplo-consumo", label: "Exemplo de consumo", permission: "USAGE_DEMO_READ" },

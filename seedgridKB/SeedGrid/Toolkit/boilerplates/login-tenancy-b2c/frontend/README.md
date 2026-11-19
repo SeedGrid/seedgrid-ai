@@ -129,9 +129,9 @@ try {
   `app/api/auth/refresh/route.ts` (renovacao), `lib/api-base-url.ts` (base da API). Testes: `proxy.test.ts`,
   `lib/query.test.ts`.
 
-## Dias úteis: feriados prontos, móveis e vai trabalhar
+## Dias úteis: calendário da empresa
 
-Telas em `app/dias-uteis/*`, BFF em `app/api/business-days/[...path]` (repassa GET/POST/PUT/DELETE para
+Uma tela só, `app/dias-uteis/page.tsx` (semana da empresa, feriados, feriados móveis e exceções do ano), BFF em `app/api/business-days/[...path]` (repassa GET/POST/PUT/DELETE para
 `/business-days/*`; empresa e permissões `BUSINESS_DAY_*` vêm do token) e lógica pura em `lib/business-days.ts`
 (testada em `lib/business-days.test.ts`).
 

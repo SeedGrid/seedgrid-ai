@@ -9,13 +9,9 @@ import {
   SgStack,
 } from "@seedgrid/fe-components";
 import {
-  Briefcase,
-  CalendarCheck,
   CalendarDays,
-  CalendarRange,
   CreditCard,
   KeyRound,
-  ListChecks,
   LogOut,
   Palette,
   ScrollText,
@@ -52,11 +48,7 @@ const iconByHref = {
   "/security/roles/role_list": <ShieldCheck size={16} />,
   "/security/apikeys/apikey_list": <KeyRound size={16} />,
   "/security/audit": <ScrollText size={16} />,
-  "/dias-uteis/holiday_list": <CalendarDays size={16} />,
-  "/dias-uteis/week_profile": <CalendarRange size={16} />,
-  "/dias-uteis/calendar": <CalendarCheck size={16} />,
-  "/dias-uteis/holiday_reference": <ListChecks size={16} />,
-  "/dias-uteis/work_override_list": <Briefcase size={16} />,
+  "/dias-uteis": <CalendarDays size={16} />,
 } as const;
 
 function normalizeMenuPath(pathname: string): string {
@@ -73,15 +65,6 @@ function normalizeMenuPath(pathname: string): string {
 
   if (pathname.startsWith("/security/apikeys/")) {
     return "/security/apikeys/apikey_list";
-  }
-
-  // A tela de edicao do feriado marca o item de LISTA como ativo.
-  if (pathname.startsWith("/dias-uteis/holiday_edit")) {
-    return "/dias-uteis/holiday_list";
-  }
-
-  if (pathname.startsWith("/dias-uteis/work_override_edit")) {
-    return "/dias-uteis/work_override_list";
   }
 
   return pathname;
