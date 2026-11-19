@@ -170,3 +170,13 @@ public class MeuBackupTenantProvider implements br.com.seedgrid.backup.spis.Tena
     }
 }
 ```
+
+## ExportCompanyScopeProvider
+
+Diz ao `backup` de quais empresas o pedido de export pode ler. É implementado pelo `login-tenancy` e pelo `subdomain-tenancy`; o host de uma empresa só não precisa dele. **Desde backup 2026.11.8 (P178)** o provider devolve um **conjunto** de empresas (`CompanyScope` com `List<CompanyRef>`): `scopeFor(companyPublicIds)` recebe os ids pedidos em `ExportRequest.companyPublicIds` e valida contra o `allowedCompanies` do token. Lista vazia = todas as empresas do token (nunca a base inteira); id fora da lista lança `ForbiddenException` (403); `allCompanies` (administrador da plataforma) = tudo, ou só as escolhidas. O padrão (sem provider do host) aceita apenas a lista vazia. O resultado é gravado no job e levado ao worker assíncrono.
+
+**Pacote:** `br.com.seedgrid.backup.spis`
+
+## ExportCompanyTableRule
+
+Regra por tabela para o export com escopo de empresa, usada quando a tabela **não tem** coluna de empresa mas o dado é do cliente. **Desde backup 2026.11.8 (P178).** Cada host registra beans (`@ApplicationScoped`): `CompanyUsersExportRule` (usuários da empresa pelo vínculo `sg_user_companies`, só `id`, `public_id`, `email`, `name`, `whats_app`, `active`, `email_confirmed_at`, `created_at`, `updated_at` e `additional_attributes`), `CompanyAttachmentsExportRule` (`sg_attachments` com `owner_key` = `publicId` da empresa; o `filemanagement` continua sem conhecer empresa) e `CompanyUserNotificationsExportRule` (`sg_user_notification` pelo usuário). Tabela sem coluna de empresa e sem regra **não sai** (falha fechada). As colunas sensíveis (`seedgrid.backup.scoped-sensitive-column-patterns`) e as tabelas excluídas (`seedgrid.backup.scoped-excluded-tables`) também valem no export com escopo de empresa.
