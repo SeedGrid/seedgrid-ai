@@ -22,5 +22,6 @@ Regra: **o projeto inteiro tem uma única versão**. Back e todos os fronts (por
 ## Regras
 
 - Nunca altere versões de `<dependency>`, `<parent>`, BOMs, extensions SeedGrid ou pacotes `@seedgrid/*`; atualização de dependências é outra tarefa.
+- **Exceção (plataforma SeedGrid):** nos boilerplates do toolkit, a tarefa "atualizar versões" depois de publicar componente ou extension **é** esta alteração: suba `<dependency>`, BOMs e `@seedgrid/*` para a última versão publicada, com versão fixa (sem `^`), e só depois de type-check, testes e build. A fonte é o repositório `boilerplate`; a pasta `boilerplates/` do `seedgrid-ia` vem do `sync-boilerplates` (P175).
 - Não publique artefatos, não faça deploy e não envie nada a serviços externos.
 - Se houver mudanças não commitadas no repositório, avise antes de alterar.

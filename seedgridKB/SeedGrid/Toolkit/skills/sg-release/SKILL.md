@@ -34,3 +34,4 @@ Regras: `HO-03` (release por merge normal, sem squash) e `HO-07` (autorização 
 - Não gera o texto do `CHANGELOG`: as entradas são das tarefas (HO-02 manda a mensagem de cada squash citar a tarefa). Se a seção "Nao publicado" estiver vazia, diga ao usuário antes de seguir.
 - O pom do produto novo nasce `0.1.0-SNAPSHOT`: a primeira release o troca por `YYYY.M.N`. Voltar a `-SNAPSHOT` na `develop` é decisão do produto, não desta skill.
 - Teste do script: `tests/release.test.ts` no repositório do `seedgrid-ai`.
+- Esta skill é de produto. A release do **toolkit** (`@seedgrid/ai-toolkit`) tem procedimento próprio, com a conferência dos boilerplates (`sync-boilerplates --check`) antes da tag; não use `release.mjs` nela.
