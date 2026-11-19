@@ -4,6 +4,14 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.8.3] — 2026-11-19
+
+### Alterado
+- **Boilerplates sincronizados com `SeedGrid/boilerplate` `ec6d108` (P174, P175, P176).**
+  - P174: `PublicIdCell` único (ID curto com os 5 últimos do `publicId`) e listas por `publicId` (boilerplates BE-30, FE-36 e FE-37); ações de linha só com Edit3 e Trash2.
+  - P175: pins nas últimas versões publicadas. `login-tenancy` 2026.11.12 (b2b e b2c, com `security`/`audit` 2026.11.12, `commons` 2026.11.3, `cities` 2026.11.1), `subdomain-tenancy` 2026.11.14, `backup` 2026.11.7 (corrige o vazamento de dados entre empresas no export, P169), `@seedgrid/fe-core`, `fe-theme` e `fe-components` 2026.11.15 (`enabled` no lugar de `disabled`).
+  - P176: o calendário da empresa passa a ser uma tela única, no lugar das 7 telas de dias úteis (regra FE-38; skill `sg-crud-front` e notas da `business-days` atualizadas).
+
 ### Adicionado
 - `scripts/check-boilerplate-versions.mjs` (P175): AVISA (sai 0) quando um boilerplate fixa uma extension (pom.xml, inclusive o que vem do BOM do modelo) ou um `@seedgrid/*` (package.json) atrás da última publicada (Nexus e npm). `--fixture` roda offline, `--json` devolve a tabela, `--strict` reprova. Passo não-bloqueante no CI; o Nexus pede `SEEDGRID_NEXUS_USER`/`SEEDGRID_NEXUS_PASSWORD` (sem elas avisa que não conferiu). Teste: `tests/check-boilerplate-versions.test.ts`.
 

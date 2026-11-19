@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "0.8.2",
+  "contentVersion": "0.8.3",
   "toolkitBase": "SeedGrid/Toolkit",
   "components": [
     {
