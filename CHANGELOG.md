@@ -4,6 +4,17 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A versão d
 
 ## [Não publicado]
 
+## [0.8.4] — 2026-11-19
+
+### Alterado
+- **Boilerplates sincronizados com `SeedGrid/boilerplate` `dfc997e` (P176, P178, P180).**
+  - P178 (backup self-service por empresa): `login-tenancy` 2026.11.15 (b2b e b2c), `subdomain-tenancy` 2026.11.17 e `backup` 2026.11.10 (via BOM), `commons` 2026.11.3 no modular. O ADMIN de cada empresa-cliente exporta o próprio backup (permissões `BACKUP_*` com audience NULL), escolhendo uma, várias ou todas as suas empresas; o backup da plataforma sai sem segredo nem 2FA e o limite de criar export é por usuário. Telas de backup no front e no admin dos três modelos.
+  - P176: acentuação no calendário da empresa.
+- **KB do backup (P178)**: visão geral, configuração, SPIs e catálogo com o backup self-service, as regras `ExportCompanyTableRule`, as propriedades `seedgrid.backup.scoped-*` e `platform-*` e o limite por usuário; catálogo com `seedgrid.persistence.digits-only`.
+- **Regras (P180)**: `FE-39` a `FE-42` (empresa só PJ com `SgInput*`, menu Segurança, contadores só do domínio, assinatura sem instrução de admin) e `BE-74`; `FE-38` só com `business-days` marcado (`modulos-front.json`) e a skill `sg-new-product` grava as respostas.
+- Skills `sg-bump` e `sg-release` (P175): `sg-bump` aceita a atualização de versões dos boilerplates (exceção) e `sg-release` avisa que a release do toolkit tem procedimento próprio.
+- Catálogo da skill `sg-new-product` fixa `seedgrid-cities` 2026.11.1.
+
 ## [0.8.3] — 2026-11-19
 
 ### Alterado
