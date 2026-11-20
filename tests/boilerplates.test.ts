@@ -49,10 +49,12 @@ describe('componente boilerplates (conteúdo)', () => {
     }
   });
 
-  test('todo modelo tem o menu do usuário obrigatório (Meu perfil, Temas e Sair)', async () => {
+  test('todo modelo tem o menu do usuário obrigatório (Meu perfil e Sair; Temas só no modular)', async () => {
     for (const m of MODELS) {
       const shell = await readText(bundledContentDir(), `${BP}${m}/frontend/app/components/Shell.tsx`);
-      for (const label of ['Meu perfil', 'Temas', 'Sair']) assert.ok(shell.includes(`label: "${label}"`), `${m}: menu do usuário sem ${label}`);
+      // Tema e modo escuro saíram do menu do usuário dos 3 modelos de login (vivem na barra superior, P180.F2.T7); só o modular ainda os tem lá.
+      const labels = m === 'modular' ? ['Meu perfil', 'Temas', 'Sair'] : ['Meu perfil', 'Sair'];
+      for (const label of labels) assert.ok(shell.includes(`label: "${label}"`), `${m}: menu do usuário sem ${label}`);
     }
   });
 
