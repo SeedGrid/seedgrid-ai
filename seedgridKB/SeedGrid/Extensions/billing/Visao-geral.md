@@ -12,6 +12,7 @@ Assinaturas prontas para hosts Quarkus. Cobre planos, condições comerciais (te
 
 - Configuração: [[SeedGrid/Extensions/billing/Configuracao|Configuração do billing]]
 - Exemplos: [[SeedGrid/Extensions/billing/Exemplos|Exemplos do billing]]
+- Como criar um contador de uso (passo a passo, com o caso do report): [[SeedGrid/Extensions/billing/Contadores-de-uso|Contadores de uso]]
 - Enums: [[SeedGrid/Extensions/billing/Enums|Enums do billing]]
 - Porte Rust: [[SeedGrid/Extensions/billing/Rust|Porte Rust]]
 
