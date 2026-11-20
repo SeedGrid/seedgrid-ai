@@ -121,7 +121,7 @@ plano, vagas, webhook, admin de contas e os indicadores do dashboard), com os en
 
 | O quê | Onde |
 |---|---|
-| **Contadores de uso** (o que se cobra por uso): `requests` e `storage-mb` de exemplo | declarados em `billing/AppUsageMeters.java`, contados em `demo/UsageDemoResource.java`, planos de demonstração na `V3001`. Guia: [`docs/contadores-de-uso.md`](docs/contadores-de-uso.md) |
+| **Contadores de uso** (o que se cobra por uso): **nenhum vem declarado** (BE-74) | o produto declara os do seu domínio em `billing/AppUsageMeters.java`; os planos de demonstração (`V3001`) têm só preço e permissões. Guia: [`docs/contadores-de-uso.md`](docs/contadores-de-uso.md) |
 | Campos do produto no term que não são contador (exemplo: `supportLevel`) | `AppPlanTermValidator` |
 | Avisos internos (WhatsApp) e e-mails de perda/manutenção de acesso | extensions billing e notification; o host observa apenas `UserAccessEvent` para e-mails ao usuário |
 
@@ -132,7 +132,7 @@ O trial é um `plan_term` semeado pela fundação, com `public_id` fixo
 
 | | Onde mora | O que significa |
 |---|---|---|
-| **Cota** | `plan_term_meters` do term do trial (uma linha por contador) | A franquia de cada contador no trial, sem excedente. A `V3001` semeia 20 requisições e deixa `storage-mb` **fora** do trial, de propósito, para mostrar o 402 `METER_NOT_IN_PLAN`. Contador sem linha = fora do trial. |
+| **Cota** | `plan_term_meters` do term do trial (uma linha por contador) | A franquia de cada contador no trial, sem excedente. O boilerplate não declara contador, então não semeia cota. Contador sem linha = fora do trial. |
 | **Prazo** | `plans.trial_days` | Dias até o trial vencer. **`0` = não expira por data**. |
 
 Ambos são editáveis na tela `/plans/plan_trial` do admin, e a tela de contas permite conceder

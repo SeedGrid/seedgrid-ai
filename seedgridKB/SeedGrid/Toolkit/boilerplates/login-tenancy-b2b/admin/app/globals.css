@@ -111,6 +111,8 @@ h6 {
 
 .login-shell > * {
   width: min(100%, 420px);
+  /* o card do SgCard traz `w-full` (utilitario carregado depois) e vencia o `width` acima: o limite fica em max-width */
+  max-width: 420px;
 }
 
 .login-brand {
@@ -153,9 +155,9 @@ h6 {
 }
 
 .shell-sidebar {
-  min-height: calc(100vh - 48px);
+  min-height: calc(100vh - var(--topbar-height, 0px) - 40px);
   position: sticky;
-  top: 24px;
+  top: calc(var(--topbar-height, 0px) + 16px);
 }
 
 .shell-menu {
@@ -308,14 +310,6 @@ h6 {
     padding: 16px;
   }
 
-  .shell-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .shell-sidebar {
-    min-height: auto;
-    position: static;
-  }
 }
 
 /* Filtros em grid responsivo (ex.: AI Requests). Sem isso as labels fluem inline e ficam "emboladas". */
@@ -356,4 +350,146 @@ h6 {
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Barra superior fixa (FE-43, P180): título à esquerda; idioma, tema e modo escuro à direita. */
+:root {
+  --topbar-height: 56px;
+}
+
+body:has(.topbar) {
+  padding-top: calc(var(--topbar-height) + 16px);
+}
+
+.topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: var(--topbar-height);
+  padding: 0 16px;
+  background: rgb(var(--sg-surface));
+  border-bottom: 1px solid rgb(var(--sg-border));
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Título longo (ou em es/fr) encolhe com reticências; o grupo da direita (sino, idioma, tema, modo escuro) NUNCA encolhe,
+   senão empurra o botão de modo escuro para fora da tela em 390 px. */
+.topbar-left {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.topbar-right {
+  flex: 0 0 auto;
+}
+
+.topbar-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.topbar-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: rgb(var(--sg-text));
+  cursor: pointer;
+}
+
+.topbar-icon-btn:hover,
+.topbar-icon-btn.is-active {
+  background: rgba(var(--sg-border), 0.35);
+  border-color: rgb(var(--sg-border));
+}
+
+.topbar-menu-btn {
+  display: none;
+}
+
+.topbar-theme {
+  position: relative;
+}
+
+.topbar-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: min(380px, calc(100vw - 24px));
+  max-height: calc(100vh - var(--topbar-height) - 24px);
+  overflow: auto;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+}
+
+.topbar-popover > div {
+  padding: 0;
+}
+
+.shell-backdrop {
+  display: none;
+}
+
+/* Celular (<= 800 px): o menu vira gaveta sobre o conteúdo (aberta pelo botão da barra) e o conteúdo ocupa a largura toda. */
+@media (max-width: 800px) {
+  .topbar-menu-btn {
+    display: inline-flex;
+  }
+
+  .topbar-popover {
+    position: fixed;
+    top: calc(var(--topbar-height) + 8px);
+    right: 12px;
+  }
+
+  .shell-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .shell-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    width: min(320px, 86vw);
+    min-height: 100vh;
+    overflow: auto;
+    border-radius: 0;
+    transform: translateX(-105%);
+    transition: transform 0.2s ease;
+  }
+
+  .shell-grid.drawer-open .shell-sidebar {
+    transform: none;
+  }
+
+  .shell-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    border: 0;
+    background: rgba(15, 23, 42, 0.45);
+  }
 }

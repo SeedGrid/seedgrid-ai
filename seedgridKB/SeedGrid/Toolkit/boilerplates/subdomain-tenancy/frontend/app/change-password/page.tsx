@@ -26,7 +26,7 @@ export default function ChangePasswordPage() {
     setInfoMessage(null);
 
     if (newPassword !== confirmNewPassword) {
-      setErrorMessage("A confirmacao da nova senha nao confere.");
+      setErrorMessage("A confirmação da nova senha não confere.");
       return;
     }
 
@@ -51,7 +51,7 @@ export default function ChangePasswordPage() {
         return;
       }
 
-      setInfoMessage("Senha alterada. Faca login novamente com a nova senha.");
+      setInfoMessage("Senha alterada. Faça login novamente com a nova senha.");
       router.push("/login");
       router.refresh();
     });

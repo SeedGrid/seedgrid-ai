@@ -39,6 +39,7 @@ import {
   type PlanCatalogItem,
   type PlansPendingChange,
 } from "@/lib/ported/billingTypes";
+import { PLANS_SUBTITLE, PLAN_UNAVAILABLE_MESSAGE, isPlanSubscribable } from "@/lib/plan-availability";
 
 function formatPlanDate(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -265,10 +266,9 @@ export function SubscriptionPlans({
   const gridMaxWidth = `${gridColumns * 21}rem`;
 
   async function handleSubscribe(plan: PlanCatalogItem) {
-    if (!plan.checkoutEnabled) {
-      setError(
-        `O plano "${plan.name}" ainda nao tem pagamento configurado. Cadastre o ID de preco do Stripe nesse plano pelo admin para habilitar a assinatura.`,
-      );
+    if (!isPlanSubscribable(plan)) {
+      // Defesa: o botão nem aparece para plano sem preço (FE-42); a instrução de configurar o preço é só do admin.
+      setError(`O plano "${plan.name}": ${PLAN_UNAVAILABLE_MESSAGE}`);
       return;
     }
     setError(null);
@@ -493,7 +493,7 @@ export function SubscriptionPlans({
             ? "Finalize o pagamento na aba do navegador. Esta tela atualiza sozinha."
             : effectiveChange
               ? `Você está no plano ${currentPlan?.name ?? "atual"}. Upgrade entra na hora (com rateio); downgrade vale a partir do próximo ciclo.`
-              : "Mais solicitações de IA, mais relatórios. Faça upgrade quando precisar."}
+              : PLANS_SUBTITLE}
         </p>
       </div>
 
@@ -648,6 +648,10 @@ export function SubscriptionPlans({
               ) : isScheduledDowngrade ? (
                 <div className="flex w-full items-center justify-center gap-1.5 rounded-sg border border-amber-300 bg-amber-100/70 px-3 py-2 text-sm font-medium text-amber-800">
                   <Clock size={15} className="shrink-0" /> Downgrade agendado para o fim do ciclo
+                </div>
+              ) : !isPlanSubscribable(plan) ? (
+                <div className="flex w-full items-center justify-center gap-1.5 rounded-sg border border-sg-border bg-sg-muted-surface px-3 py-2 text-sm font-medium text-sg-muted">
+                  <Clock size={15} className="shrink-0" /> {PLAN_UNAVAILABLE_MESSAGE}
                 </div>
               ) : (
                 <SgButton

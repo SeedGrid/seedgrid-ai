@@ -338,9 +338,9 @@ export function buildCompanyPage(
 export function toCompanyBody(input: Partial<CompanyForm>): Record<string, unknown> {
   // O corpo vem do navegador: campo ausente vira texto vazio em vez de quebrar o BFF.
   const form: CompanyForm = { ...EMPTY_COMPANY_FORM, ...input, active: input.active };
-  const isPf = form.personType === "PF";
+  // O cadastro de empresa é sempre pessoa jurídica (FE-39): o tipo vai fixo.
   const body: Record<string, unknown> = {
-    personType: form.personType,
+    personType: "PJ",
     cpfCnpj: digitsOnly(form.cpfCnpj),
     corporateName: form.corporateName.trim(),
     tradeName: form.tradeName.trim(),
@@ -358,15 +358,12 @@ export function toCompanyBody(input: Partial<CompanyForm>): Record<string, unkno
     body.addrCity = form.addrCity.trim();
     body.addrState = form.addrState.trim().toUpperCase();
   }
-  // Representante legal e' da pessoa juridica; PF nao o envia.
-  if (!isPf) {
-    body.repFirstName = form.repFirstName.trim();
-    body.repLastName = form.repLastName.trim();
-    body.repCpf = digitsOnly(form.repCpf);
-    body.repPhone = form.repPhone.trim();
-    body.repWhatsapp = form.repWhatsapp.trim();
-    body.repEmail = form.repEmail.trim();
-  }
+  body.repFirstName = form.repFirstName.trim();
+  body.repLastName = form.repLastName.trim();
+  body.repCpf = digitsOnly(form.repCpf);
+  body.repPhone = form.repPhone.trim();
+  body.repWhatsapp = form.repWhatsapp.trim();
+  body.repEmail = form.repEmail.trim();
   if (form.active !== undefined) {
     body.active = form.active;
   }
@@ -386,12 +383,12 @@ export function validateCompanyForm(form: CompanyForm): string | null {
   if (!form.tradeName.trim()) {
     return "Informe o nome fantasia.";
   }
-  const digits = digitsOnly(form.cpfCnpj);
-  if (form.personType === "PJ" && digits.length !== 14) {
-    return "Informe o CNPJ com 14 digitos.";
+  if (digitsOnly(form.cpfCnpj).length !== 14) {
+    return "Informe o CNPJ com 14 dígitos.";
   }
-  if (form.personType === "PF" && digits.length !== 0 && digits.length !== 11) {
-    return "Informe o CPF com 11 digitos (ou deixe em branco).";
+  const repCpf = digitsOnly(form.repCpf);
+  if (repCpf.length !== 0 && repCpf.length !== 11) {
+    return "Informe o CPF do representante com 11 dígitos (ou deixe em branco).";
   }
   const state = form.addrState.trim();
   if (state && !BRAZIL_STATES.includes(state.toUpperCase())) {
@@ -403,7 +400,7 @@ export function validateCompanyForm(form: CompanyForm): string | null {
 /** Preenche o formulario de edicao a partir da empresa carregada. */
 export function formFromEntry(company: CompanyEntry): CompanyForm {
   return {
-    personType: company.personType,
+    personType: "PJ",
     cpfCnpj: company.cpfCnpj,
     corporateName: company.corporateName,
     tradeName: company.tradeName,
@@ -434,7 +431,7 @@ export const COMPANY_ERROR_MESSAGES: Record<string, string> = {
     "Nao e possivel inativar esta empresa: a conta precisa manter ao menos uma empresa ativa com um administrador.",
   COMPANY_QUOTA_EXCEEDED:
     "O limite de empresas do seu plano foi atingido. Faca upgrade do plano para cadastrar ou reativar mais empresas.",
-  COMPANY_DOCUMENT_INVALID: "Documento invalido para o tipo de pessoa (CNPJ para PJ; CPF opcional para PF).",
+  COMPANY_DOCUMENT_INVALID: "CNPJ inválido. Confira os 14 dígitos.",
   COMPANY_READ_ONLY: "Esta empresa esta em modo somente leitura e nao aceita alteracoes.",
   COMPANY_DISABLED: "Esta empresa esta desligada.",
 };

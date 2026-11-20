@@ -3,8 +3,12 @@
 import {
   SgButton,
   SgCard,
-  SgCombobox,
   SgGrid,
+  SgInputCNPJ,
+  SgInputCPF,
+  SgInputEmail,
+  SgInputPhone,
+  SgInputPostalCode,
   SgInputText,
   SgSkeleton,
   SgStack,
@@ -19,27 +23,29 @@ import { CityPicker } from "../../../components/CityPicker";
 import { StatusBadge } from "../../../components/StatusBadge";
 import { useAdminAccess } from "../../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
+import { createCitySearch, type CityFetcher } from "@/lib/cities";
 import {
   COMPANY_ACCESS_MODE_LABELS,
-  COMPANY_PERSON_TYPE_LABELS,
   EMPTY_COMPANY_FORM,
   companyErrorFromThrown,
-  digitsOnly,
-  documentLabel,
   formFromEntry,
   validateCompanyForm,
   type CompanyAccessMode,
   type CompanyEntry,
   type CompanyForm,
-  type CompanyPersonType,
 } from "@/lib/companies";
+import {
+  applyLookupPatch,
+  companyPatchFromPublicaCnpj,
+  companyPatchFromViaCep,
+  matchCityByName,
+  type ViaCepData,
+} from "@/lib/company-lookup";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 
-const PERSON_TYPE_ITEMS = (Object.keys(COMPANY_PERSON_TYPE_LABELS) as CompanyPersonType[]).map((type) => ({
-  id: type,
-  label: COMPANY_PERSON_TYPE_LABELS[type],
-  value: type,
-}));
+// Cidade vinda da consulta (CNPJ/CEP) é casada com a lista da cities; uma instância para a tela toda (a lista da UF fica em cache).
+const cityFetcher: CityFetcher = (path) => adminProxyClient.get(path);
+const searchCities = createCitySearch(cityFetcher);
 
 export default function CompanyEditPage() {
   return (
@@ -71,6 +77,26 @@ function CompanyEditPageContent() {
 
   function setField<K extends keyof CompanyForm>(key: K, value: CompanyForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  // FE-39: a consulta (CNPJ ou CEP) só preenche o que veio; depois tenta escolher a cidade da lista (FK).
+  async function applyLookup(patch: ReturnType<typeof companyPatchFromViaCep>) {
+    setForm((current) => applyLookupPatch(current, patch));
+    if (!patch.addrCity || !patch.addrState) {
+      return;
+    }
+    try {
+      const city = matchCityByName(await searchCities(patch.addrState, patch.addrCity), patch.addrCity);
+      if (city) {
+        setForm((current) =>
+          current.addrState === patch.addrState && current.addrCity === patch.addrCity
+            ? { ...current, cityId: city.id, cityName: city.label }
+            : current,
+        );
+      }
+    } catch {
+      // Sem a lista de cidades (permissão ou rede), fica o texto e a dica "Escolha a cidade".
+    }
   }
 
   useEffect(() => {
@@ -158,8 +184,6 @@ function CompanyEditPageContent() {
     );
   }
 
-  const isPf = form.personType === "PF";
-
   return (
     <Shell
       eyebrow="Seguranca"
@@ -203,26 +227,20 @@ function CompanyEditPageContent() {
                 </SgStack>
               ) : null}
 
-              <SgGrid minItemWidth={220} gap={12}>
-                <SgCombobox
-                  id="company-person-type"
-                  label="Tipo de pessoa"
-                  source={PERSON_TYPE_ITEMS}
-                  value={form.personType}
-                  onValueChange={(value) => setField("personType", value === "PF" ? "PF" : "PJ")}
-                />
-                <SgInputText
-                  id="company-cpf-cnpj"
-                  label={isPf ? "CPF (opcional)" : documentLabel(form.personType)}
-                  hintText="Somente numeros"
-                  maxLength={18}
-                  inputProps={{ value: form.cpfCnpj }}
-                  onChange={(value) => setField("cpfCnpj", digitsOnly(value).slice(0, 14))}
-                />
-              </SgGrid>
+              {/* FE-39: empresa é sempre pessoa jurídica, sem escolha de tipo; documento, CEP, telefone e e-mail com componente próprio. */}
+              <SgInputCNPJ
+                id="company-cnpj"
+                label="CNPJ"
+                required
+                validateWithPublicaCnpj
+                publicaCnpjErrorMessage="CNPJ não encontrado na base pública. Confira o número ou preencha os dados à mão."
+                onPublicaCnpjResult={(data) => void applyLookup(companyPatchFromPublicaCnpj(data))}
+                inputProps={{ value: form.cpfCnpj }}
+                onChange={(value) => setField("cpfCnpj", value)}
+              />
               <SgInputText
                 id="company-corporate-name"
-                label={isPf ? "Nome" : "Razao social"}
+                label="Razão social"
                 inputProps={{ value: form.corporateName }}
                 onChange={(value) => setField("corporateName", value)}
               />
@@ -234,10 +252,12 @@ function CompanyEditPageContent() {
               />
 
               <SgGrid minItemWidth={180} gap={12}>
-                <SgInputText
+                <SgInputPostalCode
                   id="company-postal-code"
                   label="CEP"
-                  maxLength={9}
+                  validateWithViaCep
+                  viaCepErrorMessage="CEP não encontrado."
+                  onViaCepResult={(data: ViaCepData) => void applyLookup(companyPatchFromViaCep(data))}
                   inputProps={{ value: form.addrPostalCode }}
                   onChange={(value) => setField("addrPostalCode", value)}
                 />
@@ -249,7 +269,7 @@ function CompanyEditPageContent() {
                 />
                 <SgInputText
                   id="company-number"
-                  label="Numero"
+                  label="Número"
                   inputProps={{ value: form.addrNumber }}
                   onChange={(value) => setField("addrNumber", value)}
                 />
@@ -286,58 +306,53 @@ function CompanyEditPageContent() {
                   }))
                 }
               />
-              <SgInputText
+              <SgInputPhone
                 id="company-address-phone"
                 label="Telefone"
                 inputProps={{ value: form.addrPhone }}
                 onChange={(value) => setField("addrPhone", value)}
               />
 
-              {isPf ? null : (
-                <>
-                  <SgGrid minItemWidth={180} gap={12}>
-                    <SgInputText
-                      id="company-rep-first-name"
-                      label="Representante: nome"
-                      inputProps={{ value: form.repFirstName }}
-                      onChange={(value) => setField("repFirstName", value)}
-                    />
-                    <SgInputText
-                      id="company-rep-last-name"
-                      label="Representante: sobrenome"
-                      inputProps={{ value: form.repLastName }}
-                      onChange={(value) => setField("repLastName", value)}
-                    />
-                    <SgInputText
-                      id="company-rep-cpf"
-                      label="Representante: CPF"
-                      maxLength={14}
-                      inputProps={{ value: form.repCpf }}
-                      onChange={(value) => setField("repCpf", value)}
-                    />
-                  </SgGrid>
-                  <SgGrid minItemWidth={180} gap={12}>
-                    <SgInputText
-                      id="company-rep-phone"
-                      label="Representante: telefone"
-                      inputProps={{ value: form.repPhone }}
-                      onChange={(value) => setField("repPhone", value)}
-                    />
-                    <SgInputText
-                      id="company-rep-whatsapp"
-                      label="Representante: WhatsApp"
-                      inputProps={{ value: form.repWhatsapp }}
-                      onChange={(value) => setField("repWhatsapp", value)}
-                    />
-                    <SgInputText
-                      id="company-rep-email"
-                      label="Representante: e-mail"
-                      inputProps={{ value: form.repEmail }}
-                      onChange={(value) => setField("repEmail", value)}
-                    />
-                  </SgGrid>
-                </>
-              )}
+              <SgGrid minItemWidth={180} gap={12}>
+                <SgInputText
+                  id="company-rep-first-name"
+                  label="Representante: nome"
+                  inputProps={{ value: form.repFirstName }}
+                  onChange={(value) => setField("repFirstName", value)}
+                />
+                <SgInputText
+                  id="company-rep-last-name"
+                  label="Representante: sobrenome"
+                  inputProps={{ value: form.repLastName }}
+                  onChange={(value) => setField("repLastName", value)}
+                />
+                <SgInputCPF
+                  id="company-rep-cpf"
+                  label="Representante: CPF"
+                  inputProps={{ value: form.repCpf }}
+                  onChange={(value) => setField("repCpf", value)}
+                />
+              </SgGrid>
+              <SgGrid minItemWidth={180} gap={12}>
+                <SgInputPhone
+                  id="company-rep-phone"
+                  label="Representante: telefone"
+                  inputProps={{ value: form.repPhone }}
+                  onChange={(value) => setField("repPhone", value)}
+                />
+                <SgInputPhone
+                  id="company-rep-whatsapp"
+                  label="Representante: WhatsApp"
+                  inputProps={{ value: form.repWhatsapp }}
+                  onChange={(value) => setField("repWhatsapp", value)}
+                />
+                <SgInputEmail
+                  id="company-rep-email"
+                  label="Representante: e-mail"
+                  inputProps={{ value: form.repEmail }}
+                  onChange={(value) => setField("repEmail", value)}
+                />
+              </SgGrid>
 
               <SgButton
                 appearance="outline"

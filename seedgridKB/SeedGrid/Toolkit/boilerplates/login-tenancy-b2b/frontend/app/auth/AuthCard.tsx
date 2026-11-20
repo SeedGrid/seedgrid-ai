@@ -29,7 +29,7 @@ export function AuthCard({ title, wide = false, children }: AuthCardProps) {
   return (
     <div className={`rounded-sg border border-sg-border bg-sg-surface p-6 shadow-sm${wide ? " w-full" : ""}`}>
       <h1 className="mb-5 text-center text-2xl font-semibold text-sg-text">{title}</h1>
-      {/* Area INLINE dos avisos publicados por sgWhistle (ex.: "CNPJ ja cadastrado" no signup).
+      {/* Area INLINE dos avisos publicados por sgWhistle (ex.: "CNPJ já cadastrado" no signup).
           O SgWhistleHost nao e um overlay flutuante: ele desenha exatamente onde e montado, sem
           portal nem position:fixed. Montado no topo do card, o aviso aparece junto do formulario
           a que se refere — montado na raiz da aplicacao, ficava abaixo da tela inteira, fora da

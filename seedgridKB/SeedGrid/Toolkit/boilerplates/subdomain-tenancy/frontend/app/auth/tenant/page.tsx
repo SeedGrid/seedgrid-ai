@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SgButton, SgInputText, SgStack } from "@seedgrid/fe-components";
+import { lowerSubdomainWhileTyping, normalizeSubdomain } from "@/lib/subdomain-input";
 import { AuthCard, AuthMessage } from "../AuthCard";
 
 export default function TenantPage() {
@@ -10,7 +11,7 @@ export default function TenantPage() {
   const [error, setError] = useState<string | null>(null);
 
   function enter() {
-    const tenant = subdomain.trim().toLowerCase();
+    const tenant = normalizeSubdomain(subdomain);
     if (!/^[a-z0-9_]{5,50}$/.test(tenant) || tenant === "master") {
       setError("Informe o subdominio cadastrado para sua empresa.");
       return;
@@ -29,7 +30,7 @@ export default function TenantPage() {
             id="tenant-subdomain"
             label="Subdomínio"
             inputProps={{ value: subdomain }}
-            onChange={setSubdomain}
+            onChange={(value) => setSubdomain(lowerSubdomainWhileTyping(value))}
           />
           {error && <AuthMessage tone="error">{error}</AuthMessage>}
           <SgButton label="Continuar" onClick={enter} />

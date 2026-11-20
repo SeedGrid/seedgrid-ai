@@ -28,7 +28,14 @@ const PRESETS = [
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
-export function ThemeView({ onClose }: { readonly onClose?: () => void }) {
+// `showModeToggle`: a barra superior já tem o botão de modo claro/escuro; no popover dela ele não se repete (FE-43).
+export function ThemeView({
+  onClose,
+  showModeToggle = true,
+}: {
+  readonly onClose?: () => void;
+  readonly showModeToggle?: boolean;
+}) {
   const { currentTheme, currentMode, setTheme, setMode } = useSgTheme();
   const persistTheme = useThemePersistence();
   const [seed, setSeed] = useState(currentTheme.seed ?? "#0891b2");
@@ -61,6 +68,7 @@ export function ThemeView({ onClose }: { readonly onClose?: () => void }) {
         <div className="mb-5 flex items-center justify-between gap-2">
           <h1 className="text-base font-semibold text-sg-text">Personalizar Tema</h1>
           <div className="flex items-center gap-1">
+            {showModeToggle ? (
             <button
               type="button"
               onClick={toggleMode}
@@ -70,6 +78,7 @@ export function ThemeView({ onClose }: { readonly onClose?: () => void }) {
             >
               {isDark ? <Moon size={18} /> : <Sun size={18} />}
             </button>
+            ) : null}
             <button
               type="button"
               onClick={() => onClose?.()}

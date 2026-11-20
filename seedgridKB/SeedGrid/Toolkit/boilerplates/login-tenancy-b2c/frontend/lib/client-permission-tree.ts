@@ -119,17 +119,6 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
     ],
   },
   {
-    id: "exemplo-consumo",
-    label: "Exemplo de consumo",
-    screens: [
-      {
-        id: "exemplo-consumo/exemplo-consumo",
-        label: "Exemplo de consumo",
-        actions: [{ permission: "USAGE_DEMO_READ", label: `${OPEN_SCREEN}, fazer requisicoes e enviar arquivos` }],
-      },
-    ],
-  },
-  {
     id: "menu-usuario",
     label: "Minha assinatura (menu do usuario)",
     screens: [

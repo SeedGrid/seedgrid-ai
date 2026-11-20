@@ -25,7 +25,7 @@ function ForgotPasswordConfirmContent() {
   useEffect(() => {
     const token = searchParams.get("token")?.trim();
     if (!token) {
-      setErrorMessage("Link de confirmacao invalido ou incompleto.");
+      setErrorMessage("Link de confirmação inválido ou incompleto.");
       return;
     }
 
@@ -41,13 +41,13 @@ function ForgotPasswordConfirmContent() {
         }
         if (!response.ok) {
           const text = await response.text();
-          setErrorMessage(text || "Nao foi possivel confirmar a troca de senha.");
+          setErrorMessage(text || "Não foi possível confirmar a troca de senha.");
           return;
         }
         router.replace("/auth/forgot-password/success");
       } catch {
         if (active) {
-          setErrorMessage("Nao foi possivel conectar ao servidor. Tente novamente.");
+          setErrorMessage("Não foi possível conectar ao servidor. Tente novamente.");
         }
       }
     })();

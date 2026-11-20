@@ -6,6 +6,7 @@ import {
   SgCard,
   SgCheckboxGroup,
   SgInputPassword,
+  SgInputPhone,
   SgInputText,
   SgSkeleton,
   SgStack,
@@ -337,7 +338,7 @@ function UserEditPageContent() {
                 inputProps={{ value: editor.email }}
                 onChange={(email) => setEditor((current) => ({ ...current, email }))}
               />
-              <SgInputText
+              <SgInputPhone
                 id="user-whatsapp"
                 label="WhatsApp"
                 inputProps={{ value: editor.whatsApp }}

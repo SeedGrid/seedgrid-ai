@@ -57,10 +57,10 @@ export const navItems: NavItem[] = [
   },
   {
     href: "/security",
-    label: "Seguranca",
+    label: "Segurança",
     children: [
-      { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
-      { href: "/security/self-enter", label: "Convidar usuario externo", permission: "SELFENTER_INVITE" },
+      { href: "/security/users/user_list", label: "Usuários", permission: "USER_READ" },
+      { href: "/security/self-enter", label: "Convidar usuário externo", permission: "SELFENTER_INVITE" },
       { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
       { href: "/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
       { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },

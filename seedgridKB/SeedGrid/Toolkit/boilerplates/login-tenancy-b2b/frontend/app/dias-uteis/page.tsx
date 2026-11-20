@@ -112,7 +112,7 @@ export default function CompanyCalendarPage() {
   const [companies, setCompanies] = useState<MyCompany[]>([]);
   const [switching, setSwitching] = useState(false);
 
-  // O seletor só' existe com mais de uma empresa; trocar usa a mesma troca de sessao do CompanyAccessBar.
+  // O seletor só' existe com mais de uma empresa; trocar usa `requestSelectCompany` (a faixa CompanyAccessBar nao troca mais empresa).
   useEffect(() => {
     if (accessLoading) return;
     const controller = new AbortController();

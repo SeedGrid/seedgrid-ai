@@ -40,7 +40,7 @@ export function ConfirmEmailView({
 
     if (!token) {
       setStatus("error");
-      setMessage("Link invalido: token nao informado.");
+      setMessage("Link inválido: token não informado.");
       return;
     }
 
@@ -63,15 +63,15 @@ export function ConfirmEmailView({
           // confirmado) ou expirou. Mostramos uma mensagem clara em vez do texto tecnico.
           if (response.status === 404) {
             setMessage(
-              "Este link de confirmacao ja foi usado ou expirou. " +
-                "Se a sua conta ja esta confirmada, basta fazer login.",
+              "Este link de confirmação já foi usado ou expirou. " +
+                "Se a sua conta já está confirmada, basta fazer login.",
             );
           } else {
             setMessage(
               payload.detail ??
                 payload.message ??
                 payload.title ??
-                "Nao foi possivel confirmar o e-mail.",
+                "Não foi possível confirmar o e-mail.",
             );
           }
           return;
@@ -98,7 +98,7 @@ export function ConfirmEmailView({
       } catch {
         setStatus("error");
         setMessage(
-          "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.",
+          "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
         );
       }
     })();
