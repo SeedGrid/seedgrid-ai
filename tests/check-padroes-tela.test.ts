@@ -46,6 +46,10 @@ for (const [nome, [files, regra]] of Object.entries(ruins)) {
 test('passa: exemplo corrigido (mascara, menu agrupado, texto no admin, contador do dominio)', () => withTree({
   'app/company_edit/page.tsx': '<SgInputText id="company-name" label="Nome" />\n<SgInputCpfCnpj id="company-doc" label="CNPJ" />',
   'frontend/app/data.ts': 'export const navItems = [\n  {\n    href: "/security",\n    label: "Seguranca",\n    children: [\n      { href: "/security/users/user_list", label: "Usuarios" },\n    ],\n  },\n];\n',
+  'frontend/app/empresas/data.ts': 'export const navItems = [
+  { href: "/security/companies/company_list", label: "Empresas" },
+];
+',
   'admin/app/plans/plan_edit/page.tsx': 'const t = "Cadastre o ID de preco do Stripe";',
   'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition("exports", "Exportacoes")); } }',
 }, (dir) => {

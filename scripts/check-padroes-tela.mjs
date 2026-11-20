@@ -68,7 +68,7 @@ for (const f of walk(root)) {
     for (const x of itens) {
       const href = x.m[2];
       const ehRaiz = /^\s*\{\s*href:/.test(x.l) ? x.m[1].length === rootIndent : x.m[1].length === rootIndent + 2 && /^\s*\{\s*$/.test(lines[x.i - 1] || '') && (lines[x.i - 1].match(/^\s*/)[0].length === rootIndent);
-      if (ehRaiz && /^\/(security\/|apikeys|audit)/.test(href) && !/children/.test(lines.slice(x.i, x.i + 4).join('\n'))) {
+      if (ehRaiz && /^\/(security\/(?!companies)|apikeys|audit)/.test(href) && !/children/.test(lines.slice(x.i, x.i + 4).join('\n'))) {
         add('menu-seguranca-solto', f, `item "${href}" na raiz do menu: deve ficar dentro do grupo Seguranca (FE-40)`);
       }
     }
