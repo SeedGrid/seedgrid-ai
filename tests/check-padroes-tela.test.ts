@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { test } from 'node:test';
+
+// build-test/tests/check-padroes-tela.test.js -> raiz do repositorio
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const SCRIPT = path.join(ROOT, 'scripts', 'check-padroes-tela.mjs');
+
+function withTree(files: Record<string, string>, fn: (dir: string) => void): void {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'check-padroes-tela-'));
+  try {
+    for (const [name, content] of Object.entries(files)) {
+      const file = path.join(dir, name);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, content, 'utf8');
+    }
+    fn(dir);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+const run = (dir: string, ...extra: string[]) => {
+  const r = spawnSync(process.execPath, [SCRIPT, '--dir', dir, '--no-baseline', ...extra], { encoding: 'utf8' });
+  return { code: r.status, out: `${r.stdout}${r.stderr}` };
+};
+
+const ruins: Record<string, [Record<string, string>, string]> = {
+  'campo de CEP com SgInputText': [{ 'app/company_edit/page.tsx': '<SgInputText id="company-postal-code" label="CEP" inputProps={{ value: v }} />' }, 'campo-mascarado'],
+  'telefone com SgInputText': [{ 'app/x/user_edit/page.tsx': '<SgInputText\n  id="user-phone"\n  label="Telefone"\n/>' }, 'campo-mascarado'],
+  'item de seguranca solto na raiz do menu': [{ 'frontend/app/data.ts': 'export const navItems = [\n  { href: "/security/users/user_list", label: "Usuarios" },\n];\n' }, 'menu-seguranca-solto'],
+  'instrucao de admin no app do cliente': [{ 'frontend/app/assinatura/View.tsx': 'const t = "Cadastre o ID de preco do Stripe nesse plano";' }, 'instrucao-admin-no-cliente'],
+  'contador requests por padrao': [{ 'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition(REQUESTS, "Requisicoes")); } }' }, 'contador-requests-por-padrao'],
+};
+for (const [nome, [files, regra]] of Object.entries(ruins)) {
+  test(`reprova: ${nome}`, () => withTree(files, (dir) => {
+    const r = run(dir);
+    assert.equal(r.code, 1, r.out);
+    assert.match(r.out, new RegExp(regra));
+  }));
+}
+
+test('passa: exemplo corrigido (mascara, menu agrupado, texto no admin, contador do dominio)', () => withTree({
+  'app/company_edit/page.tsx': '<SgInputText id="company-name" label="Nome" />\n<SgInputCpfCnpj id="company-doc" label="CNPJ" />',
+  'frontend/app/data.ts': 'export const navItems = [\n  {\n    href: "/security",\n    label: "Seguranca",\n    children: [\n      { href: "/security/users/user_list", label: "Usuarios" },\n    ],\n  },\n];\n',
+  'admin/app/plans/plan_edit/page.tsx': 'const t = "Cadastre o ID de preco do Stripe";',
+  'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition("exports", "Exportacoes")); } }',
+}, (dir) => {
+  const r = run(dir);
+  assert.equal(r.code, 0, r.out);
+}));
+
+test('baseline: entrada que deixou de ocorrer reprova (o baseline so encolhe)', () => withTree({
+  'app/x_edit/page.tsx': '<SgInputText id="nome" label="Nome" />',
+  'base.json': JSON.stringify({ conhecidas: ['campo-mascarado|app/x_edit/page.tsx'] }),
+}, (dir) => {
+  const r = spawnSync(process.execPath, [SCRIPT, '--dir', dir, '--baseline', path.join(dir, 'base.json')], { encoding: 'utf8' });
+  assert.equal(r.status, 1);
+  assert.match(`${r.stdout}${r.stderr}`, /baseline obsoleto/);
+}));
