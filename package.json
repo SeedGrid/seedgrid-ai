@@ -39,7 +39,8 @@
     "sync-boilerplates": "node scripts/sync-boilerplates.mjs",
     "check-boilerplates": "node scripts/sync-boilerplates.mjs --check --fetch --soft",
     "prepack": "npm run check-boilerplates && npm run check-secrets && npm run check-sg-enabled && npm run clean && npm run build",
-    "clean": "node -e \"for (const d of ['dist','build-test']) require('node:fs').rmSync(d,{recursive:true,force:true})\""
+    "clean": "node -e \"for (const d of ['dist','build-test']) require('node:fs').rmSync(d,{recursive:true,force:true})\"",
+    "check-sobras": "node scripts/check-sobras.mjs"
   },
   "dependencies": {
     "smol-toml": "^1.4.2",
