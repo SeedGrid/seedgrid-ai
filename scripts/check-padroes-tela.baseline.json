@@ -12,6 +12,7 @@
     "instrucao-admin-no-cliente|login-tenancy-b2b/frontend/app/assinatura/SubscriptionPlansView.tsx",
     "instrucao-admin-no-cliente|login-tenancy-b2c/frontend/app/assinatura/SubscriptionPlansView.tsx",
     "instrucao-admin-no-cliente|subdomain-tenancy/frontend/app/assinatura/SubscriptionPlansView.tsx",
+    "menu-ordem|subdomain-tenancy/frontend/app/data.ts",
     "menu-seguranca-solto|login-tenancy-b2b/frontend/app/data.ts",
     "menu-seguranca-solto|login-tenancy-b2c/frontend/app/data.ts",
     "menu-seguranca-solto|modular/frontend/app/data.ts",

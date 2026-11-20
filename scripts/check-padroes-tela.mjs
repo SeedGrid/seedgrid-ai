@@ -3,7 +3,8 @@
 //  1. campo de documento, telefone, WhatsApp ou CEP com `SgInputText` em `*_edit/page.tsx` (use o componente com mascara);
 //  2. item de seguranca (/security/..., /apikeys/...) solto na raiz do menu (`data.ts`), fora do grupo Seguranca (FE-40);
 //  3. texto "Cadastre o ID de preco" fora do admin: o cliente nunca ve instrucao de administrador (FE-42);
-//  4. contador `requests` declarado por padrao em *UsageMeters*.java (FE-41, BE-74).
+//  4. contador `requests` declarado por padrao em *UsageMeters*.java (FE-41, BE-74);
+//  5. Empresas e Seguranca fora do fim do menu lateral (FE-44).
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -73,6 +74,14 @@ for (const f of walk(root)) {
       }
     }
     void ind;
+    // FE-44: Empresas e Seguranca (grupo "/security") sao as ULTIMAS opcoes do menu lateral; nada de dominio depois delas
+    const raizes = itens.filter((x) => (/^\s*\{\s*href:/.test(x.l) ? x.m[1].length === rootIndent : x.m[1].length === rootIndent + 2 && /^\s*\{\s*$/.test(lines[x.i - 1] || '') && lines[x.i - 1].match(/^\s*/)[0].length === rootIndent)).map((x) => x.m[2]);
+    const fim = (h) => h === '/security' || /^\/security\/companies/.test(h);
+    const primeiro = raizes.findIndex(fim);
+    if (primeiro >= 0) {
+      const depois = raizes.slice(primeiro).filter((h) => !fim(h) && !/^\/(security\/|apikeys|audit)/.test(h));
+      if (depois.length) add('menu-ordem', f, `Empresas e Seguranca devem ser as ultimas opcoes do menu (FE-44); depois delas: ${depois.join(', ')}`);
+    }
   }
   if (/\.(tsx|ts)$/.test(r) && !/(^|\/)admin\//.test(r) && !/\.(test|spec)\./.test(r)) {
     if (/Cadastre o ID de pre[cç]o/i.test(read(f))) add('instrucao-admin-no-cliente', f, 'texto "Cadastre o ID de preco" fora do admin: o cliente nunca ve instrucao de administrador (FE-42)');

@@ -32,6 +32,7 @@ const ruins: Record<string, [Record<string, string>, string]> = {
   'campo de CEP com SgInputText': [{ 'app/company_edit/page.tsx': '<SgInputText id="company-postal-code" label="CEP" inputProps={{ value: v }} />' }, 'campo-mascarado'],
   'telefone com SgInputText': [{ 'app/x/user_edit/page.tsx': '<SgInputText\n  id="user-phone"\n  label="Telefone"\n/>' }, 'campo-mascarado'],
   'item de seguranca solto na raiz do menu': [{ 'frontend/app/data.ts': 'export const navItems = [\n  { href: "/security/users/user_list", label: "Usuarios" },\n];\n' }, 'menu-seguranca-solto'],
+  'Empresas e Seguranca antes de itens do produto': [{ 'frontend/app/data.ts': ['export const navItems = [', '  { href: "/security/companies/company_list", label: "Empresas" },', '  { href: "/midias/media_list", label: "Midias" },', '];', ''].join('\n') }, 'menu-ordem'],
   'instrucao de admin no app do cliente': [{ 'frontend/app/assinatura/View.tsx': 'const t = "Cadastre o ID de preco do Stripe nesse plano";' }, 'instrucao-admin-no-cliente'],
   'contador requests por padrao': [{ 'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition(REQUESTS, "Requisicoes")); } }' }, 'contador-requests-por-padrao'],
 };
