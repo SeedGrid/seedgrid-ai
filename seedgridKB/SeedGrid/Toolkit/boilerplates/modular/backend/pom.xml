@@ -26,7 +26,7 @@
         <seedgrid.security.version>2026.11.12</seedgrid.security.version>
         <seedgrid.audit.version>2026.11.12</seedgrid.audit.version>
         <seedgrid.privacy.version>2026.11.0</seedgrid.privacy.version>
-        <seedgrid.commons.version>2026.11.2</seedgrid.commons.version>
+        <seedgrid.commons.version>2026.11.3</seedgrid.commons.version>
         <seedgrid.resilience.version>2026.11.0</seedgrid.resilience.version>
         <seedgrid.user-notifications.version>2026.11.5</seedgrid.user-notifications.version>
         <!-- No seedgrid-filemanagement o minio e <optional>: nao chega transitivo. -->

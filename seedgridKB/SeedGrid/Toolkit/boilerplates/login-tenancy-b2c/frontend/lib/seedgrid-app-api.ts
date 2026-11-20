@@ -277,3 +277,51 @@ export type TwoFactorEnableResponse = {
   } | null;
 };
 
+// ── Backup / Data Export (ext seedgrid-backup, endpoints /exports) ──
+// Enums serializam pelo NOME (sem @JsonValue no backend).
+export type BackupFormat = "CSV_ZIP" | "SQL_DUMP_ZIP";
+export type ExportScope = "DOMAIN" | "RAW" | "CUSTOM";
+export type ExportStatus =
+  | "REQUESTED"
+  | "QUEUED"
+  | "RUNNING"
+  | "DONE"
+  | "DONE_NOTIFIED"
+  | "FAILED"
+  | "EXPIRED"
+  | "CANCELLED";
+
+export type ExportArtifactInfo = {
+  id: number;
+  type: string;
+  filename: string;
+  sizeBytes: number | null;
+  sha256?: string;
+  mimeType?: string;
+};
+
+export type ExportJob = {
+  jobId: string;
+  status: ExportStatus;
+  progress: number | null;
+  currentStep: string | null;
+  format: BackupFormat;
+  scope: ExportScope;
+  databaseSchema: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  expiresAt: string | null;
+  errorMessage: string | null;
+  totalSizeBytes: number | null;
+  downloadable: boolean | null;
+  artifacts: ExportArtifactInfo[] | null;
+};
+
+export type ExportCreateRequest = {
+  format: BackupFormat;
+  scope: ExportScope;
+  includeAttachments: boolean;
+  /** Filiais exportadas; omitido = todas as empresas do usuário (P178). */
+  companyPublicIds?: string[];
+};

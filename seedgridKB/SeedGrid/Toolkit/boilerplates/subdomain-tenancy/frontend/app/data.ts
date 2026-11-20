@@ -25,16 +25,18 @@ export type NavItem = {
 // `app/<href>/page.tsx` correspondente.
 export const navItems: NavItem[] = [
   { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
-  // Convite: SELFENTER_INVITE e' a permissao de abrir a tela (as de aprovar/reprovar so' liberam a
+  // Convite: SELFENTER_INVITE e' a permissao de abrir a tela (as de aprovar/reprovar só liberam a
   // secao de aprovacoes dentro dela), igual ao admin.
   { href: "/security/self-enter", label: "Convidar usuario externo", permission: "SELFENTER_INVITE" },
   { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
   { href: "/security/companies/company_list", label: "Empresas", permission: "COMPANY_READ" },
   { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
   { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+  // Backup self-service (extension seedgrid-backup): o ADMIN de cada filial exporta só os dados das suas empresas.
+  { href: "/backup/export_list", label: "Backup", permission: "BACKUP_READ" },
   // Calendario da empresa (extension seedgrid-business-days: /business-days/*): a semana, os feriados e as
   // excecoes do ano numa tela so.
-  { href: "/dias-uteis", label: "Calendario da empresa", permission: "BUSINESS_DAY_READ" },
+  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" },
   // Demonstracao dos contadores de uso (backend: demo/UsageDemoResource.java). Remova junto com o dominio
   // de exemplo (e a permissao USAGE_DEMO_READ, migration V3002) ao comecar o seu produto.
   { href: "/exemplo-consumo", label: "Exemplo de consumo", permission: "USAGE_DEMO_READ" },

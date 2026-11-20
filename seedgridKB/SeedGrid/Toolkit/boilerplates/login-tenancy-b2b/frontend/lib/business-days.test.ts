@@ -16,7 +16,7 @@ describe("rotulos de origem", () => {
     expect(holidaySourceLabel("TENANT")).toBe("Conta");
     expect(holidaySourceLabel("STATE")).toBe("Estadual");
     expect(holidaySourceLabel("NATIONAL")).toBe("Nacional");
-    expect(holidaySourceLabel("MOVABLE")).toBe("Movel");
+    expect(holidaySourceLabel("MOVABLE")).toBe("Móvel");
   });
 
   it("ausente vira null e desconhecida volta como veio", () => {
@@ -25,15 +25,15 @@ describe("rotulos de origem", () => {
     expect(holidaySourceLabel("OUTRA")).toBe("OUTRA");
   });
 
-  it("traduz a origem do valor do movel; ausente = Padrao", () => {
+  it("traduz a origem do valor do móvel; ausente = Padrão", () => {
     expect(movableOriginLabel("COMPANY")).toBe("Empresa");
     expect(movableOriginLabel("TENANT")).toBe("Conta (tenant)");
-    expect(movableOriginLabel("DEFAULT")).toBe("Padrao");
-    expect(movableOriginLabel(undefined)).toBe("Padrao");
+    expect(movableOriginLabel("DEFAULT")).toBe("Padrão");
+    expect(movableOriginLabel(undefined)).toBe("Padrão");
   });
 });
 
-describe("payload do PUT de movel", () => {
+describe("payload do PUT de móvel", () => {
   it("mantem enabled: null (voltar a herdar) na serializacao", () => {
     expect(JSON.stringify(buildMovablePayload("CARNIVAL", null))).toBe('{"code":"CARNIVAL","enabled":null}');
   });

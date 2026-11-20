@@ -112,7 +112,7 @@ export default function CompanyCalendarPage() {
   const [companies, setCompanies] = useState<MyCompany[]>([]);
   const [switching, setSwitching] = useState(false);
 
-  // O seletor so' existe com mais de uma empresa; trocar usa a mesma troca de sessao do CompanyAccessBar.
+  // O seletor só' existe com mais de uma empresa; trocar usa a mesma troca de sessao do CompanyAccessBar.
   useEffect(() => {
     if (accessLoading) return;
     const controller = new AbortController();
@@ -121,7 +121,7 @@ export default function CompanyCalendarPage() {
         const response = await fetch("/api/me/companies", { cache: "no-store", signal: controller.signal });
         if (response.ok) setCompanies(parseMyCompanies(await response.json()));
       } catch {
-        // sem a lista, a tela segue so' com a empresa corrente
+        // sem a lista, a tela segue só' com a empresa corrente
       }
     })();
     return () => controller.abort();
@@ -202,7 +202,7 @@ export default function CompanyCalendarPage() {
       await adminProxyClient.put(`${BASE}/week-profile`, { body: weekProfilePayload(weights) });
       toast.success("Semana da empresa salva.");
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Nao foi possivel salvar a semana da empresa.");
+      toast.error(extractApiErrorMessage(error) ?? "Não foi possível salvar a semana da empresa.");
     } finally {
       // Sempre recarrega: se algo falhou no meio, a tela mostra o que de fato ficou gravado.
       setSaving(false);
@@ -213,9 +213,9 @@ export default function CompanyCalendarPage() {
   async function resetWeek() {
     try {
       await adminProxyClient.delete(`${BASE}/week-profile`);
-      toast.success("Semana padrao restaurada.");
+      toast.success("Semana padrão restaurada.");
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Nao foi possivel restaurar a semana padrao.");
+      toast.error(extractApiErrorMessage(error) ?? "Não foi possível restaurar a semana padrão.");
     } finally {
       setResetting(false);
       await load();
@@ -230,7 +230,7 @@ export default function CompanyCalendarPage() {
       setMovables(updated);
       await load();
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Nao foi possivel alterar o feriado movel.");
+      toast.error(extractApiErrorMessage(error) ?? "Não foi possível alterar o feriado móvel.");
     }
   }
 
@@ -252,11 +252,11 @@ export default function CompanyCalendarPage() {
 
   if (!accessLoading && !canView) {
     return (
-      <Shell eyebrow="Dias uteis" title="Calendario da empresa" description="Acesso controlado por permissao.">
+      <Shell eyebrow="Dias úteis" title="Calendário da empresa" description="Acesso controlado por permissão.">
         <SgStack gap={16}>
           {shouldShowCompanySelector(companies) ? <SgCard cardStyle="outlined">{companyPicker}</SgCard> : null}
-          <SgCard cardStyle="outlined" title="Sem permissao">
-            <StatusBadge severity="warning" value="Voce nao possui permissao para visualizar o calendario desta empresa." />
+          <SgCard cardStyle="outlined" title="Sem permissão">
+            <StatusBadge severity="warning" value="Você não possui permissão para visualizar o calendário desta empresa." />
           </SgCard>
         </SgStack>
       </Shell>
@@ -267,17 +267,17 @@ export default function CompanyCalendarPage() {
     profile?.source === "COMPANY"
       ? "Semana definida para esta empresa."
       : profile?.source === "GLOBAL"
-        ? "Semana herdada da conta. Salvar cria a semana propria desta empresa."
-        : "Semana padrao (segunda a sexta). Salvar cria a semana propria desta empresa.";
+        ? "Semana herdada da conta. Salvar cria a semana própria desta empresa."
+        : "Semana padrão (segunda a sexta). Salvar cria a semana própria desta empresa.";
   const dialogActions = selected
     ? dayActions(selected, findRegisteredHoliday(selected, holidays), findOverride(selected, overrides), permissions)
     : null;
 
   return (
     <Shell
-      eyebrow="Dias uteis"
-      title="Calendario da empresa"
-      description="Os dias que a empresa trabalha: a semana, os feriados e as excecoes do ano, num lugar so."
+      eyebrow="Dias úteis"
+      title="Calendário da empresa"
+      description="Os dias que a empresa trabalha: a semana, os feriados e as exceções do ano, num lugar só."
     >
       <SgStack gap={16}>
         <SgCard cardStyle="outlined">
@@ -308,7 +308,7 @@ export default function CompanyCalendarPage() {
           </SgStack>
           {!canEdit ? (
             <p style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>
-              Voce tem acesso apenas para consulta: o calendario nao pode ser alterado.
+              Você tem acesso apenas para consulta: o calendário não pode ser alterado.
             </p>
           ) : null}
         </SgCard>
@@ -320,7 +320,7 @@ export default function CompanyCalendarPage() {
             <SgCard
               cardStyle="outlined"
               title="A semana da empresa"
-              description="Meio periodo vale metade de um dia util: uma semana com sabado ate o meio-dia vale 5,5, e nao 6."
+              description="Meio período vale metade de um dia útil: uma semana com sábado até o meio-dia vale 5,5, e não 6."
             >
               <SgStack gap={12}>
                 {profile ? <p style={{ fontSize: 13, opacity: 0.8, overflowWrap: "anywhere" }}>{sourceText}</p> : null}
@@ -349,7 +349,7 @@ export default function CompanyCalendarPage() {
                   <div>
                     <SgButton
                       appearance="ghost"
-                      label="Voltar a semana padrao"
+                      label="Voltar à semana padrão"
                       onClick={() => setResetting(true)}
                       severity="secondary"
                     />
@@ -360,13 +360,13 @@ export default function CompanyCalendarPage() {
 
             <SgStack align="center" direction="row" gap={16} wrap style={{ fontSize: 12 }}>
               <Legend visual="holiday" label="Feriado do cadastro" />
-              <Legend visual="movable" label="Feriado movel (calculado)" />
+              <Legend visual="movable" label="Feriado móvel (calculado)" />
               <Legend visual="worked-holiday" label="Feriado em que a empresa abre" />
-              <Legend visual="half" label="Meio periodo" />
-              <Legend visual="closed" label="A empresa nao abre" />
+              <Legend visual="half" label="Meio período" />
+              <Legend visual="closed" label="A empresa não abre" />
               <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
                 <CalendarDays aria-hidden size={14} />
-                {formatBusinessDays(total)} dias uteis em {year}
+                {formatBusinessDays(total)} dias úteis em {year}
               </span>
             </SgStack>
 
@@ -387,7 +387,7 @@ export default function CompanyCalendarPage() {
               </div>
             )}
 
-            <SgCard cardStyle="outlined" title="Feriados moveis desta empresa">
+            <SgCard cardStyle="outlined" title="Feriados móveis desta empresa">
               <SgStack gap={12}>
                 <div>
                   <SgButton
@@ -400,8 +400,8 @@ export default function CompanyCalendarPage() {
                 {showMovables ? (
                   <SgStack gap={8}>
                     <p style={{ fontSize: 12, opacity: 0.7 }}>
-                      Carnaval, Sexta-feira Santa e Corpus Christi sao feriado por padrao. Desmarque para a empresa
-                      trabalhar nesses dias, todo ano, ate voltar a herdar.
+                      Carnaval, Sexta-feira Santa e Corpus Christi são feriado por padrão. Desmarque para a empresa
+                      trabalhar nesses dias, todo ano, até voltar a herdar.
                     </p>
                     {movables.map((movable) => (
                       <SgStack key={movable.code} align="center" direction="row" gap={12} wrap>
@@ -448,8 +448,8 @@ export default function CompanyCalendarPage() {
       <SgConfirmationDialog
         open={resetting}
         severity="danger"
-        title="Voltar a semana padrao"
-        message="A empresa volta a usar a semana da conta (ou segunda a sexta). Os feriados e as excecoes do ano nao mudam."
+        title="Voltar à semana padrão"
+        message="A empresa volta a usar a semana da conta (ou segunda a sexta). Os feriados e as exceções do ano não mudam."
         confirmButton={{ label: "Restaurar", severity: "danger" }}
         cancelButton={{ label: "Cancelar" }}
         onConfirm={() => void resetWeek()}
@@ -483,7 +483,7 @@ function MonthCard({
     <div style={{ border: BORDER, borderRadius: 8, padding: 12, display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
         <strong style={{ fontSize: 14 }}>{label}</strong>
-        <span style={{ fontSize: 11, opacity: 0.6 }}>{formatBusinessDays(monthBusinessDays(days))} dias uteis</span>
+        <span style={{ fontSize: 11, opacity: 0.6 }}>{formatBusinessDays(monthBusinessDays(days))} dias úteis</span>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, textAlign: "center", fontSize: 11, opacity: 0.6 }}>
         {SUNDAY_FIRST_INITIALS.map((initial, position) => (
@@ -493,7 +493,7 @@ function MonthCard({
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, marginTop: 3 }}>
         {cells.map((day, position) =>
           day ? (
-            // <button> cru: nao ha componente SeedGrid de celula de calendario (SgButton traz padding,
+            // <button> cru: não há componente SeedGrid de célula de calendário (SgButton traz padding,
             // altura e borda de botao, o que desmancharia a grade de 7 colunas).
             <button
               key={day.date}
@@ -545,7 +545,7 @@ type DayDialogProps = {
   onChanged: () => Promise<void>;
 };
 
-/** Tudo o que se faz num dia: cadastrar/editar/excluir feriado e abrir, fechar ou meio periodo so naquele dia. */
+/** Tudo o que se faz num dia: cadastrar/editar/excluir feriado e abrir, fechar ou meio período só naquele dia. */
 function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Readonly<DayDialogProps>) {
   const [name, setName] = useState(holiday?.name ?? "");
   const [recurring, setRecurring] = useState(holiday ? holiday.recurring : true);
@@ -567,7 +567,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
       toast.success(okMessage);
       await onChanged();
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Nao foi possivel concluir a alteracao.");
+      toast.error(extractApiErrorMessage(error) ?? "Não foi possível concluir a alteração.");
     } finally {
       setBusy(false);
       setConfirmDelete(null);
@@ -595,7 +595,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
       toast.error(built.error);
       return;
     }
-    void run(() => adminProxyClient.post(`${BASE}/work-overrides`, { body: built.payload }), "Excecao registrada.");
+    void run(() => adminProxyClient.post(`${BASE}/work-overrides`, { body: built.payload }), "Exceção registrada.");
   }
 
   const stateOptions = isHolidayDay ? STATE_SOURCE.filter((option) => option.value !== "0") : STATE_SOURCE;
@@ -647,7 +647,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
                 </>
               ) : (
                 <p style={{ fontSize: 12, opacity: 0.75 }}>
-                  {holiday.global ? "Feriado da conta: vale para todas as empresas e so se altera na conta." : holiday.name}
+                  {holiday.global ? "Feriado da conta: vale para todas as empresas e só se altera na conta." : holiday.name}
                 </p>
               )}
               {actions.deleteHoliday ? (
@@ -690,7 +690,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
 
           {override ? (
             <SgStack gap={8}>
-              <strong style={{ fontSize: 13 }}>Excecao neste dia</strong>
+              <strong style={{ fontSize: 13 }}>Exceção neste dia</strong>
               <p style={{ fontSize: 12, opacity: 0.75 }}>
                 {override.weight == null ? "Peso do dia da semana" : weightLabel(override.weight)}
                 {override.reason ? ` - ${override.reason}` : ""}
@@ -700,7 +700,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
                   <SgButton
                     appearance="outline"
                     enabled={!busy}
-                    label="Remover excecao"
+                    label="Remover exceção"
                     leftIcon={<Trash2 size={16} />}
                     onClick={() => setConfirmDelete("override")}
                     severity="danger"
@@ -736,11 +736,11 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
       <SgConfirmationDialog
         open={confirmDelete !== null}
         severity="danger"
-        title={confirmDelete === "holiday" ? "Excluir feriado" : "Remover excecao"}
+        title={confirmDelete === "holiday" ? "Excluir feriado" : "Remover exceção"}
         message={
           confirmDelete === "holiday"
-            ? `Tem certeza que deseja excluir o feriado "${holiday?.name ?? ""}"? Esta acao nao pode ser desfeita.`
-            : "O dia volta a seguir a semana e os feriados. Esta acao nao pode ser desfeita."
+            ? `Tem certeza que deseja excluir o feriado "${holiday?.name ?? ""}"? Esta ação não pode ser desfeita.`
+            : "O dia volta a seguir a semana e os feriados. Esta ação não pode ser desfeita."
         }
         confirmButton={{ label: busy ? "Excluindo..." : "Excluir", severity: "danger", enabled: !busy }}
         cancelButton={{ label: "Cancelar", enabled: !busy }}
@@ -751,7 +751,7 @@ function DayDialog({ day, holiday, override, actions, onClose, onChanged }: Read
               confirmDelete === "holiday"
                 ? adminProxyClient.delete(`${BASE}/holidays/${holiday!.id}`)
                 : adminProxyClient.delete(`${BASE}/work-overrides/${override!.id}`),
-            confirmDelete === "holiday" ? "Feriado excluido." : "Excecao removida.",
+            confirmDelete === "holiday" ? "Feriado excluído." : "Exceção removida.",
           )
         }
         onCancel={() => setConfirmDelete(null)}

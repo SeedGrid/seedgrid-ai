@@ -36,6 +36,11 @@ export const ADMIN_PERMISSIONS = {
   businessDaysCreate: "BUSINESS_DAY_CREATE",
   businessDaysEdit: "BUSINESS_DAY_UPDATE",
   businessDaysDelete: "BUSINESS_DAY_DELETE",
+  // Backup self-service por filial (ext seedgrid-backup, P178): sem audience, valem para plataforma e cliente.
+  backupView: "BACKUP_READ",
+  backupCreate: "BACKUP_CREATE",
+  backupDownload: "BACKUP_DOWNLOAD",
+  backupDelete: "BACKUP_DELETE",
 } as const;
 
 export type AdminPermission =

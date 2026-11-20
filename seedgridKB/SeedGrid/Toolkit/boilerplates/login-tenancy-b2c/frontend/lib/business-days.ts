@@ -1,4 +1,4 @@
-// Contrato da API de dias uteis (`seedgrid-business-days`, rotas em `/business-days/*`) como o front
+// Contrato da API de dias úteis (`seedgrid-business-days`, rotas em `/business-days/*`) como o front
 // a consome via `/api/business-days/*`. Mesmo arquivo em `login-tenancy/frontend` e
 // `subdomain-tenancy/frontend` (mantenha os dois iguais).
 
@@ -12,7 +12,7 @@ export type HolidayEntry = {
   recurring: boolean;
   /** Feriado sem empresa: vale para todos. */
   global: boolean;
-  /** O escopo corrente pode alterar/excluir. Feriado global e' so' leitura para quem tem empresa. */
+  /** O escopo corrente pode alterar/excluir. Feriado global e' só' leitura para quem tem empresa. */
   editable: boolean;
   active: boolean;
   createdAt: string | null;
@@ -31,7 +31,7 @@ export type HolidayPayload = {
 export type WeekDayEntry = {
   /** 1 = segunda ... 7 = domingo. */
   dayOfWeek: number;
-  /** 1 = dia inteiro, 0.5 = meio periodo, 0 = fechado. */
+  /** 1 = dia inteiro, 0.5 = meio período, 0 = fechado. */
   weight: number;
 };
 
@@ -100,7 +100,7 @@ export const MONTH_LABELS = [
   "Dezembro",
 ] as const;
 
-/** Indice = `dayOfWeek` ISO (1 = segunda). A posicao 0 nao e' usada. */
+/** Indice = `dayOfWeek` ISO (1 = segunda). A posicao 0 não e' usada. */
 export const WEEKDAY_LABELS = [
   "",
   "Segunda-feira",
@@ -108,13 +108,13 @@ export const WEEKDAY_LABELS = [
   "Quarta-feira",
   "Quinta-feira",
   "Sexta-feira",
-  "Sabado",
+  "Sábado",
   "Domingo",
 ] as const;
 
 export const WEEKDAY_SHORT_LABELS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"] as const;
 
-/** Nome do `java.time.DayOfWeek` (como a API devolve no calendario) -> numero ISO. */
+/** Nome do `java.time.DayOfWeek` (como a API devolve no calendário) -> número ISO. */
 export const ISO_DAY_BY_NAME: Record<string, number> = {
   MONDAY: 1,
   TUESDAY: 2,
@@ -127,14 +127,14 @@ export const ISO_DAY_BY_NAME: Record<string, number> = {
 
 export const WEIGHT_OPTIONS = [
   { id: "1", label: "Dia inteiro" },
-  { id: "0.5", label: "Meio periodo" },
+  { id: "0.5", label: "Meio período" },
   { id: "0", label: "Fechado" },
 ] as const;
 
 export function weightLabel(weight: number): string {
   if (weight >= 1) return "Dia inteiro";
   if (weight <= 0) return "Fechado";
-  if (weight === 0.5) return "Meio periodo";
+  if (weight === 0.5) return "Meio período";
   return `${Math.round(weight * 100)}% do dia`;
 }
 
@@ -149,7 +149,7 @@ export function formatHolidayDate(holiday: Pick<HolidayEntry, "day" | "month" | 
 }
 
 // ---------------------------------------------------------------------------------------------
-// Feriados prontos, moveis e "vai trabalhar" (extension business-days, T8.5)
+// Feriados prontos, móveis e "vai trabalhar" (extension business-days, T8.5)
 // ---------------------------------------------------------------------------------------------
 
 export const HOLIDAY_SOURCE_LABELS: Record<HolidaySource, string> = {
@@ -157,10 +157,10 @@ export const HOLIDAY_SOURCE_LABELS: Record<HolidaySource, string> = {
   TENANT: "Conta",
   STATE: "Estadual",
   NATIONAL: "Nacional",
-  MOVABLE: "Movel",
+  MOVABLE: "Móvel",
 };
 
-/** Rotulo do selo de origem; ausente devolve null (nao inventa selo) e desconhecido volta como veio. */
+/** Rotulo do selo de origem; ausente devolve null (não inventa selo) e desconhecido volta como veio. */
 export function holidaySourceLabel(source: string | null | undefined): string | null {
   if (!source) return null;
   return HOLIDAY_SOURCE_LABELS[source as HolidaySource] ?? source;
@@ -187,7 +187,7 @@ export type ReferenceHoliday = {
   date: string;
   source: "NATIONAL" | "STATE" | "MOVABLE";
   legalBasis: string | null;
-  /** `false` so' num movel desmarcado. */
+  /** `false` só' num móvel desmarcado. */
   enabled: boolean;
   uf: string | null;
 };
@@ -214,7 +214,7 @@ export type WorkOverridePayload = {
 export const MOVABLE_ORIGIN_LABELS: Record<MovableOrigin, string> = {
   COMPANY: "Empresa",
   TENANT: "Conta (tenant)",
-  DEFAULT: "Padrao",
+  DEFAULT: "Padrão",
 };
 
 export function movableOriginLabel(origin: string | null | undefined): string {
@@ -222,12 +222,12 @@ export function movableOriginLabel(origin: string | null | undefined): string {
   return MOVABLE_ORIGIN_LABELS[origin as MovableOrigin] ?? origin;
 }
 
-/** "Voltar a herdar" so' faz sentido quando o valor foi definido aqui (empresa ou tenant), nao no padrao. */
+/** "Voltar a herdar" só' faz sentido quando o valor foi definido aqui (empresa ou tenant), não no padrão. */
 export function canInheritMovable(movable: Pick<MovableHoliday, "origin">): boolean {
   return movable.origin === "COMPANY" || movable.origin === "TENANT";
 }
 
-/** Marcador dos moveis: so' com BUSINESS_DAY_UPDATE. */
+/** Marcador dos móveis: só' com BUSINESS_DAY_UPDATE. */
 export function canEditMovable(hasUpdatePermission: boolean): boolean {
   return hasUpdatePermission;
 }
@@ -271,7 +271,7 @@ export const WORK_OVERRIDE_DEFAULT_WEIGHT = "default";
 export const WORK_OVERRIDE_WEIGHT_OPTIONS = [
   { id: WORK_OVERRIDE_DEFAULT_WEIGHT, label: "Peso do dia da semana" },
   { id: "1", label: "Dia inteiro" },
-  { id: "0.5", label: "Meio periodo" },
+  { id: "0.5", label: "Meio período" },
 ] as const;
 
 /** Valida e monta o corpo do POST/PUT de `/work-overrides`. Devolve `error` em pt-BR se invalido. */

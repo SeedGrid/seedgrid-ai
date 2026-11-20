@@ -10,6 +10,7 @@ import {
 } from "@seedgrid/fe-components";
 import {
   CalendarDays,
+  DatabaseBackup,
   Building2,
   CreditCard,
   KeyRound,
@@ -50,10 +51,14 @@ const iconByHref = {
   "/security/companies/company_list": <Building2 size={16} />,
   "/security/apikeys/apikey_list": <KeyRound size={16} />,
   "/security/audit": <ScrollText size={16} />,
+  "/backup/export_list": <DatabaseBackup size={16} />,
   "/dias-uteis": <CalendarDays size={16} />,
 } as const;
 
 function normalizeMenuPath(pathname: string): string {
+  if (pathname.startsWith("/backup/")) {
+    return "/backup/export_list";
+  }
   // As telas de edicao (user_edit/role_edit) marcam o item de LISTA como ativo; sem isso o menu
   // "solta" a selecao ao abrir o cadastro. As demais regras do report-admin (planos, IA, trial)
   // sairam junto com aquelas telas.

@@ -246,6 +246,8 @@ export type ExportCreateRequest = {
   format: BackupFormat;
   scope: ExportScope;
   includeAttachments: boolean;
+  /** Filiais exportadas; omitido = todas as empresas do usuário (P178). */
+  companyPublicIds?: string[];
 };
 
 export type PermissionOption = {

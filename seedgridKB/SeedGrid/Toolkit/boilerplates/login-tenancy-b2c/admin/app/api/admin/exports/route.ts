@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { problemResponse } from "@/lib/core/problem-response";
+import { backupCompanyHeader, parseBackupCompanies } from "@/lib/backup-companies";
+import { SecurityPaths } from "@/lib/security-paths";
 import { apiFetchSecurity } from "@/lib/seedgrid-app-api-server";
 import type { ExportCreateRequest, ExportJob } from "@/lib/seedgrid-app-api";
 
@@ -24,9 +26,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ExportCreateRequest;
+    // Quem tem várias empresas precisa mandar X-Company-Id (a security responde 400 sem ele). Vale a
+    // corrente da sessão; sem ela, uma das escolhidas ou das empresas do usuário. O header não define o
+    // que sai: quem define é companyPublicIds (omitido = todas as empresas do usuário, nunca a base inteira).
+    const mine = body.companyPublicIds?.length
+      ? []
+      : parseBackupCompanies(await apiFetchSecurity<unknown>(SecurityPaths.me.companies));
+    const companyId = backupCompanyHeader(null, body.companyPublicIds, mine);
     const created = await apiFetchSecurity<ExportJob>("/exports", {
       method: "POST",
       body: JSON.stringify(body),
+      ...(companyId ? { headers: { "X-Company-Id": companyId } } : {}),
     });
     return NextResponse.json(created, { status: 201 });
   } catch (error) {

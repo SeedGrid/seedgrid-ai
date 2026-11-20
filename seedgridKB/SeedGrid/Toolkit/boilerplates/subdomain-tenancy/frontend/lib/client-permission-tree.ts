@@ -4,7 +4,7 @@
  *
  * Mesmo arquivo em `frontend/lib` e `admin/lib` (mantenha os dois iguais):
  *  - frontend: arvore do editor de perfis da conta e o "olhinho" da lista de perfis. Permissao que
- *    nao esta aqui NAO aparece (o cliente so' ve o que existe no menu dele).
+ *    nao esta aqui NAO aparece (o cliente só ve o que existe no menu dele).
  *  - admin: arvore de "features liberadas" do plano (condicoes comerciais), sem os grupos que nao se
  *    vendem por plano (`seguranca`, `menu-usuario`).
  *
@@ -96,17 +96,33 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
     ],
   },
   {
+    id: "backup",
+    label: "Backup",
+    screens: [
+      {
+        id: "backup/export_list",
+        label: "Backup por filial",
+        actions: [
+          { permission: "BACKUP_READ", label: `${OPEN_SCREEN} e ver os backups` },
+          { permission: "BACKUP_CREATE", label: "Solicitar backup das filiais" },
+          { permission: "BACKUP_DOWNLOAD", label: "Baixar o backup" },
+          { permission: "BACKUP_DELETE", label: "Excluir backup" },
+        ],
+      },
+    ],
+  },
+  {
     id: "dias-uteis",
-    label: "Dias uteis",
+    label: "Dias úteis",
     screens: [
       {
         id: "dias-uteis/calendario",
-        label: "Calendario da empresa",
+        label: "Calendário da empresa",
         actions: [
-          { permission: "BUSINESS_DAY_READ", label: `${OPEN_SCREEN} e ver o calendario do ano` },
+          { permission: "BUSINESS_DAY_READ", label: `${OPEN_SCREEN} e ver o calendário do ano` },
           { permission: "BUSINESS_DAY_CREATE", label: "Cadastrar feriado e abrir um dia fechado" },
-          { permission: "BUSINESS_DAY_UPDATE", label: "Editar a semana da empresa, feriados e feriados moveis" },
-          { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado e remover excecao de um dia" },
+          { permission: "BUSINESS_DAY_UPDATE", label: "Editar a semana da empresa, feriados e feriados móveis" },
+          { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado e remover exceção de um dia" },
         ],
       },
     ],

@@ -3,7 +3,9 @@
 import {
   SgButton,
   SgCard,
+  SgCheckboxGroup,
   SgCombobox,
+  SgRadioGroup,
   SgStack,
   SgToggleSwitch,
   toast,
@@ -11,13 +13,20 @@ import {
 } from "@seedgrid/fe-components";
 import { ArrowLeft, DatabaseBackup } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Shell } from "../../components/Shell";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import {
+  backupCompanyPayload,
+  parseBackupCompanies,
+  shouldShowBackupCompanySelector,
+  type BackupCompany,
+  type BackupCompanyMode,
+} from "@/lib/backup-companies";
 import type { BackupFormat, ExportJob, ExportScope } from "@/lib/seedgrid-app-api";
 
 const FORMAT_OPTIONS: SgComboboxSource = [
@@ -40,12 +49,40 @@ export default function ExportEditPage() {
   const [scope, setScope] = useState<ExportScope>("DOMAIN");
   const [includeAttachments, setIncludeAttachments] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [companies, setCompanies] = useState<BackupCompany[]>([]);
+  const [companyMode, setCompanyMode] = useState<BackupCompanyMode>("ALL");
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
+  const showCompanies = shouldShowBackupCompanySelector(companies);
+  const companyOptions = useMemo(
+    () => companies.map((company) => ({ label: company.name, value: company.publicId })),
+    [companies],
+  );
+
+  // Filiais do usuário (GET /me/companies). O seletor só existe com mais de uma (FE-38).
+  useEffect(() => {
+    if (accessLoading) return;
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/me/companies", { cache: "no-store", signal: controller.signal });
+        if (response.ok) setCompanies(parseBackupCompanies(await response.json()));
+      } catch {
+        // sem a lista, o pedido segue sem escolha (todas as filiais do usuário)
+      }
+    })();
+    return () => controller.abort();
+  }, [accessLoading]);
 
   async function handleCreate() {
+    const companyPart = backupCompanyPayload(companyMode, selectedCompanies, companies);
+    if ("error" in companyPart) {
+      toast.error(companyPart.error);
+      return;
+    }
     setSubmitting(true);
     try {
       await adminProxyClient.post<ExportJob>("/api/admin/exports", {
-        body: { format, scope, includeAttachments },
+        body: { format, scope, includeAttachments, ...companyPart },
       });
       router.push("/exports/export_list?saved=created");
     } catch (err) {
@@ -87,6 +124,30 @@ export default function ExportEditPage() {
             value={scope}
             onValueChange={(value) => setScope((value ? String(value) : "DOMAIN") as ExportScope)}
           />
+          {showCompanies ? (
+            <SgStack gap={8}>
+              <SgRadioGroup
+                id="export-company-mode"
+                title="Filiais"
+                orientation="horizontal"
+                source={[
+                  { label: "Todas", value: "ALL" },
+                  { label: "Escolher filiais", value: "SOME" },
+                ]}
+                value={companyMode}
+                onChange={(value) => setCompanyMode(value === "SOME" ? "SOME" : "ALL")}
+              />
+              {companyMode === "SOME" ? (
+                <SgCheckboxGroup
+                  id="export-companies"
+                  title="Filiais do export"
+                  source={companyOptions}
+                  value={selectedCompanies}
+                  onChange={(value) => setSelectedCompanies(value.map(String))}
+                />
+              ) : null}
+            </SgStack>
+          ) : null}
           <SgToggleSwitch
             id="export-attachments"
             label="Incluir anexos (imagens/arquivos)"
