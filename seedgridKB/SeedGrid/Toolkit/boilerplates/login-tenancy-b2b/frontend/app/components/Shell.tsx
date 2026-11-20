@@ -7,14 +7,15 @@ import {
   SgPanel,
   SgScreen,
   SgStack,
+  SgNotificationBell,
 } from "@seedgrid/fe-components";
 import {
   CalendarDays,
   DatabaseBackup,
   CreditCard,
   KeyRound,
+  Lock,
   LogOut,
-  Palette,
   ScrollText,
   ShieldCheck,
   UserCog,
@@ -22,9 +23,10 @@ import {
   Users,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useState, type CSSProperties } from "react";
+import { ReactNode, useEffect, useState, type CSSProperties } from "react";
 
 import { SeedGridLogo } from "./SeedGridLogo";
+import { TopBar } from "./TopBar";
 import { useAdminAccess } from "./AdminAccessProvider";
 import { navItems, type NavItem } from "../data";
 import { ADMIN_ROLE } from "@/lib/admin-permissions";
@@ -44,6 +46,7 @@ const SIDEBAR_PANEL_PADDING = 20;
 
 // Recortado junto com o `navItems` (app/data.ts): so' as folhas do menu do cliente.
 const iconByHref = {
+  "/security": <Lock size={16} />,
   "/security/users/user_list": <Users size={16} />,
   "/security/self-enter": <UserPlus size={16} />,
   "/security/roles/role_list": <ShieldCheck size={16} />,
@@ -180,6 +183,9 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
   const normalizedPathname = normalizeMenuPath(pathname);
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Celular (<= 800 px): o menu vira gaveta sobre o conteúdo, aberta pelo botão da barra superior (FE-43).
+  const [isNarrow, setIsNarrow] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { hasPermission, hasRole, me, sessionExpired } = useAdminAccess();
   const visibleNavItems = filterNavItems(navItems, hasPermission, hasRole);
   const activeTrail = resolveActiveTrail(visibleNavItems, normalizedPathname);
@@ -192,6 +198,19 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
   const expandedIds = (activeTrail ?? [])
     .filter((item) => item.children?.length)
     .map((item) => item.href);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 800px)");
+    const sync = () => setIsNarrow(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  // Trocou de tela: a gaveta fecha.
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
 
   function logout() {
     void fetch("/api/auth/logout", { method: "POST" }).then(() => {
@@ -209,8 +228,18 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
 
   return (
     <SgScreen className="shell-screen" fullscreen={false} padding={0}>
+      <TopBar
+        title={title}
+        // Sino de notificacoes do usuario (BFF /api/user-notifications). So' com sessao valida: sem ela o sino
+        // pediria a lista a toa e tomaria 401.
+        notifications={me !== null && !sessionExpired ? <SgNotificationBell /> : undefined}
+        onOpenMenu={() => setDrawerOpen(true)}
+      />
+      {isNarrow && drawerOpen ? (
+        <button type="button" className="shell-backdrop" aria-label="Fechar o menu" onClick={() => setDrawerOpen(false)} />
+      ) : null}
       <div
-        className="shell-grid"
+        className={`shell-grid${drawerOpen ? " drawer-open" : ""}`}
         style={{
           "--shell-sidebar-width": `${
             (sidebarCollapsed ? SIDEBAR_MENU_COLLAPSED_WIDTH : SIDEBAR_MENU_EXPANDED_WIDTH) +
@@ -227,7 +256,7 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
               onClick: () => router.push("/"),
             }}
             className="shell-menu"
-            collapsed={sidebarCollapsed}
+            collapsed={isNarrow ? false : sidebarCollapsed}
             collapsedWidth={SIDEBAR_MENU_COLLAPSED_WIDTH}
             defaultExpandedIds={expandedIds.length ? expandedIds : undefined}
             expandedWidth={SIDEBAR_MENU_EXPANDED_WIDTH}
@@ -235,9 +264,14 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
             menuStyle="sidebar"
             menuVariantStyle="panel"
             onCollapsedChange={setSidebarCollapsed}
-            onNavigate={(node) => node.url && router.push(node.url)}
+            onNavigate={(node) => {
+              if (node.url) {
+                setDrawerOpen(false);
+                router.push(node.url);
+              }
+            }}
             search={{ enabled: true, placeholder: "Buscar area" }}
-            showCollapseButton
+            showCollapseButton={!isNarrow}
             selection={{ activeUrl: normalizedPathname }}
             user={{
               name: me?.name ?? "Minha conta",
@@ -267,13 +301,6 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
                 hint: "Plano, faturas e forma de pagamento",
                 icon: <CreditCard size={16} />,
                 url: "/assinatura",
-              },
-              {
-                id: "themes",
-                label: "Temas",
-                hint: "Escolha e personalize o tema visual",
-                icon: <Palette size={16} />,
-                url: "/temas",
               },
               {
                 id: "logout",

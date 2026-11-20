@@ -49,6 +49,7 @@ import {
 import type { CnpjSignupStatus } from "@/lib/ported/billingTypes";
 import { readError } from "@/lib/ported/clientError";
 import { cityIdForSignup, lookupCityByIbge, type PublicCity } from "@/lib/public-cities";
+import { lowerSubdomainWhileTyping, normalizeSubdomain } from "@/lib/subdomain-input";
 import { AuthCard, AuthMessage } from "./AuthCard";
 
 interface SignupFormProps {
@@ -184,7 +185,7 @@ function toIsoDate(value: string): string {
 
 function buildPayload(form: SignupFormValues, cityId?: number): SignupPayload {
   return {
-    subdomain: form.subdomain.trim().toLowerCase(),
+    subdomain: normalizeSubdomain(form.subdomain),
     cnpj: form.cnpj.replace(/\D/g, ""),
     corporateName: form.corporateName.trim(),
     tradeName: form.tradeName.trim(),
@@ -559,7 +560,9 @@ export function SignupForm({
   }
 
   async function submitSignup(values: SignupFormValues) {
-    if (!/^[a-z0-9_]{5,50}$/.test(values.subdomain.trim()) || values.subdomain === "master") {
+    // Maiuscula nao e' erro: converte (o campo ja converte ao digitar; isto cobre colar/autopreencher).
+    const subdomain = normalizeSubdomain(values.subdomain);
+    if (!/^[a-z0-9_]{5,50}$/.test(subdomain) || subdomain === "master") {
       setError("Use um subdominio de 5 a 50 letras minusculas, numeros ou sublinhado, diferente de master.");
       return;
     }
@@ -585,7 +588,7 @@ export function SignupForm({
     try {
       const result = await signUp(buildPayload(values, cityIdForSignup(resolvedCityRef.current, values.addressState)));
       setSignupEmail(values.rootEmail.trim());
-      setSignupSubdomain(values.subdomain.trim());
+      setSignupSubdomain(subdomain);
       if (result.verificationToken) setConfirmToken(result.verificationToken);
       setStage("confirm");
       if (result.emailDelivered === false) {
@@ -663,7 +666,7 @@ export function SignupForm({
           id="confirm-subdomain"
           label="Subdomínio"
           inputProps={{ value: signupSubdomain }}
-          onChange={setSignupSubdomain}
+          onChange={(value) => setSignupSubdomain(lowerSubdomainWhileTyping(value))}
         />
         <p className="mb-4 text-sm text-muted-foreground">
           Informe o código enviado ao e-mail do cadastro{signupEmail ? ` (${signupEmail})` : ""}.
@@ -735,8 +738,12 @@ export function SignupForm({
               name="subdomain"
               register={register}
               label="Subdomínio"
-              hintText="Endereço da empresa: 5 a 50 letras minúsculas, números ou sublinhado."
+              hintText="Endereço da empresa: 5 a 50 letras, números ou sublinhado (convertido para minúsculas)."
               required
+              onChange={(value) => {
+                const lower = lowerSubdomainWhileTyping(value);
+                if (lower !== value) applyValue("subdomain", lower);
+              }}
             />
             <SgInputCNPJ
               id={FIELD_ID.cnpj}

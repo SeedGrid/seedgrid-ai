@@ -89,7 +89,7 @@ function LoginPageContent() {
         ? SESSION_REVOKED_MESSAGE
         : expired === "disabled"
           ? COMPANY_DISABLED_MESSAGE
-          : "Sessao expirada. Efetue login novamente.",
+          : "Sessão expirada. Efetue login novamente.",
     );
     router.replace(pathname, { scroll: false });
   }, [expired, pathname, router]);
@@ -109,7 +109,7 @@ function LoginPageContent() {
         });
       } catch {
         setErrorMessage(
-          "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.",
+          "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
         );
         return;
       }
@@ -201,7 +201,7 @@ function LoginPageContent() {
               />
               {/* Signup e reenvio de confirmacao: o report-admin nao tem (backoffice nao cadastra
                   empresa), o report-client tem — sao as entradas do `SignupForm` portado. O
-                  "Nao recebi o e-mail" abre o formulario direto na etapa de confirmacao, que e' o
+                  "Não recebi o e-mail" abre o formulario direto na etapa de confirmacao, que e' o
                   `initialStage="confirm"` que o proprio SignupForm ja' previa. */}
               <SgButton
                 appearance="ghost"
@@ -212,7 +212,7 @@ function LoginPageContent() {
               />
               <SgButton
                 appearance="ghost"
-                label="Nao recebi o e-mail de confirmacao"
+                label="Não recebi o e-mail de confirmação"
                 onClick={() => router.push("/auth/signup?stage=confirm")}
                 severity="secondary"
                 type="button"

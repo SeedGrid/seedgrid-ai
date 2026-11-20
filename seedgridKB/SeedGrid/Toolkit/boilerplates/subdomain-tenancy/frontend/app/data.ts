@@ -10,13 +10,13 @@ export type NavItem = {
 };
 
 // Menu do APP DO CLIENTE. E' o mesmo `data.ts` do report-admin com a lista recortada: aqui o menu
-// lateral tem tres itens, e o resto (Meu perfil, Minha assinatura, Temas, Sair) vive no
+// lateral tem os itens abaixo, e o resto (Meu perfil, Minha assinatura, Temas, Sair) vive no
 // `sgUserMenu` do Shell.tsx, nao aqui.
 //
 // Nada de Visao Geral, Contas, Comercial, Precos, Moedas nem Plataforma: tudo isso e' backoffice e
 // fica no admin. Convidar usuario externo e API Keys ficam nos dois: aqui valem para a propria conta.
 //
-// Mesma ordem do grupo Seguranca do admin (e do `lib/client-permission-tree.ts`).
+// Mesma ordem do grupo Segurança do admin (e do `lib/client-permission-tree.ts`).
 //
 // As permissoes sao as do catalogo da propria extension (`USER_READ`, `ROLE_READ`, `LOG_READ`,
 // `SELFENTER_INVITE` do ext-security e `APIKEY_READ` do ext-apikeys) —
@@ -24,20 +24,23 @@ export type NavItem = {
 // que nao bate com a rota real e' 404 garantido (PLAN.md §8.7): cada `href` aqui tem um
 // `app/<href>/page.tsx` correspondente.
 export const navItems: NavItem[] = [
-  { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
-  // Convite: SELFENTER_INVITE e' a permissao de abrir a tela (as de aprovar/reprovar só liberam a
-  // secao de aprovacoes dentro dela), igual ao admin.
-  { href: "/security/self-enter", label: "Convidar usuario externo", permission: "SELFENTER_INVITE" },
-  { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
+  // Empresas: cadastro de negócio, item próprio logo acima do grupo Segurança (FE-40, P180.F0.D2).
   { href: "/security/companies/company_list", label: "Empresas", permission: "COMPANY_READ" },
-  { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
-  { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+  // FE-40: o menu tem sempre o grupo "Segurança" (igual ao admin); item de segurança solto na raiz é erro.
+  {
+    href: "/security",
+    label: "Segurança",
+    children: [
+      { href: "/security/users/user_list", label: "Usuários", permission: "USER_READ" },
+      // Convite: SELFENTER_INVITE é a permissão de abrir a tela (as de aprovar/reprovar só liberam a
+      // seção de aprovações dentro dela), igual ao admin.
+      { href: "/security/self-enter", label: "Convidar usuário externo", permission: "SELFENTER_INVITE" },
+      { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
+      { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
+      { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+    ],
+  },
   // Backup self-service (extension seedgrid-backup): o ADMIN de cada filial exporta só os dados das suas empresas.
   { href: "/backup/export_list", label: "Backup", permission: "BACKUP_READ" },
-  // Calendario da empresa (extension seedgrid-business-days: /business-days/*): a semana, os feriados e as
-  // excecoes do ano numa tela so.
-  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" },
-  // Demonstracao dos contadores de uso (backend: demo/UsageDemoResource.java). Remova junto com o dominio
-  // de exemplo (e a permissao USAGE_DEMO_READ, migration V3002) ao comecar o seu produto.
-  { href: "/exemplo-consumo", label: "Exemplo de consumo", permission: "USAGE_DEMO_READ" },
+  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" }, // só com a extension opcional business-days (FE-38)
 ];

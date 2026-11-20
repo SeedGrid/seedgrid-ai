@@ -1,8 +1,8 @@
 # Contadores de uso: como cobrar por uso
 
 Um **contador de uso** é o que o produto cobra por consumo: requisições, MB armazenados, notas emitidas,
-relatórios gerados. Este boilerplate vem com **dois contadores de exemplo**, um para cada forma de contar.
-Troque-os pelos do seu produto.
+relatórios gerados. Este boilerplate **não declara contador nenhum** (regra BE-74): o produto declara só os do **seu**
+domínio. Os exemplos deste guia (`requests`, `storage-mb`) são ilustrativos e não existem no código.
 
 | | O produto (este boilerplate) | O `seedgrid-billing` |
 |---|---|---|
@@ -14,27 +14,34 @@ Troque-os pelos do seu produto.
 Nada disso é configuração: franquia e excedente são condição comercial **do plano**, editada nas telas do
 admin.
 
-## O exemplo que vem pronto
+## O que vem pronto
 
-| Contador | Label | Como é contado | Onde |
-|---|---|---|---|
-| `requests` | Requisições | anotação: 1 chamada = 1 unidade | `POST /api/demo/requests` |
-| `storage-mb` | MB armazenados | código: o tamanho só se conhece no envio | `POST /api/demo/files` |
-
-E três planos semeados (`V3001__seed_usage_meter_plans.sql`), cada um mostrando um comportamento:
-
-| Plano | `requests` | `storage-mb` | O que demonstra |
-|---|---|---|---|
-| Trial | 20, sem excedente | **fora do plano** | o upload dá 402 `METER_NOT_IN_PLAN` |
-| Básico (R$ 49,90) | 100, sem excedente | 50 MB, sem excedente | 402 `QUOTA_EXCEEDED` quando a franquia acaba |
-| Pro (R$ 149,90) | 1.000 + R$ 0,10 por unidade excedente | 500 MB + R$ 0,05 | o excedente é cobrado no Stripe, numa linha por contador |
+`AppUsageMeters` devolve lista vazia: o produto novo cobra só a assinatura, e as telas de trial, condições
+comerciais e termos do plano não mostram bloco de uso. Os planos de demonstração (`V3001`) têm só preço e
+permissões. Billing, trial e planos funcionam sem contador declarado (coberto por teste).
 
 > Os termos de Básico e Pro são criados por SQL, então **nascem sem preço no Stripe**. Antes do primeiro
 > checkout, abra cada plano em **Comercial > Planos > Condições comerciais** e clique em **Publicar**. Um
 > termo criado pela tela já nasce publicado.
 
-No app do cliente, o menu **Exemplo de consumo** (`frontend/app/exemplo-consumo`) mostra o saldo de cada
-contador, tem um botão que consome requisições e um campo de upload que consome MB.
+### Produto já gerado de uma versão anterior do boilerplate
+
+Versões antigas semeavam o contador `requests`, a permissão `USAGE_DEMO_READ` e o `UsageDemoResource`.
+Migration de produto só **acrescenta** (BE-73): não edite a `V3001`/`V3002` já aplicadas. Apague o
+`UsageDemoResource` e crie uma migration nova (próximo número livre de `db/migration/app/`) que remove a
+permissão:
+
+```sql
+delete from sg_plan_term_permissions
+ where permission_id in (select id from sg_permissions where name = 'USAGE_DEMO_READ');
+delete from sg_role_permissions
+ where permission_id in (select id from sg_permissions where name = 'USAGE_DEMO_READ');
+delete from sg_permissions where name = 'USAGE_DEMO_READ';
+```
+
+No `subdomain-tenancy`, repita o `delete` de `sg_role_permissions` e `sg_permissions` numa migration de
+`db/migration/app-tenant/` (o banco de cada tenant). Se o seu produto não usa o contador `requests`, remova também a
+linha dele de `sg_plan_term_meters` (`where meter = 'requests'`) e da lista de `AppUsageMeters`.
 
 ## Passo a passo para o seu produto
 
@@ -67,7 +74,7 @@ public class AppUsageMeters implements UsageMeterContributor {
 ### 2. Conte
 
 Quando **uma chamada vale uma quantidade fixa**, anote o método
-([`demo/UsageDemoResource.java`](../backend/src/main/java/br/com/seedgrid/app/api/demo/UsageDemoResource.java)):
+(exemplo ilustrativo):
 
 ```java
 @POST
@@ -149,24 +156,18 @@ Um contador que o produto não declara é recusado com 400 `INVALID_PLAN_TERM_ME
 | `METER_NOT_IN_PLAN` | o plano não inclui o contador (`meter` e `label` no corpo) |
 | `QUOTA_EXCEEDED` / `TRIAL_QUOTA_EXCEEDED` | franquia do contador esgotada num plano sem excedente dele (`meter` e `label` no corpo) |
 
-### 5. Remova o exemplo
+### 5. Sem contadores
 
-Quando os contadores do seu produto estiverem no lugar:
-
-- apague `demo/UsageDemoResource.java`, a tela `frontend/app/exemplo-consumo` e as rotas
-  `frontend/app/api/demo/*`;
-- tire o item "Exemplo de consumo" de `frontend/app/data.ts`;
-- troque os contadores de `AppUsageMeters` e os planos da `V3001` (ou crie os seus pelas telas e apague a
-  `V3001` antes do primeiro deploy).
+Se o produto não conta nada, deixe `AppUsageMeters.meters()` vazio. Não há exemplo para remover: o
+boilerplate não traz contador, recurso de demonstração nem permissão `USAGE_DEMO_*`.
 
 ## Onde está cada coisa
 
 | | |
 |---|---|
 | Declaração dos contadores | `backend/src/main/java/br/com/seedgrid/app/api/billing/AppUsageMeters.java` |
-| As duas formas de contar | `backend/src/main/java/br/com/seedgrid/app/api/demo/UsageDemoResource.java` |
-| Planos de demonstração | `backend/src/main/resources/db/migration/app/V3001__seed_usage_meter_plans.sql` |
+| Planos de demonstração (preço e permissões, sem contador) | `backend/src/main/resources/db/migration/app/V3001__seed_usage_meter_plans.sql` |
 | Editor de franquia/excedente (admin) | `admin/app/components/MeterQuotaEditor.tsx`, `admin/lib/usage-meters.ts` |
 | Telas do admin | `admin/app/plans/plan_terms`, `plan_trial`, `accounts` (concessão por contador), `billing`, `subscriptions` |
-| Barras de consumo (cliente) | `frontend/app/components/MeterUsageBar.tsx`, `frontend/app/assinatura`, `frontend/app/exemplo-consumo` |
+| Barras de consumo (cliente) | `frontend/app/components/MeterUsageBar.tsx`, `frontend/app/assinatura` |
 | A extensão | `seedgrid-quarkus-ext-billing`, plano em `seedgrid-platform-work/planos/billing/2026-10-02-contadores-de-uso-declarados-pelo-host.md` |

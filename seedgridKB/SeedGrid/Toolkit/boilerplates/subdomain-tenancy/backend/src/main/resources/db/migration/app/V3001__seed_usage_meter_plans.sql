@@ -1,11 +1,9 @@
--- PLANOS DE DEMONSTRACAO dos contadores de uso (billing/AppUsageMeters.java). Cada um mostra um
+-- PLANOS DE DEMONSTRACAO (so' preco e permissoes; sem contador de uso). Cada um mostra um
 -- comportamento do billing de proposito; troque pelos planos do SEU produto. Guia: docs/contadores-de-uso.md.
 --
---   | Plano  | requests                 | storage-mb               | O que demonstra                          |
---   |--------|--------------------------|--------------------------|------------------------------------------|
---   | Trial  | 20, sem excedente        | FORA do plano            | 402 METER_NOT_IN_PLAN no upload          |
---   | Basico | 100, sem excedente       | 50 MB, sem excedente     | 402 QUOTA_EXCEEDED quando a franquia acaba |
---   | Pro    | 1.000 + R$ 0,10 cada a+  | 500 MB + R$ 0,05 cada a+ | excedente cobrado no Stripe, 1 linha por contador |
+-- O boilerplate NAO traz contador de uso (BE-74): os planos abaixo so' tem preco e permissoes. Declare os
+-- contadores do SEU dominio em billing/AppUsageMeters.java e semeie a franquia de cada um por plano em
+-- sg_plan_term_meters (ou pela tela "Condicoes comerciais"), no formato do exemplo de docs/contadores-de-uso.md.
 --
 -- PUBLICAR NO STRIPE: term criado por SQL nasce SEM preco no provider. Antes do checkout, abra o plano na
 -- tela "Condicoes comerciais" do admin e clique em "Publicar" (cria o preco fixo e um preco de excedente
@@ -19,22 +17,15 @@
 
 do $$
 begin
-    if to_regclass('sg_plan_term_meters') is null then
-        raise notice 'V3001: billing desligado (sem plan_term_meters); planos de demonstracao ignorados.';
+    if to_regclass('sg_plan_terms') is null then
+        raise notice 'V3001: billing desligado (sem sg_plan_terms); planos de demonstracao ignorados.';
         return;
     end if;
 
-    -- Trial: so' requisicoes. O term TRIAL e' semeado pelo billing (billing/V505); aqui so' entra a franquia.
-    insert into sg_plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
-    select gen_random_uuid()::text, pt.id, 'requests', 20, 0
-    from sg_plan_terms pt
-    where pt.public_id = '00000000-0000-0000-0000-0000000000a2'
-    on conflict (plan_term_id, meter) do nothing;
-
     insert into sg_plans (public_id, code, name, description, active)
     values
-        (gen_random_uuid()::text, 'BASICO', 'Basico', 'Requisicoes e armazenamento com franquia fixa', true),
-        (gen_random_uuid()::text, 'PRO', 'Pro', 'Franquia maior e excedente cobrado por uso', true)
+        (gen_random_uuid()::text, 'BASICO', 'Basico', 'Plano de demonstracao com preco fixo', true),
+        (gen_random_uuid()::text, 'PRO', 'Pro', 'Plano de demonstracao de preco maior', true)
     on conflict (code) do nothing;
 
     -- Um term vigente desde hoje para cada plano (so' se o plano ainda nao tiver nenhum).
@@ -43,18 +34,6 @@ begin
     from sg_plans p
     join (values ('BASICO', 49.90), ('PRO', 149.90)) as v(code, price) on v.code = p.code
     where not exists (select 1 from sg_plan_terms t where t.plan_id = p.id);
-
-    insert into sg_plan_term_meters (public_id, plan_term_id, meter, included_units, overage_price)
-    select gen_random_uuid()::text, t.id, v.meter, v.included, v.overage
-    from sg_plan_terms t
-    join sg_plans p on p.id = t.plan_id
-    join (values
-            ('BASICO', 'requests', 100, 0.00),
-            ('BASICO', 'storage-mb', 50, 0.00),
-            ('PRO', 'requests', 1000, 0.10),
-            ('PRO', 'storage-mb', 500, 0.05)
-         ) as v(code, meter, included, overage) on v.code = p.code
-    on conflict (plan_term_id, meter) do nothing;
 
     -- O acesso e' a INTERSECAO entre a permissao da role e a do plano: term sem permissoes nao libera nada.
     -- Os planos de demonstracao liberam o mesmo que o trial: as permissoes de audience 'client'.

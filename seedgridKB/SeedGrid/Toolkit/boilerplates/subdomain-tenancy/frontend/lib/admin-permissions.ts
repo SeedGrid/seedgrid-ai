@@ -34,7 +34,7 @@ export const ADMIN_PERMISSIONS = {
   apiKeysView: "APIKEY_READ",
   apiKeysCreate: "APIKEY_CREATE",
   apiKeysRevoke: "APIKEY_REVOKE",
-  // Calendario de dias uteis (ext business-days, V1101): sem audience, valem para plataforma e cliente.
+  // businessDays*: calendario de dias uteis (ext opcional business-days, V1101), sem audience: valem para plataforma e cliente.
   businessDaysView: "BUSINESS_DAY_READ",
   businessDaysCreate: "BUSINESS_DAY_CREATE",
   businessDaysEdit: "BUSINESS_DAY_UPDATE",

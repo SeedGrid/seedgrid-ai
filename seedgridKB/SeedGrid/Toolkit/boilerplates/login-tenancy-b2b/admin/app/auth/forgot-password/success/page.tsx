@@ -12,7 +12,7 @@ export default function ForgotPasswordSuccessPage() {
         <SgCard
           cardStyle="elevated"
           title="Senha alterada"
-          description="Sua nova senha ja esta ativa. Faca login para continuar."
+          description="Sua nova senha já está ativa. Faça login para continuar."
         >
           <SgStack gap={16}>
             <SgButton label="Ir para o login" onClick={() => router.push("/login")} />

@@ -129,7 +129,7 @@ Para recomeçar do zero, dropar e recriar o banco é mais simples do que corrigi
 | | |
 |---|---|
 | Migrations do produto | `src/main/resources/db/migration/app/` (**não** em `db/migration/`) |
-| Cobrança por uso (contadores) | declarados em `billing/AppUsageMeters.java`, contados com `@SgConsumesUsage(meter = ...)` ou `UsageService.consume(...)` — exemplo em `demo/UsageDemoResource.java`, planos em `V3001`; troque pelos do seu produto. Franquia e excedente são do plano, nas telas do admin. Guia: [`docs/contadores-de-uso.md`](../docs/contadores-de-uso.md) |
+| Cobrança por uso (contadores) | declarados em `billing/AppUsageMeters.java`, contados com `@SgConsumesUsage(meter = ...)` ou `UsageService.consume(...)`; o boilerplate não declara nenhum (BE-74) — declare os do seu produto. Franquia e excedente são do plano, nas telas do admin. Guia: [`docs/contadores-de-uso.md`](../docs/contadores-de-uso.md) |
 | Campos do produto no plano | `additionalAttributes` do term (exemplo: `supportLevel`), validado em `billing/AppPlanTermValidator.java` |
 | Plano, assinatura, checkout, contas e avisos de mudança de acesso | **não** implemente: endpoints e e-mails transacionais de `UserAccessEvent` são responsabilidade do `seedgrid-billing` |
 | Templates de e-mail | `src/main/resources/templates/` — inclui overrides em `templates/billing/{html,txt}/` para os avisos de acesso |

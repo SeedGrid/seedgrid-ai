@@ -55,7 +55,8 @@ class B2bBillingLimitsE2ETest extends E2eBase {
         term.put("maxCompanies", maxCompanies);
         term.put("maxReadOnlyCompanies", 1);
         term.put("permissionPublicIds", permissions);
-        term.put("meters", List.of(Map.of("meter", "requests", "includedUnits", 100, "overagePrice", 0)));
+        // sem contador de uso: o produto do boilerplate cobra so' a assinatura (BE-74)
+        term.put("meters", List.of());
         return expect(json(platform.token()).body(term).post("/admin/plans/" + planId + "/terms"), 201)
                 .jsonPath().getString("publicId");
     }

@@ -41,7 +41,7 @@ end $$;
 
 - `name` tem no maximo 30 caracteres.
 - No subdomain-tenancy as migrations de `db/migration/app` rodam no banco **master**.
-- Referencia viva: `V3002__usage_demo_permission.sql`.
+- Referencia viva: `V3000__seed_permissions.sql` (o boilerplate nao traz permissao de demonstracao).
 
 ## 2. Endpoint
 

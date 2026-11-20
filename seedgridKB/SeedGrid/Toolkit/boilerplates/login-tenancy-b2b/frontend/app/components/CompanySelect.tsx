@@ -4,7 +4,7 @@
 // de uma empresa e nenhuma escolhida). Lista as empresas de `GET /api/me/companies`, trava as
 // DESATIVADAS (com a explicacao), deixa escolher as ATIVAS e as SOMENTE LEITURA (estas com aviso) e
 // chama `POST /api/me/select-company`, que re-emite o token escopado. Quem decide para onde ir depois
-// e' a pagina (`onSelected`). A troca de empresa com a sessao aberta e' a `CompanyAccessBar`.
+// e' a pagina (`onSelected`). Nao ha troca de empresa pela faixa `CompanyAccessBar` (P180.F2.T7): so' o aviso de somente leitura.
 
 import { SgButton } from "@seedgrid/fe-components";
 import { useCallback, useEffect, useMemo, useState } from "react";

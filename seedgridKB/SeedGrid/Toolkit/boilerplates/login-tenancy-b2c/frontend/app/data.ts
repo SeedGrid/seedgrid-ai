@@ -23,14 +23,16 @@ export type NavItem = {
 // um `app/<href>/page.tsx` correspondente.
 // B2C: uma conta = uma pessoa. Sem Usuarios, Convite de usuario externo e Perfis (só fazem sentido com empresa/equipe).
 export const navItems: NavItem[] = [
-  { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
-  { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+  // FE-40: o menu tem sempre o grupo "Segurança" (igual ao admin); item de segurança solto na raiz é erro.
+  {
+    href: "/security",
+    label: "Segurança",
+    children: [
+      { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
+      { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+    ],
+  },
   // Backup self-service (extension seedgrid-backup): o ADMIN de cada filial exporta só os dados das suas empresas.
   { href: "/backup/export_list", label: "Backup", permission: "BACKUP_READ" },
-  // Calendario da empresa (extension seedgrid-business-days: /business-days/*): a semana, os feriados e as
-  // excecoes do ano numa tela so.
-  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" },
-  // Demonstracao dos contadores de uso (backend: demo/UsageDemoResource.java). Remova junto com o dominio
-  // de exemplo (e a permissao USAGE_DEMO_READ, migration V3002) ao comecar o seu produto.
-  { href: "/exemplo-consumo", label: "Exemplo de consumo", permission: "USAGE_DEMO_READ" },
+  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" }, // só com a extension opcional business-days (FE-38)
 ];

@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
       return;
     }
     if (newPassword !== confirmPassword) {
-      setErrorMessage("A confirmacao da nova senha nao confere.");
+      setErrorMessage("A confirmação da nova senha não confere.");
       return;
     }
 
@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
           body: JSON.stringify({ email: email.trim(), newPassword }),
         });
       } catch {
-        setErrorMessage("Nao foi possivel conectar ao servidor. Tente novamente.");
+        setErrorMessage("Não foi possível conectar ao servidor. Tente novamente.");
         return;
       }
 
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
       }
 
       setInfoMessage(
-        "Enviamos um e-mail de confirmacao. Abra o link para concluir a troca de senha.",
+        "Enviamos um e-mail de confirmação. Abra o link para concluir a troca de senha.",
       );
     });
   }
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
         <SgCard
           cardStyle="elevated"
           title="Esqueci a senha"
-          description="Informe seu e-mail e a nova senha. Voce recebera um link para confirmar a troca."
+          description="Informe seu e-mail e a nova senha. Você receberá um link para confirmar a troca."
         >
           <form onSubmit={onSubmit}>
             <SgStack gap={16}>

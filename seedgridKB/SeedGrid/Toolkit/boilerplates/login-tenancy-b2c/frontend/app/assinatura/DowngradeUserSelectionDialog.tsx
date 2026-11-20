@@ -67,7 +67,7 @@ export function DowngradeUserSelectionDialog({
       const deactivateIds = new Set(result.selectedUserPublicIds ?? []);
       setSelected(eligibleIds.filter((id) => !deactivateIds.has(id)));
     } catch (err) {
-      setError(typeof err === "string" ? err : "Falha ao carregar a selecao de usuarios.");
+      setError(typeof err === "string" ? err : "Falha ao carregar a selecao de usuários.");
     } finally {
       setLoading(false);
     }

@@ -218,10 +218,18 @@ describe("corpo enviado ao backend", () => {
     });
   });
 
-  it("pessoa fisica nao envia representante legal", () => {
-    const body = toCompanyBody({ ...EMPTY_COMPANY_FORM, personType: "PF", corporateName: "Maria", tradeName: "Maria" });
-    expect(body).not.toHaveProperty("repFirstName");
-    expect(body.personType).toBe("PF");
+  it("empresa é sempre pessoa jurídica e envia o representante legal", () => {
+    const body = toCompanyBody({
+      ...EMPTY_COMPANY_FORM,
+      personType: "PF",
+      corporateName: "Acme",
+      tradeName: "Acme",
+      repFirstName: " Ana ",
+      repCpf: "123.456.789-09",
+    });
+    expect(body.personType).toBe("PJ");
+    expect(body.repFirstName).toBe("Ana");
+    expect(body.repCpf).toBe("12345678909");
   });
 
   it("inativar/reativar manda so active", () => {
@@ -233,17 +241,18 @@ describe("corpo enviado ao backend", () => {
 describe("validacao do formulario", () => {
   const ok = { ...EMPTY_COMPANY_FORM, corporateName: "A", tradeName: "A", cpfCnpj: "12345678000195" };
 
-  it("aceita PJ com CNPJ e PF com CPF ou sem documento", () => {
+  it("aceita CNPJ de 14 dígitos, com ou sem CPF do representante", () => {
     expect(validateCompanyForm(ok)).toBeNull();
-    expect(validateCompanyForm({ ...ok, personType: "PF", cpfCnpj: "" })).toBeNull();
-    expect(validateCompanyForm({ ...ok, personType: "PF", cpfCnpj: "12345678909" })).toBeNull();
+    expect(validateCompanyForm({ ...ok, cpfCnpj: "12.345.678/0001-95" })).toBeNull();
+    expect(validateCompanyForm({ ...ok, repCpf: "123.456.789-09" })).toBeNull();
   });
 
   it("recusa o que o backend recusaria", () => {
     expect(validateCompanyForm({ ...ok, corporateName: " " })).toMatch(/razao social/i);
     expect(validateCompanyForm({ ...ok, tradeName: "" })).toMatch(/fantasia/i);
     expect(validateCompanyForm({ ...ok, cpfCnpj: "123" })).toMatch(/CNPJ/);
-    expect(validateCompanyForm({ ...ok, personType: "PF", cpfCnpj: "123" })).toMatch(/CPF/);
+    expect(validateCompanyForm({ ...ok, cpfCnpj: "" })).toMatch(/CNPJ/);
+    expect(validateCompanyForm({ ...ok, repCpf: "123" })).toMatch(/CPF/);
     expect(validateCompanyForm({ ...ok, addrState: "XX" })).toMatch(/UF/);
   });
 });

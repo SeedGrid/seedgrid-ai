@@ -37,6 +37,21 @@ const OPEN_SCREEN = "Abrir a tela";
 
 export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
   {
+    id: "empresas",
+    label: "Empresas",
+    screens: [
+      {
+        id: "empresas/empresas",
+        label: "Empresas",
+        actions: [
+          { permission: "COMPANY_READ", label: OPEN_SCREEN },
+          { permission: "COMPANY_CREATE", label: "Criar empresa" },
+          { permission: "COMPANY_UPDATE", label: "Editar, inativar e reativar empresa" },
+        ],
+      },
+    ],
+  },
+  {
     id: "seguranca",
     label: "Seguranca",
     screens: [
@@ -68,15 +83,6 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
           { permission: "ROLE_CREATE", label: "Criar perfil" },
           { permission: "ROLE_UPDATE", label: "Editar perfil" },
           { permission: "ROLE_DELETE", label: "Excluir perfil" },
-        ],
-      },
-      {
-        id: "seguranca/empresas",
-        label: "Empresas",
-        actions: [
-          { permission: "COMPANY_READ", label: OPEN_SCREEN },
-          { permission: "COMPANY_CREATE", label: "Criar empresa" },
-          { permission: "COMPANY_UPDATE", label: "Editar, inativar e reativar empresa" },
         ],
       },
       {
@@ -124,17 +130,6 @@ export const CLIENT_PERMISSION_MENU_TREE: PermissionMenuGroup[] = [
           { permission: "BUSINESS_DAY_UPDATE", label: "Editar a semana da empresa, feriados e feriados móveis" },
           { permission: "BUSINESS_DAY_DELETE", label: "Excluir feriado e remover exceção de um dia" },
         ],
-      },
-    ],
-  },
-  {
-    id: "exemplo-consumo",
-    label: "Exemplo de consumo",
-    screens: [
-      {
-        id: "exemplo-consumo/exemplo-consumo",
-        label: "Exemplo de consumo",
-        actions: [{ permission: "USAGE_DEMO_READ", label: `${OPEN_SCREEN}, fazer requisicoes e enviar arquivos` }],
       },
     ],
   },

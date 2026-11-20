@@ -97,7 +97,7 @@ const INVOICE_STATUS_LABELS: Record<string, string> = {
   open: "Em aberto",
   draft: "Rascunho",
   void: "Anulada",
-  uncollectible: "Nao recebivel",
+  uncollectible: "Não recebivel",
 };
 
 function subscriptionStatusTone(status: string): string {
@@ -244,7 +244,7 @@ export function SubscriptionManageView({
       await cancelSubscription();
       setCancelOpen(false);
       setActionMessage(
-        "Cancelamento agendado. Voce mantem o acesso ate o fim do periodo ja pago.",
+        "Cancelamento agendado. Você mantem o acesso ate o fim do periodo já pago.",
       );
       await onRefresh();
     } catch (err) {
@@ -457,7 +457,7 @@ export function SubscriptionManageView({
               />
             ))}
             <Field
-              label="Usuarios"
+              label="Usuários"
               value={maxUsers == null ? "Ilimitados" : numberFormatter.format(maxUsers)}
             />
             <Field label="Inicio" value={formatIsoDate(subscription.startsAt)} />
@@ -689,7 +689,7 @@ export function SubscriptionManageView({
       <DowngradeUserSelectionDialog
         open={userSelectionOpen}
         onOpenChange={setUserSelectionOpen}
-        onSaved={() => setActionMessage("Selecao de usuarios salva com sucesso.")}
+        onSaved={() => setActionMessage("Selecao de usuários salva com sucesso.")}
       />
 
       <DowngradeCompanySelectionDialog

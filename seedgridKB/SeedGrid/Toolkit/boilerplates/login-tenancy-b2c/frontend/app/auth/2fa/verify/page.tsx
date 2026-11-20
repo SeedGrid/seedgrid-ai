@@ -25,15 +25,15 @@ function normalizeCode(value: string) {
 
 function methodHintFor(method: string): string {
   if (method === "EMAIL") {
-    return "Enviamos um codigo para o seu e-mail.";
+    return "Enviamos um código para o seu e-mail.";
   }
   if (method === "WHATSAPP") {
-    return "Enviamos um codigo para o seu WhatsApp.";
+    return "Enviamos um código para o seu WhatsApp.";
   }
   if (method === "TOTP") {
-    return "Use o codigo do seu app autenticador.";
+    return "Use o código do seu app autenticador.";
   }
-  return "Informe o codigo do segundo fator.";
+  return "Informe o código do segundo fator.";
 }
 
 export default function TwoFactorVerifyPage() {
@@ -49,7 +49,7 @@ export default function TwoFactorVerifyPage() {
   useEffect(() => {
     const stored = readPendingTwoFactor();
     if (!stored) {
-      setErrorMessage("Sessao de verificacao expirada. Faca login novamente.");
+      setErrorMessage("Sessão de verificação expirada. Faça login novamente.");
       return;
     }
     setPendingSession(stored);
@@ -89,7 +89,7 @@ export default function TwoFactorVerifyPage() {
       if (!response.ok) {
         lastSubmittedRef.current = null;
         setErrorMessage(
-          payload?.error ?? payload?.message ?? "Codigo invalido ou expirado.",
+          payload?.error ?? payload?.message ?? "Código inválido ou expirado.",
         );
         return;
       }
@@ -99,7 +99,7 @@ export default function TwoFactorVerifyPage() {
       router.refresh();
     } catch {
       lastSubmittedRef.current = null;
-      setErrorMessage("Nao foi possivel conectar ao servidor. Tente novamente.");
+      setErrorMessage("Não foi possível conectar ao servidor. Tente novamente.");
     } finally {
       setPending(false);
     }
@@ -129,7 +129,7 @@ export default function TwoFactorVerifyPage() {
       }
       setCode("");
       lastSubmittedRef.current = null;
-      setInfoMessage(payload?.message ?? "Codigo reenviado.");
+      setInfoMessage(payload?.message ?? "Código reenviado.");
     } finally {
       setResending(false);
     }
@@ -141,14 +141,14 @@ export default function TwoFactorVerifyPage() {
         <SgCard
           cardStyle="elevated"
           title="Validar segundo fator"
-          description="Confirme o codigo para concluir o acesso administrativo."
+          description="Confirme o código para concluir o acesso administrativo."
         >
           <SgStack gap={16}>
             <span className="text-xs text-muted-foreground">{methodHint}</span>
 
             <SgInputOTP
               id="login-2fa-otp"
-              label="Codigo"
+              label="Código"
               mask="### ###"
               value={code}
               inputProps={{ autoComplete: "one-time-code", inputMode: "text" }}
@@ -165,14 +165,14 @@ export default function TwoFactorVerifyPage() {
             {errorMessage ? <div className="login-error">{errorMessage}</div> : null}
 
             <SgButton
-              label={pending ? "Validando..." : "Validar codigo"}
+              label={pending ? "Validando..." : "Validar código"}
               onClick={() => void verify(code)}
             />
 
             {canResend ? (
               <SgButton
                 appearance="ghost"
-                label={resending ? "Reenviando..." : "Reenviar codigo"}
+                label={resending ? "Reenviando..." : "Reenviar código"}
                 onClick={() => void resend()}
                 severity="secondary"
                 type="button"
