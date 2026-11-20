@@ -152,6 +152,18 @@ Estas são sugestões de como medir, escolhidas pelo que o produto vende. Nenhum
 
 Regras de ouro: consuma **depois** do sucesso, dentro da mesma transação que grava o resultado; chame `assertCanConsume` **antes** de gastar algo caro (LLM, envio, armazenamento); use uma chave que identifique a operação (como o `publicId` da requisição), como fazem os exemplos; e não renomeie o código de um contador em uso.
 
+## Remover um contador que já foi usado (linhas órfãs)
+
+Fonte: `UsageMeterCatalog`, `PlanTermMetersService`, `BillingResponseMapper` (billing-core).
+
+- **O startup não falha** por causa de linha órfã em `sg_plan_term_meters`: o catálogo só recusa, no startup, um `@SgConsumesUsage` que aponte para contador não declarado.
+- **A leitura continua:** um contador não declarado (histórico de um removido) aparece pelo próprio código no lugar do rótulo.
+- **Gravar um term que ainda lista o contador removido é recusado** ("Contador de uso nao declarado: ..."): a lista de `meters` enviada **substitui** a do term, então basta reenviar sem o código removido para limpar.
+- **Consumir** um contador não declarado falha (`UndeclaredUsageMeterException`), e um term sem aquele contador recusa o consumo (`MeterNotInPlanException`).
+- **Stripe:** o meter e o preço metered já publicados continuam no Stripe; arquive no Stripe se quiser. O billing não apaga por você.
+
+Resumo: remover o contador do código é seguro para subir e ler; o que sobra é limpar as linhas dos terms (reenviando-os sem o contador) e o que foi publicado no Stripe.
+
 ## Armadilhas
 
 - O código é permanente: trocar o código cria outro contador e deixa o histórico e o meter do Stripe órfãos.
