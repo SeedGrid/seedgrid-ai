@@ -11,6 +11,8 @@ analisado-em: 2026-11-04
 
 > **Status: publicada no Maven Central:** 2026.11.01 e **2026.11.02 em 2026-11-03** (com a auditoria do P136) e **2026.11.03 em 2026-11-04** (ETag/304 nas leituras e teto padrão de 100 por usuário, P129), `seedgrid-user-notifications`, repositório próprio `seedgrid-quarkus-ext-user-notifications`, commit `1b3bf83` na `main` (sem tag no GitHub). Planos P130 e P136 do work. Detalhes: [[SeedGrid/Extensions/user-notifications/Configuracao|Configuração]] · [[SeedGrid/Extensions/user-notifications/Exemplos|Exemplos]].
 
+> **`actionable` (P186.F4, user-notifications 2026.11.6, commit `7b914c7`, tag `v2026.11.6`, publicada no Nexus):** a notificação ganhou o booleano `actionable` (migration **V1401**, coluna `actionable BOOLEAN NOT NULL DEFAULT false`; opcional, `false` por padrão). Quem notifica diz se o item **pode ser aberto**; o front só torna o item clicável quando `actionable=true` **e** há handler registrado para o `type`. **Nunca vai URL nem caminho no payload** (só identificadores, como `exportPublicId`). A listagem (`GET /user-notifications`) devolve o campo em cada item. Versão **2026.11.7** (dev-3, P187): só bump de dependências (privacy, audit, commons); o contrato `actionable` é o da 2026.11.6. **Atualização de host:** o `backup` 2026.11.12 em diante exige user-notifications **>= 2026.11.6** (com a versão antiga dá `NoSuchMethodError` ao notificar).
+
 > **2026.11.03:** `login-tenancy` 2026.11.04 e `subdomain-tenancy` 2026.11.05 saíram para apontar para esta versão (a dependência é `seedgrid.usernotifications.version`); `backup` e `realtime` não mudaram.
 
 > **Auditoria (P136), publicada na 2026.11.02:** `backup` 2026.11.03, `login-tenancy` 2026.11.03 e `subdomain-tenancy` 2026.11.04 saíram só para alinhar a versão (sem mudança de código). O módulo de testes `seedgrid-user-notifications-integration-tests-audit` também foi para o Central.
@@ -37,10 +39,11 @@ notifier.notify(userPublicId, "report.ready", "Relatório pronto", "Clique para 
         Map.of("reportId", reportId));
 ```
 
+- **`actionable` (desde a 2026.11.6):** sobrecargas novas `notify(userPublicId, type, title, message, payload, boolean actionable)` e `notify(accountPublicId, userPublicId, type, title, message, payload, expiresAt, boolean actionable)`. As antigas continuam e equivalem a `actionable=false`.
 - Devolve o `publicId` da notificação; com a extension desligada não grava e devolve `null`.
 - `payload` leva **só identificadores** (nunca URL, caminho de arquivo nem dado pessoal), no máximo `max-payload-bytes`. Quem abre a notificação chama a rota da extension dona do recurso (por exemplo, o download do backup).
 - Grava na transação do chamador; o aviso só sai depois do commit.
-- Fora de uma requisição (job em segundo plano) use a sobrecarga com a conta: `notify(accountPublicId, userPublicId, type, title, message, payload, expiresAt)`.
+- Fora de uma requisição (job em segundo plano) use a sobrecarga com a conta: `notify(accountPublicId, userPublicId, type, title, message, payload, expiresAt)` (e a versão com `actionable`, acima).
 - Limites: `type` ≤ 100, `title` ≤ 200, `message` ≤ 1000 caracteres; `type` e `title` obrigatórios. Violação lança `InvalidNotificationException`.
 
 ## Rotas (`/user-notifications`, só do usuário logado)
@@ -127,7 +130,7 @@ _Fonte: código de `seedgrid-quarkus-ext-user-notifications` (versão 2026.11.02
 
 ## Quem usa hoje
 
-- **`backup`**: ao terminar o export, sucesso ou erro, notifica quem pediu (`backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`). Dependência `provided` no backup: sem a user-notifications ele funciona igual (SPI `ExportInboxNotifier`). A conta de quem pediu é gravada na linha do job (`sg_export_jobs`, coluna `inbox_account_public_id`, V401), então sobrevive a reinício do servidor.
+- **`backup`**: ao terminar o export, sucesso ou erro, notifica quem pediu (`backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`; `backup.finished` sai com `actionable=true` e `backup.failed` com `false`, desde o backup 2026.11.12). Dependência `provided` no backup: sem a user-notifications ele funciona igual (SPI `ExportInboxNotifier`). A conta de quem pediu é gravada na linha do job (`sg_export_jobs`, coluna `inbox_account_public_id`, V401), então sobrevive a reinício do servidor.
 - **`reports`** (plano P128, futuro): relatório pronto.
 
 ## Lacunas e pontos de atenção
