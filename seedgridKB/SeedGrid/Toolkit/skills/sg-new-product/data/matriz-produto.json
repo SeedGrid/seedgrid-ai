@@ -441,7 +441,7 @@
               "apikeys"
             ],
             "pom_adicionar": [
-              "br.com.seedgrid:seedgrid-apikeys:2026.11.0"
+              "br.com.seedgrid:seedgrid-apikeys:2026.11.1"
             ],
             "hibernate_packages": [
               "br.com.seedgrid.apikeys.entities"
