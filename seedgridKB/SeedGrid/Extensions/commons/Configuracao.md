@@ -52,6 +52,12 @@ Headers fixos (não configuráveis): `Access-Control-Allow-Headers`, `Access-Con
 
 Variáveis de ambiente pela regra MP (**Inferência**, nomes sem ambiguidade na leitura por nome exato): `SEEDGRID_APP_BUSINESS_TIMEZONE`, `SEEDGRID_WEB_CORS_ALLOW_ORIGINS`, `SEEDGRID_WEB_CORS_ALLOW_METHODS`, `SEEDGRID_SHOW_DEV_MESSAGE`, `APP_BUILD_VERSION`.
 
+### 2.5 Normalização de dados (digits-only)
+
+| Propriedade | Tipo | Valores aceitos | Padrão | Obrigatória | Comportamento | Uso | Relações | Fase | Origem |
+|---|---|---|---|---|---|---|---|---|---|
+| `seedgrid.persistence.digits-only` | `boolean` | `true`/`false` (env `SEEDGRID_PERSISTENCE_DIGITS_ONLY`) | `false` | Não | Desligada, `Contact` (telefone e WhatsApp) e `Address` (CEP e telefone, do cities) gravam o valor como chega, com máscara. Ligada, gravam só os dígitos (`(11) 98765-4321` vira `11987654321`; `null` continua `null`) | `Contact` (commons) e `Address` (cities) | Lida pelo commons (2026.11.3) e pelo cities (2026.11.1); opt-in, o padrão não muda dado existente | runtime | `Contact`/`Address` (2026.11.3) |
+
 ## 3. Propriedades de frameworks lidas
 
 | Propriedade | Como é lida | Efeito | Origem |

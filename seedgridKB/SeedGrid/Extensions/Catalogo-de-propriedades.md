@@ -28,7 +28,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | business-days | 5 |
 | Quarkus | cache | 21 |
 | Quarkus | cities | 14 |
-| Quarkus | commons | 5 |
+| Quarkus | commons | 6 |
 | Quarkus | exchange | 4 |
 | Quarkus | filemanagement | 35 |
 | Quarkus | login-tenancy | 45 |
@@ -65,7 +65,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-security | 44 |
 | Front | fe-self-enter | 3 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **888** |
+| **Total** | | **889** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -257,6 +257,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.web.cors.allow-methods` | CORS (CorsFilter) | `String` | `GET,POST,PUT,PATCH,DELETE,OPTIONS` | Runtime | Valor de Access-Control-Allow-Methods na resposta ao preflight; não é usado para bloquear métodos | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 | `seedgrid.show-dev-message` | Tratamento de exceções | `boolean` | `false` | Runtime | true preenche devMessage no Problem Details (mensagem técnica da exceção / violações); false devolve devMessage vazio | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 | `app.build.version` | Banner de inicialização | `String` | `dev` | Runtime (startup) | Impresso em System.out como Versao: <valor> após o banner.txt do classpath (se existir) | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
+| `seedgrid.persistence.digits-only` | Normalização de dados (digits-only) | `boolean` | `false` | runtime | Desligada, Contact (telefone e WhatsApp) e Address (CEP e telefone, do cities) gravam o valor como chega, com máscara | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 
 ### exchange
 
