@@ -47,4 +47,22 @@ describe("FE-46: clique seguido nao duplica o registro (nada de void na acao)", 
     const offenders = offendersFor((line) => new RegExp(`^\\s+void ${WRITE_NAMES}[A-Za-z]*\\(`).test(line) && !line.includes("THEME_STORAGE_KEY"));
     assert.deepEqual(offenders, []);
   });
+
+  // Gravacao SEMPRE passa pelo botao (SgButton com onClick devolvendo a Promise, onde mora a idempotencia). O <form>
+  // existe so para o gerenciador de senhas/Enter: o onSubmit e' apenas preventDefault, e o Enter aciona o botao submit.
+  // Vale para TODO <form> (login, esqueci a senha, troca de senha, perfil, 2FA): nenhum onSubmit com funcao externa.
+  it("onSubmit de <form> so faz preventDefault: a acao passa pelo botao (SgButton com onClick devolvendo a Promise)", () => {
+    const offenders: string[] = [];
+    for (const file of sources(APP_DIR)) {
+      const rel = file.slice(APP_DIR.length);
+      const source = readFileSync(file, "utf8");
+      for (const match of source.matchAll(/<form[^>]*?onSubmit={((?:[^{}]|{[^{}]*})*)}/g)) {
+        const handler = match[1].replace(/s+/g, " ").trim();
+        const parts = /^((w+)) => (w+).preventDefault()$/.exec(handler);
+        const onlyPrevent = parts !== null && parts[1] === parts[2];
+        if (!onlyPrevent) offenders.push(`${rel}: onSubmit={${handler}}`);
+      }
+    }
+    assert.deepEqual(offenders, []);
+  });
 });

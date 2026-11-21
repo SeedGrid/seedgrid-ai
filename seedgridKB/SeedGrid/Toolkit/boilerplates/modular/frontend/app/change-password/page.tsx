@@ -9,7 +9,7 @@ import {
 } from "@seedgrid/fe-components";
 import { messageForHttpStatus, readApiErrorMessage } from "@seedgrid/fe-core";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState, useTransition } from "react";
+import { useState } from "react";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -18,10 +18,8 @@ export default function ChangePasswordPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function changePassword() {
     setErrorMessage(null);
     setInfoMessage(null);
 
@@ -30,46 +28,42 @@ export default function ChangePasswordPage() {
       return;
     }
 
-    startTransition(async () => {
-      const response = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
-      });
-
-      const payload = (await readJson(response)) as
-        | { detail?: string; title?: string; message?: string; error?: string; violations?: { message?: string }[] }
-        | null;
-
-      if (!response.ok) {
-        setErrorMessage(readApiErrorMessage(payload) ?? messageForHttpStatus(response.status));
-        return;
-      }
-
-      setInfoMessage("Senha alterada. Faca login novamente com a nova senha.");
-      router.push("/login");
-      router.refresh();
+    const response = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
     });
+
+    const payload = (await readJson(response)) as
+      | { detail?: string; title?: string; message?: string; error?: string; violations?: { message?: string }[] }
+      | null;
+
+    if (!response.ok) {
+      setErrorMessage(readApiErrorMessage(payload) ?? messageForHttpStatus(response.status));
+      return;
+    }
+
+    setInfoMessage("Senha alterada. Faca login novamente com a nova senha.");
+    router.push("/login");
+    router.refresh();
   }
 
   // Escape do "trap": se o token expirou (ou o usuario quer entrar com outra conta),
   // limpa a sessao (cookies token+refresh+must-change) e libera o /login. Sem isso, o
   // middleware mantem o usuario preso nesta tela enquanto houver cookie de sessao.
-  function onBackToLogin() {
-    startTransition(async () => {
-      try {
-        await fetch("/api/auth/logout", { method: "POST" });
-      } catch {
-        // ignora erro de rede — segue pro login de qualquer forma
-      }
-      router.push("/login");
-      router.refresh();
-    });
+  async function onBackToLogin() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignora erro de rede — segue pro login de qualquer forma
+    }
+    router.push("/login");
+    router.refresh();
   }
 
   return (
@@ -80,7 +74,7 @@ export default function ChangePasswordPage() {
           description="A API marcou sua conta para troca obrigatoria de senha antes de continuar."
           title="Alterar senha"
         >
-          <form onSubmit={onSubmit}>
+          <form onSubmit={(event) => event.preventDefault()}>
             <SgStack gap={16}>
               <SgInputPassword
                 maxLength={128}
@@ -129,7 +123,8 @@ export default function ChangePasswordPage() {
               {infoMessage ? <div className="login-info">{infoMessage}</div> : null}
               {errorMessage ? <div className="login-error">{errorMessage}</div> : null}
               <SgButton
-                label={pending ? "Salvando..." : "Salvar nova senha"}
+                label="Salvar nova senha"
+                onClick={() => changePassword()}
                 type="submit"
               />
               <SgButton

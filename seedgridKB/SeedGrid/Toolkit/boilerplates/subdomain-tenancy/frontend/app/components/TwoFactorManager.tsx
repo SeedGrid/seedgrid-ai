@@ -15,7 +15,7 @@ import {
   type SgComboboxSource,
 } from "@seedgrid/fe-components";
 import { Download, ShieldCheck, ShieldOff } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { StatusBadge } from "./StatusBadge";
 import type {
@@ -168,9 +168,6 @@ export function TwoFactorManager() {
     }
   }
 
-  // Guarda por ref: Enter no formulario ou clique seguido nao dispara o desativar duas vezes.
-  const disablingRef = useRef(false);
-
   async function handleDisable() {
     const requiresTotp = status?.primaryMethod === "TOTP";
     if (
@@ -186,10 +183,6 @@ export function TwoFactorManager() {
       return;
     }
 
-    if (disablingRef.current) {
-      return;
-    }
-    disablingRef.current = true;
     setPending(true);
     setFeedback(null);
     try {
@@ -207,7 +200,6 @@ export function TwoFactorManager() {
       resetForms();
       await loadStatus();
     } finally {
-      disablingRef.current = false;
       setPending(false);
     }
   }
@@ -274,12 +266,7 @@ export function TwoFactorManager() {
           {status.enabled ? (
             // <form> em volta pelo mesmo motivo da tela de perfil: campo de senha solto faz o
             // Chrome reclamar no console e atrapalha o gerenciador de senhas.
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                return handleDisable();
-              }}
-            >
+            <form onSubmit={(event) => event.preventDefault()}>
               <SgStack gap={12}>
                 <span style={{ fontSize: 13, opacity: 0.75 }}>
                   Informe <strong>apenas um</strong> destes para confirmar — nao precisa preencher
@@ -324,6 +311,7 @@ export function TwoFactorManager() {
                   type="submit"
                   appearance="outline"
                   label={pending ? "Desativando..." : "Desativar"}
+                  onClick={() => handleDisable()}
                   leftIcon={<ShieldOff size={16} />}
                   severity="danger"
                 />

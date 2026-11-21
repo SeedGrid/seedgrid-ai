@@ -126,9 +126,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Guarda por ref: Enter no formulario ou clique seguido nao troca a senha duas vezes.
-  const savingPwdRef = useRef(false);
-
   async function savePassword() {
     if (!currentPassword) {
       toast.error("Informe a senha atual.");
@@ -138,10 +135,6 @@ export default function ProfilePage() {
       toast.error("A confirmacao nao confere com a nova senha.");
       return;
     }
-    if (savingPwdRef.current) {
-      return;
-    }
-    savingPwdRef.current = true;
     setSavingPwd(true);
     try {
       const response = await fetch("/api/me/profile/password", {
@@ -158,7 +151,6 @@ export default function ProfilePage() {
       setNewPassword("");
       setConfirmPassword("");
     } finally {
-      savingPwdRef.current = false;
       setSavingPwd(false);
     }
   }
@@ -345,12 +337,7 @@ export default function ProfilePage() {
             {/* <form> de verdade (com o e-mail como username escondido): sem ele o Chrome loga
                 "Password field is not contained in a form" e o gerenciador de senhas nao sabe
                 distinguir a senha atual da nova. O submit tambem faz o Enter funcionar. */}
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                return savePassword();
-              }}
-            >
+            <form onSubmit={(event) => event.preventDefault()}>
               <input
                 type="text"
                 name="username"
@@ -411,7 +398,7 @@ export default function ProfilePage() {
                     appearance="outline"
                     label={savingPwd ? "Salvando..." : "Alterar senha"}
                     leftIcon={<Save size={16} />}
-                    loading={savingPwd}
+                    onClick={() => savePassword()}
                     severity="secondary"
                   />
                 </SgStack>

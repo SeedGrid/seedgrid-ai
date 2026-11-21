@@ -6,7 +6,9 @@
 //  4. contador `requests` declarado por padrao em *UsageMeters*.java (FE-41, BE-74);
 //  5. Empresas e Seguranca fora do fim do menu lateral (FE-44);
 //  6. botao de acao que GRAVA com `onClick={() => void salvar()}` (ou onSubmit): o `void` descarta a Promise e o SgButton nao entra em
-//     loading, entao o clique repetido duplica o registro (FE-46, P190). Devolva a Promise: `onClick={() => salvar()}`.
+//     loading, entao o clique repetido duplica o registro (FE-46, P190). Devolva a Promise: `onClick={() => salvar()}`;
+//  7. `<form onSubmit={...}>` que faz mais do que `event.preventDefault()`: a gravacao passa sempre pelo botao (FE-46, P190). O form so
+//     existe para o gerenciador de senha do navegador; o `SgButton type="submit"` leva o `onClick` que devolve a Promise.
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -88,7 +90,17 @@ for (const f of walk(root)) {
   if (/\.tsx$/.test(r) && !/\.(test|spec)\./.test(r)) {
     const GRAVA = /(save|submit|salvar|confirm|delete|remove|excluir|create|criar|send|enviar|pay|pagar|update|reactivate|reativar|cancel|downgrade|register|apply|aplicar|publish|revoke|invite|approve|reject|rotate|regenerate|toggle|restore|import|export|finish|signup|login|logout)/i;
     const re = /on(?:Click|Submit)=\{\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*void\s+([A-Za-z_$][\w$.]*)\s*\(/g;
-    for (const m of read(f).matchAll(re)) {
+    const srcF = read(f);
+    for (const m of srcF.matchAll(/<form\b/g)) {
+      const attrs = tagAttrs(srcF, m.index + m[0].length);
+      const o = attrs.match(/\bonSubmit\s*=\s*\{([\s\S]*)\}\s*$/m) || attrs.match(/\bonSubmit\s*=\s*\{([\s\S]*?)\}(?=\s+\w+=|\s*$)/);
+      if (!o) continue;
+      const corpo = o[1].replace(/\s+/g, ' ').trim();
+      if (!/^\(?\s*[A-Za-z_$][\w$]*\s*\)?\s*=>\s*[A-Za-z_$][\w$]*\.preventDefault\(\)\s*$/.test(corpo)) {
+        add('form-onsubmit-grava', f, `<form onSubmit={${corpo.slice(0, 60)}${corpo.length > 60 ? '...' : ''}}>: o form so faz event.preventDefault(); a acao passa pelo SgButton type="submit" com onClick que devolve a Promise (FE-46)`);
+      }
+    }
+    for (const m of srcF.matchAll(re)) {
       if (GRAVA.test(m[1])) add('botao-grava-com-void', f, `onClick/onSubmit com \`void ${m[1]}()\`: devolva a Promise (\`() => ${m[1]}()\`) para o SgButton travar o clique repetido (FE-46)`);
     }
   }

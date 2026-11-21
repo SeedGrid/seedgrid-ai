@@ -10,7 +10,7 @@ import {
 import { messageForHttpStatus, readApiErrorMessage } from "@seedgrid/fe-core";
 import { Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState, useTransition } from "react";
+import { useState } from "react";
 
 import { Shell } from "../../components/Shell";
 
@@ -19,10 +19,8 @@ export default function SecurityChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [pending, startTransition] = useTransition();
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function changePassword() {
 
     if (!currentPassword.trim()) {
       toast.error("Informe a senha atual.");
@@ -34,24 +32,22 @@ export default function SecurityChangePasswordPage() {
       return;
     }
 
-    startTransition(async () => {
-      const response = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      const payload = (await readJson(response)) as ProblemPayload | null;
-
-      if (!response.ok) {
-        toast.error(readApiErrorMessage(payload) ?? messageForHttpStatus(response.status));
-        return;
-      }
-
-      toast.success("Senha alterada. Faca login novamente com a nova senha.");
-      router.push("/login");
-      router.refresh();
+    const response = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword }),
     });
+
+    const payload = (await readJson(response)) as ProblemPayload | null;
+
+    if (!response.ok) {
+      toast.error(readApiErrorMessage(payload) ?? messageForHttpStatus(response.status));
+      return;
+    }
+
+    toast.success("Senha alterada. Faca login novamente com a nova senha.");
+    router.push("/login");
+    router.refresh();
   }
 
   return (
@@ -65,7 +61,7 @@ export default function SecurityChangePasswordPage() {
         title="Nova senha"
         description="Por seguranca, apos a troca voce sera redirecionado para um novo login."
       >
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(event) => event.preventDefault()}>
           <SgStack gap={16}>
             <SgInputPassword
               maxLength={128}
@@ -114,9 +110,10 @@ export default function SecurityChangePasswordPage() {
 
             <SgButton
               appearance="outline"
-              label={pending ? "Salvando..." : "Salvar"}
+              label="Salvar"
               leftIcon={<Save size={16} />}
               severity="secondary"
+              onClick={() => changePassword()}
               type="submit"
             />
           </SgStack>

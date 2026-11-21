@@ -9,7 +9,7 @@ import {
   SgStack,
 } from "@seedgrid/fe-components";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState, useTransition } from "react";
+import { useState } from "react";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -18,10 +18,8 @@ export default function ForgotPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function requestPasswordReset() {
     setErrorMessage(null);
     setInfoMessage(null);
 
@@ -34,30 +32,28 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    startTransition(async () => {
-      let response: Response;
-      try {
-        response = await fetch("/api/auth/forgot-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email.trim(), newPassword }),
-        });
-      } catch {
-        setErrorMessage("Nao foi possivel conectar ao servidor. Tente novamente.");
-        return;
-      }
+    let response: Response;
+    try {
+      response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), newPassword }),
+      });
+    } catch {
+      setErrorMessage("Nao foi possivel conectar ao servidor. Tente novamente.");
+      return;
+    }
 
-      const payload = (await readJson(response)) as ProblemPayload | null;
+    const payload = (await readJson(response)) as ProblemPayload | null;
 
-      if (!response.ok) {
-        setErrorMessage(extractMessage(payload) ?? "Falha ao solicitar a troca de senha.");
-        return;
-      }
+    if (!response.ok) {
+      setErrorMessage(extractMessage(payload) ?? "Falha ao solicitar a troca de senha.");
+      return;
+    }
 
-      setInfoMessage(
-        "Enviamos um e-mail de confirmacao. Abra o link para concluir a troca de senha.",
-      );
-    });
+    setInfoMessage(
+      "Enviamos um e-mail de confirmacao. Abra o link para concluir a troca de senha.",
+    );
   }
 
   return (
@@ -68,7 +64,7 @@ export default function ForgotPasswordPage() {
           title="Esqueci a senha"
           description="Informe seu e-mail e a nova senha. Voce recebera um link para confirmar a troca."
         >
-          <form onSubmit={onSubmit}>
+          <form onSubmit={(event) => event.preventDefault()}>
             <SgStack gap={16}>
               <SgInputEmail
                 id="forgot-email"
@@ -108,7 +104,8 @@ export default function ForgotPasswordPage() {
               {infoMessage ? <div className="login-info">{infoMessage}</div> : null}
               {errorMessage ? <div className="login-error">{errorMessage}</div> : null}
               <SgButton
-                label={pending ? "Enviando..." : "Solicitar troca de senha"}
+                label="Solicitar troca de senha"
+                onClick={() => requestPasswordReset()}
                 type="submit"
               />
               <SgButton

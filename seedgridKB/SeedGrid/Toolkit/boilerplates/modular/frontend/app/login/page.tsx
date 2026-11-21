@@ -11,12 +11,10 @@ import {
 } from "@seedgrid/fe-components";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  FormEvent,
   Suspense,
   useEffect,
   useRef,
   useState,
-  useTransition,
 } from "react";
 
 import type { AdminLoginResponse } from "@/lib/admin-auth";
@@ -45,7 +43,6 @@ function LoginPageContent() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
   useEffect(() => {
     if (searchParams.get("confirmed") === "1") {
       setInfoMessage(
@@ -77,62 +74,59 @@ function LoginPageContent() {
     router.replace(pathname, { scroll: false });
   }, [expired, pathname, router]);
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function signIn() {
     setErrorMessage(null);
     setInfoMessage(null);
 
-    startTransition(async () => {
-      let response: Response;
-      try {
-        response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ login: email.trim(), password }),
-        });
-      } catch {
-        setErrorMessage(
-          "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.",
-        );
+    let response: Response;
+    try {
+      response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login: email.trim(), password }),
+      });
+    } catch {
+      setErrorMessage(
+        "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.",
+      );
+      return;
+    }
+
+    const payload = ((await readJson(response)) ?? {}) as
+      | AdminLoginResponse
+      | { message?: string };
+
+    if (!response.ok) {
+      // O PasswordChangeRequiredFilter (ext-security) pode bloquear ate' a PROPRIA chamada
+      // pos-login com esse codigo (nao so' a flag de sucesso tratada abaixo). Sem isso, a
+      // tela mostrava o JSON cru do erro em vez de abrir a troca de senha.
+      if (isPasswordChangeRequiredError(payload)) {
+        router.push("/change-password");
+        router.refresh();
         return;
       }
-
-      const payload = ((await readJson(response)) ?? {}) as
-        | AdminLoginResponse
-        | { message?: string };
-
-      if (!response.ok) {
-        // O PasswordChangeRequiredFilter (ext-security) pode bloquear ate' a PROPRIA chamada
-        // pos-login com esse codigo (nao so' a flag de sucesso tratada abaixo). Sem isso, a
-        // tela mostrava o JSON cru do erro em vez de abrir a troca de senha.
-        if (isPasswordChangeRequiredError(payload)) {
-          router.push("/change-password");
-          router.refresh();
-          return;
-        }
-        // Empresa desligada (COMPANY_DISABLED): nao entra; mensagem propria, nao a generica.
-        if (isCompanyDisabledBody(payload)) {
-          setErrorMessage(COMPANY_DISABLED_MESSAGE);
-          return;
-        }
-        setErrorMessage(extractMessage(payload) ?? "Falha ao autenticar no admin.");
+      // Empresa desligada (COMPANY_DISABLED): nao entra; mensagem propria, nao a generica.
+      if (isCompanyDisabledBody(payload)) {
+        setErrorMessage(COMPANY_DISABLED_MESSAGE);
         return;
       }
+      setErrorMessage(extractMessage(payload) ?? "Falha ao autenticar no admin.");
+      return;
+    }
 
-      if (isTwoFactorRequired(payload)) {
-        // Guarda o desafio e segue para a pagina dedicada de verificacao.
-        savePendingTwoFactor({
-          tempToken: payload.tempToken,
-          method: payload.method ?? null,
-        });
-        router.push("/auth/2fa/verify");
-        return;
-      }
+    if (isTwoFactorRequired(payload)) {
+      // Guarda o desafio e segue para a pagina dedicada de verificacao.
+      savePendingTwoFactor({
+        tempToken: payload.tempToken,
+        method: payload.method ?? null,
+      });
+      router.push("/auth/2fa/verify");
+      return;
+    }
 
-      // Sucesso: escolha da empresa (companySelectionRequired) > troca obrigatoria de senha > app.
-      router.push(resolvePostLoginPath(payload));
-      router.refresh();
-    });
+    // Sucesso: escolha da empresa (companySelectionRequired) > troca obrigatoria de senha > app.
+    router.push(resolvePostLoginPath(payload));
+    router.refresh();
   }
 
   return (
@@ -147,7 +141,7 @@ function LoginPageContent() {
             description="Use uma conta com role ADMIN para acessar o backoffice."
             title="Entrar no Admin Web"
           >
-          <form onSubmit={onSubmit}>
+          <form onSubmit={(event) => event.preventDefault()}>
             <SgStack gap={16}>
               <SgInputEmail
                 id="login-email"
@@ -187,7 +181,8 @@ function LoginPageContent() {
                 <div className="login-error">{errorMessage}</div>
               ) : null}
               <SgButton
-                label={pending ? "Processando..." : "Entrar"}
+                label="Entrar"
+                onClick={() => signIn()}
                 type="submit"
               />
             </SgStack>

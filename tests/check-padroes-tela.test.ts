@@ -63,3 +63,34 @@ test('baseline: entrada que deixou de ocorrer reprova (o baseline so encolhe)', 
   assert.equal(r.status, 1);
   assert.match(`${r.stdout}${r.stderr}`, /baseline obsoleto/);
 }));
+
+test('FE-46: onClick com void numa acao de gravacao reprova; devolver a Promise passa', () => {
+  withTree({ 'app/a/page.tsx': '<SgButton onClick={() => void salvar()} />' }, (dir) => {
+    const r = run(dir);
+    assert.equal(r.code, 1);
+    assert.match(r.out, /botao-grava-com-void/);
+  });
+  withTree({ 'app/a/page.tsx': '<SgButton onClick={() => salvar()} />' }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+  withTree({ 'app/a/page.tsx': '<SgButton onClick={() => void abrirDialogo()} />' }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+});
+
+test('FE-46: form com onSubmit que faz mais que preventDefault reprova; so preventDefault passa', () => {
+  withTree({ 'app/a/page.tsx': '<form onSubmit={onSubmit}><SgButton type="submit" /></form>' }, (dir) => {
+    const r = run(dir);
+    assert.equal(r.code, 1);
+    assert.match(r.out, /form-onsubmit-grava/);
+  });
+  withTree({ 'app/a/page.tsx': '<form onSubmit={(event) => { void salvar(); }}><SgButton type="submit" /></form>' }, (dir) => {
+    assert.equal(run(dir).code, 1);
+  });
+  withTree({ 'app/a/page.tsx': '<form onSubmit={(event) => event.preventDefault()}><SgButton type="submit" onClick={() => salvar()} /></form>' }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+  withTree({ 'app/a/page.tsx': '<form onSubmit={(e) => e.preventDefault()}><input /></form>' }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+});
