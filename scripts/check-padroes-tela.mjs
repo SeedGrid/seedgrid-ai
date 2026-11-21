@@ -4,7 +4,9 @@
 //  2. item de seguranca (/security/..., /apikeys/...) solto na raiz do menu (`data.ts`), fora do grupo Seguranca (FE-40);
 //  3. texto "Cadastre o ID de preco" fora do admin: o cliente nunca ve instrucao de administrador (FE-42);
 //  4. contador `requests` declarado por padrao em *UsageMeters*.java (FE-41, BE-74);
-//  5. Empresas e Seguranca fora do fim do menu lateral (FE-44).
+//  5. Empresas e Seguranca fora do fim do menu lateral (FE-44);
+//  6. botao de acao que GRAVA com `onClick={() => void salvar()}` (ou onSubmit): o `void` descarta a Promise e o SgButton nao entra em
+//     loading, entao o clique repetido duplica o registro (FE-46, P190). Devolva a Promise: `onClick={() => salvar()}`.
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -81,6 +83,13 @@ for (const f of walk(root)) {
     if (primeiro >= 0) {
       const depois = raizes.slice(primeiro).filter((h) => !fim(h) && !/^\/(security\/|apikeys|audit)/.test(h));
       if (depois.length) add('menu-ordem', f, `Empresas e Seguranca devem ser as ultimas opcoes do menu (FE-44); depois delas: ${depois.join(', ')}`);
+    }
+  }
+  if (/\.tsx$/.test(r) && !/\.(test|spec)\./.test(r)) {
+    const GRAVA = /(save|submit|salvar|confirm|delete|remove|excluir|create|criar|send|enviar|pay|pagar|update|reactivate|reativar|cancel|downgrade|register|apply|aplicar|publish|revoke|invite|approve|reject|rotate|regenerate|toggle|restore|import|export|finish|signup|login|logout)/i;
+    const re = /on(?:Click|Submit)=\{\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*void\s+([A-Za-z_$][\w$.]*)\s*\(/g;
+    for (const m of read(f).matchAll(re)) {
+      if (GRAVA.test(m[1])) add('botao-grava-com-void', f, `onClick/onSubmit com \`void ${m[1]}()\`: devolva a Promise (\`() => ${m[1]}()\`) para o SgButton travar o clique repetido (FE-46)`);
     }
   }
   if (/\.(tsx|ts)$/.test(r) && !/(^|\/)admin\//.test(r) && !/\.(test|spec)\./.test(r)) {

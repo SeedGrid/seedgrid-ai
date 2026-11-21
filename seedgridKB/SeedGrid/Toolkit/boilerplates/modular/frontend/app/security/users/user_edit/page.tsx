@@ -90,6 +90,7 @@ function UserEditPageContent() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [editor, setEditor] = useState<UserEditorState>(EMPTY_EDITOR);
   const [roleOptions, setRoleOptions] = useState<RoleSummary[]>([]);
   // Locked to the loaded identity, not the editable e-mail field, so the
@@ -191,30 +192,37 @@ function UserEditPageContent() {
     };
   }, [accessLoading, canAccessPage, isEditing, userPublicId]);
 
+  // Erro de salvar: toast (some sozinho) + aviso fixo acima do Salvar, com o texto do backend (detail).
+  function showSaveError(message: string) {
+    setSaveError(message);
+    toast.error(message);
+  }
+
   async function submitUser() {
+    setSaveError(null);
     if (!editor.name.trim()) {
-      toast.error("Informe o nome do usuario.");
+      showSaveError("Informe o nome do usuario.");
       return;
     }
 
     if (!editor.email.trim()) {
-      toast.error("Informe o e-mail do usuario.");
+      showSaveError("Informe o e-mail do usuario.");
       return;
     }
 
     if (!isEditing && !editor.password.trim()) {
-      toast.error("Informe a senha inicial do usuario.");
+      showSaveError("Informe a senha inicial do usuario.");
       return;
     }
 
     // So valida coincidencia quando ha senha (no editar, senha em branco = manter a atual).
     if (editor.password.trim() && editor.password !== editor.confirmPassword) {
-      toast.error("As senhas nao coincidem.");
+      showSaveError("As senhas nao coincidem.");
       return;
     }
 
     if (editor.cargo.trim().length > 100) {
-      toast.error("Cargo deve ter no máximo 100 caracteres.");
+      showSaveError("Cargo deve ter no máximo 100 caracteres.");
       return;
     }
 
@@ -249,7 +257,7 @@ function UserEditPageContent() {
       );
       router.refresh();
     } catch (error) {
-      toast.error(extractApiErrorMessage(error) ?? "Falha ao salvar usuario.");
+      showSaveError(extractApiErrorMessage(error) ?? "Falha ao salvar usuario.");
     } finally {
       setSubmitting(false);
     }
@@ -450,6 +458,10 @@ function UserEditPageContent() {
                   }))
                 }
               />
+
+              {saveError ? (
+                <StatusBadge severity="danger" value={saveError} />
+              ) : null}
 
               <SgButton
                 appearance="outline"

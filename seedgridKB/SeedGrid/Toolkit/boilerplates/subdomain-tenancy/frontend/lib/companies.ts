@@ -381,7 +381,9 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
  * Confere o formulario antes de salvar. `pendingCityText` e o que a pessoa digitou no campo Cidade: so vale a cidade
- * ESCOLHIDA na lista (`cityId`); texto digitado sem escolher e recusado em vez de gravar texto solto.
+ * ESCOLHIDA na lista (`cityId`); texto NOVO digitado sem escolher e recusado em vez de gravar texto solto.
+ * Empresa que veio so com a cidade em texto (signup, sem `cityId`) salva normalmente enquanto a pessoa nao mexer
+ * na cidade: o texto herdado (`addrCity`) e mantido, e quem so quer mudar o telefone nao e barrado.
  */
 export function validateCompanyForm(form: CompanyForm, pendingCityText = ""): string | null {
   if (!form.corporateName.trim()) {
@@ -405,7 +407,8 @@ export function validateCompanyForm(form: CompanyForm, pendingCityText = ""): st
   if (state && !BRAZIL_STATES.includes(state.toUpperCase())) {
     return "UF invalida.";
   }
-  if (pendingCityText.trim() !== "" && form.cityId == null) {
+  const typed = pendingCityText.trim();
+  if (typed !== "" && form.cityId == null && typed !== form.addrCity.trim()) {
     return "Escolha a cidade na lista: o texto digitado sem escolher não é gravado.";
   }
   return null;

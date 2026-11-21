@@ -12,7 +12,7 @@ allowBuilds:
   protobufjs: true
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@seedgrid/fe-components@2026.10.0 || 2026.11.15'
+  - '@seedgrid/fe-components@2026.10.0 || 2026.11.15 || 2026.11.16'
   - '@seedgrid/pulse-subscriber-react@3.0.0'
   - '@seedgrid/fe-core@2026.11.15'
   - '@seedgrid/fe-theme@2026.11.15'

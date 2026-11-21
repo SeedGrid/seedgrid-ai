@@ -259,6 +259,12 @@ describe("validacao do formulario", () => {
     expect(validateCompanyForm(ok, "")).toBeNull();
     expect(validateCompanyForm(ok, "abcXYZ")).toMatch(/Escolha a cidade na lista/);
     expect(validateCompanyForm({ ...ok, cityId: 3550308, cityName: "Sao Paulo" }, "")).toBeNull();
+    // empresa do signup: so cidade em TEXTO (sem cityId); quem nao mexeu na cidade salva (so quer mudar o telefone)
+    const legacy = { ...ok, addrCity: "Sao Paulo", cityId: null, cityName: "" };
+    expect(validateCompanyForm(legacy, "")).toBeNull();
+    expect(validateCompanyForm(legacy, "Sao Paulo")).toBeNull();
+    // mexeu na cidade e deixou texto novo sem escolher: recusa
+    expect(validateCompanyForm(legacy, "Sao Pau")).toMatch(/Escolha a cidade na lista/);
     // escolheu da lista: o texto pendente volta vazio e o cityId vale
     expect(validateCompanyForm({ ...ok, cityId: 3550308, cityName: "Sao Paulo" }, "Sao Paulo")).toBeNull();
   });

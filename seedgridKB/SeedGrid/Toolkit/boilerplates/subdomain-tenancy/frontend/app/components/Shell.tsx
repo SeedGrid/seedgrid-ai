@@ -8,6 +8,7 @@ import {
   SgScreen,
   SgStack,
   SgNotificationBell,
+  registerNotificationAction,
 } from "@seedgrid/fe-components";
 import {
   CalendarDays,
@@ -34,6 +35,11 @@ import { navItems, type NavItem } from "../data";
 import { ADMIN_ROLE } from "@/lib/admin-permissions";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { PRODUCT_SETTINGS_LABEL, PRODUCT_SETTINGS_PATH } from "@/lib/product-settings";
+import {
+  BACKUP_NOTIFICATION_CONFIG,
+  browserNotificationDeps,
+  registerBackupNotificationActions,
+} from "@/lib/notification-actions";
 
 type ShellProps = {
   title: string;
@@ -207,6 +213,12 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
   const expandedIds = (activeTrail ?? [])
     .filter((item) => item.children?.length)
     .map((item) => item.href);
+
+  // Acoes do sino por tipo de notificacao (P186): o sino so conhece o registro; o host diz o que cada tipo faz.
+  useEffect(
+    () => registerBackupNotificationActions(registerNotificationAction, BACKUP_NOTIFICATION_CONFIG, browserNotificationDeps((path) => router.push(path))),
+    [router],
+  );
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 800px)");

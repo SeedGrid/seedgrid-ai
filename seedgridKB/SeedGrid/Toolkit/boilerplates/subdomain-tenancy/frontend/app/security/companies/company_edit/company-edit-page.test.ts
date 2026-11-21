@@ -36,6 +36,8 @@ describe("company_edit: empresa é sempre pessoa jurídica", () => {
   it("o campo Cidade avisa a tela do texto digitado e o Salvar recusa texto sem escolha (QA)", () => {
     expect(source).toMatch(/<CityPicker[\s\S]*?onTextChange=\{setCityText\}/);
     expect(source).toMatch(/validateCompanyForm\(form, cityText\)/);
+    // so o texto digitado pela pessoa conta; a cidade herdada em texto nao trava o Salvar
+    expect(source).toMatch(/useState\(""\);[\s\S]*?setCityText/);
   });
 
   it("liga a busca por CNPJ e por CEP e preenche a tela com o resultado", () => {

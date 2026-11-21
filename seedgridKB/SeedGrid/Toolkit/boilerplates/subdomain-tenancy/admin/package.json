@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --port 3003",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --import ./scripts/register-test-loader.mjs --test lib/integration-roles.test.ts lib/plan-commercial.test.ts lib/query.test.ts lib/backup-companies.test.ts lib/topbar.test.ts lib/brand.test.ts lib/menu-order.test.ts lib/status-badge.test.ts proxy.test.ts",
+    "test": "node --experimental-strip-types --import ./scripts/register-test-loader.mjs --test lib/integration-roles.test.ts lib/plan-commercial.test.ts lib/query.test.ts lib/backup-companies.test.ts lib/topbar.test.ts lib/brand.test.ts lib/menu-order.test.ts lib/status-badge.test.ts lib/user-edit-errors.test.ts lib/notification-actions.test.ts proxy.test.ts",
     "postinstall": "node scripts/strip-bom-seedgrid.mjs"
   },
   "dependencies": {
@@ -21,7 +21,7 @@
     "@opentelemetry/sdk-logs": "^0.221.0",
     "@opentelemetry/sdk-node": "^0.221.0",
     "@opentelemetry/semantic-conventions": "^1.43.0",
-    "@seedgrid/fe-components": "2026.11.15",
+    "@seedgrid/fe-components": "2026.11.16",
     "@seedgrid/fe-core": "2026.11.15",
     "@seedgrid/fe-theme": "2026.11.15",
     "@tiptap/core": "^2.27.2",
