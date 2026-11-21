@@ -88,7 +88,7 @@ export function LoginMethodsManager() {
             title={`Desvincular ${providerLabel(identity.provider)}`}
             leftIcon={<Trash2 size={16} />}
             enabled={!(removing === identity.publicId)}
-            onClick={() => void remove(identity)}
+            onClick={() => remove(identity)}
           />
         </div>
       ))}

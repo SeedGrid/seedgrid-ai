@@ -35,7 +35,7 @@ export default function SelectCompanyPage() {
               router.replace(changePasswordRequired ? "/change-password" : "/");
               router.refresh();
             }}
-            onCancel={() => void cancel()}
+            onCancel={() => cancel()}
             onSessionLost={goToLogin}
           />
         </SgCard>

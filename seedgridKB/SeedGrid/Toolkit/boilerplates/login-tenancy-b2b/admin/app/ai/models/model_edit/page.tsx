@@ -191,7 +191,7 @@ function AiModelEditPageContent() {
               isEditing={isEditing}
               submitting={submitting}
               onChange={setEditor}
-              onSubmit={() => void submitModel()}
+              onSubmit={() => submitModel()}
             />
           )}
         </SgStack>
@@ -365,7 +365,7 @@ function ModelPrices({
             appearance="outline"
             label={submitting ? "Lancando..." : "Lancar"}
             leftIcon={<Save size={16} />}
-            onClick={() => void launch()}
+            onClick={() => launch()}
             severity="secondary"
           />
         </SgStack>

@@ -246,7 +246,7 @@ function EmailRequired({ pending, onSent }: { pending: string; onSent: (email: s
           criar a conta.
         </p>
         <SgInputEmail id="social-email" label="E-mail" required onChange={setEmail} />
-        <SgButton severity="primary" appearance="solid" loading={busy} className="w-full" onClick={() => void submit()}>
+        <SgButton severity="primary" appearance="solid" loading={busy} className="w-full" onClick={() => submit()}>
           Enviar código
         </SgButton>
       </SgStack>
@@ -354,13 +354,13 @@ function CodeStep({
               lastSubmitted.current = null;
             }
           }}
-          onComplete={(value) => void submit(value)}
+          onComplete={(value) => submit(value)}
         />
         {message ? <p className="text-sm text-red-600">{message}</p> : null}
-        <SgButton severity="primary" appearance="solid" loading={busy} className="w-full" onClick={() => void submit(code)}>
+        <SgButton severity="primary" appearance="solid" loading={busy} className="w-full" onClick={() => submit(code)}>
           Confirmar
         </SgButton>
-        <SgButton appearance="ghost" severity="secondary" type="button" onClick={() => void resend()}>
+        <SgButton appearance="ghost" severity="secondary" type="button" onClick={() => resend()}>
           Reenviar código
         </SgButton>
       </SgStack>

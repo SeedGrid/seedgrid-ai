@@ -126,6 +126,9 @@ export default function ProfilePage() {
     }
   }
 
+  // Guarda por ref: Enter no formulario ou clique seguido nao troca a senha duas vezes.
+  const savingPwdRef = useRef(false);
+
   async function savePassword() {
     if (!currentPassword) {
       toast.error("Informe a senha atual.");
@@ -135,6 +138,10 @@ export default function ProfilePage() {
       toast.error("A confirmacao nao confere com a nova senha.");
       return;
     }
+    if (savingPwdRef.current) {
+      return;
+    }
+    savingPwdRef.current = true;
     setSavingPwd(true);
     try {
       const response = await fetch("/api/me/profile/password", {
@@ -151,6 +158,7 @@ export default function ProfilePage() {
       setNewPassword("");
       setConfirmPassword("");
     } finally {
+      savingPwdRef.current = false;
       setSavingPwd(false);
     }
   }
@@ -274,7 +282,7 @@ export default function ProfilePage() {
                         leftIcon={<Trash2 size={14} />}
                         size="sm"
                         enabled={!avatarBusy}
-                        onClick={() => void removeAvatar()}
+                        onClick={() => removeAvatar()}
                         severity="danger"
                       />
                     ) : null}
@@ -317,7 +325,7 @@ export default function ProfilePage() {
                       label={savingData ? "Salvando..." : "Salvar dados"}
                       leftIcon={<Save size={16} />}
                       loading={savingData}
-                      onClick={() => void saveData()}
+                      onClick={() => saveData()}
                       severity="secondary"
                     />
                   </SgStack>
@@ -340,7 +348,7 @@ export default function ProfilePage() {
             <form
               onSubmit={(event) => {
                 event.preventDefault();
-                void savePassword();
+                return savePassword();
               }}
             >
               <input

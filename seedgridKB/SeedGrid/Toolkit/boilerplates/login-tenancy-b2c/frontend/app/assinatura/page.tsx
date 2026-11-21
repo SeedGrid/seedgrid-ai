@@ -58,7 +58,7 @@ export default function SubscriptionPage() {
       title="Minha assinatura"
       description="Seu plano, o consumo do ciclo, as faturas e a forma de pagamento."
     >
-      <ListLoadError error={loadError} onRetry={() => void load()} />
+      <ListLoadError error={loadError} onRetry={() => load()} />
 
       {loadError ? null : loading ? (
         <Carregando className="justify-center py-10" texto="Carregando assinatura..." />
@@ -67,7 +67,7 @@ export default function SubscriptionPage() {
       ) : (
         // Sem assinatura: a landing de planos em modo checkout (1a assinatura), exatamente como o
         // report-client fazia para quem ainda nao assinou.
-        <SubscriptionPlans mode="checkout" onSubscriptionActivated={() => void load()} />
+        <SubscriptionPlans mode="checkout" onSubscriptionActivated={() => load()} />
       )}
     </Shell>
   );

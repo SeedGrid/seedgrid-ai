@@ -183,14 +183,14 @@ export function CompanySelect({ onSelected, onCancel, onSessionLost }: Props) {
         </div>
       ) : null}
 
-      <SgButton label={busy ? "Entrando..." : "Entrar"} enabled={canConfirm} onClick={() => void confirm()} />
+      <SgButton label={busy ? "Entrando..." : "Entrar"} enabled={canConfirm} onClick={() => confirm()} />
       {!loading && companies.length === 0 && error ? (
         <SgButton
           appearance="ghost"
           label="Tentar novamente"
           severity="secondary"
           type="button"
-          onClick={() => void load()}
+          onClick={() => load()}
         />
       ) : null}
       <SgButton

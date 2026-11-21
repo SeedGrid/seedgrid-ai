@@ -231,7 +231,7 @@ export function DowngradeCompanySelectionDialog({
               severity="primary"
               enabled={!(!matches || saving)}
               loading={saving}
-              onClick={() => void handleConfirm()}
+              onClick={() => handleConfirm()}
             >
               {confirmLabel}
             </SgButton>

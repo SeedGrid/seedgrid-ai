@@ -356,7 +356,7 @@ export default function NotificationsPage() {
                     onChange={(conditionalRecipients) => update(definition.code, { conditionalRecipients })}
                   />
                 ) : null}
-                <SgButton label={busyCode === definition.code ? "Salvando..." : "Salvar evento"} leftIcon={<Save size={16} />} enabled={!(busyCode !== null)} onClick={() => void save({ definition, configuration })} severity="primary" />
+                <SgButton label={busyCode === definition.code ? "Salvando..." : "Salvar evento"} leftIcon={<Save size={16} />} enabled={!(busyCode !== null)} onClick={() => save({ definition, configuration })} severity="primary" />
               </SgStack>
             </section>
           ))}

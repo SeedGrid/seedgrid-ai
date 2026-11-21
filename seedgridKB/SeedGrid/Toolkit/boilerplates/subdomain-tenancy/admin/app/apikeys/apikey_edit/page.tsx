@@ -173,7 +173,7 @@ export default function ApiKeyEditPage() {
                 appearance="outline"
                 label={copied ? "Copiado!" : "Copiar"}
                 leftIcon={<Copy size={16} />}
-                onClick={() => void copyKey()}
+                onClick={() => copyKey()}
                 severity="secondary"
               />
               <SgButton
@@ -247,7 +247,7 @@ export default function ApiKeyEditPage() {
                 label={submitting ? "Criando..." : "Criar chave"}
                 leftIcon={<KeyRound size={16} />}
                 enabled={!submitting}
-                onClick={() => void handleCreate()}
+                onClick={() => handleCreate()}
                 severity="primary"
               />
             </SgStack>

@@ -402,7 +402,7 @@ function RoleListPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDeleteRole()}
+        onConfirm={() => confirmDeleteRole()}
         onCancel={() => setRoleToDelete(null)}
       />
 

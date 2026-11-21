@@ -300,7 +300,7 @@ export default function CurrenciesPage() {
             <SgButton
               label={saving ? "Salvando..." : "Salvar"}
               enabled={!saving}
-              onClick={() => void save()}
+              onClick={() => save()}
               severity="primary"
             />
           </div>
@@ -319,7 +319,7 @@ export default function CurrenciesPage() {
         confirmButton={{ label: deleting ? "Excluindo..." : "Excluir", severity: "danger", enabled: !deleting}}
         cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDelete()}
+        onConfirm={() => confirmDelete()}
         onCancel={() => setToDelete(null)}
       />
     </Shell>

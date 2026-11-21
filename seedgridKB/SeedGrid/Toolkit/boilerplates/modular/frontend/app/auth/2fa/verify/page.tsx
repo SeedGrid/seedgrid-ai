@@ -158,7 +158,7 @@ export default function TwoFactorVerifyPage() {
                   lastSubmittedRef.current = null;
                 }
               }}
-              onComplete={(value) => void verify(value)}
+              onComplete={(value) => verify(value)}
             />
 
             {infoMessage ? <div className="login-info">{infoMessage}</div> : null}
@@ -166,14 +166,14 @@ export default function TwoFactorVerifyPage() {
 
             <SgButton
               label={pending ? "Validando..." : "Validar codigo"}
-              onClick={() => void verify(code)}
+              onClick={() => verify(code)}
             />
 
             {canResend ? (
               <SgButton
                 appearance="ghost"
                 label={resending ? "Reenviando..." : "Reenviar codigo"}
-                onClick={() => void resend()}
+                onClick={() => resend()}
                 severity="secondary"
                 type="button"
               />

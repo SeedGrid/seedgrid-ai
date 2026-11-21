@@ -238,7 +238,7 @@ export default function PlanTrialPage() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
-                onClick={() => void submit()}
+                onClick={() => submit()}
                 severity="secondary"
               />
             ) : null}

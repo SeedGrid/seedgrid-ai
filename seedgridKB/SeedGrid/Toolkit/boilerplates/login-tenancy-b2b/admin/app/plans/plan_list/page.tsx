@@ -421,7 +421,7 @@ function PlanListPageContent() {
           enabled: !deleting,
         }}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDeletePlan()}
+        onConfirm={() => confirmDeletePlan()}
         onCancel={() => setPlanToDelete(null)}
       />
     </Shell>

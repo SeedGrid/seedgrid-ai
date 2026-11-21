@@ -167,7 +167,7 @@ export default function ExportEditPage() {
               label={submitting ? "Solicitando..." : "Solicitar export"}
               leftIcon={<DatabaseBackup size={16} />}
               enabled={!submitting}
-              onClick={() => void handleCreate()}
+              onClick={() => handleCreate()}
               severity="primary"
             />
           </SgStack>

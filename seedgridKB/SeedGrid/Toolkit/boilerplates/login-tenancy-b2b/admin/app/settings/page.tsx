@@ -167,7 +167,7 @@ export default function SettingsPage() {
                 label={saving ? "Salvando..." : "Salvar configuracao"}
                 leftIcon={<Save size={16} />}
                 loading={saving}
-                onClick={() => void save()}
+                onClick={() => save()}
                 severity="secondary"
               />
               <SgButton
@@ -175,7 +175,7 @@ export default function SettingsPage() {
                 label="Verificar agora"
                 leftIcon={<RefreshCw size={16} />}
                 loading={checking}
-                onClick={() => void checkNow()}
+                onClick={() => checkNow()}
                 severity="primary"
               />
             </SgStack>

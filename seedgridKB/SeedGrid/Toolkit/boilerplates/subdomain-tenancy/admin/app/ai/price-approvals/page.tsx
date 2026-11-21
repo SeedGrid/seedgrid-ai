@@ -124,7 +124,7 @@ export default function AiPriceApprovalsPage() {
               label="Verificar agora"
               leftIcon={<RefreshCw size={16} />}
               loading={acting === "check"}
-              onClick={() => void checkNow()}
+              onClick={() => checkNow()}
               severity="secondary"
             />
           </SgStack>
@@ -198,7 +198,7 @@ export default function AiPriceApprovalsPage() {
                               label="Aprovar"
                               leftIcon={<Check size={16} />}
                               loading={acting === item.id}
-                              onClick={() => void act(item.id, "approve")}
+                              onClick={() => act(item.id, "approve")}
                               severity="success"
                             />
                           ) : null}
@@ -207,7 +207,7 @@ export default function AiPriceApprovalsPage() {
                             label={item.errorMessage ? "Dispensar" : "Recusar"}
                             leftIcon={<X size={16} />}
                             loading={acting === item.id}
-                            onClick={() => void act(item.id, "reject")}
+                            onClick={() => act(item.id, "reject")}
                             severity="danger"
                           />
                         </SgStack>

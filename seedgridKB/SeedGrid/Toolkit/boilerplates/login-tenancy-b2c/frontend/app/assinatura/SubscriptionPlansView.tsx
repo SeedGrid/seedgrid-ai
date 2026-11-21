@@ -458,7 +458,7 @@ export function SubscriptionPlans({
         <div className="rounded-sg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           {error}
         </div>
-        <SgButton appearance="outline" severity="secondary" size="sm" onClick={() => void load()}>
+        <SgButton appearance="outline" severity="secondary" size="sm" onClick={() => load()}>
           Tentar novamente
         </SgButton>
       </div>
@@ -515,7 +515,7 @@ export function SubscriptionPlans({
             appearance="outline"
             size="sm"
             loading={cancelingDowngrade}
-            onClick={() => void cancelDowngrade()}
+            onClick={() => cancelDowngrade()}
           >
             Cancelar downgrade
           </SgButton>
@@ -660,7 +660,7 @@ export function SubscriptionPlans({
                   style={{ width: "100%" }}
                   loading={busy || isPending}
                   enabled={!(plan.current || busy || isPending)}
-                  onClick={() => void handleSubscribe(plan)}
+                  onClick={() => handleSubscribe(plan)}
                 >
                   {plan.current
                     ? "Plano atual"
@@ -797,7 +797,7 @@ export function SubscriptionPlans({
                 severity="primary"
                 enabled={canConfirmChange}
                 loading={confirmBusy}
-                onClick={() => void confirmChange()}
+                onClick={() => confirmChange()}
               >
                 Confirmar troca
               </SgButton>
@@ -902,7 +902,7 @@ export function SubscriptionPlans({
                 severity="primary"
                 enabled={canConfirmCheckout}
                 loading={checkoutConfirmBusy}
-                onClick={() => void confirmCheckoutWithSelection()}
+                onClick={() => confirmCheckoutWithSelection()}
               >
                 Continuar para pagamento
               </SgButton>

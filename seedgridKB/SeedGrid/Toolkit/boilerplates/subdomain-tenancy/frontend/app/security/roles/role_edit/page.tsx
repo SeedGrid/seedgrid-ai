@@ -478,7 +478,7 @@ function RoleEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
-                onClick={() => void submitRole()}
+                onClick={() => submitRole()}
                 severity="secondary"
               />
             </SgStack>

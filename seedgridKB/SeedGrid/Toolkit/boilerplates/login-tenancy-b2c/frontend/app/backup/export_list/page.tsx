@@ -307,7 +307,7 @@ function ExportListPageContent() {
         }}
         cancelButton={{ label: "Voltar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDelete()}
+        onConfirm={() => confirmDelete()}
         onCancel={() => setToDelete(null)}
       />
     </Shell>

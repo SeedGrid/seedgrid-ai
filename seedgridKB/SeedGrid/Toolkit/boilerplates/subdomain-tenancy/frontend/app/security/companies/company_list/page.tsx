@@ -442,7 +442,7 @@ function CompanyListPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !toggling}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmToggleActive()}
+        onConfirm={() => confirmToggleActive()}
         onCancel={() => setCompanyToToggle(null)}
       />
     </Shell>

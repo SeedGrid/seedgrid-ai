@@ -241,7 +241,7 @@ export default function CompanyCalendarPage() {
       width={280}
       source={toCompanyOptions(companies)}
       value={currentCompany?.publicId ?? null}
-      onValueChange={(value) => void selectCompany(value ? String(value) : "")}
+      onValueChange={(value) => selectCompany(value ? String(value) : "")}
     />
   ) : (
     <SgStack gap={4}>
@@ -298,7 +298,7 @@ export default function CompanyCalendarPage() {
                   enabled={weekChanged && !saving && !loading}
                   label={saving ? "Salvando..." : "Salvar"}
                   leftIcon={<Save size={16} />}
-                  onClick={() => void saveWeek()}
+                  onClick={() => saveWeek()}
                   severity="secondary"
                   size="md"
                   style={{ height: 44 }}
@@ -313,7 +313,7 @@ export default function CompanyCalendarPage() {
           ) : null}
         </SgCard>
 
-        <ListLoadError error={loadError} onRetry={() => void load()} />
+        <ListLoadError error={loadError} onRetry={() => load()} />
 
         {loadError ? null : (
           <>
@@ -410,14 +410,14 @@ export default function CompanyCalendarPage() {
                           label={movable.name}
                           checked={movable.enabled}
                           enabled={canEditMovable(canEdit)}
-                          onChange={(checked) => void setMovable(movable, checked)}
+                          onChange={(checked) => setMovable(movable, checked)}
                         />
                         <span style={{ fontSize: 12, opacity: 0.7 }}>{movableOriginLabel(movable.origin)}</span>
                         {canEditMovable(canEdit) && canInheritMovable(movable) ? (
                           <SgButton
                             appearance="ghost"
                             label="Voltar a herdar"
-                            onClick={() => void setMovable(movable, null)}
+                            onClick={() => setMovable(movable, null)}
                             severity="secondary"
                             size="sm"
                           />
@@ -452,7 +452,7 @@ export default function CompanyCalendarPage() {
         message="A empresa volta a usar a semana da conta (ou segunda a sexta). Os feriados e as exceções do ano não mudam."
         confirmButton={{ label: "Restaurar", severity: "danger" }}
         cancelButton={{ label: "Cancelar" }}
-        onConfirm={() => void resetWeek()}
+        onConfirm={() => resetWeek()}
         onCancel={() => setResetting(false)}
       />
     </Shell>

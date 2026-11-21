@@ -15,7 +15,7 @@ import {
   type SgComboboxSource,
 } from "@seedgrid/fe-components";
 import { Download, ShieldCheck, ShieldOff } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { StatusBadge } from "./StatusBadge";
 import type {
@@ -168,6 +168,9 @@ export function TwoFactorManager() {
     }
   }
 
+  // Guarda por ref: Enter no formulario ou clique seguido nao dispara o desativar duas vezes.
+  const disablingRef = useRef(false);
+
   async function handleDisable() {
     const requiresTotp = status?.primaryMethod === "TOTP";
     if (
@@ -183,6 +186,10 @@ export function TwoFactorManager() {
       return;
     }
 
+    if (disablingRef.current) {
+      return;
+    }
+    disablingRef.current = true;
     setPending(true);
     setFeedback(null);
     try {
@@ -200,6 +207,7 @@ export function TwoFactorManager() {
       resetForms();
       await loadStatus();
     } finally {
+      disablingRef.current = false;
       setPending(false);
     }
   }
@@ -269,7 +277,7 @@ export function TwoFactorManager() {
             <form
               onSubmit={(event) => {
                 event.preventDefault();
-                void handleDisable();
+                return handleDisable();
               }}
             >
               <SgStack gap={12}>
@@ -336,7 +344,7 @@ export function TwoFactorManager() {
                 appearance="outline"
                 label={pending ? "Processando..." : "Ativar"}
                 leftIcon={<ShieldCheck size={16} />}
-                onClick={() => void handleEnable()}
+                onClick={() => handleEnable()}
                 severity="secondary"
               />
             </SgStack>
@@ -405,12 +413,12 @@ export function TwoFactorManager() {
                 mask="999-999"
                 value={totpCode}
                 onRawChange={setTotpCode}
-                onComplete={(value) => void handleConfirmTotp(value.replace(/\D/g, ""))}
+                onComplete={(value) => handleConfirmTotp(value.replace(/\D/g, ""))}
               />
               <SgButton
                 appearance="outline"
                 label={pending ? "Confirmando..." : "Confirmar"}
-                onClick={() => void handleConfirmTotp()}
+                onClick={() => handleConfirmTotp()}
                 severity="secondary"
               />
             </SgStack>
@@ -439,12 +447,12 @@ export function TwoFactorManager() {
               mask="999-999"
               value={setupCode}
               onRawChange={setSetupCode}
-              onComplete={(value) => void handleConfirmSetup(value.replace(/\D/g, ""))}
+              onComplete={(value) => handleConfirmSetup(value.replace(/\D/g, ""))}
             />
             <SgButton
               appearance="outline"
               label={pending ? "Confirmando..." : "Confirmar"}
-              onClick={() => void handleConfirmSetup()}
+              onClick={() => handleConfirmSetup()}
               severity="secondary"
             />
           </SgStack>

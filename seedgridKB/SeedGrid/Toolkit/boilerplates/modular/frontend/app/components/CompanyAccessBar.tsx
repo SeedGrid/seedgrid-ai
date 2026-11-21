@@ -103,7 +103,7 @@ export function CompanyAccessBar() {
             label="Empresa"
             source={options}
             value={currentCompany?.publicId ?? null}
-            onValueChange={(value) => void selectCompany(value ? String(value) : "")}
+            onValueChange={(value) => selectCompany(value ? String(value) : "")}
           />
         </div>
       ) : null}

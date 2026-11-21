@@ -389,7 +389,7 @@ function UserListPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDeleteUser()}
+        onConfirm={() => confirmDeleteUser()}
         onCancel={() => setUserToDelete(null)}
       />
     </Shell>

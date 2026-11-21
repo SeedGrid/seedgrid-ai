@@ -375,7 +375,7 @@ export default function AccountsPage() {
               <SgButton
                 appearance="outline"
                 label={submitting ? "Concedendo..." : "Conceder"}
-                onClick={() => void submitGrant()}
+                onClick={() => submitGrant()}
                 severity="secondary"
               />
             </SgStack>

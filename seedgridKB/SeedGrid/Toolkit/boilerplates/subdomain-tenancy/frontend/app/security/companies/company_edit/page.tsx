@@ -236,7 +236,7 @@ function CompanyEditPageContent() {
                 required
                 validateWithPublicaCnpj
                 publicaCnpjErrorMessage="CNPJ não encontrado na base pública. Confira o número ou preencha os dados à mão."
-                onPublicaCnpjResult={(data) => void applyLookup(companyPatchFromPublicaCnpj(data))}
+                onPublicaCnpjResult={(data) => applyLookup(companyPatchFromPublicaCnpj(data))}
                 inputProps={{ value: form.cpfCnpj }}
                 onChange={(value) => setField("cpfCnpj", value)}
               />
@@ -259,7 +259,7 @@ function CompanyEditPageContent() {
                   label="CEP"
                   validateWithViaCep
                   viaCepErrorMessage="CEP não encontrado."
-                  onViaCepResult={(data: ViaCepData) => void applyLookup(companyPatchFromViaCep(data))}
+                  onViaCepResult={(data: ViaCepData) => applyLookup(companyPatchFromViaCep(data))}
                   inputProps={{ value: form.addrPostalCode }}
                   onChange={(value) => setField("addrPostalCode", value)}
                 />
@@ -361,7 +361,7 @@ function CompanyEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
-                onClick={() => void submitCompany()}
+                onClick={() => submitCompany()}
                 severity="secondary"
                 enabled={!submitting}
               />

@@ -213,7 +213,7 @@ export default function SelfEnterPage() {
       setToApprove(request);
       return;
     }
-    void approve(request);
+    return approve(request);
   }
 
   function confirmApprove() {
@@ -225,7 +225,7 @@ export default function SelfEnterPage() {
       setApproveError("Escolha ao menos um perfil para o novo usuario.");
       return;
     }
-    void approve(request, approveRoles);
+    return approve(request, approveRoles);
   }
 
   async function confirmReject() {
@@ -274,7 +274,7 @@ export default function SelfEnterPage() {
               iconOnly
               leftIcon={<RefreshCw size={16} />}
               loading={actingId === row.id}
-              onClick={() => void resendInvitation(row.id)}
+              onClick={() => resendInvitation(row.id)}
               severity="secondary"
             />
           ) : null,
@@ -385,7 +385,7 @@ export default function SelfEnterPage() {
                   appearance="ghost"
                   label="Atualizar"
                   leftIcon={<RefreshCw size={16} />}
-                  onClick={() => void loadAll()}
+                  onClick={() => loadAll()}
                   severity="secondary"
                 />
                 <SgButton
@@ -483,7 +483,7 @@ export default function SelfEnterPage() {
             appearance="outline"
             label={submitting ? "Enviando..." : "Enviar convite"}
             leftIcon={<Send size={16} />}
-            onClick={() => void submitInvitation()}
+            onClick={() => submitInvitation()}
             severity="secondary"
           />
         </SgStack>
@@ -547,7 +547,7 @@ export default function SelfEnterPage() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !(actingId !== null)}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmReject()}
+        onConfirm={() => confirmReject()}
         onCancel={() => setToReject(null)}
       />
     </Shell>

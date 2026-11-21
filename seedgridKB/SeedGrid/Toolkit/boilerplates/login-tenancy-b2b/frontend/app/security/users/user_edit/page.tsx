@@ -467,7 +467,7 @@ function UserEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
-                onClick={() => void submitUser()}
+                onClick={() => submitUser()}
                 severity="secondary"
               />
             </SgStack>

@@ -92,7 +92,7 @@ export function PersonalSignupForm({ config, onSubmitted, onBackToLogin }: Perso
           </>
         ) : null}
       </SgStack>
-      <SgButton severity="primary" appearance="solid" loading={busy} onClick={() => void handleSubmit()}
+      <SgButton severity="primary" appearance="solid" loading={busy} onClick={() => handleSubmit()}
         className="mt-4 w-full">
         Criar conta
       </SgButton>

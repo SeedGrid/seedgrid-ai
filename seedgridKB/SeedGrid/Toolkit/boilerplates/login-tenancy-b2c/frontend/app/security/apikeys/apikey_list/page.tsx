@@ -269,7 +269,7 @@ function ApiKeyListPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !revoking}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmRevoke()}
+        onConfirm={() => confirmRevoke()}
         onCancel={() => setToRevoke(null)}
       />
     </Shell>

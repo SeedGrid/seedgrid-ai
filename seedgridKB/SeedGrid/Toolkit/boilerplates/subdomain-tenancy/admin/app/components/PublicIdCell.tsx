@@ -32,7 +32,7 @@ export function PublicIdCell({ publicId }: Readonly<{ publicId: string }>) {
         title="Copiar ID completo"
         iconOnly
         leftIcon={<Copy size={14} />}
-        onClick={() => void copyPublicId(publicId)}
+        onClick={() => copyPublicId(publicId)}
         severity="secondary"
       />
     </SgStack>

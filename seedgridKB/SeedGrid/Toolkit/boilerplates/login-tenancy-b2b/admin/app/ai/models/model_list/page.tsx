@@ -262,7 +262,7 @@ function AiModelListPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDelete()}
+        onConfirm={() => confirmDelete()}
         onCancel={() => setModelToDelete(null)}
       />
     </Shell>

@@ -233,7 +233,7 @@ function PlanEditPageContent() {
               isEditing={isEditing}
               submitting={submitting}
               onChange={setEditor}
-              onSubmit={() => void submitPlan()}
+              onSubmit={() => submitPlan()}
             />
           )}
         </SgStack>

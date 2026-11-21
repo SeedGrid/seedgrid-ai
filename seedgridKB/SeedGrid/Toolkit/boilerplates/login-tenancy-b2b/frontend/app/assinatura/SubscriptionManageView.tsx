@@ -370,7 +370,7 @@ export function SubscriptionManageView({
                 appearance="outline"
                 size="sm"
                 loading={cancelDowngradeBusy}
-                onClick={() => void handleCancelDowngrade()}
+                onClick={() => handleCancelDowngrade()}
               >
                 Cancelar downgrade
               </SgButton>
@@ -411,7 +411,7 @@ export function SubscriptionManageView({
               appearance="solid"
               size="sm"
               loading={reactivateBusy}
-              onClick={() => void handleReactivate()}
+              onClick={() => handleReactivate()}
             >
               Reativar assinatura
             </SgButton>
@@ -482,7 +482,7 @@ export function SubscriptionManageView({
                 severity="secondary"
                 appearance="outline"
                 loading={portalBusy}
-                onClick={() => void handlePortal()}
+                onClick={() => handlePortal()}
               >
                 Gerenciar pagamento
               </SgButton>
@@ -492,7 +492,7 @@ export function SubscriptionManageView({
                 severity="success"
                 appearance="outline"
                 loading={reactivateBusy}
-                onClick={() => void handleReactivate()}
+                onClick={() => handleReactivate()}
               >
                 Reativar assinatura
               </SgButton>
@@ -586,7 +586,7 @@ export function SubscriptionManageView({
             </h2>
             <button
               type="button"
-              onClick={() => void loadInvoices()}
+              onClick={() => loadInvoices()}
               aria-label="Atualizar faturas"
               title="Atualizar"
               className="flex h-8 w-8 items-center justify-center rounded-sg border border-sg-border text-sg-muted transition-colors hover:bg-sg-muted-surface hover:text-sg-text"
@@ -643,7 +643,7 @@ export function SubscriptionManageView({
                           {link ? (
                             <button
                               type="button"
-                              onClick={() => void openUrl(link)}
+                              onClick={() => openUrl(link)}
                               className="inline-flex items-center gap-1 text-xs text-sg-primary hover:underline"
                             >
                               Ver <ExternalLink size={12} />
@@ -724,7 +724,7 @@ export function SubscriptionManageView({
               severity="danger"
               appearance="solid"
               loading={cancelBusy}
-              onClick={() => void handleCancel()}
+              onClick={() => handleCancel()}
             >
               Cancelar assinatura
             </SgButton>

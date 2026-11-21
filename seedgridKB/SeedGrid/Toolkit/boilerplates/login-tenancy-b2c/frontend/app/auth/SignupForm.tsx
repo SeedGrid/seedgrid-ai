@@ -725,20 +725,20 @@ export function SignupForm({
           mask="999-999"
           inputProps={{ inputMode: "numeric" }}
           onRawChange={(raw) => setConfirmToken(raw)}
-          onComplete={(value) => void handleConfirm(value.replace(/\D/g, ""))}
+          onComplete={(value) => handleConfirm(value.replace(/\D/g, ""))}
         />
         <SgButton
           severity="primary"
           appearance="solid"
           loading={busy}
           enabled={!(confirmToken.length !== 6)}
-          onClick={() => void handleConfirm()}
+          onClick={() => handleConfirm()}
           className="mt-3 w-full"
         >
           Confirmar
         </SgButton>
         <div className="mt-3 flex justify-between">
-          <SgButton severity="primary" appearance="ghost" onClick={() => void handleResend()}>
+          <SgButton severity="primary" appearance="ghost" onClick={() => handleResend()}>
             Reenviar email
           </SgButton>
           <SgButton severity="primary" appearance="ghost" onClick={onBackToLogin}>
@@ -1000,7 +1000,7 @@ export function SignupForm({
               label="Email"
               required
               validateOnBlur
-              onExit={() => void handleEmailExit()}
+              onExit={() => handleEmailExit()}
               // Mudou o e-mail: re-avalia a vinculacao no proximo onExit.
               onChange={() => setLinkingExisting((current) => (current ? false : current))}
             />

@@ -659,7 +659,7 @@ function PlanTermsPageContent() {
                   iconOnly
                   leftIcon={<Upload size={16} />}
                   loading={acting}
-                  onClick={() => void handlePublish(row)}
+                  onClick={() => handlePublish(row)}
                   severity="primary"
                 />
               ) : null}
@@ -967,7 +967,7 @@ function PlanTermsPageContent() {
             appearance="outline"
             label={submitting ? "Salvando..." : editing ? "Salvar" : "Salvar e publicar"}
             leftIcon={<Save size={16} />}
-            onClick={() => void submitTerm()}
+            onClick={() => submitTerm()}
             severity="secondary"
           />
         </SgStack>
@@ -985,7 +985,7 @@ function PlanTermsPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !deleting}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmDelete()}
+        onConfirm={() => confirmDelete()}
         onCancel={() => setTermToDelete(null)}
       />
 
@@ -1001,7 +1001,7 @@ function PlanTermsPageContent() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !(actingTermId !== null)}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmArchive()}
+        onConfirm={() => confirmArchive()}
         onCancel={() => setTermToArchive(null)}
       />
     </Shell>

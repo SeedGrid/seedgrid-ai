@@ -213,7 +213,7 @@ export default function CurrencyRatesPage() {
               iconOnly
               leftIcon={<RefreshCw size={16} />}
               loading={retryingId === row.id}
-              onClick={() => (row.status === "FAILED" ? void retry(row) : setRetryTarget(row))}
+              onClick={() => (row.status === "FAILED" ? retry(row) : setRetryTarget(row))}
               severity="secondary"
             />
           ) : null}
@@ -264,7 +264,7 @@ export default function CurrencyRatesPage() {
         <div style={{ marginTop: 16 }}>
           {/* Filtro novo sempre volta pra 1a pagina: manter o offset antigo cairia num "vazio" quando
               o resultado novo for menor que a pagina em que o usuario estava. */}
-          <SgButton label="Buscar" leftIcon={<Search size={16} />} onClick={() => void search(0)} severity="primary" />
+          <SgButton label="Buscar" leftIcon={<Search size={16} />} onClick={() => search(0)} severity="primary" />
         </div>
       </SgCard>
 
@@ -280,7 +280,7 @@ export default function CurrencyRatesPage() {
             id="currency-rates-table"
             lazy
             loading={loading}
-            onPage={(event) => void search(event.first)}
+            onPage={(event) => search(event.first)}
             paginator
             rows={PAGE_SIZE}
             showGridlines
@@ -338,7 +338,7 @@ export default function CurrencyRatesPage() {
             <SgButton
               label={saving ? "Salvando..." : "Salvar"}
               enabled={!saving}
-              onClick={() => void saveManualRate()}
+              onClick={() => saveManualRate()}
               severity="primary"
             />
           </div>

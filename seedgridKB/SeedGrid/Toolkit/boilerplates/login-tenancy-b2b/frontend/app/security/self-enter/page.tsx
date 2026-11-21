@@ -204,8 +204,7 @@ export default function SelfEnterPage() {
   function approve(request: EntryRequestResponse) {
     // Convite ja' carrega os perfis escolhidos ao convidar: aprova direto, sem body.
     if (request.origin !== "PUBLIC") {
-      void submitApproval(request);
-      return;
+      return submitApproval(request);
     }
     setApproveRoles([]);
     setToApprove(request);
@@ -274,7 +273,7 @@ export default function SelfEnterPage() {
               iconOnly
               leftIcon={<RefreshCw size={16} />}
               loading={actingId === row.id}
-              onClick={() => void resendInvitation(row.id)}
+              onClick={() => resendInvitation(row.id)}
               severity="secondary"
             />
           ) : null,
@@ -323,7 +322,7 @@ export default function SelfEnterPage() {
                   iconOnly
                   leftIcon={<CheckCircle2 size={16} />}
                   loading={acting}
-                  onClick={() => void approve(row)}
+                  onClick={() => approve(row)}
                   severity="primary"
                 />
               ) : null}
@@ -385,7 +384,7 @@ export default function SelfEnterPage() {
                   appearance="ghost"
                   label="Atualizar"
                   leftIcon={<RefreshCw size={16} />}
-                  onClick={() => void loadAll()}
+                  onClick={() => loadAll()}
                   severity="secondary"
                 />
                 <SgButton
@@ -442,7 +441,7 @@ export default function SelfEnterPage() {
                   appearance="outline"
                   label={linkCopied ? "Copiado!" : "Copiar link"}
                   leftIcon={<Copy size={16} />}
-                  onClick={() => void copyPublicLink()}
+                  onClick={() => copyPublicLink()}
                   severity="secondary"
                 />
               </SgStack>
@@ -521,7 +520,7 @@ export default function SelfEnterPage() {
             appearance="outline"
             label={submitting ? "Enviando..." : "Enviar convite"}
             leftIcon={<Send size={16} />}
-            onClick={() => void submitInvitation()}
+            onClick={() => submitInvitation()}
             severity="secondary"
           />
         </SgStack>
@@ -565,7 +564,7 @@ export default function SelfEnterPage() {
             enabled={!(approveRoles.length === 0 || actingId !== null)}
             onClick={() => {
               if (toApprove) {
-                void submitApproval(toApprove, approveRoles);
+                return submitApproval(toApprove, approveRoles);
               }
             }}
             severity="primary"
@@ -585,7 +584,7 @@ export default function SelfEnterPage() {
         }}
         cancelButton={{ label: "Cancelar", enabled: !(actingId !== null)}}
         closeOnConfirm={false}
-        onConfirm={() => void confirmReject()}
+        onConfirm={() => confirmReject()}
         onCancel={() => setToReject(null)}
       />
     </Shell>

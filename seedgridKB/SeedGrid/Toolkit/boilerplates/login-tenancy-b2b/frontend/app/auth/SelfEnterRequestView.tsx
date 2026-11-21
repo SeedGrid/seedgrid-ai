@@ -193,18 +193,18 @@ export function SelfEnterRequestView() {
                 mask="999-999"
                 inputProps={{ inputMode: "numeric" }}
                 onRawChange={(raw) => setCode(raw)}
-                onComplete={(value) => void confirmCode(value)}
+                onComplete={(value) => confirmCode(value)}
               />
               <SgButton
                 label={submitting ? "Confirmando..." : "Confirmar"}
                 enabled={!(submitting || code.replace(/\D/g, "").length !== 6)}
-                onClick={() => void confirmCode()}
+                onClick={() => confirmCode()}
               />
               <SgButton
                 appearance="ghost"
                 label="Reenviar codigo"
                 enabled={!submitting}
-                onClick={() => void resendCode()}
+                onClick={() => resendCode()}
               />
             </>
           ) : null}
@@ -265,7 +265,7 @@ export function SelfEnterRequestView() {
               <SgButton
                 label={submitting ? "Enviando..." : "Solicitar cadastro"}
                 enabled={!submitting}
-                onClick={() => void submitRequest()}
+                onClick={() => submitRequest()}
               />
               <SgButton
                 appearance="ghost"
