@@ -145,3 +145,13 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 - Persistência em `REQUIRES_NEW`: o log não é desfeito se a transação principal der rollback **depois** do método, mas só é gravado se o método terminar sem exceção (a gravação é após o `proceed`). Lookup que falha resulta em log sem before/after, **sem erro** (só log `debug`/`warn`); com repository por conta, use `lookupMethod` (Exemplos §9).
 - O repository do lookup é sempre o derivado de `entityFqcn`; não dá para escolher outro. `lookups` com mais de um campo ou sem `findBy<Campo>` exige repository Panache (`find(String, Object...)`).
 - Não há API pronta de auditoria manual além de montar o `AuditLog` e chamar `AuditGateway#persist` ou `AuditEmitter#emit`; a gravação manual não preenche usuário/data nem mascara (Exemplos §9.2).
+
+## Snapshot que nunca derruba a operação (audit 2026.11.13)
+
+**Contrato:** a auditoria **nunca** derruba nem prende a operação auditada. O `AuditInterceptor` monta o snapshot antes e depois do método `@SgAudit` (`beforeState`/`afterState`) serializando a entidade inteira com o `PersonalDataSanitizer` (privacy), **dentro da transação** do método.
+
+- **Entidade com ciclo** (relação bidirecional sem `@JsonIgnore` no lado filho, por exemplo `Plan.terms` ↔ `PlanTerm.plan`): até a 2026.11.12 o Jackson recursava até `StackOverflowError` e a thread travava até o Reaper cancelar a transação (visto em produção no Display como 524 no Cloudflare). Desde a **2026.11.13** o snapshot é protegido: em falha o audit grava a marca `<snapshot-indisponivel>` (com o tipo do objeto) e um log `WARN` legível, e a operação auditada **segue normalmente**; `OutOfMemoryError` não é engolido.
+- **A regra continua sendo corrigir a entidade:** o lado filho leva `@JsonIgnore` (regra **BE-75**, [[SeedGrid/Toolkit/rules/backend-seedgrid|regras do backend]]), porque a marca esconde o dado do snapshot e não conserta o ciclo. Teste de ciclo obrigatório na entidade auditada (modelo: `EntityJsonCycleTest` do billing 2026.11.21).
+- **Não coberto por teste de container:** o `around()` do interceptador com banco real e entidade cíclica (testado o `safeSnapshot` com o sanitizador real e com um que lança `StackOverflowError`).
+- **Quem precisa subir:** todo produto que usa `@SgAudit` deve estar em `seedgrid-ext-audit` **2026.11.13** (core, postgresql e mongodb) e `seedgrid-quarkus-lib-privacy` **2026.11.1**; as tenancies 2026.11.22 já trazem as duas. Veja [[SeedGrid/Extensions/privacy/Visao-geral|privacy]] e o plano P187.
+

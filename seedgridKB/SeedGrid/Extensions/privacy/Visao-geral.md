@@ -105,3 +105,13 @@ Nenhuma.
 - Para e-mail use `SearchNormalization.EMAIL`; `CANONICAL` remove a pontuação e faria e-mails diferentes colidirem (Javadoc de `SearchNormalization`).
 - Trocar de modo com dados existentes exige migração: desligado→ligado deixa registros antigos crus e sem hash; ligado→desligado exige a chave para ler valores `v1:`.
 - **Dado binário (vetor biométrico, embedding, arquivo pequeno):** o `@SgEncryptedField`/`EncryptedFieldAttributeConverter` só cifra `String` (Confirmado). Para binário, grave o conteúdo em **Base64 num campo `String`** cifrado. O texto cifrado sai como `v1:<iv em Base64>:<texto cifrado em Base64>` (IV de 12 bytes, tag GCM de 16): para um valor de *n* caracteres ocupa `3 + 16 + 1 + 4*ceil((n+16)/3)` caracteres. Exemplos (Base64 do vetor → coluna): 128 floats de 32 bits (512 bytes → 684 caracteres) → ~956 caracteres; 512 floats (2048 bytes → 2732 caracteres) → ~3684 caracteres. **O `length = 512` dos exemplos não serve:** use `columnDefinition = "text"` (ou `length` calculado com folga). Não existe hash de busca útil para vetor (o hash HMAC é de igualdade exata); a comparação de vetores é feita em memória, depois de decifrar. Custo: cifra e decifra são AES-GCM por valor, a cada leitura e escrita da entidade; **não medi** o custo para centenas de registros por vez (carregar 600 vetores de ~1 KB decifra 600 strings; carregue só o que precisa e considere cache em memória decifrado, com a chave fora do log).
+
+## Conversão para árvore JSON protegida contra ciclo (privacy 2026.11.1)
+
+O `PersonalDataSanitizer` só mascara, mas a conversão do objeto em árvore JSON acontece dentro dele (`sanitizeToJson` → `maskToTree` → `mapper.valueToTree`). Objeto com **referência circular** fazia o Jackson recursar até estourar a pilha.
+
+- **Achado testado (não presumido):** o Jackson já traduz `StackOverflowError` em `IllegalArgumentException("Infinite recursion")` no `valueToTree`, e o limite de profundidade (`maxNestingDepth`) **não vale** para `valueToTree` (só para `writeValueAsString`). Por isso a proteção **não** é um limite de profundidade.
+- **Comportamento desde a 2026.11.1:** a falha é traduzida em `PersonalDataSerializationException`, com o **tipo do objeto** na mensagem; nenhum erro de recursão escapa sem contexto para o chamador. Objeto sem ciclo se comporta como antes (nada muda no formato do snapshot válido).
+- **Quem trata a falha:** o chamador. O `seedgrid-ext-audit` **2026.11.13** captura a exceção, grava `<snapshot-indisponivel>` e segue a operação (veja [[SeedGrid/Extensions/audit/Visao-geral|audit]]). Quem usar o sanitizador direto deve tratar a exceção.
+- **Prevenção:** lado filho com `@JsonIgnore` (regra **BE-75**).
+
