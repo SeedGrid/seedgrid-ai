@@ -23,8 +23,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Quarkus | ai-pricing | 5 |
 | Quarkus | apikeys | 2 |
 | Quarkus | audit | 6 |
-| Quarkus | backup | 47 |
-| Quarkus | billing | 33 |
+| Quarkus | backup | 51 |
+| Quarkus | billing | 35 |
 | Quarkus | business-days | 5 |
 | Quarkus | cache | 21 |
 | Quarkus | cities | 14 |
@@ -65,7 +65,7 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | Front | fe-security | 44 |
 | Front | fe-self-enter | 3 |
 | Front | fe-subdomain-tenancy | 2 |
-| **Total** | | **882** |
+| **Total** | | **888** |
 
 ## Quarkus (Java) — `application.properties`
 
@@ -108,10 +108,10 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.backup.retention-days` | Execução, fila e retenção | int | `7` (BC e MP) | Runtime | Ao concluir (DONE), expiresAt = agora + N dias | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.excluded-domain-entity-packages` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | — (vazio) | Runtime | Entidades JPA cujo pacote começa com algum prefixo são puladas nos escopos DOMAIN e RAW (a partir de backup 2026.11.7… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.company-column-names` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `company_public_id,company_id` (a partir de backup 2026.11.7) | Runtime | Colunas que identificam a empresa dona da linha | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
-| `seedgrid.backup.scoped-sensitive-column-patterns` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `_hash,password,secret,token` (a partir de backup 2026.11.8) | Runtime | No export com escopo de empresa, colunas cujo nome contém um desses trechos não saem | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
-| `seedgrid.backup.scoped-excluded-tables` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `sg_api_keys` (a partir de backup 2026.11.8) | Runtime | Tabelas que não saem no export com escopo de empresa | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
-| `seedgrid.backup.platform-omitted-columns` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `password_reset_token`, `email_confirmation_token`, `two_factor_totp_secret`, `temp_new_password`, `pending_bootstrap_password`, as colunas de 2FA e segredos de outras tabelas (a partir de backup 2026.11.10) | Runtime | Colunas omitidas só no export da plataforma (nome exato, ignora maiúsculas e `_`; `tabela.coluna` restringe); lista vazia = completo | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
-| `seedgrid.backup.platform-excluded-tables` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `sg_refresh_tokens,sg_password_history,sg_backup_codes` (a partir de backup 2026.11.10) | Runtime | Tabelas que não saem no export da plataforma; lista vazia = completo | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.scoped-sensitive-column-patterns` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `_hash,password,secret,token` (a partir de backup 2026.11.8) | Runtime | No export com escopo de empresa, coluna ou campo cujo nome contém algum trecho não sai (hash de senha, token, segredo) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.scoped-excluded-tables` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `sg_api_keys` (a partir de backup 2026.11.8) | Runtime | Tabelas que não saem no export com escopo de empresa, mesmo tendo coluna de empresa | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.platform-omitted-columns` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | password_reset_token, email_confirmation_token, two_factor_totp_secret, temp_new_password… | Runtime | Colunas omitidas só no export da plataforma (allCompanies ou sem empresa no pedido) | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
+| `seedgrid.backup.platform-excluded-tables` | Execução, fila e retenção | `Optional<List<String>>` (lista separada por vírgula) | `sg_refresh_tokens`, `sg_password_history`, `sg_backup_codes` (a partir de backup 2026.11.10) | Runtime | Tabelas que não saem no export da plataforma (no DOMAIN, as entidades RefreshToken, PasswordHistory e a de códigos de… | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.enabled` | Notificação | boolean | `true` (BC e MP) | Runtime | Liga o scheduler de notificação e entra em EmailExportNotificationService#isEnabled() | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.poll-interval` | Notificação | String (duração do Quarkus Scheduler) | `5m` (BC e MP) | Runtime | Intervalo do @Scheduled(every = "{seedgrid.backup.notification.poll-interval}") | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
 | `seedgrid.backup.notification.max-retries` | Notificação | int | `3` (BC e MP) | Runtime | Jobs DONE com notificationAttempts < max-retries são (re)notificados; sucesso → DONE_NOTIFIED | [[SeedGrid/Extensions/backup/Configuracao\|backup/Configuracao]] |
@@ -183,8 +183,8 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.billing.stripe.test-clock-enabled` | Provider Stripe (seedgrid-billing-stripe) | boolean | `true` | runtime | Com chave sk_test, a nova assinatura nasce num customer preso a um Stripe Test Clock, para testes E2E | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.stripe.product` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — | runtime | No startup, StripeProductBootstrap faz retrieve-or-create do produto | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.stripe.product-name` | Provider Stripe (seedgrid-billing-stripe) | Optional\<String\> | — (usa o próprio ID) | runtime | Nome do produto criado no bootstrap | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
-| `seedgrid.billing.stripe.connect-timeout-ms` | Provider Stripe (seedgrid-billing-stripe) | int | `5000` | runtime | Tempo máximo para conectar na API do Stripe; `< 1` mantém o padrão do SDK (30 s) | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
-| `seedgrid.billing.stripe.read-timeout-ms` | Provider Stripe (seedgrid-billing-stripe) | int | `20000` | runtime | Tempo máximo esperando a resposta do Stripe; `< 1` mantém o padrão do SDK (80 s); estourou = term salvo não publicado | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.connect-timeout-ms` | Provider Stripe (seedgrid-billing-stripe) | int | `5000` | runtime | Tempo máximo para conectar na API do Stripe | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
+| `seedgrid.billing.stripe.read-timeout-ms` | Provider Stripe (seedgrid-billing-stripe) | int | `20000` | runtime | Tempo máximo esperando a resposta do Stripe | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.past-due.enabled` | Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout | boolean | `false` | Runtime | Liga o ciclo de inadimplência das empresas e o agendador | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.quota.users.enabled` | Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout | boolean | `false` | Build | Liga o PlanUserQuotaValidator (limite maxUsers) | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
 | `seedgrid.billing.quota.companies.enabled` | Propriedades do ciclo 2026.10.22: inadimplência e escolha no checkout | boolean | `false` | Build | Liga o PlanCompanyQuotaValidator (limite maxCompanies) | [[SeedGrid/Extensions/billing/Configuracao\|billing/Configuracao]] |
@@ -257,7 +257,6 @@ Tabela geral de **todas as propriedades públicas** de configuração documentad
 | `seedgrid.web.cors.allow-methods` | CORS (CorsFilter) | `String` | `GET,POST,PUT,PATCH,DELETE,OPTIONS` | Runtime | Valor de Access-Control-Allow-Methods na resposta ao preflight; não é usado para bloquear métodos | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 | `seedgrid.show-dev-message` | Tratamento de exceções | `boolean` | `false` | Runtime | true preenche devMessage no Problem Details (mensagem técnica da exceção / violações); false devolve devMessage vazio | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 | `app.build.version` | Banner de inicialização | `String` | `dev` | Runtime (startup) | Impresso em System.out como Versao: <valor> após o banner.txt do classpath (se existir) | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
-| `seedgrid.persistence.digits-only` | Normalização de dados | `boolean` | `false` (env `SEEDGRID_PERSISTENCE_DIGITS_ONLY`) | Runtime | Desligada, `Contact` (commons: telefone e WhatsApp) e `Address` (cities: CEP e telefone) gravam o valor como chega, com máscara. Ligada, gravam só os dígitos (`(11) 98765-4321` vira `11987654321`; `null` continua `null`). Lida pelo commons e pelo cities (commons 2026.11.3, cities 2026.11.1) | [[SeedGrid/Extensions/commons/Configuracao\|commons/Configuracao]] |
 
 ### exchange
 
