@@ -27,6 +27,7 @@ vi.mock("@/lib/core/problem-response", () => ({
 
 import * as listRoute from "./route";
 import * as itemRoute from "./[publicId]/route";
+import * as documentExistsRoute from "./document-exists/route";
 
 const context = (publicId = "co-1") => ({ params: Promise.resolve({ publicId }) });
 const json = (body: unknown, status = 200) =>
@@ -181,5 +182,34 @@ describe("BFF /api/security/companies/[publicId]", () => {
     const response = await itemRoute.GET(req("GET"), context());
     expect(apiFetchSecurity).toHaveBeenCalledWith("/companies/co-1");
     expect(await response.json()).toMatchObject({ accessMode: "READ_ONLY", cpfCnpj: "12345678909", personType: "PF" });
+  });
+});
+
+describe("BFF GET /api/security/companies/document-exists (P180.F2.T16)", () => {
+  it("repassa document e excludePublicId ao security e devolve so o booleano", async () => {
+    apiFetchSecurity.mockResolvedValue({ exists: true, outro: "ignorado" });
+    const response = await documentExistsRoute.GET(
+      req("GET", undefined, "http://localhost/api/security/companies/document-exists?document=12345678000195&excludePublicId=co-1"),
+    );
+    expect(apiFetchSecurity).toHaveBeenCalledWith("/companies/document-exists?document=12345678000195&excludePublicId=co-1");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ exists: true });
+  });
+
+  it("sem excludePublicId nao manda o parametro; exists ausente vira false", async () => {
+    apiFetchSecurity.mockResolvedValue({});
+    const response = await documentExistsRoute.GET(
+      req("GET", undefined, "http://localhost/api/security/companies/document-exists?document=12345678000195"),
+    );
+    expect(apiFetchSecurity).toHaveBeenCalledWith("/companies/document-exists?document=12345678000195");
+    expect(await response.json()).toEqual({ exists: false });
+  });
+
+  it("erro do backend (ex.: 404 de versao antiga) volta com o mesmo status", async () => {
+    apiFetchSecurity.mockRejectedValue({ status: 404, responseBody: { title: "Not Found" } });
+    const response = await documentExistsRoute.GET(
+      req("GET", undefined, "http://localhost/api/security/companies/document-exists?document=1"),
+    );
+    expect(response.status).toBe(404);
   });
 });

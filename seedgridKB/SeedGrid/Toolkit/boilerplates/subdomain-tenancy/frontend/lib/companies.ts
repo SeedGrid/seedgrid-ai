@@ -451,6 +451,9 @@ export const COMPANY_ERROR_MESSAGES: Record<string, string> = {
   COMPANY_DOCUMENT_INVALID: "CNPJ inválido. Confira os 14 dígitos.",
   COMPANY_READ_ONLY: "Esta empresa esta em modo somente leitura e nao aceita alteracoes.",
   COMPANY_DISABLED: "Esta empresa esta desligada.",
+  // 409 no Salvar: o servidor e a verdade sobre duplicidade (o aviso do onExit do CNPJ e so uma dica antecipada).
+  COMPANY_ALREADY_EXISTS: "Empresa já cadastrada.",
+  COMPANY_REP_EMAIL_INVALID: "E-mail do representante inválido.",
 };
 
 /**

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { problemResponse } from "@/lib/core/problem-response";
+import { bffProblemResponse } from "@/lib/bff-problem";
+import { EXPORT_BFF_TIMEOUT_MS } from "@/lib/bff-timeout";
 import { backupCompanyHeader, parseBackupCompanies } from "@/lib/backup-companies";
 import { ADMIN_CURRENT_COMPANY_COOKIE, parseCurrentCompany } from "@/lib/company-access";
 import { cookies } from "next/headers";
@@ -17,10 +18,11 @@ export async function GET(request: Request) {
     const size = params.get("size") ?? "100";
     const jobs = await apiFetchSecurity<ExportJob[]>(
       `/exports?page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`,
+      { timeoutMs: EXPORT_BFF_TIMEOUT_MS },
     );
     return NextResponse.json(jobs);
   } catch (error) {
-    return problemResponse(error);
+    return bffProblemResponse(error);
   }
 }
 
@@ -33,16 +35,17 @@ export async function POST(request: Request) {
     // que sai: quem define é companyPublicIds (omitido = todas as empresas do usuário, nunca a base inteira).
     const mine = body.companyPublicIds?.length
       ? []
-      : parseBackupCompanies(await apiFetchSecurity<unknown>(SecurityPaths.me.companies));
+      : parseBackupCompanies(await apiFetchSecurity<unknown>(SecurityPaths.me.companies, { timeoutMs: EXPORT_BFF_TIMEOUT_MS }));
     const current = parseCurrentCompany((await cookies()).get(ADMIN_CURRENT_COMPANY_COOKIE)?.value);
     const companyId = backupCompanyHeader(current?.publicId, body.companyPublicIds, mine);
     const created = await apiFetchSecurity<ExportJob>("/exports", {
+      timeoutMs: EXPORT_BFF_TIMEOUT_MS,
       method: "POST",
       body: JSON.stringify(body),
       ...(companyId ? { headers: { "X-Company-Id": companyId } } : {}),
     });
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
-    return problemResponse(error);
+    return bffProblemResponse(error);
   }
 }

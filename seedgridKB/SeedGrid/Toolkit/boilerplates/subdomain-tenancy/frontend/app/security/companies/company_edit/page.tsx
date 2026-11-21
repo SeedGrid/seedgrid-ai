@@ -42,6 +42,7 @@ import {
   type ViaCepData,
 } from "@/lib/company-lookup";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
+import { COMPANY_ALREADY_EXISTS_MESSAGE, checkCompanyDocumentExists } from "@/lib/company-document";
 
 // Cidade vinda da consulta (CNPJ/CEP) é casada com a lista da cities; uma instância para a tela toda (a lista da UF fica em cache).
 const cityFetcher: CityFetcher = (path) => adminProxyClient.get(path);
@@ -70,6 +71,8 @@ function CompanyEditPageContent() {
   const [submitting, setSubmitting] = useState(false);
   // Texto digitado no campo Cidade sem escolher da lista: o Salvar recusa (so a cidade escolhida e gravada).
   const [cityText, setCityText] = useState("");
+  // "Empresa ja cadastrada." junto ao CNPJ (consulta no onExit; so avisa, nao bloqueia o Salvar).
+  const [documentExists, setDocumentExists] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [form, setForm] = useState<CompanyForm>(EMPTY_COMPANY_FORM);
   // Estado de acesso e situacao so' aparecem (nao se editam aqui): accessMode e do billing/plataforma,
@@ -79,6 +82,13 @@ function CompanyEditPageContent() {
 
   function setField<K extends keyof CompanyForm>(key: K, value: CompanyForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  // Ao sair do campo CNPJ: ja existe empresa com este documento? (na edicao, a propria empresa nao conta)
+  async function checkDocument() {
+    setDocumentExists(
+      await checkCompanyDocumentExists((path) => adminProxyClient.get(path), form.cpfCnpj, companyPublicId),
+    );
   }
 
   // FE-39: a consulta (CNPJ ou CEP) só preenche o que veio; depois tenta escolher a cidade da lista (FK).
@@ -238,8 +248,13 @@ function CompanyEditPageContent() {
                 publicaCnpjErrorMessage="CNPJ não encontrado na base pública. Confira o número ou preencha os dados à mão."
                 onPublicaCnpjResult={(data) => applyLookup(companyPatchFromPublicaCnpj(data))}
                 inputProps={{ value: form.cpfCnpj }}
-                onChange={(value) => setField("cpfCnpj", value)}
+                onChange={(value) => {
+                  setField("cpfCnpj", value);
+                  setDocumentExists(false);
+                }}
+                onExit={() => checkDocument()}
               />
+              {documentExists ? <StatusBadge severity="warning" value={COMPANY_ALREADY_EXISTS_MESSAGE} /> : null}
               <SgInputText
                 id="company-corporate-name"
                 label="Razão social"

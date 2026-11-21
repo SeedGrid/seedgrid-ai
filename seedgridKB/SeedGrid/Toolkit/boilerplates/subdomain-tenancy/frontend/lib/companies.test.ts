@@ -295,6 +295,11 @@ describe("erros do backend (plano 4.14)", () => {
     expect(companyErrorMessage(null, "")).toBe("Nao foi possivel concluir a operacao.");
   });
 
+  it("409 COMPANY_ALREADY_EXISTS e 400 COMPANY_REP_EMAIL_INVALID tem texto proprio no Salvar", () => {
+    expect(companyErrorMessage({ code: "COMPANY_ALREADY_EXISTS", detail: "x" }, "x")).toBe("Empresa já cadastrada.");
+    expect(companyErrorMessage({ code: "COMPANY_REP_EMAIL_INVALID" }, "x")).toBe("E-mail do representante inválido.");
+  });
+
   it("companyErrorFromThrown le o responseBody do ApiClientError", () => {
     const thrown = Object.assign(new Error("falhou"), {
       status: 402,

@@ -39,6 +39,8 @@ export function TwoFactorManager() {
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  // Erro do desativar fica NO formulario (o toast some em poucos segundos e o usuario nao via por que falhou).
+  const [disableError, setDisableError] = useState<string | null>(null);
 
   const [method, setMethod] = useState<TwoFactorMethod>("TOTP");
   const [totpCode, setTotpCode] = useState("");
@@ -175,7 +177,7 @@ export function TwoFactorManager() {
       !disableBackupCode.trim() &&
       (!requiresTotp || !disableCode.trim())
     ) {
-      toast.error(
+      setDisableError(
         requiresTotp
           ? "Informe sua senha, um codigo de backup ou o codigo do app."
           : "Informe sua senha ou um codigo de backup.",
@@ -185,6 +187,7 @@ export function TwoFactorManager() {
 
     setPending(true);
     setFeedback(null);
+    setDisableError(null);
     try {
       const { ok, data } = await postJson("/api/auth/2f/disable", {
         twoFactorCode: disableCode.trim() || undefined,
@@ -192,7 +195,7 @@ export function TwoFactorManager() {
         backupCode: disableBackupCode.trim() || undefined,
       });
       if (!ok) {
-        toast.error(extractError(data));
+        setDisableError(extractError(data));
         return;
       }
       toast.success("2FA desativado.");
@@ -306,6 +309,9 @@ export function TwoFactorManager() {
                       onChange={setDisableCode}
                     />
                   </>
+                ) : null}
+                {disableError ? (
+                  <StatusBadge severity="danger" value={disableError} />
                 ) : null}
                 <SgButton
                   type="submit"

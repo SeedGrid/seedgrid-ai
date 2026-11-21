@@ -39,11 +39,11 @@ importers:
         specifier: ^1.43.0
         version: 1.43.0
       '@seedgrid/fe-components':
-        specifier: 2026.11.16
-        version: 2026.11.16(0ea5f70fc5180a32fd5be7026cdd10e1)
+        specifier: 2026.11.17
+        version: 2026.11.17(0ea5f70fc5180a32fd5be7026cdd10e1)
       '@seedgrid/fe-core':
-        specifier: 2026.11.15
-        version: 2026.11.15(react@19.1.0)
+        specifier: 2026.11.17
+        version: 2026.11.17(react@19.1.0)
       '@seedgrid/fe-theme':
         specifier: 2026.11.15
         version: 2026.11.15(react@19.1.0)
@@ -638,8 +638,8 @@ packages:
   '@remirror/core-constants@3.0.0':
     resolution: {integrity: sha512-42aWfPrimMfDKDi4YegyS7x+/0tlzaqwPQCULLanv3DMIlu96KTJR0fM5isWX2UViOqlGnX6YFgqWepcX+XMNg==}
 
-  '@seedgrid/fe-components@2026.11.16':
-    resolution: {integrity: sha512-GcY3jYgtzKp1ohB5LOfDDqwWp7UYvniUWKp2ZAXIw/kIf2qUaHTT/puNDM1XYL7YimwGrqckSDQSWSO/NpmBpw==}
+  '@seedgrid/fe-components@2026.11.17':
+    resolution: {integrity: sha512-D5Z98lEqdHJXcW54zJpEOd2zUsoR0STqmqYr4SDmFu62NkyfCmtWarkg+/MWySEDBgNqzQwgAkHuGoEUxh2/Sw==}
     peerDependencies:
       '@tiptap/core': ^2.9.1
       '@tiptap/extension-color': ^2.9.1
@@ -661,6 +661,11 @@ packages:
 
   '@seedgrid/fe-core@2026.11.15':
     resolution: {integrity: sha512-jvFrQfoJyTt0Ub+XxJdv9gWODDpY44m8wwzza4e37l7FnuYWiTAqbZ1OzhYktcys/ZDgoCi3zXm9c/aiYzCJbg==}
+    peerDependencies:
+      react: ^18.2.0 || ^19.0.0
+
+  '@seedgrid/fe-core@2026.11.17':
+    resolution: {integrity: sha512-xb1dl2i0/cJGg55jMq+FDb3++2waN+Ly+uOto18KEryZT4AwY8FmZGuMv1teW1JVxFYlO0kIuJf9VCVwEMd0jw==}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
 
@@ -2118,7 +2123,7 @@ snapshots:
 
   '@remirror/core-constants@3.0.0': {}
 
-  '@seedgrid/fe-components@2026.11.16(0ea5f70fc5180a32fd5be7026cdd10e1)':
+  '@seedgrid/fe-components@2026.11.17(0ea5f70fc5180a32fd5be7026cdd10e1)':
     dependencies:
       '@pqina/flip': 1.8.4
       '@seedgrid/pulse-subscriber-react': 3.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2144,6 +2149,10 @@ snapshots:
       - react-dom
 
   '@seedgrid/fe-core@2026.11.15(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+
+  '@seedgrid/fe-core@2026.11.17(react@19.1.0)':
     dependencies:
       react: 19.1.0
 

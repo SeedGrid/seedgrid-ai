@@ -40,6 +40,15 @@ describe("company_edit: empresa é sempre pessoa jurídica", () => {
     expect(source).toMatch(/useState\(""\);[\s\S]*?setCityText/);
   });
 
+  it("no onExit do CNPJ consulta se a empresa ja existe, avisa junto ao campo e nao bloqueia (FE-46: sem void)", () => {
+    expect(source).toMatch(/<SgInputCNPJ[\s\S]*?onExit=\{\(\) => checkDocument\(\)\}/);
+    expect(source).toMatch(/checkCompanyDocumentExists\([\s\S]*?form\.cpfCnpj, companyPublicId\)/);
+    expect(source).toMatch(/documentExists \? <StatusBadge severity="warning" value=\{COMPANY_ALREADY_EXISTS_MESSAGE\}/);
+    // o aviso nao entra na validacao do Salvar: o 409 COMPANY_ALREADY_EXISTS do backend continua valendo
+    expect(source).not.toMatch(/validateCompanyForm\([^)]*documentExists/);
+    expect(source).not.toMatch(/void checkDocument/);
+  });
+
   it("liga a busca por CNPJ e por CEP e preenche a tela com o resultado", () => {
     expect(source).toMatch(/validateWithPublicaCnpj/);
     expect(source).toMatch(/onPublicaCnpjResult=\{[^}]*companyPatchFromPublicaCnpj/);

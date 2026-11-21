@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { SecurityPaths } from "@/lib/security-paths";
 
 import { ApiClientError } from "@/lib/core";
+import { UpstreamTimeoutError, isTimeoutAbort, signalWithTimeout } from "@/lib/bff-timeout";
 import { isAdminLoginSuccess, type AdminLoginResponse } from "./admin-auth";
 import {
   ADMIN_COMPANY_SELECTION_PENDING_COOKIE,
@@ -71,6 +72,8 @@ export async function buildServerApiHeaders(
 
 type FetchOptions = Omit<RequestInit, "headers"> & {
   headers?: HeadersInit;
+  /** Tempo limite desta chamada ao backend, em ms (so vale se a rota pedir; 0/ausente = sem limite). */
+  timeoutMs?: number;
 };
 
 export async function apiFetchServer<T>(
@@ -362,9 +365,12 @@ async function safeFetch(
   path: string,
   options: FetchOptions = {},
 ): Promise<Response> {
+  // `timeoutMs` e' so nosso: nao vai para o fetch. O limite aborta com TimeoutError, que vira 504 no BFF (P192).
+  const { timeoutMs, ...init } = options;
   try {
     return await backendFetch(`${apiBaseUrl}${path}`, {
-      ...options,
+      ...init,
+      signal: signalWithTimeout(init.signal, timeoutMs),
       headers: await buildServerApiHeaders({
         "Content-Type": "application/json",
         ...options.headers,
@@ -372,6 +378,9 @@ async function safeFetch(
       cache: "no-store",
     });
   } catch (error) {
+    if (timeoutMs && isTimeoutAbort(error)) {
+      throw new UpstreamTimeoutError(timeoutMs);
+    }
     throw new ApiConnectionError(path, error);
   }
 }

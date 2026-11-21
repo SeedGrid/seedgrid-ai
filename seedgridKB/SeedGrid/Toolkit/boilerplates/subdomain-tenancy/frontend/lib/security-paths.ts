@@ -72,6 +72,8 @@ export const SecurityPaths = {
     base: "/companies",
     public: "/public/companies",
     byPublicId: (publicId: string) => `/companies/${seg(publicId)}`,
+    // Ja existe empresa com este CNPJ/CPF? (security 2026.11.14; so devolve o booleano).
+    documentExists: "/companies/document-exists",
   },
 
   /** SELF-ENTER (/self-enter autenticado, /public/self-enter não-autenticado). */
