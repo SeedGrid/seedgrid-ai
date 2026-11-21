@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/Providers";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 const fontDisplay = Space_Grotesk({
   subsets: ["latin"],
@@ -16,8 +17,8 @@ const fontBody = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "SeedGrid | App Admin",
-  description: "Backoffice do SeedGrid App com identidade visual SeedGrid.",
+  title: `${PRODUCT_NAME} Admin`,
+  description: `Backoffice do ${PRODUCT_NAME} com identidade visual SeedGrid.`,
   icons: {
     icon: "/favicon.svg",
   },

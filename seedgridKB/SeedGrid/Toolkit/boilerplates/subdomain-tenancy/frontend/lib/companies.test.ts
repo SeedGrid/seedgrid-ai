@@ -247,6 +247,22 @@ describe("validacao do formulario", () => {
     expect(validateCompanyForm({ ...ok, repCpf: "123.456.789-09" })).toBeNull();
   });
 
+  it("e-mail do representante: em branco ou com forma valida; texto solto e recusado (QA P180.F2.T14)", () => {
+    expect(validateCompanyForm({ ...ok, repEmail: "" })).toBeNull();
+    expect(validateCompanyForm({ ...ok, repEmail: "rep@empresa.com.br" })).toBeNull();
+    for (const bad of ["abcXYZ", "rep@", "@empresa.com", "rep@empresa", "rep @empresa.com"]) {
+      expect(validateCompanyForm({ ...ok, repEmail: bad }), bad).toMatch(/e-mail válido/);
+    }
+  });
+
+  it("cidade: so vale a escolhida da lista; texto digitado sem escolher e recusado (QA P180.F2.T14)", () => {
+    expect(validateCompanyForm(ok, "")).toBeNull();
+    expect(validateCompanyForm(ok, "abcXYZ")).toMatch(/Escolha a cidade na lista/);
+    expect(validateCompanyForm({ ...ok, cityId: 3550308, cityName: "Sao Paulo" }, "")).toBeNull();
+    // escolheu da lista: o texto pendente volta vazio e o cityId vale
+    expect(validateCompanyForm({ ...ok, cityId: 3550308, cityName: "Sao Paulo" }, "Sao Paulo")).toBeNull();
+  });
+
   it("recusa o que o backend recusaria", () => {
     expect(validateCompanyForm({ ...ok, corporateName: " " })).toMatch(/razao social/i);
     expect(validateCompanyForm({ ...ok, tradeName: "" })).toMatch(/fantasia/i);

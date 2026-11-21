@@ -10,6 +10,7 @@ import {
 } from "@seedgrid/fe-components";
 import {
   KeyRound,
+  Lock,
   LogOut,
   Palette,
   ScrollText,
@@ -42,6 +43,7 @@ const SIDEBAR_PANEL_PADDING = 20;
 // Icone de cada item do menu, pelo `href` (opcional). Acrescente aqui ao criar telas em `navItems`.
 // So as folhas do menu deste produto (app/data.ts).
 const iconByHref: Record<string, ReactNode> = {
+  "/security": <Lock size={16} />,
   "/security/users/user_list": <Users size={16} />,
   "/security/self-enter": <UserPlus size={16} />,
   "/security/roles/role_list": <ShieldCheck size={16} />,

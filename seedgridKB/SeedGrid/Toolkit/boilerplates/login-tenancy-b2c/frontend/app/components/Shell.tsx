@@ -17,6 +17,7 @@ import {
   Lock,
   LogOut,
   ScrollText,
+  Settings,
   ShieldCheck,
   UserCog,
   UserPlus,
@@ -30,6 +31,8 @@ import { TopBar } from "./TopBar";
 import { useAdminAccess } from "./AdminAccessProvider";
 import { navItems, type NavItem } from "../data";
 import { ADMIN_ROLE } from "@/lib/admin-permissions";
+import { PRODUCT_NAME } from "@/lib/brand";
+import { PRODUCT_SETTINGS_LABEL, PRODUCT_SETTINGS_PATH } from "@/lib/product-settings";
 
 type ShellProps = {
   title: string;
@@ -251,7 +254,7 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
           <SgMenu
             border={false}
             brand={{
-              title: "SeedGrid App",
+              title: PRODUCT_NAME,
               image: <SeedGridLogo />,
               onClick: () => router.push("/"),
             }}
@@ -275,7 +278,7 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
             selection={{ activeUrl: normalizedPathname }}
             user={{
               name: me?.name ?? "Minha conta",
-              subtitle: "SeedGrid App",
+              subtitle: PRODUCT_NAME,
               // So' pede a foto de quem TEM foto: o GET do avatar responde 404 para quem esta
               // sem avatarStorageKey, e o <img> quebrado sujava o console em toda tela — para,
               // no fim, cair no mesmo fallback de iniciais.
@@ -302,6 +305,10 @@ export function Shell({ title, eyebrow, description, children }: Readonly<ShellP
                 icon: <CreditCard size={16} />,
                 url: "/assinatura",
               },
+              // Tela de configuracao propria do produto (lib/product-settings.ts): entra aqui, nunca no menu lateral.
+              ...(PRODUCT_SETTINGS_PATH
+                ? [{ id: "settings", label: PRODUCT_SETTINGS_LABEL, icon: <Settings size={16} />, url: PRODUCT_SETTINGS_PATH }]
+                : []),
               {
                 id: "logout",
                 label: "Sair",

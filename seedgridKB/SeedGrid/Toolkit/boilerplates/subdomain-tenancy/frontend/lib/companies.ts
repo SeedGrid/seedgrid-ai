@@ -376,7 +376,14 @@ export function toActivePatch(active: boolean): { active: boolean } {
 }
 
 /** Primeiro erro de validacao do formulario (ou null). Mensagens iguais as do backend em sentido. */
-export function validateCompanyForm(form: CompanyForm): string | null {
+// E-mail com forma valida (algo@dominio.tld); o backend e quem confirma de verdade.
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Confere o formulario antes de salvar. `pendingCityText` e o que a pessoa digitou no campo Cidade: so vale a cidade
+ * ESCOLHIDA na lista (`cityId`); texto digitado sem escolher e recusado em vez de gravar texto solto.
+ */
+export function validateCompanyForm(form: CompanyForm, pendingCityText = ""): string | null {
   if (!form.corporateName.trim()) {
     return "Informe a razao social.";
   }
@@ -390,9 +397,16 @@ export function validateCompanyForm(form: CompanyForm): string | null {
   if (repCpf.length !== 0 && repCpf.length !== 11) {
     return "Informe o CPF do representante com 11 dígitos (ou deixe em branco).";
   }
+  const repEmail = form.repEmail.trim();
+  if (repEmail !== "" && !EMAIL_SHAPE.test(repEmail)) {
+    return "Informe um e-mail válido para o representante (ou deixe em branco).";
+  }
   const state = form.addrState.trim();
   if (state && !BRAZIL_STATES.includes(state.toUpperCase())) {
     return "UF invalida.";
+  }
+  if (pendingCityText.trim() !== "" && form.cityId == null) {
+    return "Escolha a cidade na lista: o texto digitado sem escolher não é gravado.";
   }
   return null;
 }

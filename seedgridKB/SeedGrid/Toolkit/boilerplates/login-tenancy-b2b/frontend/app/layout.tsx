@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/Providers";
 import { LocaleProvider } from "@/components/providers/locale-provider";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 const fontDisplay = Space_Grotesk({
   subsets: ["latin"],
@@ -17,7 +18,7 @@ const fontBody = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "SeedGrid App",
+  title: PRODUCT_NAME,
   description: "Aplicativo do cliente SeedGrid: conta, usuarios, perfis, assinatura e temas.",
   icons: {
     icon: "/favicon.svg",

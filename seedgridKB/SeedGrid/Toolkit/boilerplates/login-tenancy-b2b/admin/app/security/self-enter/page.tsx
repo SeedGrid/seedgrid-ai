@@ -39,6 +39,7 @@ import {
   type InvitationEntry,
   type SelfEnterPublicLink,
 } from "@/lib/self-enter";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 const STATUS_META: Record<
   EntryRequestStatus,
@@ -423,7 +424,7 @@ export default function SelfEnterPage() {
       ? `${existingAccount.name} ja tem acesso a plataforma (perfis atuais: ${
           existingAccount.platformRoles.join(", ") || "nenhum"
         }). Substituir pelos perfis selecionados?`
-      : `${existingAccount.name} ja tem conta no SeedGrid App com este e-mail, entao nao cabe um novo cadastro. Conceder acesso a plataforma com os perfis selecionados? A senha atual dele nao muda.`;
+      : `${existingAccount.name} ja tem conta no ${PRODUCT_NAME} com este e-mail, entao nao cabe um novo cadastro. Conceder acesso a plataforma com os perfis selecionados? A senha atual dele nao muda.`;
 
   if (!accessLoading && !canView) {
     return (

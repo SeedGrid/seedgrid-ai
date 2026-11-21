@@ -14,10 +14,17 @@ export type NavItem = {
 // Meu perfil, Temas e Sair vivem no menu do usuario (Shell.tsx). As permissoes sao as do catalogo das
 // extensions (as mesmas que os controllers cobram no @PermissionsAllowed). Rota de menu que nao bate com uma
 // pagina real e' 404 garantido: cada href tem um app/<href>/page.tsx.
+// Ordem (FE-44): Segurança é sempre a ÚLTIMA opção; item de segurança solto na raiz é erro (FE-40).
 export const navItems: NavItem[] = [
-  { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
-  { href: "/security/self-enter", label: "Convidar usuario externo", permission: "SELFENTER_INVITE" },
-  { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
-  { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
-  { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+  {
+    href: "/security",
+    label: "Segurança",
+    children: [
+      { href: "/security/users/user_list", label: "Usuarios", permission: "USER_READ" },
+      { href: "/security/self-enter", label: "Convidar usuario externo", permission: "SELFENTER_INVITE" },
+      { href: "/security/roles/role_list", label: "Perfis", permission: "ROLE_READ" },
+      { href: "/security/apikeys/apikey_list", label: "API Keys", permission: "APIKEY_READ" },
+      { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
+    ],
+  },
 ];

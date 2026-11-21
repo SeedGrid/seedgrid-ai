@@ -357,3 +357,13 @@ h6 {
   align-items: center;
   flex-wrap: wrap;
 }
+
+/* Mensagem de estado (StatusBadge) longa quebra linha em vez de estourar a tela (QA do 2FA a 390 px, P180).
+   O SgBadge e' whitespace-nowrap por padrao; aqui o texto longo desce de linha e nunca passa da largura do pai. */
+.status-badge.status-badge {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+  border-radius: 14px;
+}

@@ -22,6 +22,7 @@ import type {
   AdminDashboardOverview,
   ExchangeRate,
 } from "@/lib/seedgrid-app-api";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 type DunningItem = AdminDashboardOverview["dunning"]["items"][number];
 
@@ -171,7 +172,7 @@ export default function Home() {
     const target = firstVisibleHref(hasPermission, hasRole);
     return (
       <Shell
-        eyebrow="SeedGrid App"
+        eyebrow={PRODUCT_NAME}
         title="Visao geral"
         description="Indicadores da plataforma."
       >
@@ -191,7 +192,7 @@ export default function Home() {
 
   return (
     <Shell
-      eyebrow="SeedGrid App"
+      eyebrow={PRODUCT_NAME}
       title="Visao geral"
       description="Indicadores reais da plataforma: negocio, cobranca e saude."
     >

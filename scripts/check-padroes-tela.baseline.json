@@ -1,9 +1,4 @@
 {
-  "_nota": "Violacoes conhecidas ainda nao corrigidas no boilerplate (modular: menu Seguranca solto, FE-40). So encolhe: apague a entrada ao corrigir.",
-  "conhecidas": [
-    "menu-ordem|login-tenancy-b2b/frontend/app/data.ts",
-    "menu-ordem|login-tenancy-b2c/frontend/app/data.ts",
-    "menu-ordem|subdomain-tenancy/frontend/app/data.ts",
-    "menu-seguranca-solto|modular/frontend/app/data.ts"
-  ]
+  "_nota": "Violacoes conhecidas ainda nao corrigidas no boilerplate. So encolhe: apague a entrada ao corrigir. Vazio desde o boilerplate 9af2e41 (P180.F2.T18).",
+  "conhecidas": []
 }

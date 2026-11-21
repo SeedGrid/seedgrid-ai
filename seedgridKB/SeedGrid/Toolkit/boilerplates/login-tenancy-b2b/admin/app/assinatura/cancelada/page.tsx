@@ -1,6 +1,7 @@
 "use client";
 
 import { SgButton, SgCard, SgScreen } from "@seedgrid/fe-components";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 // Landing de CANCELAMENTO do checkout do Stripe (cancel_url). O Stripe redireciona para ca
 // quando o usuario abandona/cancela o checkout. Pagina PUBLICA (liberada no middleware):
@@ -14,7 +15,7 @@ export default function CheckoutCanceledPage() {
             Voce cancelou o checkout e <strong>nenhuma cobranca foi feita</strong>.
           </div>
           <p className="lede">
-            Volte ao app SeedGrid App para escolher um plano quando quiser.
+            Volte ao app {PRODUCT_NAME} para escolher um plano quando quiser.
           </p>
           <SgButton label="Fechar esta janela" onClick={() => window.close()} />
         </SgCard>

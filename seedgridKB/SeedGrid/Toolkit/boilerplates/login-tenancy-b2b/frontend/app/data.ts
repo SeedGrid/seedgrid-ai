@@ -21,7 +21,11 @@ export type NavItem = {
 // `SELFENTER_INVITE`, `APIKEY_READ`) — as mesmas que os controllers cobram no `@PermissionsAllowed`.
 // Rota de menu que nao bate com a rota real e' 404 garantido (PLAN.md §8.7): cada `href` aqui tem
 // um `app/<href>/page.tsx` correspondente.
+// Ordem (FE-44, P180.F2.T18): Empresas e Segurança são sempre as ÚLTIMAS opções, nessa ordem, logo acima do sgUserMenu.
 export const navItems: NavItem[] = [
+  // Backup self-service (extension seedgrid-backup): o ADMIN de cada filial exporta só os dados das suas empresas.
+  { href: "/backup/export_list", label: "Backup", permission: "BACKUP_READ" },
+  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" }, // só com a extension opcional business-days (FE-38)
   // FE-40: o menu tem sempre o grupo "Segurança" (igual ao admin); item de segurança solto na raiz é erro.
   {
     href: "/security",
@@ -36,7 +40,4 @@ export const navItems: NavItem[] = [
       { href: "/security/audit", label: "Auditoria", permission: "LOG_READ" },
     ],
   },
-  // Backup self-service (extension seedgrid-backup): o ADMIN de cada filial exporta só os dados das suas empresas.
-  { href: "/backup/export_list", label: "Backup", permission: "BACKUP_READ" },
-  { href: "/dias-uteis", label: "Calendário da empresa", permission: "BUSINESS_DAY_READ" }, // só com a extension opcional business-days (FE-38)
 ];

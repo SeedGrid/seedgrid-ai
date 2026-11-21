@@ -21,6 +21,7 @@ import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 import type { ApiKeyCreateResponse, ApiKeyRoleOption } from "@/lib/seedgrid-app-api";
 import { numberToText } from "@/lib/format";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 export default function ApiKeyEditPage() {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function ApiKeyEditPage() {
       return;
     }
     const content = [
-      "SeedGrid App — API Key",
+      `${PRODUCT_NAME} — API Key`,
       `Nome: ${created.name}`,
       `Prefixo: ${created.prefix}`,
       "Guarde em local seguro. Esta chave nao sera exibida novamente.",

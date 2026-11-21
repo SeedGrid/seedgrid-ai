@@ -56,6 +56,7 @@ export function StatusBadge({ value, severity }: Readonly<StatusBadgeProps>) {
 
   return (
     <SgBadge
+      className="status-badge"
       badgeStyle="soft"
       customColors={SEVERITY_COLORS[resolvedSeverity]}
       rounded

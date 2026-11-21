@@ -3,6 +3,7 @@
 import { SgButton, SgCard, SgScreen } from "@seedgrid/fe-components";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 type Status = "loading" | "success" | "error";
 
@@ -80,7 +81,7 @@ export function ConfirmEmailView({
         setStatus("success");
         if (afterSuccess === "desktop-app") {
           setMessage(
-            "E-mail confirmado com sucesso! Abra o aplicativo SeedGrid Report no seu " +
+            "E-mail confirmado com sucesso! Abra o aplicativo " + PRODUCT_NAME + " no seu " +
               "computador e entre com a senha provisoria para definir sua nova senha.",
           );
           // Sem redirecionamento: este usuario nao tem acesso ao admin-web, so' ao app

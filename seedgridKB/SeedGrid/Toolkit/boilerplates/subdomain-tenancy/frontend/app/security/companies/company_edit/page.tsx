@@ -68,6 +68,8 @@ function CompanyEditPageContent() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  // Texto digitado no campo Cidade sem escolher da lista: o Salvar recusa (so a cidade escolhida e gravada).
+  const [cityText, setCityText] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [form, setForm] = useState<CompanyForm>(EMPTY_COMPANY_FORM);
   // Estado de acesso e situacao so' aparecem (nao se editam aqui): accessMode e do billing/plataforma,
@@ -144,7 +146,7 @@ function CompanyEditPageContent() {
   }, [accessLoading, canAccessPage, isEditing, companyPublicId]);
 
   async function submitCompany() {
-    const validationError = validateCompanyForm(form);
+    const validationError = validateCompanyForm(form, cityText);
     if (validationError) {
       toast.error(validationError);
       return;
@@ -297,6 +299,7 @@ function CompanyEditPageContent() {
                 onUfChange={(uf) =>
                   setForm((current) => ({ ...current, addrState: uf, cityId: null, cityName: "", addrCity: "" }))
                 }
+                onTextChange={setCityText}
                 onCityChange={(city) =>
                   setForm((current) => ({
                     ...current,

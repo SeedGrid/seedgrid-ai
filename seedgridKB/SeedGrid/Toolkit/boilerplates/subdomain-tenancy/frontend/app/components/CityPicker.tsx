@@ -28,6 +28,8 @@ type CityPickerProps = {
   onUfChange: (uf: string) => void;
   /** `null` = cidade limpa. */
   onCityChange: (city: { id: number; name: string } | null) => void;
+  /** O que esta digitado no campo (vazio ao escolher da lista ou limpar): a tela recusa salvar texto sem escolha. */
+  onTextChange?: (text: string) => void;
   /** So' para teste/injecao; o padrao fala com o BFF `/api/cities/**`. */
   fetcher?: CityFetcher;
 };
@@ -43,6 +45,7 @@ export function CityPicker({
   legacyCityText,
   onUfChange,
   onCityChange,
+  onTextChange,
   fetcher = defaultFetcher,
 }: Readonly<CityPickerProps>) {
   const search = useMemo(() => createCitySearch(fetcher), [fetcher]);
@@ -63,6 +66,8 @@ export function CityPicker({
 
   function handleText(next: string) {
     setText(next);
+    const chosenNow = lastChosen.current;
+    onTextChange?.(chosenNow && chosenNow.name === next ? "" : next);
     if (next === "") {
       onCityChange(null);
       return;
@@ -78,6 +83,7 @@ export function CityPicker({
 
   function handleUf(next: string) {
     setText("");
+    onTextChange?.("");
     lastChosen.current = null;
     onUfChange(next);
   }
@@ -87,6 +93,7 @@ export function CityPicker({
     const choice = { id: Number(ref?.id ?? item.id), name: ref?.name ?? item.label };
     lastChosen.current = choice;
     setText(choice.name);
+    onTextChange?.("");
     onCityChange(choice);
   }
 
