@@ -1,7 +1,7 @@
 {
   "repositorio": "https://github.com/SeedGrid/boilerplate.git",
   "ref": "origin/main",
-  "commit": "6897e09ecd7418eda4fbd2c61641411f67e2d9e6",
+  "commit": "50fe6dd23a6e38c971adb15835c4720b8a2e3150",
   "modelos": [
     "login-tenancy-b2b",
     "login-tenancy-b2c",
