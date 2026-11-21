@@ -155,3 +155,16 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 - **Não coberto por teste de container:** o `around()` do interceptador com banco real e entidade cíclica (testado o `safeSnapshot` com o sanitizador real e com um que lança `StackOverflowError`).
 - **Quem precisa subir:** todo produto que usa `@SgAudit` deve estar em `seedgrid-ext-audit` **2026.11.13** (core, postgresql e mongodb) e `seedgrid-quarkus-lib-privacy` **2026.11.1**; as tenancies 2026.11.22 já trazem as duas. Veja [[SeedGrid/Extensions/privacy/Visao-geral|privacy]] e o plano P187.
 
+
+## Gravação depois do commit, sem segurar a operação (audit 2026.11.14, ainda não publicada)
+
+Defeito que motivou (P192, 2026-11-21): excluir um export no Display ficava em "Processando…" e a exclusão era revertida. A auditoria gravava **dentro da transação do negócio** (o interceptador do `@SgAudit` é mais interno que o `@Transactional`), sem tempo limite; com o Mongo lento a thread esperava até o `Transaction Reaper` cancelar a transação (60 s). O Narayana **não** coordena o Mongo: o travamento era a gravação síncrona dentro da transação.
+
+- **Entrega depois do commit:** o registro é montado como antes (`before` antes do `proceed`, `after` depois), mas entregue no fim da transação (só se confirmou) por uma fila limitada com thread própria (`AuditDelivery`); a operação não espera.
+- **Política de falha** `seedgrid.audit.failure-policy`: `LOG` (padrão) só registra o erro no log e a operação segue; `FAIL` entrega de forma síncrona, como antes, para quem exige auditoria garantida.
+- **Rollback** `seedgrid.audit.on-rollback`: `SKIP` (padrão) não grava o que reverteu; `RECORD` mantém a trilha das tentativas que falharam.
+- **Tempos limite do cliente Mongo** (`seedgrid.audit.mongodb.*`, padrões 3 s conectar, 5 s ler, 3 s escolher servidor; configuráveis): o cliente deixa de esperar para sempre.
+- **Efeitos para quem consome:** a gravação é **assíncrona** (ler o registro logo depois da resposta pode não vê-lo ainda); a ordem entre usuários pode mudar (dentro de uma thread ela é mantida); fila cheia descarta o mais novo com aviso.
+- **Atenção, host multi-tenant com `audit-postgresql`:** se o tenant do Hibernate é resolvido pela requisição, a thread de entrega tem contexto novo; use `failure-policy=FAIL` até validar.
+- **Os tempos limite valem para o cliente Mongo padrão do Quarkus;** um host que usa o mesmo cliente para o negócio deve sobrescrevê-los. `AuditGatewayImpl` e `AuditEmitter` seguem síncronos.
+- **Decisão do dono (2026-11-21):** padrão `LOG`, `SKIP` e auditoria best-effort aceitos (plano P192.F0.D1).
