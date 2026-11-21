@@ -156,6 +156,8 @@ public class MeuBackupExporter implements BackupExporter {
 
 ## Notificação ao terminar o export (publicada em 2026-11-03, `backup` 2026.11.02)
 
+> **Atualização (P186.F4, 2026-11-21):** **backup 2026.11.12** (commit `9030f83`, tag `v2026.11.12`, Nexus): `backup.finished` passa `actionable=true` e `backup.failed` `actionable=false` (payload continua só `{exportPublicId}`, sem URL). O download de export expirado ou falho devolve **410 com corpo JSON** e mensagem legível em português ("Este backup expirou ou falhou e não está mais disponível para download. Gere um novo backup."); antes as respostas de erro do download saíam com `Content-Type: application/zip`, o que impedia o cliente de ler a mensagem (corrigido para 404 e 410). **Exige user-notifications >= 2026.11.6.** Versão **2026.11.13** (dev-3, P187): só bump de dependências, mesmo contrato. Hosts que pinam via `subdomain-tenancy` 2026.11.22 recebem backup .13 e user-notifications .7. Testes: backup 67 verdes; **não testado** de ponta a ponta com o sino do front.
+
 > Plano P130 (`backup` 2026.11.02, commits `af3e93c` e `7928d89`, no Maven Central). Ao terminar o export, com sucesso ou erro, o backup deixa uma notificação na caixa de quem pediu, pelo SPI opcional `ExportInboxNotifier` (tipos `backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`; o download continua pela rota do backup). A dependência da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]] é `provided`: sem ela o backup funciona igual, e falha da caixa só vira log. A conta de quem pediu fica na coluna nova `sg_export_jobs.inbox_account_public_id` (migration V401), então sobrevive a reinício do servidor. **Confirmado** (relato do dev-2).
 
 ## Anotações
