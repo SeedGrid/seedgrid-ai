@@ -9,6 +9,7 @@
 //     loading, entao o clique repetido duplica o registro (FE-46, P190). Devolva a Promise: `onClick={() => salvar()}`;
 //  7. `<form onSubmit={...}>` que faz mais do que `event.preventDefault()`: a gravacao passa sempre pelo botao (FE-46, P190). O form so
 //     existe para o gerenciador de senha do navegador; o `SgButton type="submit"` leva o `onClick` que devolve a Promise.
+//  8. `console.log/debug/info` que imprime requisicao, cabecalho, corpo, token, cookie ou senha (FE-47, P193): vaza segredo no console do navegador.
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -102,6 +103,13 @@ for (const f of walk(root)) {
     }
     for (const m of srcF.matchAll(re)) {
       if (GRAVA.test(m[1])) add('botao-grava-com-void', f, `onClick/onSubmit com \`void ${m[1]}()\`: devolva a Promise (\`() => ${m[1]}()\`) para o SgButton travar o clique repetido (FE-46)`);
+    }
+  }
+  if (/\.(tsx?|mjs|js)$/.test(r) && !/\.(test|spec)\./.test(r)) {
+    // 8. console.log/debug/info que imprime requisicao, cabecalho, corpo, token ou senha (FE-47, P193)
+    const SENSIVEL = /(authorization|headers?|body|token|password|senha|cookie|api[-_ ]?key|curl|requestinit)/i;
+    for (const m of read(f).matchAll(/console\.(?:log|debug|info)\s*\(([^;]*?)\)\s*;?\s*$/gm)) {
+      if (SENSIVEL.test(m[1])) add('console-log-sensivel', f, `console.${m[0].slice(8, 12).replace(/\W/g, '')} com dado sensivel (requisicao, cabecalho, corpo, token ou senha): nao logue isso (FE-47)`);
     }
   }
   if (/\.(tsx|ts)$/.test(r) && !/(^|\/)admin\//.test(r) && !/\.(test|spec)\./.test(r)) {

@@ -34,6 +34,8 @@ const ruins: Record<string, [Record<string, string>, string]> = {
   'item de seguranca solto na raiz do menu': [{ 'frontend/app/data.ts': 'export const navItems = [\n  { href: "/security/users/user_list", label: "Usuarios" },\n];\n' }, 'menu-seguranca-solto'],
   'Empresas e Seguranca antes de itens do produto': [{ 'frontend/app/data.ts': ['export const navItems = [', '  { href: "/security/companies/company_list", label: "Empresas" },', '  { href: "/midias/media_list", label: "Midias" },', '];', ''].join('\n') }, 'menu-ordem'],
   'instrucao de admin no app do cliente': [{ 'frontend/app/assinatura/View.tsx': 'const t = "Cadastre o ID de preco do Stripe nesse plano";' }, 'instrucao-admin-no-cliente'],
+  'console.log com cabecalho da requisicao': [{ 'frontend/lib/http.ts': 'export function f(init: RequestInit) {\n  console.log("[API Request] Headers:", init.headers);\n}\n' }, 'console-log-sensivel'],
+  'console.log com corpo e senha': [{ 'frontend/app/auth/login.tsx': 'console.log("login", body, password);' }, 'console-log-sensivel'],
   'contador requests por padrao': [{ 'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition(REQUESTS, "Requisicoes")); } }' }, 'contador-requests-por-padrao'],
 };
 for (const [nome, [files, regra]] of Object.entries(ruins)) {
@@ -94,3 +96,11 @@ test('FE-46: form com onSubmit que faz mais que preventDefault reprova; so preve
     assert.equal(run(dir).code, 0);
   });
 });
+
+test('passa: console.log sem dado sensivel e console de arquivo de teste', () => withTree({
+  'frontend/lib/x.ts': 'console.log("carregou a tela");\n',
+  'frontend/lib/y.test.ts': 'console.log("token", token);\n',
+}, (dir) => {
+  const r = run(dir);
+  assert.equal(r.code, 0, r.out);
+}));
