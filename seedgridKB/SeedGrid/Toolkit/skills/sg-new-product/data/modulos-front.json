@@ -104,12 +104,62 @@
       }
     },
     "backup": {
-      "descricao": "Backup e exportacao de dados (telas e proxies da API) no admin.",
+      "descricao": "Backup e exportacao de dados (telas e proxies da API): no admin (exportacao da plataforma) e no front do cliente (backup por filial, ADMIN de cada filial).",
       "escopos": {
+        "frontend": {
+          "apagar": [
+            "app/backup",
+            "app/api/backup",
+            "lib/backup-companies.ts",
+            "lib/backup-companies.test.ts",
+            "lib/bff-exports-timeout.test.ts"
+          ],
+          "linhas": [
+            {
+              "arquivo": "app/data.ts",
+              "contem": "href: \"/backup/export_list\""
+            },
+            {
+              "arquivo": "app/data.ts",
+              "contem": "Backup self-service (extension seedgrid-backup)"
+            },
+            {
+              "arquivo": "app/components/Shell.tsx",
+              "contem": "DatabaseBackup"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "backupView:"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "backupCreate:"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "backupDownload:"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "backupDelete:"
+            },
+            {
+              "arquivo": "lib/admin-permissions.ts",
+              "contem": "Backup self-service por filial"
+            }
+          ],
+          "blocos": [
+            {
+              "arquivo": "lib/client-permission-tree.ts",
+              "contem": "id: \"backup\","
+            }
+          ]
+        },
         "admin": {
           "apagar": [
             "app/exports",
-            "app/api/admin/exports"
+            "app/api/admin/exports",
+            "lib/bff-exports-timeout.test.ts"
           ],
           "blocos": [
             {
