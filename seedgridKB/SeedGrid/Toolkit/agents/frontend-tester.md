@@ -36,6 +36,7 @@ Ordem natural: implementador, `revisor`, `qa` e, por último, o `frontend-tester
 - Como subir o produto e o back de desenvolvimento (de `.ai/local/` ou do repositório; para o `dev.env`, a skill `sg-dev-env`).
 - Navegador real disponível e, para app móvel, emulador ou dispositivo. Sem eles, o item vira "não executado (motivo)".
 - Credenciais e dados de teste do ambiente de desenvolvimento. Nunca dados reais nem segredos de produção.
+- Antes de uma publicação: o roteiro de 12 passos e a classe da mudança em `.ai/references/roteiro-de-prova-de-comportamento.md`; o resultado (PROVADO, VISTO ou NÃO TESTADO por passo, com o commit testado) vai no pedido de "pode".
 
 ## Responsabilidades
 
