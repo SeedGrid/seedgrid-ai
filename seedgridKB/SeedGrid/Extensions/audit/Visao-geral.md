@@ -156,7 +156,7 @@ public class MeuAuditPersistenceProvider implements AuditPersistenceProvider {
 - **Quem precisa subir:** todo produto que usa `@SgAudit` deve estar em `seedgrid-ext-audit` **2026.11.13** (core, postgresql e mongodb) e `seedgrid-quarkus-lib-privacy` **2026.11.1**; as tenancies 2026.11.22 já trazem as duas. Veja [[SeedGrid/Extensions/privacy/Visao-geral|privacy]] e o plano P187.
 
 
-## Gravação depois do commit, sem segurar a operação (audit 2026.11.14, ainda não publicada)
+## Gravação depois do commit, sem segurar a operação (audit 2026.11.14, publicada)
 
 Defeito que motivou (P192, 2026-11-21): excluir um export no Display ficava em "Processando…" e a exclusão era revertida. A auditoria gravava **dentro da transação do negócio** (o interceptador do `@SgAudit` é mais interno que o `@Transactional`), sem tempo limite; com o Mongo lento a thread esperava até o `Transaction Reaper` cancelar a transação (60 s). O Narayana **não** coordena o Mongo: o travamento era a gravação síncrona dentro da transação.
 
