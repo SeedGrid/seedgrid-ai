@@ -20,7 +20,8 @@ export function resolveTenantHost(rawHostHeader: string | null | undefined): str
   const suffix = `.${domain}`;
   if (!host.endsWith(suffix)) throw new Error("Dominio de acesso invalido.");
   const tenant = host.slice(0, -suffix.length);
-  if (!/^[a-z0-9_]{5,50}$/.test(tenant) || tenant === "master") {
+  // So letras minusculas, numeros e hifen (RFC 1123), 5 a 50; `_` nunca e aceito no host (o backend recusa).
+  if (!/^[a-z0-9-]{5,50}$/.test(tenant) || tenant === "master") {
     throw new Error("Subdominio de acesso invalido.");
   }
   return `${tenant}.${domain}`;

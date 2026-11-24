@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -28,6 +29,7 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { SgInputTextSearch } from "../../components/SgInputTextSearch";
 import { MeterQuotaEditor, useUsageMeters } from "../../components/MeterQuotaEditor";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { CLIENT_PERMISSION_MENU_TREE } from "@/lib/client-permission-tree";
 
@@ -302,6 +304,10 @@ function PlanTermsPageContent() {
     setDialogOpen(true);
   }
 
+  // Salvar: criacao so com preco valido; edicao so depois de alterar (P194.T2). A base e' o valor ao abrir o dialogo.
+  const termDirty = useDirty(form, dialogOpen);
+  const saveReady = parseDecimalInput(form.monthlyPrice) != null && (editing === null || termDirty);
+
   async function submitTerm() {
     if (!planPublicId) {
       return;
@@ -359,7 +365,7 @@ function PlanTermsPageContent() {
       );
 
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao salvar condicao comercial.");
         setStatusMessage(text || "Falha ao salvar condicao comercial.");
         return;
       }
@@ -410,7 +416,7 @@ function PlanTermsPageContent() {
         { method: "DELETE" },
       );
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao excluir condicao comercial.");
         toast.error(text || "Falha ao excluir condicao comercial.");
         return;
       }
@@ -434,7 +440,7 @@ function PlanTermsPageContent() {
         { method: "POST" },
       );
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao publicar no Stripe.");
         toast.error(text || "Falha ao publicar no Stripe.");
         return;
       }
@@ -467,7 +473,7 @@ function PlanTermsPageContent() {
         { method: "POST" },
       );
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao aposentar a condicao.");
         toast.error(text || "Falha ao aposentar a condicao.");
         return;
       }
@@ -967,6 +973,7 @@ function PlanTermsPageContent() {
             appearance="outline"
             label={submitting ? "Salvando..." : editing ? "Salvar" : "Salvar e publicar"}
             leftIcon={<Save size={16} />}
+            enabled={saveReady}
             onClick={() => submitTerm()}
             severity="secondary"
           />

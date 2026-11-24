@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -78,7 +79,7 @@ export default function SettingsPage() {
         }),
       });
       if (!response.ok) {
-        toast.error((await response.text()) || "Falha ao salvar a configuracao.");
+        toast.error(await readHttpError(response, "Falha ao salvar a configuracao."));
         return;
       }
       toast.success("Configuracao salva. O agendamento foi atualizado.");
@@ -92,7 +93,7 @@ export default function SettingsPage() {
     try {
       const response = await fetch("/api/admin/ai/price-approvals/check", { method: "POST" });
       if (!response.ok) {
-        toast.error((await response.text()) || "Falha ao verificar.");
+        toast.error(await readHttpError(response, "Falha ao verificar."));
         return;
       }
       const result = (await response.json()) as { status?: string; message?: string };

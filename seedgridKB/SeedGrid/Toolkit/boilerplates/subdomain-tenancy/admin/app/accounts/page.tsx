@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -141,7 +142,7 @@ export default function AccountsPage() {
           },
         );
         if (!response.ok) {
-          const text = await response.text();
+          const text = await readHttpError(response, "Falha ao conceder unidades.");
           setStatusMessage(text || "Falha ao conceder unidades.");
           return;
         }
@@ -160,7 +161,7 @@ export default function AccountsPage() {
           },
         );
         if (!response.ok) {
-          const text = await response.text();
+          const text = await readHttpError(response, "Falha ao estender o trial.");
           setStatusMessage(
             (text || "Falha ao estender o trial.") +
               (units > 0 ? " As unidades JA foram concedidas -- nao reenvie o formulario." : ""),

@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -471,7 +472,7 @@ function createCompaniesRequest(query: CompanyQueryState) {
     })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error(await readHttpError(response, `HTTP ${response.status}`));
         }
         return (await response.json()) as PaginatedResult<CompanyEntry>;
       })

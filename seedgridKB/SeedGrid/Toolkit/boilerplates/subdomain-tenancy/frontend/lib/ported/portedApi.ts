@@ -19,6 +19,7 @@
 // (PLAN.md §6.1) — nada de `renovarUmaVezSo` client-side aqui.
 // ---------------------------------------------------------------------------
 
+import { CLIENT_TIMEOUT_MESSAGE, errorBodyForClient, fetchWithTimeout } from "../http-error";
 import {
   buildChangePlanBody,
   buildCheckoutBody,
@@ -43,8 +44,12 @@ import type {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path, { cache: "no-store", ...init });
-  } catch {
+    response = await fetchWithTimeout(path, { cache: "no-store", ...init });
+  } catch (error) {
+    // Tempo limite (60 s): mensagem propria, para o spinner terminar em erro legivel com "Tentar de novo".
+    if (error instanceof Error && error.message === CLIENT_TIMEOUT_MESSAGE) {
+      return Promise.reject(CLIENT_TIMEOUT_MESSAGE);
+    }
     // Equivalente do `ClientError` de rede do Rust; o texto e' um dos
     // CONNECTION_ERROR_HINTS, entao a tela mostra "Reconectando..." em vez de banner vermelho.
     return Promise.reject("Nao foi possivel conectar ao servidor. Tente novamente.");
@@ -55,7 +60,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!response.ok) {
     // O corpo cru (problem+json do backend, repassado pelo BFF) vai como string: o `readError`
     // parseia e extrai `violations`/`detail`/`title`. Era exatamente o que o Rust fazia.
-    return Promise.reject(text || `HTTP ${response.status}`);
+    // Pagina HTML do proxy (Cloudflare/nginx) nunca chega a tela: vira mensagem curta; JSON passa intacto.
+    return Promise.reject(errorBodyForClient(response.status, response.headers.get("Content-Type"), text));
   }
 
   if (!text) {

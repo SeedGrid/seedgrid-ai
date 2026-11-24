@@ -141,8 +141,8 @@ describe("proxy: /api/q/** (tenant por X-Forwarded-Host)", () => {
   });
 
   it("tenants diferentes viram X-Forwarded-Host diferentes", () => {
-    const other = proxy(request("/api/q/users/search", { method: "QUERY", cookies: session, headers: { host: "Outra_Emp.localhost" } }));
-    expect(forwarded(other, "x-forwarded-host")).toBe("outra_emp.localhost");
+    const other = proxy(request("/api/q/users/search", { method: "QUERY", cookies: session, headers: { host: "Outra-Emp.localhost" } }));
+    expect(forwarded(other, "x-forwarded-host")).toBe("outra-emp.localhost");
   });
 
   it("ignora X-Forwarded-Host vindo do browser", () => {

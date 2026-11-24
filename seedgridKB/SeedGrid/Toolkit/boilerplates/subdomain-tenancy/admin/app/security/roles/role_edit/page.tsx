@@ -19,6 +19,7 @@ import { Shell } from "../../../components/Shell";
 import { StatusBadge } from "../../../components/StatusBadge";
 import { useAdminAccess } from "../../../components/AdminAccessProvider";
 import { SgInputTextSearch } from "../../../components/SgInputTextSearch";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import {
   MAPPED_PERMISSION_NAMES,
@@ -292,6 +293,15 @@ function RoleEditPageContent() {
     };
   }, [accessLoading, canAccessPage, isEditing, rolePublicId]);
 
+  // Salvar: criacao so com o obrigatorio preenchido; edicao so depois de alterar (P194.T2).
+  const dirty = useDirty(editor, !loading);
+  const requiredOk =
+    editor.name.trim().length > 0 &&
+    editor.name.length >= ROLE_NAME_MIN_LENGTH &&
+    editor.name.length <= ROLE_NAME_MAX_LENGTH &&
+    editor.description.trim().length > 0;
+  const saveReady = !protectedRole && requiredOk && (!isEditing || dirty);
+
   async function submitRole() {
     if (protectedRole) {
       toast.error("Perfil administrador protegido nao pode ser alterado.");
@@ -509,6 +519,7 @@ function RoleEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
+                enabled={saveReady}
                 onClick={() => submitRole()}
                 severity="secondary"
               />

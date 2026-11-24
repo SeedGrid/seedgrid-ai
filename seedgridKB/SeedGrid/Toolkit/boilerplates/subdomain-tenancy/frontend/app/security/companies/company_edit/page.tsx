@@ -22,6 +22,7 @@ import { Shell } from "../../../components/Shell";
 import { CityPicker } from "../../../components/CityPicker";
 import { StatusBadge } from "../../../components/StatusBadge";
 import { useAdminAccess } from "../../../components/AdminAccessProvider";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { createCitySearch, type CityFetcher } from "@/lib/cities";
 import {
@@ -154,6 +155,10 @@ function CompanyEditPageContent() {
       cancelled = true;
     };
   }, [accessLoading, canAccessPage, isEditing, companyPublicId]);
+
+  // Salvar: criacao so com o obrigatorio valido; edicao so depois de alterar (P194.T2).
+  const dirty = useDirty(form, !loading);
+  const saveReady = validateCompanyForm(form, cityText) === null && (!isEditing || dirty);
 
   async function submitCompany() {
     const validationError = validateCompanyForm(form, cityText);
@@ -376,9 +381,9 @@ function CompanyEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
+                enabled={saveReady}
                 onClick={() => submitCompany()}
                 severity="secondary"
-                enabled={!submitting}
               />
             </SgStack>
           )}

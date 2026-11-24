@@ -19,6 +19,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAdminAccess } from "../components/AdminAccessProvider";
 import { Shell } from "../components/Shell";
 import { TwoFactorManager } from "../components/TwoFactorManager";
+import { useDirty } from "@/lib/use-dirty";
 import type { MyProfile } from "@/lib/seedgrid-app-api";
 
 type ProblemPayload = {
@@ -100,6 +101,11 @@ export default function ProfilePage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Salvar dados so depois de alterar, com nome (P194.T2). Alterar senha so com os tres campos preenchidos.
+  const dirtyData = useDirty({ name, whatsApp }, !loading);
+  const saveReady = name.trim().length > 0 && dirtyData;
+  const passwordReady = Boolean(currentPassword && newPassword && confirmPassword);
 
   async function saveData() {
     if (!name.trim()) {
@@ -316,6 +322,7 @@ export default function ProfilePage() {
                       label={savingData ? "Salvando..." : "Salvar dados"}
                       leftIcon={<Save size={16} />}
                       loading={savingData}
+                      enabled={saveReady}
                       onClick={() => saveData()}
                       severity="secondary"
                     />
@@ -397,6 +404,7 @@ export default function ProfilePage() {
                     appearance="outline"
                     label={savingPwd ? "Salvando..." : "Alterar senha"}
                     leftIcon={<Save size={16} />}
+                    enabled={passwordReady}
                     onClick={() => savePassword()}
                     severity="secondary"
                   />

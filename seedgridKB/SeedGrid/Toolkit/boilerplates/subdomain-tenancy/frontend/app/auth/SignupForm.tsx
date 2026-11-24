@@ -49,7 +49,7 @@ import {
 import type { CnpjSignupStatus } from "@/lib/ported/billingTypes";
 import { readError } from "@/lib/ported/clientError";
 import { cityIdForSignup, lookupCityByIbge, type PublicCity } from "@/lib/public-cities";
-import { lowerSubdomainWhileTyping, normalizeSubdomain } from "@/lib/subdomain-input";
+import { lowerSubdomainWhileTyping, normalizeSubdomain, subdomainError } from "@/lib/subdomain-input";
 import { AuthCard, AuthMessage } from "./AuthCard";
 
 interface SignupFormProps {
@@ -562,8 +562,9 @@ export function SignupForm({
   async function submitSignup(values: SignupFormValues) {
     // Maiuscula nao e' erro: converte (o campo ja converte ao digitar; isto cobre colar/autopreencher).
     const subdomain = normalizeSubdomain(values.subdomain);
-    if (!/^[a-z0-9_]{5,50}$/.test(subdomain) || subdomain === "master") {
-      setError("Use um subdominio de 5 a 50 letras minusculas, numeros ou sublinhado, diferente de master.");
+    const subdomainProblem = subdomainError(subdomain);
+    if (subdomainProblem) {
+      setError(subdomainProblem);
       return;
     }
     // CNPJ com company: o back recusa com 409 de qualquer jeito. Barra aqui para nao gastar
@@ -738,9 +739,11 @@ export function SignupForm({
               name="subdomain"
               register={register}
               label="Subdomínio"
-              hintText="Endereço da empresa: 5 a 50 letras, números ou sublinhado (convertido para minúsculas)."
+              hintText="Endereço da empresa: 5 a 50 letras minúsculas, números ou hífen (espaço vira hífen; acentos e símbolos são removidos)."
               required
               onChange={(value) => {
+                // O aviso da tentativa anterior nao pode ficar preso: some ao mexer no campo (P194.T1).
+                setError(null);
                 const lower = lowerSubdomainWhileTyping(value);
                 if (lower !== value) applyValue("subdomain", lower);
               }}

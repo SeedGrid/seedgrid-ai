@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -136,7 +137,7 @@ export default function SecurityAuditPage() {
           // DIVERGENCIA DELIBERADA do report-admin: la' o !ok zerava a lista e sumia com o erro.
           // Agora o corpo da resposta (problem+json do backend) vira o erro que o <ListLoadError>
           // exibe. PLAN.md §6.6.
-          throw new Error((await response.text()) || `HTTP ${response.status}`);
+          throw new Error(await readHttpError(response, `HTTP ${response.status}`));
         }
         setResult((await response.json()) as PaginatedResult<AuditLogEntry>);
       } catch (error) {

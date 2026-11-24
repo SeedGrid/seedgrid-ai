@@ -12,7 +12,8 @@ export default function TenantPage() {
 
   function enter() {
     const tenant = normalizeSubdomain(subdomain);
-    if (!/^[a-z0-9_]{5,50}$/.test(tenant) || tenant === "master") {
+    // Entrar: aceita o que o host resolve (inclusive contas antigas com "_"); a regra estrita e' do cadastro.
+    if (!/^[a-z0-9-]{1,50}$/.test(tenant) || tenant === "master") {
       setError("Informe o subdominio cadastrado para sua empresa.");
       return;
     }
@@ -30,7 +31,10 @@ export default function TenantPage() {
             id="tenant-subdomain"
             label="Subdomínio"
             inputProps={{ value: subdomain }}
-            onChange={(value) => setSubdomain(lowerSubdomainWhileTyping(value))}
+            onChange={(value) => {
+              setError(null);
+              setSubdomain(lowerSubdomainWhileTyping(value));
+            }}
           />
           {error && <AuthMessage tone="error">{error}</AuthMessage>}
           <SgButton label="Continuar" onClick={enter} />

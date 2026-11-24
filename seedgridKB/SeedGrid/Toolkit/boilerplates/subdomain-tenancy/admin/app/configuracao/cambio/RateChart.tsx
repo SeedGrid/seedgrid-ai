@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import { SgCard, SgSkeleton } from "@seedgrid/fe-components";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -74,7 +75,7 @@ export function RateChart({ currencyCode }: { readonly currencyCode: string }) {
         if (currencyCode) query.set("currencyCode", currencyCode);
         const response = await fetch(`/api/admin/currency-exchange-rates/series?${query}`, { cache: "no-store" });
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error(await readHttpError(response, `HTTP ${response.status}`));
         }
         const json = (await response.json()) as SeriesResponse;
         // Resposta de uma faixa que o usuario ja trocou nao pode sobrescrever a atual: import de

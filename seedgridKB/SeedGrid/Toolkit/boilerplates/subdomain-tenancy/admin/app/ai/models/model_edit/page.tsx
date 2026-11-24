@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -139,7 +140,7 @@ function AiModelEditPageContent() {
       );
 
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao salvar modelo.");
         toast.error(text || "Falha ao salvar modelo.");
         return;
       }
@@ -252,7 +253,7 @@ function ModelPrices({
         }),
       });
       if (!response.ok) {
-        setError((await response.text()) || "Falha ao lancar preco.");
+        setError(await readHttpError(response, "Falha ao lancar preco."));
         return;
       }
       setDialogOpen(false);

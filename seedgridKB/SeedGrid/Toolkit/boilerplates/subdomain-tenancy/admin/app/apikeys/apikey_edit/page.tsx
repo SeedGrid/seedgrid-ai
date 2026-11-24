@@ -63,6 +63,9 @@ export default function ApiKeyEditPage() {
   const selectedRole = roleOptions.find((role) => role.name === roleName) ?? null;
   const rolePermissions = selectedRole?.permissions ?? [];
 
+  // Criar chave so com nome e perfil escolhidos (P194.T2).
+  const saveReady = Boolean(name.trim() && roleName);
+
   async function handleCreate() {
     if (!name.trim()) {
       toast.error("Informe um nome para a chave.");
@@ -246,7 +249,7 @@ export default function ApiKeyEditPage() {
                 appearance="solid"
                 label={submitting ? "Criando..." : "Criar chave"}
                 leftIcon={<KeyRound size={16} />}
-                enabled={!submitting}
+                enabled={saveReady}
                 onClick={() => handleCreate()}
                 severity="primary"
               />

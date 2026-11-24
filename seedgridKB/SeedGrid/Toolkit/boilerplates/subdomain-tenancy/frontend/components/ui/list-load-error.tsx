@@ -3,6 +3,7 @@
 import { SgButton } from "@seedgrid/fe-components";
 
 import { useLocale } from "@/components/providers/locale-provider";
+import { loadErrorDetail } from "@/lib/http-error";
 
 /**
  * Falha ao CARREGAR uma listagem. Existe para que erro nunca mais seja confundido com vazio.
@@ -30,7 +31,8 @@ export function ListLoadError({
     return null;
   }
 
-  const detalhe = error instanceof Error ? error.message : String(error);
+  // Nunca HTML cru (pagina 502 do Cloudflare/nginx): vira mensagem curta; problem+json vira o `detail`.
+  const detalhe = loadErrorDetail(error);
   // 401 chega aqui só depois de o refresh ter falhado — o cliente já tentou renovar e repetir.
   // Então isto significa sessão realmente encerrada, e o texto tem de dizer o que fazer.
   const sessaoExpirada = /\b401\b|unauthorized|autentica|expirad/i.test(detalhe);

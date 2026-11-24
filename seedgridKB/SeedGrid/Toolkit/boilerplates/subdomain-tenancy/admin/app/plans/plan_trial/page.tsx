@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -15,6 +16,7 @@ import { Shell } from "../../components/Shell";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
 import { MeterQuotaEditor, useUsageMeters } from "../../components/MeterQuotaEditor";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import type { TrialConfig } from "@/lib/seedgrid-app-api";
 import {
@@ -74,6 +76,12 @@ export default function PlanTrialPage() {
     }
   }, [trial, declaredMeters, metersLoading]);
 
+  // Salvar so depois de alterar (P194.T2). A base e' o valor com as linhas de contador ja montadas.
+  const saveReady = useDirty(
+    { meterRows, trialDays, commercial },
+    !loading && !metersLoading && meterRows.length === declaredMeters.length,
+  );
+
   async function submit() {
     // O trial nao tem excedente: o preco nem aparece no editor e vai sempre 0.
     const { meters, error } = toMeterPayload(meterRows, false);
@@ -104,7 +112,7 @@ export default function PlanTrialPage() {
         body: JSON.stringify({ meters, trialDays: days, ...commercialPayload }),
       });
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao salvar a configuracao do trial.");
         toast.error(text || "Falha ao salvar a configuracao do trial.");
         return;
       }
@@ -238,6 +246,7 @@ export default function PlanTrialPage() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
+                enabled={saveReady}
                 onClick={() => submit()}
                 severity="secondary"
               />

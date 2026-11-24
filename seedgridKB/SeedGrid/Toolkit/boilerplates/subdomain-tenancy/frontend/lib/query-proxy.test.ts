@@ -38,7 +38,7 @@ function rewriteForwardedHost(host: string): string | null {
 }
 
 describe("QUERY (rewrite) x BFF: mesmo X-Forwarded-Host", () => {
-  it.each(["acmeco.localhost:3002", "Outra_Emp.localhost", "tenant_01.localhost:80"])("host %s", async (host) => {
+  it.each(["acmeco.localhost:3002", "Outra-Emp.localhost", "tenant-01.localhost:80"])("host %s", async (host) => {
     const bff = await bffForwardedHost(host);
     expect(bff).not.toBeNull();
     expect(rewriteForwardedHost(host)).toBe(bff);

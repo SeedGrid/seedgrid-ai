@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -40,7 +41,7 @@ function ForgotPasswordConfirmContent() {
           return;
         }
         if (!response.ok) {
-          const text = await response.text();
+          const text = await readHttpError(response, "Não foi possível confirmar a troca de senha.");
           setErrorMessage(text || "Não foi possível confirmar a troca de senha.");
           return;
         }

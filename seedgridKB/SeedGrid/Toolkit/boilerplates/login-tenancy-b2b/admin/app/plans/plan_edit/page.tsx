@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -17,6 +18,7 @@ import { Suspense, useEffect, useState, type Dispatch, type SetStateAction } fro
 import { Shell } from "../../components/Shell";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useAdminAccess } from "../../components/AdminAccessProvider";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import type { PlanEntry } from "@/lib/seedgrid-app-api";
 import { numberToText } from "@/lib/format";
@@ -94,7 +96,7 @@ function PlanEditPageContent() {
       });
 
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao carregar plano.");
         if (!cancelled) {
           setStatusMessage(text || "Falha ao carregar plano.");
           setLoading(false);
@@ -130,6 +132,10 @@ function PlanEditPageContent() {
     };
   }, [accessLoading, canAccessPage, isEditing, planPublicId]);
 
+  // Salvar: criacao so com nome; edicao so depois de alterar (P194.T2).
+  const planDirty = useDirty(editor, !loading);
+  const saveReady = editor.name.trim().length > 0 && (!isEditing || planDirty);
+
   async function submitPlan() {
     // O codigo agora e interno e auto-gerado no backend a partir do nome.
     if (!editor.name.trim()) {
@@ -159,7 +165,7 @@ function PlanEditPageContent() {
       );
 
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao salvar plano.");
         toast.error(text || "Falha ao salvar plano.");
         return;
       }
@@ -232,6 +238,7 @@ function PlanEditPageContent() {
               editor={editor}
               isEditing={isEditing}
               submitting={submitting}
+              saveReady={saveReady}
               onChange={setEditor}
               onSubmit={() => submitPlan()}
             />
@@ -246,11 +253,12 @@ type PlanFormProps = {
   editor: PlanEditorState;
   isEditing: boolean;
   submitting: boolean;
+  saveReady: boolean;
   onChange: Dispatch<SetStateAction<PlanEditorState>>;
   onSubmit: () => void;
 };
 
-function PlanForm({ editor, isEditing, submitting, onChange, onSubmit }: PlanFormProps) {
+function PlanForm({ editor, isEditing, submitting, saveReady, onChange, onSubmit }: PlanFormProps) {
   return (
     <SgStack gap={12}>
       {isEditing && editor.publicId != null ? (
@@ -322,6 +330,7 @@ function PlanForm({ editor, isEditing, submitting, onChange, onSubmit }: PlanFor
         appearance="outline"
         label={submitting ? "Salvando..." : "Salvar"}
         leftIcon={<Save size={16} />}
+        enabled={saveReady}
         onClick={onSubmit}
         severity="secondary"
       />

@@ -29,6 +29,7 @@ import {
 import { Shell } from "../../../components/Shell";
 import { StatusBadge } from "../../../components/StatusBadge";
 import { useAdminAccess } from "../../../components/AdminAccessProvider";
+import { useDirty } from "@/lib/use-dirty";
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions";
 import { adminProxyClient, extractApiErrorMessage } from "@/lib/core";
 import { formatDateTime } from "@/lib/format";
@@ -247,6 +248,14 @@ function UserEditPageContent() {
     setSaveError(message);
     toast.error(message);
   }
+
+  // Salvar: criacao so com o obrigatorio preenchido; edicao so depois de alterar (P194.T2).
+  const dirty = useDirty(editor, !loading);
+  const requiredOk =
+    Boolean(editor.name.trim() && editor.email.trim()) &&
+    (isEditing || Boolean(editor.password.trim())) &&
+    (!editor.password.trim() || editor.password === editor.confirmPassword);
+  const saveReady = requiredOk && (!isEditing || dirty);
 
   async function submitUser() {
     setSaveError(null);
@@ -593,6 +602,7 @@ function UserEditPageContent() {
                 appearance="outline"
                 label={submitting ? "Salvando..." : "Salvar"}
                 leftIcon={<Save size={16} />}
+                enabled={saveReady}
                 onClick={() => submitUser()}
                 severity="secondary"
               />

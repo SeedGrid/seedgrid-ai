@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -475,7 +476,7 @@ function createRolesRequest(query: RoleQueryState) {
     })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error(await readHttpError(response, `HTTP ${response.status}`));
         }
         return (await response.json()) as PaginatedResult<RoleEntry>;
       })

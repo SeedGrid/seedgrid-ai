@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -81,7 +82,7 @@ export default function AiPriceApprovalsPage() {
     try {
       const response = await fetch(`/api/admin/ai/price-approvals/${id}/${action}`, { method: "POST" });
       if (!response.ok) {
-        toast.error((await response.text()) || "Falha na operacao.");
+        toast.error(await readHttpError(response, "Falha na operacao."));
         return;
       }
       await load();
@@ -95,7 +96,7 @@ export default function AiPriceApprovalsPage() {
     try {
       const response = await fetch("/api/admin/ai/price-approvals/check", { method: "POST" });
       if (!response.ok) {
-        toast.error((await response.text()) || "Falha ao verificar.");
+        toast.error(await readHttpError(response, "Falha ao verificar."));
         return;
       }
       const result = (await response.json()) as { status?: string; message?: string };

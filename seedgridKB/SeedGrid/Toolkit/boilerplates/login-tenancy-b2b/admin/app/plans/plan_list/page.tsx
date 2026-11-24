@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -154,7 +155,7 @@ function PlanListPageContent() {
       });
 
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao excluir plano.");
         toast.error(text || "Falha ao excluir plano.");
         return;
       }
@@ -448,7 +449,7 @@ function createPlansRequest(query: PlanQueryState) {
     })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error(await readHttpError(response, `HTTP ${response.status}`));
         }
         return (await response.json()) as PaginatedResult<PlanEntry>;
       })

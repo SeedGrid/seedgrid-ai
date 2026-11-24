@@ -1,5 +1,6 @@
 "use client";
 
+import { readHttpError } from "@/lib/http-error";
 import {
   SgButton,
   SgCard,
@@ -79,7 +80,7 @@ function AiModelListPageContent() {
         method: "DELETE",
       });
       if (!response.ok) {
-        const text = await response.text();
+        const text = await readHttpError(response, "Falha ao excluir modelo.");
         toast.error(text || "Falha ao excluir modelo.");
         return;
       }
