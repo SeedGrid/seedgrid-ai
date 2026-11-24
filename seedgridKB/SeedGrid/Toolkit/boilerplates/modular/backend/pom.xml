@@ -23,12 +23,12 @@
              ficam explicitas aqui, as mesmas do seedgrid-login-tenancy-parent 2026.11.9. Cada
              extension opcional que o sg-new-product acrescentar traz a sua <version> junto da
              dependencia; mantenha-as alinhadas com estas. -->
-        <seedgrid.security.version>2026.11.16</seedgrid.security.version>
-        <seedgrid.audit.version>2026.11.13</seedgrid.audit.version>
+        <seedgrid.security.version>2026.11.17</seedgrid.security.version>
+        <seedgrid.audit.version>2026.11.15</seedgrid.audit.version>
         <seedgrid.privacy.version>2026.11.1</seedgrid.privacy.version>
         <seedgrid.commons.version>2026.11.4</seedgrid.commons.version>
         <seedgrid.resilience.version>2026.11.0</seedgrid.resilience.version>
-        <seedgrid.user-notifications.version>2026.11.7</seedgrid.user-notifications.version>
+        <seedgrid.user-notifications.version>2026.11.8</seedgrid.user-notifications.version>
         <!-- No seedgrid-filemanagement o minio e <optional>: nao chega transitivo. -->
         <minio.version>8.5.9</minio.version>
     </properties>

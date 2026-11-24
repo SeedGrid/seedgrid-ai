@@ -47,8 +47,10 @@ Backend de armazenamento de arquivos (sistema de arquivos, S3, Azure Blob, MinIO
 | `byte[] retrieve(StorageKey key) throws StorageException` | Lê o conteúdo; lança `StorageNotFoundException` se não existir. |
 | `InputStream stream(StorageKey key) throws StorageException` | Lê como stream (arquivos grandes); lança `StorageNotFoundException` se não existir. |
 | `void delete(StorageKey key) throws StorageException` | Apaga o arquivo. Onde dá para detectar, lança `StorageNotFoundException` se não existir; backends cuja API de delete é idempotente (S3, MinIO) podem não fazer nada. |
-| `boolean exists(StorageKey key)` | Se o arquivo existe. |
+| `boolean exists(StorageKey key) throws StorageException` | `true` se o arquivo existe; `false` **somente quando o storage respondeu que não existe** (404, `NoSuchKey`, `not_found`). **Erro de I/O, tempo esgotado, falta de permissão ou storage fora do ar lançam `StorageException`**: não devolva `false` para "não consegui verificar" (desde 2026.11.4, P197; antes os backends MinIO, S3, Azure, GCS e outros engoliam o erro e devolviam `false`). |
 | `FileMetadata getMetadata(StorageKey key) throws StorageException` | Metadados (tamanho, content type, data de criação). |
+
+> **Quebra de compilação (filemanagement 2026.11.4):** `StorageException` é checked, então quem chama `exists()` precisa tratar ou propagar a exceção. Um `catch (Exception)` que devolve `false` volta a esconder a falha do storage: trate `StorageException` como erro de armazenamento, nunca como "arquivo ausente".
 
 **Métodos com implementação padrão** (sobrescreva só se precisar):
 
@@ -89,7 +91,7 @@ public class MeuFileStorage implements FileStorage {
     }
 
     @Override
-    public boolean exists(StorageKey key) {
+    public boolean exists(StorageKey key) throws StorageException {
         throw new UnsupportedOperationException("implemente");
     }
 

@@ -1,6 +1,6 @@
 import "server-only";
 import { headers as requestHeaders } from "next/headers";
-import { resolveTenantHost, tenancyDomain } from "./tenant-host";
+import { TenantHostError, resolveTenantHost, tenancyDomain } from "./tenant-host";
 
 export async function backendHost(): Promise<string> {
   const incoming = await requestHeaders();
@@ -15,7 +15,7 @@ export async function backendFetch(url: string, options: RequestInit = {}): Prom
   const target = new URL(url);
   const domain = tenancyDomain();
   if (host === domain && !target.pathname.startsWith("/public/tenants")) {
-    throw new Error("Informe o subdominio da empresa para acessar.");
+    throw new TenantHostError("Informe o subdominio da empresa para acessar.");
   }
   const method = options.method?.toUpperCase();
   // Escritas usam o contrato restrito da extensão Security, separado do CRUD administrativo completo.

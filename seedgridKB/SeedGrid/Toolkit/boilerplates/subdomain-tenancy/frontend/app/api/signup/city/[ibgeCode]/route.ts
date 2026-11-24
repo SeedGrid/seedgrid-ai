@@ -1,3 +1,4 @@
+import { backendUnavailableResponse } from "@/lib/backend-unavailable";
 import { NextResponse } from "next/server";
 
 import { apiBaseUrl } from "@/lib/seedgrid-app-api";
@@ -22,11 +23,8 @@ export async function GET(request: Request, context: { params: Promise<{ ibgeCod
   let response: Response;
   try {
     response = await fetch(`${apiBaseUrl}/public/cities/by-ibge-code/${ibgeCode}`, { headers, cache: "no-store" });
-  } catch {
-    return NextResponse.json(
-      { message: "Nao foi possivel conectar ao servidor. Tente novamente." },
-      { status: 503 },
-    );
+  } catch (error) {
+    return backendUnavailableResponse(error);
   }
 
   return passthroughResponse(response);

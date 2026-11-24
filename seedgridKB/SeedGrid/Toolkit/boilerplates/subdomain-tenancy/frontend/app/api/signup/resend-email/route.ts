@@ -1,3 +1,4 @@
+import { backendUnavailableResponse } from "@/lib/backend-unavailable";
 import { backendFetch } from "@/lib/backend-fetch";
 import { NextResponse } from "next/server";
 
@@ -18,11 +19,8 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
-  } catch {
-    return NextResponse.json(
-      { message: "Nao foi possivel conectar ao servidor. Tente novamente." },
-      { status: 503 },
-    );
+  } catch (error) {
+    return backendUnavailableResponse(error);
   }
 
   return passthroughResponse(response);

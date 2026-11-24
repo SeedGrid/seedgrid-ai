@@ -1,3 +1,4 @@
+import { backendUnavailableResponse } from "@/lib/backend-unavailable";
 import { backendFetch } from "@/lib/backend-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { SecurityPaths } from "@/lib/security-paths";
@@ -34,11 +35,8 @@ export async function GET(request: NextRequest) {
       `${apiBaseUrl}${SecurityPaths.auth.confirmEmail}?token=${encodeURIComponent(token)}`,
       { method: "GET" },
     );
-  } catch {
-    return NextResponse.json(
-      { message: "Nao foi possivel conectar ao servidor. Tente novamente." },
-      { status: 503 },
-    );
+  } catch (error) {
+    return backendUnavailableResponse(error);
   }
 
   const data = (await response.json().catch(() => null)) as

@@ -1,3 +1,4 @@
+import { backendUnavailableResponse } from "@/lib/backend-unavailable";
 import { backendFetch } from "@/lib/backend-fetch";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,11 +27,8 @@ export async function POST(request: NextRequest) {
       // o token so' nasce no verify e a sessao de 2FA nao o guarda.)
       body: JSON.stringify(body),
     });
-  } catch {
-    return NextResponse.json(
-      { message: "Nao foi possivel conectar ao servidor. Tente novamente." },
-      { status: 503 },
-    );
+  } catch (error) {
+    return backendUnavailableResponse(error);
   }
 
   const data = (await response.json().catch(() => null)) as
