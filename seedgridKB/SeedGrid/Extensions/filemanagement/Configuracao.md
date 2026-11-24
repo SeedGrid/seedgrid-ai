@@ -51,6 +51,17 @@ Como os nomes abaixo são **chaves do mapa**, não propriedades MP (exceto as du
 | `minio` → `secret-key` 🔒 | `String` | — | — | Sim | idem | Credenciais | — | Runtime (lazy) | idem |
 | `minio` → `bucket` | `String` | — | — | Sim | idem | Bucket alvo | — | Runtime (lazy) | idem |
 | `minio` → `region` | `String` | — | `us-east-1` | Não | Repassado ao `MinIOStorage` | Cliente | — | Runtime (lazy) | idem (`getOrDefault`) |
+| `minio` → `connect-timeout-seconds` | `int` (s) | segundos | `5` | Não | Tempo para conectar ao MinIO; estourou → `StorageException` ("MinIO did not respond within the configured time limit or is unreachable") | Cliente HTTP (OkHttp) do `MinIOStorage` | vence a propriedade global `seedgrid.filemanagement.minio.connect-timeout` | Runtime (lazy) | `MinIOTimeouts` (2026.11.3, P192.F1.T4) |
+| `minio` → `read-timeout-seconds` | `int` (s) | segundos | `30` | Não | **Inatividade do socket** na leitura: arquivo grande que continua andando não é cortado | idem | vence `seedgrid.filemanagement.minio.read-timeout` | Runtime (lazy) | idem |
+| `minio` → `write-timeout-seconds` | `int` (s) | segundos | `30` | Não | **Inatividade do socket** na escrita (upload) | idem | vence `seedgrid.filemanagement.minio.write-timeout` | Runtime (lazy) | idem |
+| `minio` → `call-timeout-seconds` | `int` (s) | segundos | `600` (10 min) | Não | Teto da chamada inteira, independente do tráfego | idem | vence `seedgrid.filemanagement.minio.call-timeout` | Runtime (lazy) | idem |
+
+**Tempos limite do MinIO (2026.11.3, P192.F1.T4).** Antes o cliente era criado sem limites e o SDK esperava cerca de 5 minutos para conectar, ler e escrever: um MinIO lento ou fora do ar prendia a thread e a transação de quem chamava (parte do defeito "excluir export pendura" do `backup`). Agora há padrões seguros (conectar 5 s, ler 30 s, escrever 30 s, teto da chamada 10 min).
+
+- **Ordem de precedência:** chave do mapa do storage > propriedade global > padrão. A global usa `Duration` do MicroProfile Config, por exemplo `5S`: `seedgrid.filemanagement.minio.connect-timeout`, `read-timeout`, `write-timeout` e `call-timeout`.
+- **Falha por tempo ou servidor inalcançável:** sobe como `StorageException` (ou `StorageConfigurationException` na criação do storage). A mensagem é "MinIO did not respond within the configured time limit or is unreachable".
+- **Comportamento novo:** quem tinha operações no MinIO com mais de 30 s sem tráfego (rede muito lenta) deve aumentar `read-timeout-seconds` e `write-timeout-seconds`. O construtor antigo `MinIOStorage(...)` continua e usa os padrões; o novo recebe `MinIOTimeouts`.
+- **Fonte:** CHANGELOG da extension, versão 2026.11.3; testes `MinIOTimeoutsTest` (servidor falso mudo e servidor HTTP que dorme).
 
 ### 2.4 `azure-blob`
 
