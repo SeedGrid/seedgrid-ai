@@ -59,7 +59,7 @@ let ok = run('install', 'pnpm', ['install', '--prefer-offline'], app);
 if (ok) ok = run('build', 'pnpm', ['build'], app);
 if (ok && !args.includes('--sem-test')) ok = run('test', 'pnpm', ['test'], app);
 
-console.log(`\n=== quadro: ${modulo}@${escopo} em ${modelo} (commit do boilerplate: ${commit}; data ${new Date().toISOString().slice(0, 10)}) ===`);
+console.log(`\n=== quadro: ${modulo}@${escopo} em ${modelo} (commit da KB (seedgrid-ia): ${commit}; data ${new Date().toISOString().slice(0, 10)}) ===`);
 for (const n of notas) console.log(`nota da receita: ${n}`);
 for (const q of quadro) console.log(`${q.etapa.padEnd(8)} ${q.resultado} (${q.segundos}s)`);
 if (!ok) console.log('resultado: FALHOU');
