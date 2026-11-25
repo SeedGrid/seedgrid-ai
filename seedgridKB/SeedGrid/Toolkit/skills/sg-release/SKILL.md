@@ -22,6 +22,7 @@ Regras: `HO-03` (release por merge normal, sem squash) e `HO-07` (autorização 
 4. Com o plano aprovado pelo usuário, rode sem `--dry-run`:
    `node .ai/skills/sg-release/scripts/release.mjs`
    Roda build e testes (`mvn verify` no backend; `npm run build` no front e no admin, se houver o script; `--sem-testes` só quando o usuário mandar), cria `release/<versão>`, sobe `backend/pom.xml` e os `package.json`, fecha o `CHANGELOG.md` ("Nao publicado" vira a versão e abre outra vazia), faz o commit `release: <versão>` e a tag anotada `v<versão>`. **Para aí.**
+4b. **Quadro da prova de comportamento.** Se a release toca boilerplate, Display ou tela de gravação, o relato do passo 5 traz o **quadro da prova de comportamento** (`references/roteiro-de-prova-de-comportamento.md`): cada passo PROVADO / VISTO / NÃO TESTADO, executado pelo `frontend-tester`. Sem o quadro, a doc devolve o pedido ao agente e não o leva ao dono.
 5. Relate o que ficou pronto e **peça a autorização do dono** para: merge normal da `release/` na `main` (HO-03), push da `main` e da tag, e deploy. Só execute o que ele autorizar, ato por ato.
 6. Depois do merge confirmado, apague a branch `release/` local e remota (HO-04); a `develop` deve receber a `main` de volta para não divergir.
 

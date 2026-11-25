@@ -34,6 +34,12 @@ Vale para a sessão principal e para todos os papéis, em qualquer tarefa (inclu
 4. **Divergência não é sua para decidir.** Tirar algo previsto, mudar um comportamento combinado, trocar um formato ou acrescentar uma dependência fora do plano: pare aquela tarefa, registre a pergunta (o que foi combinado, o que o código pede, opções e recomendação) e siga com as independentes. Registrar depois de ter feito não basta.
 5. **O host não reinventa a plataforma.** Autenticação, permissões e auditoria vêm da `seedgrid-security` e das extensions já no projeto; não crie outra. O host não altera extension (`limites-do-host.md`).
 
+### O componente já faz isso?
+
+Antes de pedir `enabled`, guarda, helper, estado extra ou qualquer mecanismo **por cima de um componente SeedGrid** (botão, campo, tabela, diálogo, sino), quem monta o pedido **lê o código ou o exemplo do componente** e cita no pedido o que ele já faz. O agente que receber o pedido e vir camada redundante **diz isso e não aplica**; a coordenação ajusta o pedido.
+
+Exemplo real (P190): o `SgButton` já espera a `Promise` do `onClick` e desabilita sozinho enquanto ela roda; um `enabled={!submitting}` por cima era camada redundante (e contra a regra FE-46), e um `void salvar()` jogava fora a `Promise` que o componente usaria.
+
 ### Hotfix
 
 Triagem rápida do `arquiteto` (causa, menor correção segura, risco), correção mínima, teste de regressão do `qa` (e do `frontend-tester`, se o defeito é de tela) e revisão enxuta. Sem refactor: o que aparecer no caminho vira pendência.

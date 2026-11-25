@@ -10,6 +10,7 @@
 //  7. `<form onSubmit={...}>` que faz mais do que `event.preventDefault()`: a gravacao passa sempre pelo botao (FE-46, P190). O form so
 //     existe para o gerenciador de senha do navegador; o `SgButton type="submit"` leva o `onClick` que devolve a Promise.
 //  8. `console.log/debug/info` que imprime requisicao, cabecalho, corpo, token, cookie ou senha (FE-47, P193): vaza segredo no console do navegador.
+//  9. cadastro de empresa (company_edit/page.tsx e SignupForm.tsx; FE-39): sem SgInputText para documento, telefone, CEP ou e-mail; SgInputCNPJ com validateWithPublicaCnpj e onPublicaCnpjResult; SgInputPostalCode com validateWithViaCep e onViaCepResult; sem seletor PF/PJ (Tipo de pessoa).
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -65,6 +66,26 @@ for (const f of walk(root)) {
       if (campo) add('campo-mascarado', f, `SgInputText para ${campo.replace(/\s+/g, ' ')}: use o componente com mascara (documento, telefone, CEP)`);
     }
   }
+  if (/(^|\/)(security\/companies\/company_edit\/page|auth\/SignupForm)\.tsx$/.test(r) && !/(^|\/)admin\//.test(r)) {
+    // FE-39: cadastro de empresa e' sempre pessoa juridica, com os componentes certos e a busca ligada
+    const src = read(f);
+    const CAMPO = /\b(cpf|cnpj|documento|document(?!ation)|telefone|phone|celular|whats\s?app|cep|zip|postal|e-?mail)/i;
+    for (const m of src.matchAll(/<SgInputText\b/g)) {
+      const attrs = tagAttrs(src, m.index + m[0].length);
+      const hit = attrs.match(/\b(?:id|label|field|name)\s*=\s*(?:"([^"]*)"|\{[`'"]([^`'"]*)[`'"]\})/g) || [];
+      const campo = hit.find((h) => CAMPO.test(h));
+      if (campo) add('empresa-campo-texto', f, `SgInputText para ${campo.replace(/\s+/g, ' ')}: use SgInputCNPJ, SgInputPhone, SgInputPostalCode ou SgInputEmail (FE-39)`);
+    }
+    for (const [tag, props, regra] of [['SgInputCNPJ', ['validateWithPublicaCnpj', 'onPublicaCnpjResult'], 'empresa-cnpj-sem-busca'], ['SgInputPostalCode', ['validateWithViaCep', 'onViaCepResult'], 'empresa-cep-sem-busca']]) {
+      for (const m of src.matchAll(new RegExp('<' + tag + '(?![A-Za-z])', 'g'))) {
+        const attrs = tagAttrs(src, m.index + m[0].length);
+        const falta = props.filter((p) => !new RegExp('(?<![A-Za-z])' + p + '(?![A-Za-z])').test(attrs));
+        if (falta.length) add(regra, f, `<${tag}> sem ${falta.join(' e ')}: a busca tem de estar ligada (FE-39)`);
+      }
+    }
+    if (/Tipo de pessoa|personType|tipoPessoa/i.test(src)) add('empresa-tipo-pessoa', f, 'seletor PF/PJ ("Tipo de pessoa") no cadastro de empresa: e sempre pessoa juridica (FE-39)');
+  }
+
   if (/(^|\/)data\.ts$/.test(r)) {
     const lines = read(f).split('\n');
     const itens = lines.map((l, i) => ({ i, m: l.match(/^(\s*)\{?\s*href:\s*"([^"]*)"/), l })).filter((x) => x.m);

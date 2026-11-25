@@ -19,6 +19,9 @@ Por que a mudança é necessária; decisões e entregas anteriores relevantes.
 ## Arquivos e áreas envolvidos
 - caminho/ou/módulo — motivo
 
+## O que o componente já faz
+Se a tarefa põe camada por cima de um componente SeedGrid (guarda, `enabled`, helper, estado extra), cite o que o componente já faz (leia o código ou o exemplo). Sem camada redundante: escreva "nada a acrescentar".
+
 ## Limites
 - O que não deve ser alterado.
 - Arquivos que outro papel está alterando em paralelo.

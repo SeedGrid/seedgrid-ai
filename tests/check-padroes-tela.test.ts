@@ -36,6 +36,10 @@ const ruins: Record<string, [Record<string, string>, string]> = {
   'instrucao de admin no app do cliente': [{ 'frontend/app/assinatura/View.tsx': 'const t = "Cadastre o ID de preco do Stripe nesse plano";' }, 'instrucao-admin-no-cliente'],
   'console.log com cabecalho da requisicao': [{ 'frontend/lib/http.ts': 'export function f(init: RequestInit) {\n  console.log("[API Request] Headers:", init.headers);\n}\n' }, 'console-log-sensivel'],
   'console.log com corpo e senha': [{ 'frontend/app/auth/login.tsx': 'console.log("login", body, password);' }, 'console-log-sensivel'],
+  'FE-39: e-mail da empresa com SgInputText': [{ 'frontend/app/security/companies/company_edit/page.tsx': '<SgInputText id="company-email" label="E-mail" inputProps={{ value: v }} />' }, 'empresa-campo-texto'],
+  'FE-39: SgInputCNPJ sem a busca ligada': [{ 'frontend/app/auth/SignupForm.tsx': '<SgInputCNPJ id="signup-cnpj" validateWithPublicaCnpj />' }, 'empresa-cnpj-sem-busca'],
+  'FE-39: SgInputPostalCode sem a busca ligada': [{ 'frontend/app/security/companies/company_edit/page.tsx': '<SgInputPostalCode id="company-cep" onViaCepResult={x} />' }, 'empresa-cep-sem-busca'],
+  'FE-39: seletor Tipo de pessoa': [{ 'frontend/app/security/companies/company_edit/page.tsx': '<SgSelect label="Tipo de pessoa" />' }, 'empresa-tipo-pessoa'],
   'contador requests por padrao': [{ 'backend/src/AppUsageMeters.java': 'class A { List<X> m(){ return List.of(new UsageMeterDefinition(REQUESTS, "Requisicoes")); } }' }, 'contador-requests-por-padrao'],
 };
 for (const [nome, [files, regra]] of Object.entries(ruins)) {
