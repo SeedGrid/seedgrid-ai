@@ -108,3 +108,28 @@ test('passa: console.log sem dado sensivel e console de arquivo de teste', () =>
   const r = run(dir);
   assert.equal(r.code, 0, r.out);
 }));
+
+test('FE-45: "Configuracoes" no sgUserMenu e tambem no menu lateral reprova; so no sgUserMenu passa', () => {
+  const shell = 'const userMenu = [{ id: "settings", label: "Configurações", url: "/configuracao/display_settings" }];';
+  withTree({
+    'frontend/app/components/Shell.tsx': shell,
+    'frontend/app/data.ts': 'export const navItems = [\n  { href: "/configuracao/display_settings", label: "Configuracao do Display" },\n];\n',
+  }, (dir) => {
+    const r = run(dir);
+    assert.equal(r.code, 1, r.out);
+    assert.match(r.out, /configuracao-duplicada-no-menu/);
+  });
+  withTree({
+    'frontend/app/components/Shell.tsx': shell,
+    'frontend/app/data.ts': 'export const navItems = [\n  { href: "/dispositivos", label: "Dispositivos" },\n];\n',
+  }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+  // sem "Configuracoes" no sgUserMenu, /configuracao/* no menu lateral (admins dos boilerplates) nao reprova
+  withTree({
+    'admin/app/components/Shell.tsx': 'const userMenu = [{ id: "profile", label: "Meu perfil", url: "/perfil" }];',
+    'admin/app/data.ts': 'export const navItems = [\n  { href: "/configuracao/moedas", label: "Moedas" },\n];\n',
+  }, (dir) => {
+    assert.equal(run(dir).code, 0);
+  });
+});

@@ -11,6 +11,7 @@
 //     existe para o gerenciador de senha do navegador; o `SgButton type="submit"` leva o `onClick` que devolve a Promise.
 //  8. `console.log/debug/info` que imprime requisicao, cabecalho, corpo, token, cookie ou senha (FE-47, P193): vaza segredo no console do navegador.
 //  9. cadastro de empresa (company_edit/page.tsx e SignupForm.tsx; FE-39): sem SgInputText para documento, telefone, CEP ou e-mail; SgInputCNPJ com validateWithPublicaCnpj e onPublicaCnpjResult; SgInputPostalCode com validateWithViaCep e onViaCepResult; sem seletor PF/PJ (Tipo de pessoa).
+// 10. FE-45: se o sgUserMenu tem "Configuracoes" e a rota dela TAMBEM e' item do menu lateral (data.ts), reprova; sem "Configuracoes" no sgUserMenu nao reprova.
 // Sem dependencias.  node scripts/check-padroes-tela.mjs [--dir <pasta>] [--baseline <arquivo>|--no-baseline]
 // Baseline: violacoes ja conhecidas das copias da KB ainda nao sincronizadas com o boilerplate corrigido.
 // Violacao nova reprova; entrada do baseline que deixou de ocorrer tambem reprova (apague-a: o baseline so encolhe).
@@ -107,6 +108,26 @@ for (const f of walk(root)) {
     if (primeiro >= 0) {
       const depois = raizes.slice(primeiro).filter((h) => !fim(h) && !/^\/(security\/|apikeys|audit)/.test(h));
       if (depois.length) add('menu-ordem', f, `Empresas e Seguranca devem ser as ultimas opcoes do menu (FE-44); depois delas: ${depois.join(', ')}`);
+    }
+  }
+  if (/(^|\/)components\/Shell\.tsx$/.test(r)) {
+    // FE-45: a tela de configuracao do produto vive em "Configuracoes" no sgUserMenu, nao tambem no menu lateral.
+    // So reprova se a rota do item "Configuracoes" do sgUserMenu TAMBEM e' um item do menu lateral (navItems).
+    // Sem "Configuracoes" no sgUserMenu nao reprova (as telas /configuracao/* do admin ficam no menu lateral).
+    const shell = read(f);
+    const item = shell.match(/label:\s*(?:"|')Configura[cç][oõ]es(?:"|')[\s\S]{0,400}?url:\s*([^,}\n]+)/);
+    if (item) {
+      let rota = item[1].trim().replace(/^["'`]|["'`]$/g, '');
+      if (/^[A-Z_]+$/.test(rota)) {
+        // constante (ex.: PRODUCT_SETTINGS_PATH de lib/product-settings.ts): resolve no arquivo do app
+        const lib = path.join(path.dirname(f), '..', '..', 'lib', 'product-settings.ts');
+        const m = fs.existsSync(lib) ? read(lib).match(new RegExp(rota + '[^=]*=\\s*["\'`]([^"\'`]+)["\'`]')) : null;
+        rota = m ? m[1] : '';
+      }
+      const dataTs = path.join(path.dirname(f), '..', 'data.ts');
+      if (rota.startsWith('/') && fs.existsSync(dataTs) && new RegExp('href:\\s*["\'`]' + rota.replace(/[.*+?^${}()|[\]\\]/g, (c) => '\\' + c) + '["\'`]').test(read(dataTs))) {
+        add('configuracao-duplicada-no-menu', f, `"${rota}" e' o item "Configuracoes" do sgUserMenu e tambem item do menu lateral (data.ts): fica so no menu do usuario (FE-45)`);
+      }
     }
   }
   if (/\.tsx$/.test(r) && !/\.(test|spec)\./.test(r)) {
