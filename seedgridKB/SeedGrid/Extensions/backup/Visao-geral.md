@@ -160,6 +160,19 @@ public class MeuBackupExporter implements BackupExporter {
 
 > Plano P130 (`backup` 2026.11.02, commits `af3e93c` e `7928d89`, no Maven Central). Ao terminar o export, com sucesso ou erro, o backup deixa uma notificação na caixa de quem pediu, pelo SPI opcional `ExportInboxNotifier` (tipos `backup.finished` e `backup.failed`, `payload` só `{exportPublicId}`; o download continua pela rota do backup). A dependência da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]] é `provided`: sem ela o backup funciona igual, e falha da caixa só vira log. A conta de quem pediu fica na coluna nova `sg_export_jobs.inbox_account_public_id` (migration V401), então sobrevive a reinício do servidor. **Confirmado** (relato do dev-2).
 
+## Nome do arquivo do export (`backup` 2026.11.19, plano P200)
+
+**Defeito corrigido (2026-11-24):** o arquivo do export era gravado como `<schema>/exports/export_<schema>_<timestamp ao segundo>.zip`. Com **banco por tenant** o schema é `public` para todos os tenants, então dois exports no **mesmo segundo** geravam a **mesma chave** e o segundo **sobrescrevia** o primeiro: um tenant podia baixar o ZIP de outro. O tenant era resolvido corretamente; a colisão estava só no nome do arquivo.
+
+**Agora:** `export_<schema>_<timestamp ao segundo>_<UUID>.zip`, com um UUID por export, nos dois exporters (`CsvZipExporter`, `SqlDumpZipExporter`), via `ExportFileNames`. O nome é gerado **uma vez** por export e usado para gravar **e** para o artefato (antes eram duas chamadas que podiam divergir).
+
+- **Exports antigos** (sem UUID) continuam baixáveis: o download usa a `storage_key` do artefato.
+- **Exports já sobrescritos não têm como ser recuperados** (o conteúdo original se perdeu).
+- O `backup` segue **agnóstico de tenant**: não há prefixo por tenant no diretório (isso exigiria um SPI novo; descartado). Com o UUID não há colisão, mas todos os tenants gravam em `public/exports`.
+- **Detecção em produção:** a consulta de leitura `scripts/p200-detecta-exports-misturados.sql` (repositório de trabalho) procura a mesma `storage_key` em bancos de tenants diferentes, divergência de sha256 e nomes do mesmo segundo entre tenants.
+
+**Provas:** `ExportFileNamesTest` (mesmo schema no mesmo segundo gera nomes diferentes; 2000 gerações concorrentes em 16 threads sem colisão; formato; schema nulo); o guardião `TenantBackupIsolationGuardianIT` (10 casos HTTP, 2 tenants reais; ver [[SeedGrid/Extensions/subdomain-tenancy/Visao-geral]]), que reprova no `backup` antigo e passa 10/10 no .19; e a spec de e2e de export concorrente, que passou contra os pacotes publicados (5 rodadas, cada ZIP só com dados do próprio tenant). **Não testado:** Mongo no `backup`; exports `DOMAIN` e `SQL_DUMP` concorrentes (só RAW e CSV_ZIP); o espelho Rust, que **ainda tem o mesmo defeito** (plano P35, tarefa TRP.13).
+
 ## Anotações
 
 _Fonte: código de `seedgrid-quarkus-ext-backup` (versão 2026.10.22, publicada no Maven Central)._

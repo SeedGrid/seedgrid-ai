@@ -115,6 +115,31 @@ Como os nomes abaixo são **chaves do mapa**, não propriedades MP (exceto as du
 
 Usa a API HTTP v2 por `java.net.http`, **sem dependência nova**.
 
+## 2.9 Limite de tamanho do upload (ponte do `filemanagement` 2026.11.5)
+
+Desde o **2026.11.5** o `filemanagement` traz uma propriedade que liga o tamanho máximo do upload ao teto de corpo HTTP do Quarkus (plano P197.F1.T4).
+
+| Propriedade | Padrão | Onde |
+|---|---|---|
+| `seedgrid.filemanagement.max-upload-size` | `250M` (250 MiB = 262144000 bytes) | `META-INF/microprofile-config.properties` do `runtime` |
+
+O mesmo arquivo mapeia `quarkus.http.limits.max-body-size=${seedgrid.filemanagement.max-upload-size}`. Quem usa o `filemanagement` (e quem o recebe por `security`, `backup`, `login-tenancy` e `subdomain-tenancy`, que pinam o .5) herda o limite sem configurar nada.
+
+**Precedência (o valor mais alto vence):**
+1. `quarkus.http.limits.max-body-size` **explícito no `application.properties` do host**: vale o do host (a ponte não o sobrescreve).
+2. `seedgrid.filemanagement.max-upload-size` do host: muda só a propriedade da extension.
+3. O padrão `250M`.
+
+Antes do .5 não havia ponte: o teto era o do Quarkus (10 MiB por padrão), a menos que o host definisse o seu. No Display ele já era `210M` por configuração própria.
+
+**Atenções:**
+- **O teto vale para TODAS as rotas do host**, não só as de upload. Um host que precisa de limite menor em outras rotas deve tratá-lo na própria rota.
+- **O upload é em memória** (`readAllBytes()`). Medido (JDK 21, G1, um upload por vez): um upload de 250 MiB passa com heap de 600 MB e de 1 GB, e **falha com `OutOfMemoryError` com heap de 400 MB** (o cliente recebe 500; o host continua vivo). Dimensione o heap em **cerca de 2,4 vezes o arquivo por upload simultâneo**. Uploads simultâneos multiplicam; a concorrência **não foi medida**.
+- **O limite efetivo é o MENOR da cadeia**: o proxy da frente (Cloudflare tem limite de corpo por plano), o proxy do front (por exemplo o do Next), o componente de upload e o limite de mídia do produto (no Display: imagem 10 MiB, vídeo 200 MiB). Suba todos para subir o limite de verdade.
+- Em container, o heap segue o limite de memória do contêiner (`-XX:MaxRAMPercentage`); defina o limite do serviço.
+
+**Provado:** a configuração efetiva (3 testes `QuarkusTest`: padrão 250 MiB; propriedade da extension; host explícito vence) e um **POST real** em host mínimo com o .5: 250 MiB → 200 (o servidor recebeu os 262144000 bytes), 251 MiB → **413**, POST pequeno em outra rota antes e depois → 200. **Não provado:** pilha completa (Cloudflare, Next), concorrência, upload em fluxo (não existe: é decisão em aberto).
+
 ## 3.1 Anexos (tabela `sg_attachments`)
 
 | Propriedade | Padrão | Efeito |

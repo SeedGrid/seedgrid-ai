@@ -181,6 +181,16 @@ Com os defaults `@DefaultBean`, o envio do OTP funciona só com o SMTP configura
 
 > Plano P130 (`subdomain-tenancy` 2026.11.03, commit `9ea38fd`, no Maven Central). A extension passa a depender da [[SeedGrid/Extensions/user-notifications/Visao-geral|user-notifications]]. A V1400 (`sg_user_notification`) roda **em cada banco de tenant** (coordinator e provisioning); o **master não recebe a tabela**. A conta é nula (o banco do tenant já isola). O usuário do tenant só vê as próprias notificações, e o id de uma notificação do tenant alfa dá 404 no beta (`UserNotificationsTenantGuardianIT`). **Confirmado** (relato do dev-2).
 
+## Isolamento do backup entre tenants e 401 sem tenant (`subdomain-tenancy` 2026.11.28, plano P200)
+
+A .28 pina `security` 2026.11.19, `backup` 2026.11.19 e `filemanagement` 2026.11.5 (o `login-tenancy` .28 também). Duas mudanças valem para o host:
+
+- **Token sem tenant agora dá 401**, não 500: `SubdomainTenancySecurityScopeResolver.scopeFor` lançava `IllegalStateException`; agora lança `AuthenticationFailedException`.
+- **Guardião de isolamento** `TenantBackupIsolationGuardianIT` (módulo `integration-tests-audit`): 10 casos HTTP com 2 tenants provisionados de verdade (banco por tenant) e login real: listar, baixar e excluir o export do outro tenant; token do tenant A no host do B; o **mesmo usuário nos dois tenants** (só o validador de subdomínio barra); token sem tenant; ADMIN da empresa A pedindo a empresa B (403); arquivo do A sem linha do B; auditoria da exclusão no banco do tenant certo; concorrência (5 rodadas × 2 exports por tenant). Falha no `backup` antigo; **10/10 no .19**.
+- **Prova de reprovação (mutação no código):** validador JWT que sempre passa → o caso do mesmo usuário nos dois tenants fica vermelho (o caso simples do token A no host B **não** pega, porque há uma segunda barreira: o token é resolvido no banco do tenant); ignorar `companyPublicIds` → o caso da empresa B fica vermelho; resolvedor de tenant fixo → os casos de baixar o do outro e de arquivo sem linha ficam vermelhos. **Os demais casos ainda não têm prova de reprovação por mutação.**
+- **Não coberto:** modo schema por tenant (o módulo não tem), Mongo no `backup`, exports `DOMAIN` e `SQL_DUMP` concorrentes, outros jobs assíncronos multi-tenant (relatórios, notificações, billing, agendados).
+- `Using forced tenant from context` desceu para `DEBUG`.
+
 ## Testes
 
 `runtime/src/test/java/br/com/seedgrid/subdomaintenancy/` — 17 classes, ~76 métodos `@Test`. **Não executados** nesta análise.
