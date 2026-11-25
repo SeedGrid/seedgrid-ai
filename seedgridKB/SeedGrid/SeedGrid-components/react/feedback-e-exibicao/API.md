@@ -510,7 +510,8 @@ import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification,
 | `tokenEndpoint` | `string` | `"/api/realtime/connect"` | Não | Rota que entrega o token do Pulse; usada quando não há `SgRealtimeProvider` acima. |
 | `requestInit` | `RequestInit` | — | Não | Opções do `fetch` (ex.: `Authorization` quando não há cookie). |
 | `fetcher` | `(input: string, init?: RequestInit) => Promise<Response>` | `fetch` global | Não | Substitui o `fetch` (apps sem BFF, testes, demonstração). Responder `enabled:false` no token liga o polling. |
-| `types` | `Record<string, SgNotificationTypeConfig>` | — | Não | Tipo da notificação → `icon` e `onOpen`. O sino não conhece o negócio. |
+| `types` | `Record<string, SgNotificationTypeConfig>` | — | Não | Tipo da notificação → `icon` e `onOpen`. O sino não conhece o negócio. O que o clique **faz** vem das ações por tipo (`actions` ou `registerNotificationAction`), não daqui. |
+| `actions` | `Record<string, SgNotificationAction>` | — | Não | Ações por tipo só desta instância; **vencem** as registradas por `registerNotificationAction`. O caminho normal é o registro. |
 | `eventPattern` | `string` | `"user-notification.*"` | Não | Evento do Pulse que dispara a leitura. |
 | `pollIntervalMs` | `number` | `45000` | Não | Polling de reserva (só com o Pulse desligado ou fora do ar), preso entre 30 e 60 s, com jitter e backoff em erro (teto 5 min). |
 | `maxVisible` | `number` | `100` | Não | Máximo de notificações na lista (cabe numa página; a lista rola dentro do painel). |
@@ -519,13 +520,18 @@ import type { SgNotificationBellProps, SgNotificationTypeConfig, SgNotification,
 | `defaultUnreadOnly` | `boolean` | `true` | Não | O painel abre em "Não lidas" (ainda não clicadas); ignorada com `showUnreadToggle={false}`; não persiste entre recargas. |
 | `onNotification` | `(notification: SgNotification) => void` | — | Não | Chegou uma notificação nova (aviso do Pulse); uma vez por notificação. |
 | `onNotificationDelete` | `(notification: SgNotification) => void` | — | Não | O usuário excluiu uma notificação. |
-| `onOpen` | `(notification: SgNotification) => void` | — | Não | O usuário abriu uma notificação (depois do `onOpen` do tipo). |
+| `onOpen` | `(notification: SgNotification) => void` | — | Não | **Válvula de escape**: roda depois da ação do tipo e do `onOpen` do tipo, só para casos fora do registro. Não use para despachar por `type` (vira `switch` no host). |
 | `onPollingTick` | `(stats: SgPollingStats) => void` | — | Não | O polling consultou a API: `{ count, lastAt, reason }` (`disabled` ou `unavailable`). |
 | `className` | `string` | — | Não | Classes extras no contêiner externo (`relative inline-block`). |
 
 ### Comportamento
 
-- **Item (`SgNotification`)**: `publicId`, `type` (livre), `title`, `message?`, `payload?` (só identificadores), `read`, `readAt?`, `createdAt`, `expiresAt?`. Ordem: mais nova primeiro.
+- **Item (`SgNotification`)**: `publicId`, `type` (livre), `title`, `message?`, `payload?` (só identificadores), `actionable?`, `read`, `readAt?`, `createdAt`, `expiresAt?`. Ordem: mais nova primeiro.
+- **Ação ao abrir, por tipo (P186).** Quem sabe abrir uma notificação é o **módulo dono do tipo**: ele registra a ação uma vez, e o sino e o host não têm `switch` por tipo. API exportada do pacote: `registerNotificationAction(type, { label?, icon?, run(notification) })` (devolve a função que desfaz o registro; registrar o mesmo tipo de novo substitui), `unregisterNotificationAction(type)`, `getNotificationAction(type)` e o tipo `SgNotificationAction`. O sino reage a registro tardio. `run` recebe a notificação e deve usar só o `payload` (identificadores; **nunca** URL ou caminho vindo do payload).
+- **Informativa x abrível.** O item só é clicável quando **as duas** coisas existem: o backend marcou `actionable=true` **e** há ação registrada para o `type` (`actions` da instância ou o registro). Clicar numa abrível marca como lida, executa `run` e fecha o painel; clicar numa informativa só marca como lida. `actionable` ausente ou `false` é informativa, mesmo com ação registrada.
+- **`actionable=true` sem ação registrada** é erro de configuração do host: o item fica informativo e o sino dá um `console.warn` (uma vez por tipo, também em produção).
+- **Erro do `run`:** o painel continua aberto com a mensagem legível do erro (`components.notifications.bell.openFailed` / `openFailedNoReason`, nos 5 idiomas); a notificação já foi marcada como lida (a ação pode sair da página, como um download).
+- **Exemplo (módulo de backup no host):** `registerNotificationAction('backup.finished', { label: 'Baixar', run: (n) => baixarExport(n.payload.exportPublicId) })` e `registerNotificationAction('backup.failed', { label: 'Ver backups', run: () => router.push('/backup/export_list') })`, em um `useEffect` do `Shell` com o `cleanup` devolvido. No boilerplate: `lib/notification-actions.ts`. Fonte: `src/notifications/notificationActions.ts`, `SgNotificationBell.tsx`, `notificationBellLogic.ts` (`openMode`).
 - **Em "Não lidas"** (padrão) o painel pede `GET {apiUrl}?unreadOnly=true`; clicar numa notificação a tira da lista (animação curta) e o contador cai na hora; vazio mostra "Tudo em dia" com atalho "Ver todas". Em "Todas" a notificação só perde o destaque. O sino nunca some.
 - **Contador**: vem do servidor (`GET /unread-count`); `99+` acima de 99.
 - **ETag/304**: o sino guarda a ETag fraca e o corpo de cada consulta (chave = query) em memória, manda `If-None-Match` na releitura e, em 304, reaproveita o corpo guardado. Contrato: `CONTRATO.md` do pacote Flutter (vetores compartilhados).
